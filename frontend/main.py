@@ -5,60 +5,80 @@ from PySide6.QtWidgets import QApplication, QGraphicsView
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 
-#from PyQt6 import QtWidgets as qtw
 
-import sys
+import sys, os
 app = QApplication(sys.argv)
 pixmap = QPixmap('frontend/main/splash.png')
 splash = QSplashScreen(pixmap)
 splash.show()
 
+icon = QIcon('frontend/main/splash.png')
+
+
+#if (os.name == 'nt'):
+    # This is needed to display the app icon on the taskbar on Windows 7
+import ctypes
+myappid = 'aiNodes' # arbitrary string
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
+
+# Create the tray
+tray = QSystemTrayIcon()
+tray.setIcon(icon)
+tray.setVisible(True)
+
+# Create the menu
+menu = QMenu()
+action = QAction("A menu item")
+menu.addAction(action)
+
+# Add a Quit option to the menu.
+quit = QAction("Quit")
+quit.triggered.connect(app.quit)
+menu.addAction(quit)
+
+# Add the menu to the tray
+tray.setContextMenu(menu)
+
+#from PyQt6 import QtCore as qtc
+#from PyQt6 import QtWidgets as qtw
+#from PyQt6 import uic
 #from PyQt6.Qt import *
+from PySide6.QtCore import *
+from PySide6 import QtCore
+from PySide6.QtGui import QIcon, QPixmap
 import transformers
 from transformers import CLIPTokenizer, CLIPTextModel
 from transformers import BertTokenizerFast
-import warnings
+import warnings, random, traceback, time
 
-#from PyQt6.QtWidgets import *
 
-import random
-
+from ldm.generate import Generate
 from ui_classes import *
+from backend.ui_func import getLatestGeneratedImagesFromPath
 
+
+
+#Node Editor Functions - We have to make it a QWidget because its now a MainWindow object, which can only be created in a QApplication, which we already have.
 #from nodeeditor.utils import loadStylesheet
 #from nodeeditor.node_editor_window import NodeEditorWindow
 #from frontend.example_calculator.calc_window import CalculatorWindow
 #from qtpy.QtWidgets import QApplication as qapp
 
 
-from PyQt6 import uic
-from PySide6.QtCore import *
-from PySide6 import QtCore
-from PySide6.QtGui import QIcon, QPixmap
-
-
-import traceback, time
-
-
-#from PyQt6 import QtCore as qtc
-
-from ldm.generate import Generate
-
-gr = Generate(  weights     = 'models/sd-v1-4.ckpt',
-                config     = 'configs/stable-diffusion/v1-inference.yaml',
-                )
-
 from backend.singleton import singleton
 
 import backend.settings as settings
 settings.load_settings_json()
 
+gr = Generate(  weights     = 'models/sd-v1-4.ckpt',
+                config     = 'configs/stable-diffusion/v1-inference.yaml',
+                )
 
 gs = singleton
 
 gs.result = ""
 
-from backend.ui_func import getLatestGeneratedImagesFromPath
 gs.album = getLatestGeneratedImagesFromPath()
 
 def prepare_loading():
@@ -219,15 +239,17 @@ class Worker(QRunnable):
 
 
 
-class GenerateWindow(QMainWindow):
-
+class GenerateWindow(QWidget):
+    loader = QtUiTools.QUiLoader()
+    file = QtCore.QFile("frontend/main/main_window.ui")
+    file.open(QtCore.QFile.ReadOnly)
+    w = loader.load(file)
+    file.close()
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        loader = QtUiTools.QUiLoader()
-        file = QtCore.QFile("frontend/main/main_window.ui")
-        file.open(QtCore.QFile.ReadOnly)
-        self.w = loader.load(file, self)
-        file.close()
+
+
+
         self.image_path = ""
 
         #print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
@@ -299,12 +321,12 @@ class GenerateWindow(QMainWindow):
 
 
 
-        #self.sizer_count.w.heightNumber.display(str(self.sizer_count.w.heightSlider.value()))
-        #self.sizer_count.w.widthNumber.display(str(self.sizer_count.w.widthSlider.value()))
-        #self.sizer_count.w.samplesNumber.display(str(self.sizer_count.w.samplesSlider.value()))
-        #self.sizer_count.w.batchSizeNumber.display(str(self.sizer_count.w.batchSizeSlider.value()))
-        #self.sizer_count.w.stepsNumber.display(str(self.sizer_count.w.stepsSlider.value()))
-        #self.sizer_count.w.scaleNumber.display(str(self.sizer_count.w.scaleSlider.value()))
+        self.w.sizer_count.w.heightNumber.display(str(self.w.sizer_count.w.heightSlider.value()))
+        self.w.sizer_count.w.widthNumber.display(str(self.w.sizer_count.w.widthSlider.value()))
+        self.w.sizer_count.w.samplesNumber.display(str(self.w.sizer_count.w.samplesSlider.value()))
+        self.w.sizer_count.w.batchSizeNumber.display(str(self.w.sizer_count.w.batchSizeSlider.value()))
+        self.w.sizer_count.w.stepsNumber.display(str(self.w.sizer_count.w.stepsSlider.value()))
+        self.w.sizer_count.w.scaleNumber.display(str(self.w.sizer_count.w.scaleSlider.value()))
 
 
 
@@ -394,7 +416,7 @@ class GenerateWindow(QMainWindow):
         upscale=[self.w.sizer_count.w.upscaleSlider.value()]
         gfpgan_strength=self.w.sizer_count.w.gfpganSlider.value() / 100
 
-        if self.w.sampler.w.seedEdit.text() is not '':
+        if self.w.sampler.w.seedEdit.text() != '':
             seed=int(self.w.sampler.w.seedEdit.text())
         else:
             seed=''
@@ -481,6 +503,8 @@ class GenerateWindow(QMainWindow):
         worker.signals.result.connect(self.get_pic)
         # Execute
         threadpool.start(worker)
+
+        #progress bar test:
         #self.progress_thread()
     def get_pic(self): #from self.image_path
         print("ok")
@@ -489,20 +513,16 @@ class GenerateWindow(QMainWindow):
         self.w.preview.pic = QGraphicsPixmapItem()
         self.w.preview.pic.setPixmap(QPixmap.fromImage(image_qt))
 
-        #pic = QPixmap(self.image_path)
         self.w.preview.w.scene.clear()
         self.w.preview.w.scene.addItem(self.w.preview.pic)
 
         self.w.preview.w.graphicsView.fitInView(self.w.preview.pic, Qt.AspectRatioMode.KeepAspectRatio)
-        #self.preview.graphicsView.setDragMode(Qt.QGraphicsView.ScrollHandDrag)
+        self.w.preview.w.graphicsView.setDragMode(Qt.QGraphicsView.DragMode.ScrollHandDrag)
     def zoom_IN(self):
         self.w.preview.w.graphicsView.scale(1.25, 1.25)
     def zoom_OUT(self):
         self.w.preview.w.graphicsView.scale(0.75, 0.75)
-def update(target, value):
-    print(type(target))
-    print(type(value))
-    target.setText(str(value.value()))
+
 """class CalculatorWin(CalculatorWindow):
     def __init__(self, *args, **kwargs):
 
@@ -529,10 +549,9 @@ if __name__ == "__main__":
     mainWindow.w.setWindowTitle("aiNodes")
     mainWindow.w.setWindowIcon(QIcon('frontend/main/splash.png'))
 
-    tray_menu = QSystemTrayIcon()
-    tray_menu.setIcon(QIcon('frontend/main/splash.png'))
-    tray_menu.setVisible(True)
+    #app.setIcon(QIcon('frontend/main/splash.png'))
     mainWindow.w.show()
+    mainWindow.w.resize(1280, 720)
     splash.finish(mainWindow)
     #mainWindow.progress_thread()
 

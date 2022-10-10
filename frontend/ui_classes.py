@@ -1,7 +1,7 @@
 #from PyQt6 import uic
 from PySide6 import QtUiTools
 from PySide6 import QtWidgets
-from PySide6.QtWidgets import QDockWidget, QGraphicsScene, QGraphicsPixmapItem, QGraphicsView
+from PySide6.QtWidgets import QDockWidget, QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QWidget
 from PySide6.QtCore import QRectF
 from PySide6 import QtCore
 
@@ -16,7 +16,7 @@ class SizerCount(QDockWidget):
         #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
 
 
-class Sampler(QDockWidget):
+class Sampler(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/sampler.ui", self)

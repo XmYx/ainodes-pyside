@@ -3,7 +3,7 @@
 an overridden Text Widget, which can pass a notification to it's parent about being modified."""
 from collections import OrderedDict
 from nodeeditor.node_serializable import Serializable
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QTextEdit
+from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QTextEdit
 
 
 class QDMNodeContentWidget(QWidget, Serializable):

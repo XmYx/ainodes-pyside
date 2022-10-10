@@ -45,6 +45,7 @@ dependencies:
       - test-tube==0.7.5
       - transformers==4.21.2
       - torch-fidelity==0.3.0
+      - PySide6
       - -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
       - -e git+https://github.com/openai/CLIP.git@main#egg=clip
       - -e git+https://github.com/Birch-san/k-diffusion.git@mps#egg=k_diffusion

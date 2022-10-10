@@ -3,9 +3,9 @@
 A module containing ``NodeEditorWidget`` class
 """
 import os
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QBrush, QPen, QFont, QColor
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QApplication, QMessageBox, QLabel, QGraphicsItem, QTextEdit, QPushButton
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QBrush, QPen, QFont, QColor
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication, QMessageBox, QLabel, QGraphicsItem, QTextEdit, QPushButton
 
 from nodeeditor.node_scene import Scene, InvalidFile
 from nodeeditor.node_node import Node

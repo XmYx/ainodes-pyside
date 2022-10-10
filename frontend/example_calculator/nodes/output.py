@@ -1,5 +1,5 @@
-from qtpy.QtWidgets import QLabel
-from qtpy.QtCore import Qt
+from PySide6.QtWidgets import QLabel
+from PySide6.QtCore import Qt
 from frontend.example_calculator.calc_conf import register_node, OP_NODE_OUTPUT
 from frontend.example_calculator.calc_node_base import CalcNode, CalcGraphicsNode
 from nodeeditor.node_content_widget import QDMNodeContentWidget

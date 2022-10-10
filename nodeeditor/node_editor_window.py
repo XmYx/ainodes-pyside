@@ -3,23 +3,25 @@
 A module containing the Main Window class
 """
 import os, json
-from qtpy.QtCore import QSize, QSettings, QPoint
-from qtpy.QtWidgets import QMainWindow, QLabel, QAction, QMessageBox, QFileDialog, QApplication
+from PySide6.QtGui import QAction
+from PySide6.QtCore import QSize, QSettings, QPoint
+from PySide6.QtWidgets import QMainWindow, QLabel, QMessageBox, QFileDialog, QApplication
 from nodeeditor.node_editor_widget import NodeEditorWidget
+
 
 
 class NodeEditorWindow(QMainWindow):
     NodeEditorWidget_class = NodeEditorWidget
 
     """Class representing NodeEditor's Main Window"""
-    def __init__(self):
+    def __init__(self, parent=None):
         """
         :Instance Attributes:
 
         - **name_company** - name of the company, used for permanent profile settings
         - **name_product** - name of this App, used for permanent profile settings
         """
-        super().__init__()
+        super(NodeEditorWindow, self).__init__(parent)
 
         self.name_company = 'Blenderfreak'
         self.name_product = 'NodeEditor'

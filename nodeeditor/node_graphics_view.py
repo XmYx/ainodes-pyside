@@ -2,9 +2,9 @@
 """
 A module containing `Graphics View` for NodeEditor
 """
-from qtpy.QtWidgets import QGraphicsView, QApplication
-from qtpy.QtCore import Signal, QPoint, Qt, QEvent, QPointF, QRectF
-from qtpy.QtGui import QPainter, QDragEnterEvent, QDropEvent, QMouseEvent, QKeyEvent, QWheelEvent
+from PySide6.QtWidgets import QGraphicsView, QApplication
+from PySide6.QtCore import Signal, QPoint, Qt, QEvent, QPointF, QRectF
+from PySide6.QtGui import QPainter, QDragEnterEvent, QDropEvent, QMouseEvent, QKeyEvent, QWheelEvent
 
 from nodeeditor.node_graphics_socket import QDMGraphicsSocket
 from nodeeditor.node_graphics_edge import QDMGraphicsEdge
@@ -106,7 +106,7 @@ class QDMGraphicsView(QGraphicsView):
 
     def initUI(self):
         """Set up this ``QGraphicsView``"""
-        self.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
+        self.setRenderHints(QPainter.Antialiasing)
 
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
 

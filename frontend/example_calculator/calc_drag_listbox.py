@@ -1,6 +1,6 @@
-from qtpy.QtGui import QPixmap, QIcon, QDrag
-from qtpy.QtCore import QSize, Qt, QByteArray, QDataStream, QMimeData, QIODevice, QPoint
-from qtpy.QtWidgets import QListWidget, QAbstractItemView, QListWidgetItem
+from PySide6.QtGui import QPixmap, QIcon, QDrag
+from PySide6.QtCore import QSize, Qt, QByteArray, QDataStream, QMimeData, QIODevice, QPoint
+from PySide6.QtWidgets import QListWidget, QAbstractItemView, QListWidgetItem
 
 from frontend.example_calculator.calc_conf import CALC_NODES, get_class_from_opcode, LISTBOX_MIMETYPE
 from nodeeditor.utils import dumpException

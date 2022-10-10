@@ -1,6 +1,6 @@
-from qtpy.QtGui import QImage
-from qtpy.QtCore import QRectF
-from qtpy.QtWidgets import QLabel
+from PySide6.QtGui import QImage
+from PySide6.QtCore import QRectF
+from PySide6.QtWidgets import QLabel
 
 from nodeeditor.node_node import Node
 from nodeeditor.node_content_widget import QDMNodeContentWidget

@@ -1,5 +1,5 @@
-from qtpy.QtWidgets import QLineEdit
-from qtpy.QtCore import Qt
+from PySide6.QtWidgets import QLineEdit
+from PySide6.QtCore import Qt
 from frontend.example_calculator.calc_conf import register_node, OP_NODE_INPUT
 from frontend.example_calculator.calc_node_base import CalcNode, CalcGraphicsNode
 from nodeeditor.node_content_widget import QDMNodeContentWidget

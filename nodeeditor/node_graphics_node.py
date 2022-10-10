@@ -2,9 +2,9 @@
 """
 A module containing Graphics representation of :class:`~nodeeditor.node_node.Node`
 """
-from qtpy.QtWidgets import QGraphicsItem, QWidget, QGraphicsTextItem
-from qtpy.QtGui import QFont, QColor, QPen, QBrush, QPainterPath
-from qtpy.QtCore import Qt, QRectF
+from PySide6.QtWidgets import QGraphicsItem, QWidget, QGraphicsTextItem
+from PySide6.QtGui import QFont, QColor, QPen, QBrush, QPainterPath
+from PySide6.QtCore import Qt, QRectF
 
 
 class QDMGraphicsNode(QGraphicsItem):

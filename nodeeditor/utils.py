@@ -2,8 +2,8 @@
 """
 Module with some helper functions
 """
-from qtpy.QtCore import QFile
-from qtpy.QtWidgets import QApplication
+from PySide6.QtCore import QFile
+from PySide6.QtWidgets import QApplication
 
 from nodeeditor.utils_no_qt import pp, dumpException
 

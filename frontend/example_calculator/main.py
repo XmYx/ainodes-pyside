@@ -1,5 +1,5 @@
 import os, sys
-from qtpy.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../examples", ".."))
 

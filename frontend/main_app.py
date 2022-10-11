@@ -668,13 +668,13 @@ class GenerateWindow(QWidget):
         self.w.preview.w.graphicsView.setScene(self.w.preview.w.scene)
 
         self.w.preview.canvas = QPixmap(512, 512)
-        self.vpainter["tins"] = QPainter()
-        self.vpainter["iins"] = QPainter()
-        self.vpainter["main"] = QPainter()
-        self.vpainter["main"].begin(self.w.preview.canvas)
+        #self.vpainter["tins"] = QPainter()
+        #self.vpainter["iins"] = QPainter()
+        #self.vpainter["main"] = QPainter()
+        #self.vpainter["main"].begin(self.w.preview.canvas)
 
         self.w.preview.canvas.fill(Qt.white)
-        self.vpainter["main"].end()
+        #self.vpainter["main"].end()
         self.w.preview.w.scene.addPixmap(self.w.preview.canvas)
 
 
@@ -697,9 +697,13 @@ class GenerateWindow(QWidget):
 
 
     def updateThumbsZoom(self):
-        size = self.w.thumbnails.w.thumbsZoom.value()
-        self.w.thumbnails.w.thumbs.setGridSize(QSize(size, size))
-        self.w.thumbnails.w.thumbs.setIconSize(QSize(size, size))
+        try:
+            if gs.callbackBusy == False:
+                size = self.w.thumbnails.w.thumbsZoom.value()
+                self.w.thumbnails.w.thumbs.setGridSize(QSize(size, size))
+                self.w.thumbnails.w.thumbs.setIconSize(QSize(size, size))
+        except:
+            pass
     def update_scaleNumber(self):
         float = self.w.sizer_count.w.scaleSlider.value() / 100
         self.w.sizer_count.w.scaleNumber.display(str(float))
@@ -730,7 +734,44 @@ class GenerateWindow(QWidget):
     def viewThread(self, item):
         worker = Worker(self.viewImageClicked(item))
         threadpool.start(worker)
+    def tileImageClicked(self, item):
+        try:
+            while gs.callbackBusy == True:
+                time.sleep(0.1)
+            #gs.callbackBusy = True
+            vins = random.randint(10000, 99999)
+            imageSize = item.icon().actualSize(QSize(10000, 10000))
+            qimage = QImage(item.icon().pixmap(imageSize).toImage())
+            self.newPixmap[vins] = QPixmap(QSize(2048, 2048))
 
+            self.vpainter[vins] = QPainter()
+
+            newItem = QGraphicsPixmapItem()
+            #vpixmap = self.w.imageItem.pixmap()
+
+
+            #self.vpainter[vins].device()
+            self.vpainter[vins].begin(self.newPixmap[vins])
+
+
+            self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
+            self.vpainter[vins].drawImage(QRect(QPoint(512, 0), QSize(qimage.size())), qimage)
+            self.vpainter[vins].drawImage(QRect(QPoint(0, 512), QSize(qimage.size())), qimage)
+            self.vpainter[vins].drawImage(QRect(QPoint(512, 512), QSize(qimage.size())), qimage)
+
+            newItem.setPixmap(self.newPixmap[vins])
+
+            #self.w.imageItem.setPixmap(vpixmap)
+            #self.w.preview.w.graphicsView.modified = True
+            for items in self.w.preview.w.scene.items():
+                self.w.preview.w.scene.removeItem(items)
+            self.w.preview.w.scene.addItem(newItem)
+            self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
+            self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+            self.vpainter[vins].end()
+            #gs.callbackBusy = False
+        except:
+            pass
     def viewImageClicked(self, item):
         try:
             while gs.callbackBusy == True:
@@ -844,7 +885,7 @@ class GenerateWindow(QWidget):
 
 """
         self.progress = 0.0
-        self.update = self.updateRate
+        self.update = 0
         for i in range(batchsize):
             for prompt in prompt_list:
                 print(f"Full Precision {full_precision}")
@@ -918,10 +959,12 @@ class GenerateWindow(QWidget):
         threadpool.start(worker)
 
     def liveUpdate(self, data1, data2):
+        self.updateRate = self.w.sizer_count.w.previewSlider.value()
+
         self.progress = self.progress + self.onePercent
         self.w.progressBar.setValue(self.progress)
 
-        if self.update == self.updateRate:
+        if self.update >= self.updateRate:
             self.test_output(data1, data2)
             self.update = 0
         else:
@@ -929,49 +972,50 @@ class GenerateWindow(QWidget):
 
 
     def test_output(self, data1, data2):
-        try:
+        if gs.callbackBusy == False:
+            try:
 
-            gs.callbackBusy = True
+                gs.callbackBusy = True
 
-            #transform = T.ToPILImage()
-            #img = transform(data1)
-            #img = Image.fromarray(data1.astype(np.uint8))
-            #img = QImage.fromTensor(data1)
+                #transform = T.ToPILImage()
+                #img = transform(data1)
+                #img = Image.fromarray(data1.astype(np.uint8))
+                #img = QImage.fromTensor(data1)
 
-            x_samples = torch.clamp((data1 + 1.0) / 2.0, min=0.0, max=1.0)
-            if len(x_samples) != 1:
-                raise Exception(
-                    f'>> expected to get a single image, but got {len(x_samples)}')
-            x_sample = 255.0 * rearrange(
-                x_samples[0].cpu().numpy(), 'c h w -> h w c'
-            )
+                x_samples = torch.clamp((data1 + 1.0) / 2.0, min=0.0, max=1.0)
+                if len(x_samples) != 1:
+                    raise Exception(
+                        f'>> expected to get a single image, but got {len(x_samples)}')
+                x_sample = 255.0 * rearrange(
+                    x_samples[0].cpu().numpy(), 'c h w -> h w c'
+                )
 
-            #self.x_sample = cv2.cvtColor(self.x_sample.astype(np.uint8), cv2.COLOR_RGB2BGR)
-            x_sample = x_sample.astype(np.uint8)
-            dPILimg = Image.fromarray(x_sample)
+                #self.x_sample = cv2.cvtColor(self.x_sample.astype(np.uint8), cv2.COLOR_RGB2BGR)
+                x_sample = x_sample.astype(np.uint8)
+                dPILimg = Image.fromarray(x_sample)
 
-            tins = random.randint(10000, 99999)
-            self.vpainter[tins] = QPainter()
-            self.tpixmap = QPixmap(512, 512)
+                tins = random.randint(10000, 99999)
 
-            #self.vpainter[tins].device()
-            self.vpainter[tins].begin(self.tpixmap)
-            self.dqimg = ImageQt(dPILimg)
-            #self.qimage[tins] = ImageQt(dPILimg)
-            self.vpainter[tins].drawImage(QRect(0, 0, 512, 512), self.dqimg)
-            #self.w.dynaview.w.label.setPixmap(self.tpixmap[tins].scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio))
-            #self.vpainter[tins].end()
-            self.vpainter[tins].end()
-            #self.w.dynaview.w.label.update()
-            #gs.callbackBusy = False
+                self.tpixmap = QPixmap(512, 512)
+                self.vpainter[tins] = QPainter(self.tpixmap)
+                self.vpainter[tins].device()
+                #self.vpainter[tins].begin(self.tpixmap)
+                self.dqimg = ImageQt(dPILimg)
+                #self.qimage[tins] = ImageQt(dPILimg)
+                self.vpainter[tins].drawImage(QRect(0, 0, 512, 512), self.dqimg)
+                #self.w.dynaview.w.label.setPixmap(self.tpixmap[tins].scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio))
+                #self.vpainter[tins].end()
+                #self.vpainter[tins].end()
+                #self.w.dynaview.w.label.update()
+                #gs.callbackBusy = False
 
-            #dqimg = ImageQt(dPILimg)
-            #qimg = QPixmap.fromImage(dqimg)
-            self.w.dynaview.w.label.setPixmap(self.tpixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
+                #dqimg = ImageQt(dPILimg)
+                #qimg = QPixmap.fromImage(dqimg)
+                self.w.dynaview.w.label.setPixmap(self.tpixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
 
-            gs.callbackBusy = False
-        except:
-            pass
+                gs.callbackBusy = False
+            except:
+                pass
         #dynapixmap = QPixmap(QPixmap.fromImage(dqimg))
 
     def image_cb(self, image, seed=None, upscaled=False, use_prefix=None, first_seed=None):
@@ -988,7 +1032,7 @@ class GenerateWindow(QWidget):
             #self.vpainter[iins] = QPainter(dpixmap)
 
             self.vpainter[iins].begin(dpixmap)
-            self.vpainter[iins].device()
+            #self.vpainter[iins].device()
 
 
             qimage = ImageQt(image)
@@ -997,7 +1041,7 @@ class GenerateWindow(QWidget):
 
 
             self.w.dynaimage.w.label.setPixmap(dpixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
-            self.vpainter["iins"].end()
+            self.vpainter[iins].end()
             #gs.callbackBusy = False
             #self.w.dynaimage.w.label.update()
         except:

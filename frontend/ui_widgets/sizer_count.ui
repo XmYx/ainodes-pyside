@@ -316,6 +316,9 @@
          </item>
          <item row="28" column="0">
           <widget class="QSlider" name="previewSlider">
+           <property name="minimum">
+            <number>3</number>
+           </property>
            <property name="maximum">
             <number>25</number>
            </property>

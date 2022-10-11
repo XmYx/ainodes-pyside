@@ -2,8 +2,11 @@
 from PySide6 import QtUiTools
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QDockWidget, QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QWidget
-from PySide6.QtCore import QRectF
+from PySide6.QtGui import QAction
 from PySide6 import QtCore
+
+
+
 
 class SizerCount(QDockWidget):
     loader = QtUiTools.QUiLoader()
@@ -194,4 +197,17 @@ class Thumbnails(QDockWidget):
         file.open(QtCore.QFile.ReadOnly)
         self.w = loader.load(file, self)
         file.close()
+        self.w.thumbs.installEventFilter(self)
+    def eventFilter(self, source, event):
+        if (event.type() == QtCore.QEvent.ContextMenu and
+                source is self.w.thumbs):
+            menu = QtWidgets.QMenu()
+            renameAction = QAction('Exit', self)
+
+            menu.addAction(renameAction)
+            if menu.exec_(event.globalPos()):
+                item = source.itemAt(event.pos())
+                print(item.text())
+            return True
+        return super(Thumbnails, self).eventFilter(source, event)
 

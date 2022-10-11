@@ -42,12 +42,12 @@ class Sampler(QWidget):
         self.w = loader.load(file, self)
         file.close()
 
-class Runner(QDockWidget):
+class Runner(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/runner.ui", self)
 
-class Prompt(QDockWidget):
+class Prompt(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/prompt.ui", self)
@@ -56,7 +56,7 @@ class Prompt(QDockWidget):
         file.open(QtCore.QFile.ReadOnly)
         self.w = loader.load(file, self)
         file.close()
-class Anim(QDockWidget):
+class Anim(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/anim.ui", self)
@@ -141,23 +141,34 @@ class PhotoViewer(QGraphicsView):
 
 
 
-class Preview(QDockWidget):
+class Preview(QWidget):
+    loader = QtUiTools.QUiLoader()
+    file = QtCore.QFile("frontend/ui_widgets/preview.ui")
+    file.open(QtCore.QFile.ReadOnly)
+    w = loader.load(file)
+    file.close()
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/preview.ui", self)
-        loader = QtUiTools.QUiLoader()
-        file = QtCore.QFile("frontend/ui_widgets/preview.ui")
-        file.open(QtCore.QFile.ReadOnly)
-        self.w = loader.load(file, self)
-        file.close()
+
         self._zoom = 0
 
         #self.graphicsView = PhotoViewer(self)
         #self.scene = QGraphicsScene()
         #self.graphicsView.setScene(self.scene)
+        self.zoom = 1
+        self.rotate = 0
+
+    def fitInView(self, *args, **kwargs):
+        super().fitInView(*args, **kwargs)
+        self.zoom = self.transform().m11()
 
 
-    """def wheelEvent(self, event):
+
+    def updateView(self):
+        self.graphicsView.scale(self.zoom, self.zoom).rotate(self.rotate)
+
+    def wheelEvent(self, event):
 
         if event.angleDelta().y() > 0:
             factor = 1.25
@@ -168,10 +179,10 @@ class Preview(QDockWidget):
         if self._zoom > 0:
             self.graphicsView.scale(factor, factor)
         elif self._zoom == 0:
-            #self.graphicsView.fitInView()
+            self.graphicsView.fitInView()
             self._zoom = 1
         else:
-            self._zoom = 0"""
+            self._zoom = 0
 
 
 class Thumbnails(QDockWidget):

@@ -6,178 +6,195 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>239</width>
-    <height>339</height>
+    <width>170</width>
+    <height>219</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Sampler</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QDockWidget" name="dockWidget">
      <widget class="QWidget" name="dockWidgetContents">
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="leftMargin">
+        <number>2</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>2</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
-        <layout class="QGridLayout" name="gridLayout">
-         <property name="leftMargin">
-          <number>5</number>
+        <widget class="QComboBox" name="comboBox_4">
+         <item>
+          <property name="text">
+           <string>Text to Image</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Text to Video</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Image to Image</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Video to Video</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="fullPrecision">
+         <property name="text">
+          <string>Full Precision</string>
          </property>
-         <property name="rightMargin">
-          <number>5</number>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="seamless">
+         <property name="text">
+          <string>Seamless</string>
          </property>
-         <item row="9" column="0">
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>Seed Behavior</string>
-           </property>
-          </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Sampler</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox">
+         <item>
+          <property name="text">
+           <string>ddim</string>
+          </property>
          </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Sample Mode</string>
-           </property>
-          </widget>
+         <item>
+          <property name="text">
+           <string>plms</string>
+          </property>
          </item>
-         <item row="2" column="0">
-          <widget class="QCheckBox" name="seamless">
-           <property name="text">
-            <string>Seamless</string>
-           </property>
-          </widget>
+         <item>
+          <property name="text">
+           <string>k_lms</string>
+          </property>
          </item>
-         <item row="10" column="0">
-          <widget class="QComboBox" name="comboBox_3">
-           <item>
-            <property name="text">
-             <string>iter</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>fixed</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>random</string>
-            </property>
-           </item>
-          </widget>
+         <item>
+          <property name="text">
+           <string>k_dpm_2</string>
+          </property>
          </item>
-         <item row="6" column="0">
-          <widget class="QComboBox" name="comboBox_2">
-           <item>
-            <property name="text">
-             <string>bicubic</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>bilinear</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>nearest</string>
-            </property>
-           </item>
-          </widget>
+         <item>
+          <property name="text">
+           <string>k_dpm_2_a</string>
+          </property>
          </item>
-         <item row="4" column="0">
-          <widget class="QComboBox" name="comboBox">
-           <item>
-            <property name="text">
-             <string>ddim</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>plms</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>k_lms</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>k_dpm_2</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>k_dpm_2_a</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>k_heun</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>k_euler</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>k_euler_a</string>
-            </property>
-           </item>
-          </widget>
+         <item>
+          <property name="text">
+           <string>k_heun</string>
+          </property>
          </item>
-         <item row="1" column="0">
-          <widget class="QCheckBox" name="fullPrecision">
-           <property name="text">
-            <string>Full Precision</string>
-           </property>
-          </widget>
+         <item>
+          <property name="text">
+           <string>k_euler</string>
+          </property>
          </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Seed</string>
-           </property>
-          </widget>
+         <item>
+          <property name="text">
+           <string>k_euler_a</string>
+          </property>
          </item>
-         <item row="8" column="0">
-          <widget class="QLineEdit" name="seedEdit"/>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Sample Mode</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox_2">
+         <item>
+          <property name="text">
+           <string>bicubic</string>
+          </property>
          </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Sampler</string>
-           </property>
-          </widget>
+         <item>
+          <property name="text">
+           <string>bilinear</string>
+          </property>
          </item>
-         <item row="0" column="0">
-          <widget class="QComboBox" name="comboBox_4">
-           <item>
-            <property name="text">
-             <string>Text to Image</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Text to Video</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Image to Image</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Video to Video</string>
-            </property>
-           </item>
-          </widget>
+         <item>
+          <property name="text">
+           <string>nearest</string>
+          </property>
          </item>
-        </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Seed</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="seedEdit"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Seed Behavior</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox_3">
+         <item>
+          <property name="text">
+           <string>iter</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>fixed</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>random</string>
+          </property>
+         </item>
+        </widget>
        </item>
       </layout>
      </widget>

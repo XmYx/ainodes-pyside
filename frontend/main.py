@@ -118,6 +118,7 @@ gr = Generate(  weights     = 'models/sd-v1-4.ckpt',
 gs = singleton
 
 gs.result = ""
+gs.callbackBusy = False
 
 gs.album = getLatestGeneratedImagesFromPath()
 
@@ -641,10 +642,24 @@ class GenerateWindow(QWidget):
         #self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.anim.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
 
-        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.thumbnails.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.thumbnails.w.dockWidget)
 
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaimage.w.dockWidget)
+        self.w.dynaview.w.setMinimumSize(QtCore.QSize(512, 512))
+
+
+        self.w.tabifyDockWidget(self.w.thumbnails.w.dockWidget, self.w.sampler.w.dockWidget)
+
+        self.w.thumbnails.w.dockWidget.setWindowTitle('Thumbnails')
+        self.w.sampler.w.dockWidget.setWindowTitle('Sampler')
+        self.w.sizer_count.w.dockWidget.setWindowTitle('Sliders')
+        self.w.prompt.w.dockWidget.setWindowTitle('Prompt')
+        self.w.dynaview.w.dockWidget.setWindowTitle('Tensor Preview')
+        self.w.dynaimage.w.dockWidget.setWindowTitle('Image Preview')
+        self.w.preview.w.setWindowTitle('Canvas')
+        #print(dir(self.w))
+        #self.w.tabWidget_1.setTabText(0, "TEST")
 
         self.vpainter = {}
         #self.resizeDocks({self.thumbnails}, {100}, QtWidgets.Horizontal);
@@ -653,7 +668,8 @@ class GenerateWindow(QWidget):
         self.w.preview.w.graphicsView.setScene(self.w.preview.w.scene)
 
         self.w.preview.canvas = QPixmap(512, 512)
-
+        self.vpainter["tins"] = QPainter()
+        self.vpainter["iins"] = QPainter()
         self.vpainter["main"] = QPainter()
         self.vpainter["main"].begin(self.w.preview.canvas)
 
@@ -708,33 +724,45 @@ class GenerateWindow(QWidget):
         self.w.thumbnails.w.thumbs.clear()
         for image in gs.album:
             self.w.thumbnails.w.thumbs.addItem(QListWidgetItem(QIcon(image), str(image)))
+    def viewThread(self, item):
+        worker = Worker(self.viewImageClicked(item))
+        threadpool.start(worker)
 
     def viewImageClicked(self, item):
+        try:
+            while gs.callbackBusy == True:
+                time.sleep(0.1)
+            #gs.callbackBusy = True
+            vins = random.randint(10000, 99999)
+            imageSize = item.icon().actualSize(QSize(10000, 10000))
+            qimage = QImage(item.icon().pixmap(imageSize).toImage())
+            newPixmap = QPixmap(qimage.size())
 
-        vins = random.randint(10000, 99999)
-        newPixmap = QPixmap(512, 512)
-        self.vpainter[vins] = QPainter(newPixmap)
+            self.vpainter[vins] = QPainter(newPixmap)
 
-        newItem = QGraphicsPixmapItem()
-        #vpixmap = self.w.imageItem.pixmap()
-
-        self.vpainter[vins].begin(newPixmap)
-        self.vpainter[vins].device()
-
-        imageSize = item.icon().actualSize(QSize(512, 512))
-        qimage = QImage(item.icon().pixmap(imageSize).toImage())
-        self.vpainter[vins].drawImage(QRect(0, 0, 512, 512), qimage)
-        newItem.setPixmap(newPixmap)
-        print( self.vpainter[vins].isActive())
+            newItem = QGraphicsPixmapItem()
+            #vpixmap = self.w.imageItem.pixmap()
 
 
+            #self.vpainter[vins].device()
+            self.vpainter[vins].begin(newPixmap)
 
-        #self.w.imageItem.setPixmap(vpixmap)
-        #self.w.preview.w.graphicsView.modified = True
-        for items in self.w.preview.w.scene.items():
-            self.w.preview.w.scene.removeItem(items)
-        self.w.preview.w.scene.addItem(newItem)
-        self.vpainter[vins].end()
+
+            self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
+            newItem.setPixmap(newPixmap)
+
+            #self.w.imageItem.setPixmap(vpixmap)
+            #self.w.preview.w.graphicsView.modified = True
+            for items in self.w.preview.w.scene.items():
+                self.w.preview.w.scene.removeItem(items)
+            self.w.preview.w.scene.addItem(newItem)
+            self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
+            self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+            self.vpainter[vins].end()
+            #gs.callbackBusy = False
+        except:
+            pass
+
         #self.w.preview.w.scene.update()
         #self.w.preview.w.graphicsView.setScene(self.w.preview.w.scene)
 
@@ -759,11 +787,13 @@ class GenerateWindow(QWidget):
 
         #self.w.preview.w.scene.addItem(imageItem)
         #self.w.preview.w.scene.setPixmap(self.w.imageItem)
-        #self.w.preview.w.graphicsView.fitInView(self.w.imageItem, Qt.AspectRatioMode.KeepAspectRatio)
-        #self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+
         #self.w.preview.w.scene.update()
 
     def run_txt2img(self, progress_callback):
+
+        prompt_list = self.w.prompt.w.textEdit.toPlainText()
+        prompt_list = prompt_list.split('\n')
         #self.w.setCentralWidget(self.w.dynaimage.w)
         width=self.w.sizer_count.w.widthSlider.value()
         height=self.w.sizer_count.w.heightSlider.value()
@@ -777,7 +807,7 @@ class GenerateWindow(QWidget):
         upscale=[self.w.sizer_count.w.upscaleSlider.value()]
         gfpgan_strength=self.w.sizer_count.w.gfpganSlider.value() / 100
 
-        self.onePercent = 100 / ( batchsize * steps * samples )
+        self.onePercent = 100 / (batchsize * steps * samples * len(prompt_list))
 
         if self.w.sampler.w.seedEdit.text() != '':
             seed=int(self.w.sampler.w.seedEdit.text())
@@ -810,74 +840,61 @@ class GenerateWindow(QWidget):
 """
         self.progress = 0.0
         for i in range(batchsize):
-            print(f"Full Precision {full_precision}")
+            for prompt in prompt_list:
+                print(f"Full Precision {full_precision}")
 
-            results = gr.prompt2image(prompt   = self.w.prompt.w.textEdit.toPlainText(),
-                                      outdir   = outdir,
-                                      cfg_scale = scale,
-                                      width  = width,
-                                      height = height,
-                                      iterations = samples,
-                                      steps = steps,
-                                      seamless = seamless,
-                                      sampler_name = sampler,
-                                      seed = seed,
-                                      upscale = upscale,
-                                      gfpgan_strength = gfpgan_strength,
-                                      strength = 0.0,
-                                      full_precision = full_precision,
-                                      step_callback=self.test_output,
-                                      image_callback=self.image_cb)
-            for row in results:
-                print(f'filename={row[0]}')
-                print(f'seed    ={row[1]}')
-                filename = random.randint(10000, 99999)
-                output = f'outputs/{filename}.png'
-                row[0].save(output)
-                self.image_path = output
-                print("We did set the image")
-                self.w.thumbnails.w.thumbs.addItem(QListWidgetItem(QIcon(self.image_path), str(self.w.prompt.w.textEdit.toPlainText())))
+                results = gr.prompt2image(prompt   = prompt,
+                                          outdir   = outdir,
+                                          cfg_scale = scale,
+                                          width  = width,
+                                          height = height,
+                                          iterations = samples,
+                                          steps = steps,
+                                          seamless = seamless,
+                                          sampler_name = sampler,
+                                          seed = seed,
+                                          upscale = upscale,
+                                          gfpgan_strength = gfpgan_strength,
+                                          strength = 0.0,
+                                          full_precision = full_precision,
+                                          step_callback=self.test_output,
+                                          image_callback=self.image_cb)
+                for row in results:
+                    print(f'filename={row[0]}')
+                    print(f'seed    ={row[1]}')
+                    filename = random.randint(10000, 99999)
+                    output = f'outputs/{filename}.png'
+                    row[0].save(output)
+                    self.image_path = output
+                    print("We did set the image")
+                    self.w.thumbnails.w.thumbs.addItem(QListWidgetItem(QIcon(self.image_path), str(self.w.prompt.w.textEdit.toPlainText())))
+                    #self.get_pic(clear=False)
+
+
+
                 #self.get_pic(clear=False)
+                #image_qt = QImage(self.image_path)
+
+                #self.w.preview.pic = QGraphicsPixmapItem()
+                #self.w.preview.pic.setPixmap(QPixmap.fromImage(image_qt))
+
+                #self.w.preview.w.scene.clear()
+                #self.w.preview.w.scene.addItem(self.w.preview.pic)
+                #self.w.preview.w.scene.update()
 
 
 
-            #self.get_pic(clear=False)
-            #image_qt = QImage(self.image_path)
+                #all_images.append(results)
 
-            #self.w.preview.pic = QGraphicsPixmapItem()
-            #self.w.preview.pic.setPixmap(QPixmap.fromImage(image_qt))
-
-            #self.w.preview.w.scene.clear()
-            #self.w.preview.w.scene.addItem(self.w.preview.pic)
-            #self.w.preview.w.scene.update()
-
-
-
-            #all_images.append(results)
-
-            #return all_images
+                #return all_images
 
 
 
 
 
 
-    def progressbar(self, progress_callback):
-        a = 0
-        b = 100
-        while b > 0:
-            a = a + 1
-            self.preview.progressBar.setValue(int(a))
-            time.sleep(1)
-            if b == 1:
-                b = 100
-    def progress_thread(self):
-        worker2 = Worker(self.progressbar)
-        #worker.signals.result.connect(self.get_pic)
-        # Execute
-        threadpool.start(worker2)
-    def set_widget(self):
-        self.w.setCentralWidget(self.w.preview.w)
+
+
     def txt2img_thread(self):
         # Pass the function to execute
         worker = Worker(self.run_txt2img)
@@ -895,69 +912,82 @@ class GenerateWindow(QWidget):
         threadpool.start(worker)
 
     def test_output(self, data1, data2):
-        self.progress = self.progress + self.onePercent
-        self.w.progressBar.setValue(self.progress)
-        print("test...")
-        print(type(data1))
+        try:
+            while gs.callbackBusy == True:
+                time.sleep(0.1)
+            gs.callbackBusy = True
+            self.progress = self.progress + self.onePercent
+            self.w.progressBar.setValue(self.progress)
+            print("test...")
+            print(type(data1))
 
-        #transform = T.ToPILImage()
-        #img = transform(data1)
-        #img = Image.fromarray(data1.astype(np.uint8))
+            #transform = T.ToPILImage()
+            #img = transform(data1)
+            #img = Image.fromarray(data1.astype(np.uint8))
 
-        #img = QImage.fromTensor(data1)
+            #img = QImage.fromTensor(data1)
 
-        x_samples = torch.clamp((data1 + 1.0) / 2.0, min=0.0, max=1.0)
-        if len(x_samples) != 1:
-            raise Exception(
-                f'>> expected to get a single image, but got {len(x_samples)}')
-        x_sample = 255.0 * rearrange(
-            x_samples[0].cpu().numpy(), 'c h w -> h w c'
-        )
+            x_samples = torch.clamp((data1 + 1.0) / 2.0, min=0.0, max=1.0)
+            if len(x_samples) != 1:
+                raise Exception(
+                    f'>> expected to get a single image, but got {len(x_samples)}')
+            x_sample = 255.0 * rearrange(
+                x_samples[0].cpu().numpy(), 'c h w -> h w c'
+            )
 
-        #self.x_sample = cv2.cvtColor(self.x_sample.astype(np.uint8), cv2.COLOR_RGB2BGR)
-        x_sample = x_sample.astype(np.uint8)
+            #self.x_sample = cv2.cvtColor(self.x_sample.astype(np.uint8), cv2.COLOR_RGB2BGR)
+            x_sample = x_sample.astype(np.uint8)
 
-        dPILimg = Image.fromarray(x_sample)
-        tins = random.randint(10000, 99999)
-        tpixmap = QPixmap(512, 512)
+            dPILimg = Image.fromarray(x_sample)
+            tins = random.randint(10000, 99999)
+            tpixmap = QPixmap(512, 512)
 
-        self.vpainter[tins] = QPainter(tpixmap)
-        self.vpainter[tins].device()
+            self.vpainter[tins] = QPainter()
+            self.vpainter[tins].device()
 
-        self.vpainter[tins].begin(tpixmap)
-        qimage = ImageQt(dPILimg)
-        self.vpainter[tins].drawImage(QRect(0, 0, 512, 512), qimage)
+            self.vpainter[tins].begin(tpixmap)
+            qimage = ImageQt(dPILimg)
+            self.vpainter[tins].drawImage(QRect(0, 0, 512, 512), qimage)
 
-        self.w.dynaview.w.label.setPixmap(tpixmap.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio))
-        #self.w.dynaview.w.label.update()
+            self.w.dynaview.w.label.setPixmap(tpixmap.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio))
+            #self.w.dynaview.w.label.update()
 
-        #dqimg = ImageQt(dPILimg)
-        self.vpainter[tins].end()
+            #dqimg = ImageQt(dPILimg)
+            self.vpainter[tins].end()
+            gs.callbackBusy = False
+        except:
+            pass
         #dynapixmap = QPixmap(QPixmap.fromImage(dqimg))
 
     def image_cb(self, image, seed=None, upscaled=False, use_prefix=None, first_seed=None):
+        try:
+            while gs.callbackBusy == True:
+                time.sleep(0.1)
+            #gs.callbackBusy = True
+            #dimg = ImageQt(image)
+            #dpixmap = QPixmap(QPixmap.fromImage(dimg))
+            iins = random.randint(10000, 99999)
 
-        #dimg = ImageQt(image)
-        #dpixmap = QPixmap(QPixmap.fromImage(dimg))
-        iins = random.randint(10000, 99999)
+            #self.vpainter[iins] = QPainter()
 
-        #self.vpainter[iins] = QPainter()
+            dpixmap = QPixmap(512, 512)
+            #self.vpainter[iins] = QPainter(dpixmap)
 
-        dpixmap = QPixmap(512, 512)
-        self.vpainter[iins] = QPainter(dpixmap)
-
-        self.vpainter[iins].begin(dpixmap)
-        self.vpainter[iins].device()
-
-
-        qimage = ImageQt(image)
-        self.vpainter[iins].drawImage(QRect(0, 0, 512, 512), qimage)
-
+            self.vpainter["iins"].begin(dpixmap)
+            self.vpainter["iins"].device()
 
 
-        self.w.dynaimage.w.label.setPixmap(dpixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
-        self.vpainter[iins].end()
-        #self.w.dynaimage.w.label.update()
+            qimage = ImageQt(image)
+            self.vpainter["iins"].drawImage(QRect(0, 0, 512, 512), qimage)
+
+
+
+            self.w.dynaimage.w.label.setPixmap(dpixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
+            self.vpainter["iins"].end()
+            #gs.callbackBusy = False
+            #self.w.dynaimage.w.label.update()
+        except:
+            pass
 
     def get_pic(self, clear=False): #from self.image_path
         #for item in self.w.preview.w.scene.items():
@@ -1001,11 +1031,16 @@ class GenerateWindow(QWidget):
 
 if __name__ == "__main__":
 
+    sshFile="frontend/style/QTDark.stylesheet"
+
+
+
     mainWindow = GenerateWindow()
     threadpool = QThreadPool()
     mainWindow.w.setWindowTitle("aiNodes")
     mainWindow.w.setWindowIcon(QIcon('frontend/main/splash_2.png'))
-
+    with open(sshFile,"r") as fh:
+        mainWindow.w.setStyleSheet(fh.read())
     #app.setIcon(QIcon('frontend/main/splash.png'))
     mainWindow.w.show()
     #mainWindow.nodeWindow.show()

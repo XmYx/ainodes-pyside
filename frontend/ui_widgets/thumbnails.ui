@@ -26,9 +26,30 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Thumbnails</string>
+   <string comment="thumbs" extracomment="thumbs">Thumbnails</string>
+  </property>
+  <property name="toolTip">
+   <string comment="thumbs" extracomment="thumbs"/>
+  </property>
+  <property name="accessibleName">
+   <string comment="thumbs" extracomment="thumbs"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QDockWidget" name="dockWidget">
      <property name="sizePolicy">
@@ -45,6 +66,21 @@
        </sizepolicy>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QListWidget" name="thumbs">
          <property name="sizePolicy">
@@ -114,6 +150,12 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>15</height>
+          </size>
          </property>
          <property name="minimum">
           <number>5</number>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>274</width>
-    <height>233</height>
+    <width>246</width>
+    <height>206</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -29,13 +29,31 @@
    <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>3</number>
+     </property>
      <property name="leftMargin">
-      <number>5</number>
+      <number>2</number>
      </property>
      <property name="rightMargin">
-      <number>5</number>
+      <number>2</number>
      </property>
      <item>
       <widget class="QLabel" name="label">

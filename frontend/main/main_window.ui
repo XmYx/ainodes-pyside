@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>685</width>
-    <height>399</height>
+    <width>695</width>
+    <height>407</height>
    </rect>
   </property>
   <property name="baseSize">
@@ -311,7 +311,7 @@ QMenu::separator {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>685</width>
+     <width>695</width>
      <height>20</height>
     </rect>
    </property>
@@ -353,7 +353,20 @@ QMenu::separator {
    <addaction name="menuWindow"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>30</height>
+    </size>
+   </property>
+   <property name="baseSize">
+    <size>
+     <width>0</width>
+     <height>200</height>
+    </size>
+   </property>
+  </widget>
   <action name="actionaiNodes_Help">
    <property name="text">
     <string>aiNodes Help</string>

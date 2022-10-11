@@ -65,6 +65,7 @@ from PIL import Image
 from einops import rearrange
 import numpy as np
 import cv2
+import time
 
 
 
@@ -547,6 +548,16 @@ class GenerateWindow(QWidget):
 
 
         self.home()
+        self.w.statusBar().showMessage('Ready')
+        self.w.progressBar = QProgressBar()
+
+
+        self.w.statusBar().addPermanentWidget(self.w.progressBar)
+
+        # This is simply to show the bar
+        self.w.progressBar.setGeometry(30, 40, 200, 25)
+        self.w.progressBar.setValue(50)
+
         self.nodeWindow = NodeWindow()
         self.load_history()
         #self.show_anim()
@@ -597,6 +608,7 @@ class GenerateWindow(QWidget):
         self.w.anim = Anim()
         self.w.prompt = Prompt()
         self.w.dynaview = Dynaview()
+        self.w.dynaimage = Dynaimage()
 
         self.w.thumbnails = Thumbnails()
 
@@ -632,14 +644,34 @@ class GenerateWindow(QWidget):
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.thumbnails.w.dockWidget)
 
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaimage.w.dockWidget)
 
+        self.vpainter = {}
         #self.resizeDocks({self.thumbnails}, {100}, QtWidgets.Horizontal);
 
         self.w.preview.w.scene = QGraphicsScene()
         self.w.preview.w.graphicsView.setScene(self.w.preview.w.scene)
 
+        self.w.preview.canvas = QPixmap(512, 512)
+
+        self.vpainter["main"] = QPainter()
+        self.vpainter["main"].begin(self.w.preview.canvas)
+
+        self.w.preview.canvas.fill(Qt.white)
+        self.vpainter["main"].end()
+        self.w.preview.w.scene.addPixmap(self.w.preview.canvas)
+
+
+        #self.w.preview.canvas.fill(Qt.black)
+        #self.w.preview.w.scene.addPixmap(self.w.preview.canvas)
+
         self.w.thumbnails.w.thumbsZoom.valueChanged.connect(self.updateThumbsZoom)
         self.w.thumbnails.w.refresh.clicked.connect(self.load_history)
+
+        self.w.imageItem = QGraphicsPixmapItem()
+        self.w.imageItem.pixmap().fill(Qt.white)
+        #self.w.preview.w.scene.addPixmap(self.w.imageItem.pixmap())
+        #self.w.preview.w.scene.update()
 
 
 
@@ -678,26 +710,61 @@ class GenerateWindow(QWidget):
             self.w.thumbnails.w.thumbs.addItem(QListWidgetItem(QIcon(image), str(image)))
 
     def viewImageClicked(self, item):
-        #self.preview.setPixmap(item.image())
-        #pic = QImage(item[0])
+
+        vins = random.randint(10000, 99999)
+        newPixmap = QPixmap(512, 512)
+        self.vpainter[vins] = QPainter(newPixmap)
+
+        newItem = QGraphicsPixmapItem()
+        #vpixmap = self.w.imageItem.pixmap()
+
+        self.vpainter[vins].begin(newPixmap)
+        self.vpainter[vins].device()
+
         imageSize = item.icon().actualSize(QSize(512, 512))
+        qimage = QImage(item.icon().pixmap(imageSize).toImage())
+        self.vpainter[vins].drawImage(QRect(0, 0, 512, 512), qimage)
+        newItem.setPixmap(newPixmap)
+        print( self.vpainter[vins].isActive())
 
-        self.w.preview.pic = QGraphicsPixmapItem()
-        self.w.preview.pic.setPixmap(item.icon().pixmap(imageSize))
 
-        self.w.preview.w.scene.clear()
 
-        self.w.preview.w.scene.addItem(self.w.preview.pic)
-        self.w.preview.w.graphicsView.fitInView(self.w.preview.pic, Qt.AspectRatioMode.KeepAspectRatio)
-        #self.preview.graphicsView.setDragMode(QGraphicsView.RubberBandDrag)
-        self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+        #self.w.imageItem.setPixmap(vpixmap)
+        #self.w.preview.w.graphicsView.modified = True
+        for items in self.w.preview.w.scene.items():
+            self.w.preview.w.scene.removeItem(items)
+        self.w.preview.w.scene.addItem(newItem)
+        self.vpainter[vins].end()
+        #self.w.preview.w.scene.update()
+        #self.w.preview.w.graphicsView.setScene(self.w.preview.w.scene)
 
-        #self.preview.graphicsView.setPhoto(item.icon().pixmap(imageSize))
+        #rad = self.w.preview.w.graphicsView.penwidth / 2 + 2
+        #self.w.preview.w.graphicsView.update(QRect(self.lastPoint, position).normalized().adjusted(-rad, -rad, +rad, +rad))
+        #self.w.preview.w.graphicsView.lastPoint = position
+
+
+
+
+
+
+
+        #for item in self.w.preview.w.scene.items():
+        #    self.w.preview.w.scene.removeItem(item)
+
+
+        #self.w.preview.w.scene.clear()
+        #imageSize = item.icon().actualSize(QSize(512, 512))
+        #print(f'image item type: {type(self.w.imageItem)}')
+        #self.w.imageItem.setPixmap(item.icon().pixmap(imageSize))
+
+        #self.w.preview.w.scene.addItem(imageItem)
+        #self.w.preview.w.scene.setPixmap(self.w.imageItem)
+        #self.w.preview.w.graphicsView.fitInView(self.w.imageItem, Qt.AspectRatioMode.KeepAspectRatio)
+        #self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+        #self.w.preview.w.scene.update()
 
     def run_txt2img(self, progress_callback):
-        self.w.preview.w.preview = QGraphicsPixmapItem()
-
-
+        #self.w.setCentralWidget(self.w.dynaimage.w)
         width=self.w.sizer_count.w.widthSlider.value()
         height=self.w.sizer_count.w.heightSlider.value()
         scale=self.w.sizer_count.w.scaleSlider.value()
@@ -759,7 +826,8 @@ class GenerateWindow(QWidget):
                                       gfpgan_strength = gfpgan_strength,
                                       strength = 0.0,
                                       full_precision = full_precision,
-                                      step_callback=mainWindow.test_output)
+                                      step_callback=self.test_output,
+                                      image_callback=self.image_cb)
             for row in results:
                 print(f'filename={row[0]}')
                 print(f'seed    ={row[1]}')
@@ -767,6 +835,8 @@ class GenerateWindow(QWidget):
                 output = f'outputs/{filename}.png'
                 row[0].save(output)
                 self.image_path = output
+                print("We did set the image")
+                self.w.thumbnails.w.thumbs.addItem(QListWidgetItem(QIcon(self.image_path), str(self.w.prompt.w.textEdit.toPlainText())))
                 #self.get_pic(clear=False)
 
 
@@ -782,7 +852,7 @@ class GenerateWindow(QWidget):
             #self.w.preview.w.scene.update()
 
 
-            self.w.thumbnails.w.thumbs.addItem(QListWidgetItem(QIcon(self.image_path), str(self.w.prompt.w.textEdit.toPlainText())))
+
             #all_images.append(results)
 
             #return all_images
@@ -806,12 +876,13 @@ class GenerateWindow(QWidget):
         #worker.signals.result.connect(self.get_pic)
         # Execute
         threadpool.start(worker2)
-
+    def set_widget(self):
+        self.w.setCentralWidget(self.w.preview.w)
     def txt2img_thread(self):
         # Pass the function to execute
         worker = Worker(self.run_txt2img)
         worker.signals.progress.connect(self.test_output)
-        worker.signals.result.connect(self.get_pic)
+        #worker.signals.result.connect(self.set_widget)
 
         # Execute
         threadpool.start(worker)
@@ -825,7 +896,7 @@ class GenerateWindow(QWidget):
 
     def test_output(self, data1, data2):
         self.progress = self.progress + self.onePercent
-        self.w.dynaview.w.progressBar.setValue(self.progress)
+        self.w.progressBar.setValue(self.progress)
         print("test...")
         print(type(data1))
 
@@ -835,56 +906,62 @@ class GenerateWindow(QWidget):
 
         #img = QImage.fromTensor(data1)
 
-        self.x_samples = torch.clamp((data1 + 1.0) / 2.0, min=0.0, max=1.0)
-        if len(self.x_samples) != 1:
+        x_samples = torch.clamp((data1 + 1.0) / 2.0, min=0.0, max=1.0)
+        if len(x_samples) != 1:
             raise Exception(
-                f'>> expected to get a single image, but got {len(self.x_samples)}')
-        self.x_sample = 255.0 * rearrange(
-            self.x_samples[0].cpu().numpy(), 'c h w -> h w c'
+                f'>> expected to get a single image, but got {len(x_samples)}')
+        x_sample = 255.0 * rearrange(
+            x_samples[0].cpu().numpy(), 'c h w -> h w c'
         )
 
-        self.x_sample = cv2.cvtColor(self.x_sample.astype(np.uint8), cv2.COLOR_RGB2BGR)
+        #self.x_sample = cv2.cvtColor(self.x_sample.astype(np.uint8), cv2.COLOR_RGB2BGR)
+        x_sample = x_sample.astype(np.uint8)
 
-        self.PILimg = Image.fromarray(self.x_sample)
-        self.qimg = ImageQt(self.PILimg)
-        self.pixmap = QPixmap(QPixmap.fromImage(self.qimg))
-        mainWindow.w.dynaview.w.label.setPixmap(self.pixmap.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio))
-        mainWindow.w.dynaview.w.label.update()
+        dPILimg = Image.fromarray(x_sample)
+        tins = random.randint(10000, 99999)
+        tpixmap = QPixmap(512, 512)
 
-        #self.w.preview.w.scene.clear()
-        #self.w.preview.w.scene.clear()
-        #self.w.preview.w.scene = QGraphicsScene()
-        #mainWindow.w.preview.w.label = QLabel(self)
-        #self.pic = QGraphicsPixmapItem()
-        #mainWindow.w.preview.w.scene.removeItem(self.pic)
-        #self.pic.setPixmap(self.pixmap)
-        #mainWindow.w.preview.w.scene.addItem(self.pic)
-        #mainWindow.w.preview.w.graphicsView.fitInView(self.pic, Qt.AspectRatioMode.KeepAspectRatio)
-        #print(type(self.pic))
-        #print(type(self.qimg))
-        #mainWindow.w.preview.w.scene.update()
-        #print(data2)
+        self.vpainter[tins] = QPainter(tpixmap)
+        self.vpainter[tins].device()
+
+        self.vpainter[tins].begin(tpixmap)
+        qimage = ImageQt(dPILimg)
+        self.vpainter[tins].drawImage(QRect(0, 0, 512, 512), qimage)
+
+        self.w.dynaview.w.label.setPixmap(tpixmap.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio))
+        #self.w.dynaview.w.label.update()
+
+        #dqimg = ImageQt(dPILimg)
+        self.vpainter[tins].end()
+        #dynapixmap = QPixmap(QPixmap.fromImage(dqimg))
 
     def image_cb(self, image, seed=None, upscaled=False, use_prefix=None, first_seed=None):
-        """
-        print(type(image))
-        print(image)
-        self.w.image_qt_cb = ImageQt(image)
+
+        #dimg = ImageQt(image)
+        #dpixmap = QPixmap(QPixmap.fromImage(dimg))
+        iins = random.randint(10000, 99999)
+
+        #self.vpainter[iins] = QPainter()
+
+        dpixmap = QPixmap(512, 512)
+        self.vpainter[iins] = QPainter(dpixmap)
+
+        self.vpainter[iins].begin(dpixmap)
+        self.vpainter[iins].device()
 
 
-        self.w.preview.w.preview.setPixmap(QPixmap.fromImage(self.w.image_qt_cb))
+        qimage = ImageQt(image)
+        self.vpainter[iins].drawImage(QRect(0, 0, 512, 512), qimage)
 
-        self.w.preview.w.scene.addItem(self.w.preview.w.preview)
-        #self.w.preview.w.graphicsView.fitInView(self.w.preview.w.preview, Qt.AspectRatioMode.KeepAspectRatio)
-        #self.w.preview.w.scene.update()"""
-        #self.get_pic()
-        pass
 
-    def get_pic(self, clear=True): #from self.image_path
-        try:
-            self.w.preview.w.scene.removeItem(self.w.preview.pic)
-        except:
-            pass
+
+        self.w.dynaimage.w.label.setPixmap(dpixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
+        self.vpainter[iins].end()
+        #self.w.dynaimage.w.label.update()
+
+    def get_pic(self, clear=False): #from self.image_path
+        #for item in self.w.preview.w.scene.items():
+        #    self.w.preview.w.scene.removeItem(item)
 
         print("trigger")
         image_qt = QImage(self.image_path)

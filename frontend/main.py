@@ -690,7 +690,7 @@ class GenerateWindow(QWidget):
         #self.w.preview.w.scene.update()
         self.newPixmap = {}
         self.tpixmap = {}
-        self.updateRate = 3
+        self.updateRate = self.w.sizer_count.w.stepsSlider.value()
 
 
 
@@ -795,6 +795,8 @@ class GenerateWindow(QWidget):
 
     def run_txt2img(self, progress_callback):
 
+        self.updateRate = self.w.sizer_count.w.previewSlider.value()
+
         prompt_list = self.w.prompt.w.textEdit.toPlainText()
         prompt_list = prompt_list.split('\n')
         #self.w.setCentralWidget(self.w.dynaimage.w)
@@ -842,7 +844,7 @@ class GenerateWindow(QWidget):
 
 """
         self.progress = 0.0
-        self.update = 3
+        self.update = self.updateRate
         for i in range(batchsize):
             for prompt in prompt_list:
                 print(f"Full Precision {full_precision}")
@@ -902,7 +904,7 @@ class GenerateWindow(QWidget):
     def txt2img_thread(self):
         # Pass the function to execute
         worker = Worker(self.run_txt2img)
-        worker.signals.progress.connect(self.test_output)
+        worker.signals.progress.connect(self.liveUpdate)
         #worker.signals.result.connect(self.set_widget)
 
         # Execute
@@ -919,13 +921,11 @@ class GenerateWindow(QWidget):
         self.progress = self.progress + self.onePercent
         self.w.progressBar.setValue(self.progress)
 
-        if self.update == 3:
-            print("Live Update")
+        if self.update == self.updateRate:
             self.test_output(data1, data2)
             self.update = 0
         else:
             self.update += 1
-            print("No Live Update")
 
 
     def test_output(self, data1, data2):
@@ -961,14 +961,14 @@ class GenerateWindow(QWidget):
             self.vpainter[tins].drawImage(QRect(0, 0, 512, 512), self.dqimg)
             #self.w.dynaview.w.label.setPixmap(self.tpixmap[tins].scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio))
             #self.vpainter[tins].end()
-
+            self.vpainter[tins].end()
             #self.w.dynaview.w.label.update()
             #gs.callbackBusy = False
 
             #dqimg = ImageQt(dPILimg)
             #qimg = QPixmap.fromImage(dqimg)
             self.w.dynaview.w.label.setPixmap(self.tpixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
-            self.vpainter[tins].end()
+
             gs.callbackBusy = False
         except:
             pass

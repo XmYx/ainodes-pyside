@@ -15,7 +15,15 @@ class SizerCount(QDockWidget):
         super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
 
-
+class Dynaview(QWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #uic.loadUi("frontend/ui_widgets/sampler.ui", self)
+        loader = QtUiTools.QUiLoader()
+        file = QtCore.QFile("frontend/ui_widgets/dynaview.ui")
+        file.open(QtCore.QFile.ReadOnly)
+        self.w = loader.load(file, self)
+        file.close()
 class Sampler(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

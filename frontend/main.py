@@ -57,6 +57,17 @@ from ldm.generate import Generate
 from ui_classes import *
 from backend.ui_func import getLatestGeneratedImagesFromPath
 
+import torch
+import torchvision
+import torchvision.transforms as T
+from PIL.ImageQt import ImageQt
+from PIL import Image
+from einops import rearrange
+import numpy as np
+import cv2
+
+
+
 
 
 #Node Editor Functions - We have to make it a QWidget because its now a MainWindow object, which can only be created in a QApplication, which we already have.
@@ -585,6 +596,7 @@ class GenerateWindow(QWidget):
         #self.runner = Runner()
         self.w.anim = Anim()
         self.w.prompt = Prompt()
+        self.w.dynaview = Dynaview()
 
         self.w.thumbnails = Thumbnails()
 
@@ -618,6 +630,8 @@ class GenerateWindow(QWidget):
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
 
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.thumbnails.w.dockWidget)
+
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
 
         #self.resizeDocks({self.thumbnails}, {100}, QtWidgets.Horizontal);
 
@@ -681,6 +695,8 @@ class GenerateWindow(QWidget):
         #self.preview.graphicsView.setPhoto(item.icon().pixmap(imageSize))
 
     def run_txt2img(self, progress_callback):
+        self.w.preview.w.preview = QGraphicsPixmapItem()
+
 
         width=self.w.sizer_count.w.widthSlider.value()
         height=self.w.sizer_count.w.heightSlider.value()
@@ -693,6 +709,8 @@ class GenerateWindow(QWidget):
         sampler=self.w.sampler.w.comboBox.currentText()
         upscale=[self.w.sizer_count.w.upscaleSlider.value()]
         gfpgan_strength=self.w.sizer_count.w.gfpganSlider.value() / 100
+
+        self.onePercent = 100 / ( batchsize * steps * samples )
 
         if self.w.sampler.w.seedEdit.text() != '':
             seed=int(self.w.sampler.w.seedEdit.text())
@@ -723,8 +741,7 @@ class GenerateWindow(QWidget):
                   )
 
 """
-
-        all_images = []
+        self.progress = 0.0
         for i in range(batchsize):
             print(f"Full Precision {full_precision}")
 
@@ -741,7 +758,8 @@ class GenerateWindow(QWidget):
                                       upscale = upscale,
                                       gfpgan_strength = gfpgan_strength,
                                       strength = 0.0,
-                                      full_precision = full_precision)
+                                      full_precision = full_precision,
+                                      step_callback=mainWindow.test_output)
             for row in results:
                 print(f'filename={row[0]}')
                 print(f'seed    ={row[1]}')
@@ -749,8 +767,22 @@ class GenerateWindow(QWidget):
                 output = f'outputs/{filename}.png'
                 row[0].save(output)
                 self.image_path = output
-                self.get_pic()
-                self.w.thumbnails.w.thumbs.addItem(QListWidgetItem(QIcon(output), str(self.w.prompt.w.textEdit.toPlainText())))
+                #self.get_pic(clear=False)
+
+
+
+            #self.get_pic(clear=False)
+            #image_qt = QImage(self.image_path)
+
+            #self.w.preview.pic = QGraphicsPixmapItem()
+            #self.w.preview.pic.setPixmap(QPixmap.fromImage(image_qt))
+
+            #self.w.preview.w.scene.clear()
+            #self.w.preview.w.scene.addItem(self.w.preview.pic)
+            #self.w.preview.w.scene.update()
+
+
+            self.w.thumbnails.w.thumbs.addItem(QListWidgetItem(QIcon(self.image_path), str(self.w.prompt.w.textEdit.toPlainText())))
             #all_images.append(results)
 
             #return all_images
@@ -778,24 +810,94 @@ class GenerateWindow(QWidget):
     def txt2img_thread(self):
         # Pass the function to execute
         worker = Worker(self.run_txt2img)
+        worker.signals.progress.connect(self.test_output)
         worker.signals.result.connect(self.get_pic)
+
         # Execute
         threadpool.start(worker)
 
         #progress bar test:
         #self.progress_thread()
-    def get_pic(self): #from self.image_path
-        print("ok")
+    def test_thread(self, data1, data2):
+        # Pass the function to execute
+        worker = Worker(self.test_output(data1, data2))
+        threadpool.start(worker)
+
+    def test_output(self, data1, data2):
+        self.progress = self.progress + self.onePercent
+        self.w.dynaview.w.progressBar.setValue(self.progress)
+        print("test...")
+        print(type(data1))
+
+        #transform = T.ToPILImage()
+        #img = transform(data1)
+        #img = Image.fromarray(data1.astype(np.uint8))
+
+        #img = QImage.fromTensor(data1)
+
+        self.x_samples = torch.clamp((data1 + 1.0) / 2.0, min=0.0, max=1.0)
+        if len(self.x_samples) != 1:
+            raise Exception(
+                f'>> expected to get a single image, but got {len(self.x_samples)}')
+        self.x_sample = 255.0 * rearrange(
+            self.x_samples[0].cpu().numpy(), 'c h w -> h w c'
+        )
+
+        self.x_sample = cv2.cvtColor(self.x_sample.astype(np.uint8), cv2.COLOR_RGB2BGR)
+
+        self.PILimg = Image.fromarray(self.x_sample)
+        self.qimg = ImageQt(self.PILimg)
+        self.pixmap = QPixmap(QPixmap.fromImage(self.qimg))
+        mainWindow.w.dynaview.w.label.setPixmap(self.pixmap.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio))
+        mainWindow.w.dynaview.w.label.update()
+
+        #self.w.preview.w.scene.clear()
+        #self.w.preview.w.scene.clear()
+        #self.w.preview.w.scene = QGraphicsScene()
+        #mainWindow.w.preview.w.label = QLabel(self)
+        #self.pic = QGraphicsPixmapItem()
+        #mainWindow.w.preview.w.scene.removeItem(self.pic)
+        #self.pic.setPixmap(self.pixmap)
+        #mainWindow.w.preview.w.scene.addItem(self.pic)
+        #mainWindow.w.preview.w.graphicsView.fitInView(self.pic, Qt.AspectRatioMode.KeepAspectRatio)
+        #print(type(self.pic))
+        #print(type(self.qimg))
+        #mainWindow.w.preview.w.scene.update()
+        #print(data2)
+
+    def image_cb(self, image, seed=None, upscaled=False, use_prefix=None, first_seed=None):
+        """
+        print(type(image))
+        print(image)
+        self.w.image_qt_cb = ImageQt(image)
+
+
+        self.w.preview.w.preview.setPixmap(QPixmap.fromImage(self.w.image_qt_cb))
+
+        self.w.preview.w.scene.addItem(self.w.preview.w.preview)
+        #self.w.preview.w.graphicsView.fitInView(self.w.preview.w.preview, Qt.AspectRatioMode.KeepAspectRatio)
+        #self.w.preview.w.scene.update()"""
+        #self.get_pic()
+        pass
+
+    def get_pic(self, clear=True): #from self.image_path
+        try:
+            self.w.preview.w.scene.removeItem(self.w.preview.pic)
+        except:
+            pass
+
+        print("trigger")
         image_qt = QImage(self.image_path)
 
         self.w.preview.pic = QGraphicsPixmapItem()
         self.w.preview.pic.setPixmap(QPixmap.fromImage(image_qt))
-
-        self.w.preview.w.scene.clear()
+        if clear == True:
+            self.w.preview.w.scene.clear()
         self.w.preview.w.scene.addItem(self.w.preview.pic)
 
         self.w.preview.w.graphicsView.fitInView(self.w.preview.pic, Qt.AspectRatioMode.KeepAspectRatio)
         self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+        #gs.obj_to_delete = self.w.preview.pic
     def zoom_IN(self):
         self.w.preview.w.graphicsView.scale(1.25, 1.25)
     def zoom_OUT(self):

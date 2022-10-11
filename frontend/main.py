@@ -688,6 +688,9 @@ class GenerateWindow(QWidget):
         self.w.imageItem.pixmap().fill(Qt.white)
         #self.w.preview.w.scene.addPixmap(self.w.imageItem.pixmap())
         #self.w.preview.w.scene.update()
+        self.newPixmap = {}
+        self.tpixmap = {}
+        self.updateRate = 3
 
 
 
@@ -736,20 +739,20 @@ class GenerateWindow(QWidget):
             vins = random.randint(10000, 99999)
             imageSize = item.icon().actualSize(QSize(10000, 10000))
             qimage = QImage(item.icon().pixmap(imageSize).toImage())
-            newPixmap = QPixmap(qimage.size())
+            self.newPixmap[vins] = QPixmap(qimage.size())
 
-            self.vpainter[vins] = QPainter(newPixmap)
+            self.vpainter[vins] = QPainter()
 
             newItem = QGraphicsPixmapItem()
             #vpixmap = self.w.imageItem.pixmap()
 
 
             #self.vpainter[vins].device()
-            self.vpainter[vins].begin(newPixmap)
+            self.vpainter[vins].begin(self.newPixmap[vins])
 
 
             self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
-            newItem.setPixmap(newPixmap)
+            newItem.setPixmap(self.newPixmap[vins])
 
             #self.w.imageItem.setPixmap(vpixmap)
             #self.w.preview.w.graphicsView.modified = True
@@ -839,6 +842,7 @@ class GenerateWindow(QWidget):
 
 """
         self.progress = 0.0
+        self.update = 3
         for i in range(batchsize):
             for prompt in prompt_list:
                 print(f"Full Precision {full_precision}")
@@ -857,7 +861,7 @@ class GenerateWindow(QWidget):
                                           gfpgan_strength = gfpgan_strength,
                                           strength = 0.0,
                                           full_precision = full_precision,
-                                          step_callback=self.test_output,
+                                          step_callback=self.liveUpdate,
                                           image_callback=self.image_cb)
                 for row in results:
                     print(f'filename={row[0]}')
@@ -911,20 +915,27 @@ class GenerateWindow(QWidget):
         worker = Worker(self.test_output(data1, data2))
         threadpool.start(worker)
 
+    def liveUpdate(self, data1, data2):
+        self.progress = self.progress + self.onePercent
+        self.w.progressBar.setValue(self.progress)
+
+        if self.update == 3:
+            print("Live Update")
+            self.test_output(data1, data2)
+            self.update = 0
+        else:
+            self.update += 1
+            print("No Live Update")
+
+
     def test_output(self, data1, data2):
         try:
-            while gs.callbackBusy == True:
-                time.sleep(0.1)
+
             gs.callbackBusy = True
-            self.progress = self.progress + self.onePercent
-            self.w.progressBar.setValue(self.progress)
-            print("test...")
-            print(type(data1))
 
             #transform = T.ToPILImage()
             #img = transform(data1)
             #img = Image.fromarray(data1.astype(np.uint8))
-
             #img = QImage.fromTensor(data1)
 
             x_samples = torch.clamp((data1 + 1.0) / 2.0, min=0.0, max=1.0)
@@ -937,22 +948,26 @@ class GenerateWindow(QWidget):
 
             #self.x_sample = cv2.cvtColor(self.x_sample.astype(np.uint8), cv2.COLOR_RGB2BGR)
             x_sample = x_sample.astype(np.uint8)
-
             dPILimg = Image.fromarray(x_sample)
+
             tins = random.randint(10000, 99999)
-            tpixmap = QPixmap(512, 512)
-
             self.vpainter[tins] = QPainter()
-            self.vpainter[tins].device()
+            self.tpixmap = QPixmap(512, 512)
 
-            self.vpainter[tins].begin(tpixmap)
-            qimage = ImageQt(dPILimg)
-            self.vpainter[tins].drawImage(QRect(0, 0, 512, 512), qimage)
+            #self.vpainter[tins].device()
+            self.vpainter[tins].begin(self.tpixmap)
+            self.dqimg = ImageQt(dPILimg)
+            #self.qimage[tins] = ImageQt(dPILimg)
+            self.vpainter[tins].drawImage(QRect(0, 0, 512, 512), self.dqimg)
+            #self.w.dynaview.w.label.setPixmap(self.tpixmap[tins].scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio))
+            #self.vpainter[tins].end()
 
-            self.w.dynaview.w.label.setPixmap(tpixmap.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio))
             #self.w.dynaview.w.label.update()
+            #gs.callbackBusy = False
 
             #dqimg = ImageQt(dPILimg)
+            #qimg = QPixmap.fromImage(dqimg)
+            self.w.dynaview.w.label.setPixmap(self.tpixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
             self.vpainter[tins].end()
             gs.callbackBusy = False
         except:
@@ -961,24 +976,23 @@ class GenerateWindow(QWidget):
 
     def image_cb(self, image, seed=None, upscaled=False, use_prefix=None, first_seed=None):
         try:
-            while gs.callbackBusy == True:
-                time.sleep(0.1)
+
             #gs.callbackBusy = True
             #dimg = ImageQt(image)
             #dpixmap = QPixmap(QPixmap.fromImage(dimg))
             iins = random.randint(10000, 99999)
 
-            #self.vpainter[iins] = QPainter()
+            self.vpainter[iins] = QPainter()
 
             dpixmap = QPixmap(512, 512)
             #self.vpainter[iins] = QPainter(dpixmap)
 
-            self.vpainter["iins"].begin(dpixmap)
-            self.vpainter["iins"].device()
+            self.vpainter[iins].begin(dpixmap)
+            self.vpainter[iins].device()
 
 
             qimage = ImageQt(image)
-            self.vpainter["iins"].drawImage(QRect(0, 0, 512, 512), qimage)
+            self.vpainter[iins].drawImage(QRect(0, 0, 512, 512), qimage)
 
 
 

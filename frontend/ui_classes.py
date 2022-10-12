@@ -1,9 +1,9 @@
 #from PyQt6 import uic
+from PySide6 import QtCore
 from PySide6 import QtUiTools
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QDockWidget, QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QWidget
-from PySide6.QtCore import QRectF
-from PySide6 import QtCore
+
 
 class SizerCount(QDockWidget):
     loader = QtUiTools.QUiLoader()

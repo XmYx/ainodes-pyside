@@ -1,4 +1,4 @@
-
+#from frontend import deforum_simplified
 from PySide6 import QtUiTools
 
 from PySide6.QtWidgets import QApplication, QGraphicsView
@@ -14,6 +14,7 @@ splash.show()
 
 icon = QIcon('frontend/main/splash_2.png')
 
+import concurrent.futures
 
 if (os.name == 'nt'):
     #This is needed to display the app icon on the taskbar on Windows 7
@@ -116,12 +117,16 @@ gr = Generate(  weights     = 'models/sd-v1-4.ckpt',
                 )
 
 gs = singleton
-
+gs.models = {}
 gs.result = ""
 gs.callbackBusy = False
 
 gs.album = getLatestGeneratedImagesFromPath()
 
+
+from backend.deforum.deforum_simplified import DeforumGenerator
+
+#deforum = DeforumGenerator()
 def prepare_loading():
     transformers.logging.set_verbosity_error()
 
@@ -322,6 +327,13 @@ class NodeWindow(NodeEditorWindow):
         self.readSettings()
 
         self.setWindowTitle("Calculator NodeEditor Example")
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            self.print_task()
+
+    def print_task(self):
+        print("Successful Concurrent Run")
+
+
 
     def closeEvent(self, event):
         self.mdiArea.closeAllSubWindows()
@@ -549,6 +561,7 @@ class GenerateWindow(QWidget):
 
 
         self.home()
+        self.w.thumbnails.thumbs.installEventFilter(self)
         self.w.statusBar().showMessage('Ready')
         self.w.progressBar = QProgressBar()
 
@@ -557,7 +570,7 @@ class GenerateWindow(QWidget):
 
         # This is simply to show the bar
         self.w.progressBar.setGeometry(30, 40, 200, 25)
-        self.w.progressBar.setValue(50)
+        self.w.progressBar.setValue(0)
 
         self.nodeWindow = NodeWindow()
         self.load_history()
@@ -600,8 +613,9 @@ class GenerateWindow(QWidget):
         else:
             return super().wheelEvent(event)"""
 
-    def home(self):
 
+    def home(self):
+        self.threadpool = QThreadPool()
         self.w.preview = Preview()
         self.w.sizer_count = SizerCount()
         self.w.sampler = Sampler()
@@ -618,8 +632,8 @@ class GenerateWindow(QWidget):
         #self.nodes.nodeeditor.addNodes()
 
         #wnd.show()
-
-        self.w.thumbnails.w.thumbs.itemClicked.connect(self.viewImageClicked)
+        self.w.thumbnails.thumbs.itemClicked.connect(self.viewImageClicked)
+        self.w.thumbnails.thumbs.itemDoubleClicked.connect(self.tileImageClicked)
         #self.thumbnails.thumbs.addItem(QListWidgetItem(QIcon('frontend/main/splash.png'), "Earth"))
 
 
@@ -642,16 +656,17 @@ class GenerateWindow(QWidget):
         #self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.anim.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
 
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.thumbnails.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.thumbnails.dockWidget)
 
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaimage.w.dockWidget)
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(512, 512))
 
 
-        self.w.tabifyDockWidget(self.w.thumbnails.w.dockWidget, self.w.sampler.w.dockWidget)
+        self.w.tabifyDockWidget(self.w.thumbnails.dockWidget, self.w.sampler.w.dockWidget)
+        self.w.tabifyDockWidget(self.w.dynaimage.w.dockWidget, self.w.dynaview.w.dockWidget)
 
-        self.w.thumbnails.w.dockWidget.setWindowTitle('Thumbnails')
+        self.w.thumbnails.dockWidget.setWindowTitle('Thumbnails')
         self.w.sampler.w.dockWidget.setWindowTitle('Sampler')
         self.w.sizer_count.w.dockWidget.setWindowTitle('Sliders')
         self.w.prompt.w.dockWidget.setWindowTitle('Prompt')
@@ -660,6 +675,7 @@ class GenerateWindow(QWidget):
         self.w.preview.w.setWindowTitle('Canvas')
         #print(dir(self.w))
         #self.w.tabWidget_1.setTabText(0, "TEST")
+
 
         self.vpainter = {}
         #self.resizeDocks({self.thumbnails}, {100}, QtWidgets.Horizontal);
@@ -681,8 +697,8 @@ class GenerateWindow(QWidget):
         #self.w.preview.canvas.fill(Qt.black)
         #self.w.preview.w.scene.addPixmap(self.w.preview.canvas)
 
-        self.w.thumbnails.w.thumbsZoom.valueChanged.connect(self.updateThumbsZoom)
-        self.w.thumbnails.w.refresh.clicked.connect(self.load_history)
+        self.w.thumbnails.thumbsZoom.valueChanged.connect(self.updateThumbsZoom)
+        self.w.thumbnails.refresh.clicked.connect(self.load_history)
 
         self.w.imageItem = QGraphicsPixmapItem()
         self.w.imageItem.pixmap().fill(Qt.white)
@@ -692,18 +708,29 @@ class GenerateWindow(QWidget):
         self.tpixmap = {}
         self.updateRate = self.w.sizer_count.w.stepsSlider.value()
 
+        self.livePainter = QPainter()
+        self.vpainter["iins"] = QPainter()
+        self.tpixmap = QPixmap(512, 512)
+        self.ipixmap = QPixmap(512, 512)
+
+        self.livePainter.begin(self.tpixmap)
 
 
+
+        self.livePainter.end()
 
 
     def updateThumbsZoom(self):
-        try:
-            if gs.callbackBusy == False:
-                size = self.w.thumbnails.w.thumbsZoom.value()
-                self.w.thumbnails.w.thumbs.setGridSize(QSize(size, size))
-                self.w.thumbnails.w.thumbs.setIconSize(QSize(size, size))
-        except:
-            pass
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+
+            try:
+                if gs.callbackBusy == False:
+                    size = self.w.thumbnails.thumbsZoom.value()
+                    self.w.thumbnails.thumbs.setGridSize(QSize(size, size))
+                    self.w.thumbnails.thumbs.setIconSize(QSize(size, size))
+            except Exception as e:
+                print(f"Exception: {e}")
+                pass
     def update_scaleNumber(self):
         float = self.w.sizer_count.w.scaleSlider.value() / 100
         self.w.sizer_count.w.scaleNumber.display(str(float))
@@ -725,15 +752,17 @@ class GenerateWindow(QWidget):
     def show_sizer_count(self):
         self.w.sizer_count.w.show()
     def show_thumbnails(self):
-        self.w.thumbnails.w.show()
+        self.w.thumbnails.show()
 
     def load_history(self):
-        self.w.thumbnails.w.thumbs.clear()
+        self.w.thumbnails.thumbs.clear()
         for image in gs.album:
-            self.w.thumbnails.w.thumbs.addItem(QListWidgetItem(QIcon(image), str(image)))
+            self.w.thumbnails.thumbs.addItem(QListWidgetItem(QIcon(image), str(image)))
     def viewThread(self, item):
-        worker = Worker(self.viewImageClicked(item))
-        threadpool.start(worker)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            self.viewImageClicked(item)
+        #worker = Worker(self.viewImageClicked(item))
+        #threadpool.start(worker)
     def tileImageClicked(self, item):
         try:
             while gs.callbackBusy == True:
@@ -744,14 +773,14 @@ class GenerateWindow(QWidget):
             qimage = QImage(item.icon().pixmap(imageSize).toImage())
             self.newPixmap[vins] = QPixmap(QSize(2048, 2048))
 
-            self.vpainter[vins] = QPainter()
+            self.vpainter[vins] = QPainter(self.newPixmap[vins])
 
             newItem = QGraphicsPixmapItem()
             #vpixmap = self.w.imageItem.pixmap()
 
 
             #self.vpainter[vins].device()
-            self.vpainter[vins].begin(self.newPixmap[vins])
+            self.vpainter[vins].beginNativePainting()
 
 
             self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
@@ -768,9 +797,10 @@ class GenerateWindow(QWidget):
             self.w.preview.w.scene.addItem(newItem)
             self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
             self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
-            self.vpainter[vins].end()
+            self.vpainter[vins].endNativePainting()
             #gs.callbackBusy = False
-        except:
+        except Exception as e:
+            print(f"Exception: {e}")
             pass
     def viewImageClicked(self, item):
         try:
@@ -782,14 +812,14 @@ class GenerateWindow(QWidget):
             qimage = QImage(item.icon().pixmap(imageSize).toImage())
             self.newPixmap[vins] = QPixmap(qimage.size())
 
-            self.vpainter[vins] = QPainter()
+            self.vpainter[vins] = QPainter(self.newPixmap[vins])
 
             newItem = QGraphicsPixmapItem()
             #vpixmap = self.w.imageItem.pixmap()
 
 
             #self.vpainter[vins].device()
-            self.vpainter[vins].begin(self.newPixmap[vins])
+            self.vpainter[vins].beginNativePainting()
 
 
             self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
@@ -802,11 +832,11 @@ class GenerateWindow(QWidget):
             self.w.preview.w.scene.addItem(newItem)
             self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
             self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
-            self.vpainter[vins].end()
+            self.vpainter[vins].endNativePainting()
             #gs.callbackBusy = False
-        except:
+        except Exception as e:
+            print(f"Exception: {e}")
             pass
-
         #self.w.preview.w.scene.update()
         #self.w.preview.w.graphicsView.setScene(self.w.preview.w.scene)
 
@@ -834,7 +864,8 @@ class GenerateWindow(QWidget):
 
         #self.w.preview.w.scene.update()
 
-    def run_txt2img(self, progress_callback):
+    def run_txt2img(self, progress_callback=None):
+        self.w.statusBar().showMessage("Loading model...")
 
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
 
@@ -844,7 +875,7 @@ class GenerateWindow(QWidget):
         width=self.w.sizer_count.w.widthSlider.value()
         height=self.w.sizer_count.w.heightSlider.value()
         scale=self.w.sizer_count.w.scaleSlider.value()
-        steps=self.w.sizer_count.w.stepsSlider.value()
+        self.steps=self.w.sizer_count.w.stepsSlider.value()
         samples=self.w.sizer_count.w.samplesSlider.value()
         batchsize=self.w.sizer_count.w.batchSizeSlider.value()
         seamless=self.w.sampler.w.seamless.isChecked()
@@ -853,7 +884,7 @@ class GenerateWindow(QWidget):
         upscale=[self.w.sizer_count.w.upscaleSlider.value()]
         gfpgan_strength=self.w.sizer_count.w.gfpganSlider.value() / 100
 
-        self.onePercent = 100 / (batchsize * steps * samples * len(prompt_list))
+        self.onePercent = 100 / (batchsize * self.steps * samples * len(prompt_list))
 
         if self.w.sampler.w.seedEdit.text() != '':
             seed=int(self.w.sampler.w.seedEdit.text())
@@ -883,7 +914,16 @@ class GenerateWindow(QWidget):
                   cfg_scale   = <float>       // condition-free guidance scale (7.5)
                   )
 
-"""
+                    """
+
+        #self.vpainter[tins] = QPainter(self.tpixmap)
+
+
+
+        #self.vpainter[iins] = QPainter(dpixmap)
+
+        #self.vpainter[iins].begin(dpixmap)
+
         self.progress = 0.0
         self.update = 0
         for i in range(batchsize):
@@ -896,7 +936,7 @@ class GenerateWindow(QWidget):
                                           width  = width,
                                           height = height,
                                           iterations = samples,
-                                          steps = steps,
+                                          steps = self.steps,
                                           seamless = seamless,
                                           sampler_name = sampler,
                                           seed = seed,
@@ -904,7 +944,7 @@ class GenerateWindow(QWidget):
                                           gfpgan_strength = gfpgan_strength,
                                           strength = 0.0,
                                           full_precision = full_precision,
-                                          step_callback=self.liveUpdate,
+                                          step_callback=self.testThread,
                                           image_callback=self.image_cb)
                 for row in results:
                     print(f'filename={row[0]}')
@@ -913,68 +953,78 @@ class GenerateWindow(QWidget):
                     output = f'outputs/{filename}.png'
                     row[0].save(output)
                     self.image_path = output
-                    print("We did set the image")
-                    self.w.thumbnails.w.thumbs.addItem(QListWidgetItem(QIcon(self.image_path), str(self.w.prompt.w.textEdit.toPlainText())))
+                    #print("We did set the image")
+                    self.w.thumbnails.thumbs.addItem(QListWidgetItem(QIcon(self.image_path), str(self.w.prompt.w.textEdit.toPlainText())))
                     #self.get_pic(clear=False)
+                self.w.statusBar().showMessage("Ready...")
+        self.stop_painters()
 
 
 
-                #self.get_pic(clear=False)
-                #image_qt = QImage(self.image_path)
-
-                #self.w.preview.pic = QGraphicsPixmapItem()
-                #self.w.preview.pic.setPixmap(QPixmap.fromImage(image_qt))
-
-                #self.w.preview.w.scene.clear()
-                #self.w.preview.w.scene.addItem(self.w.preview.pic)
-                #self.w.preview.w.scene.update()
-
-
-
-                #all_images.append(results)
-
-                #return all_images
-
-
-
-
-
-
-
-
+    def stop_painters(self):
+        try:
+            self.vpainter["iins"].end()
+            self.livePainter.end()
+        except Exception as e:
+            print(f"Exception: {e}")
+            pass
     def txt2img_thread(self):
+
+        #self.run_txt2img()
         # Pass the function to execute
+        print()
         worker = Worker(self.run_txt2img)
-        worker.signals.progress.connect(self.liveUpdate)
-        #worker.signals.result.connect(self.set_widget)
+        #worker.signals.progress.connect(self.testThread)
+        #worker.signals.result.connect(self.stop_painters)
 
         # Execute
-        threadpool.start(worker)
+        self.threadpool.start(worker)
 
         #progress bar test:
         #self.progress_thread()
-    def test_thread(self, data1, data2):
-        # Pass the function to execute
-        worker = Worker(self.test_output(data1, data2))
-        threadpool.start(worker)
+    def testThread(self, data1, data2):
 
-    def liveUpdate(self, data1, data2):
+
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
+
 
         self.progress = self.progress + self.onePercent
         self.w.progressBar.setValue(self.progress)
+        # Pass the function to execute
+        #self.liveWorker = Worker(self.liveUpdate(data1, data2))
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            self.liveUpdate(data1, data2)
+        print(type(data1))
+        print(type(data2))
+        #threadpool.start(self.liveWorker)
+
+    def liveUpdate(self, data1, data2):
+        self.w.statusBar().showMessage(f"Generating... (step {data2} of {self.steps})")
 
         if self.update >= self.updateRate:
-            self.test_output(data1, data2)
-            self.update = 0
+            try:
+                self.update = 0
+                self.test_output(data1, data2)
+            except Exception as e:
+                print(f"Exception: {e}")
+                pass
+                self.update = 0
         else:
             self.update += 1
+        return self.pass_object
 
 
     def test_output(self, data1, data2):
+        try:
+            self.livePainter = QPainter()
+
+        except Exception as e:
+            print(f"Exception: {e}")
+            pass
         if gs.callbackBusy == False:
             try:
-
+                self.livePainter.begin(self.tpixmap)
                 gs.callbackBusy = True
 
                 #transform = T.ToPILImage()
@@ -996,56 +1046,71 @@ class GenerateWindow(QWidget):
 
                 tins = random.randint(10000, 99999)
 
-                self.tpixmap = QPixmap(512, 512)
-                self.vpainter[tins] = QPainter(self.tpixmap)
-                self.vpainter[tins].device()
+                #self.tpixmap = QPixmap(512, 512)
+                #self.vpainter[tins] = QPainter(self.tpixmap)
+
                 #self.vpainter[tins].begin(self.tpixmap)
+                #self.vpainter[tins].device()
                 self.dqimg = ImageQt(dPILimg)
                 #self.qimage[tins] = ImageQt(dPILimg)
-                self.vpainter[tins].drawImage(QRect(0, 0, 512, 512), self.dqimg)
+                self.livePainter.drawImage(QRect(0, 0, 512, 512), self.dqimg)
+                self.w.dynaview.w.label.setPixmap(self.tpixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
                 #self.w.dynaview.w.label.setPixmap(self.tpixmap[tins].scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio))
-                #self.vpainter[tins].end()
                 #self.vpainter[tins].end()
                 #self.w.dynaview.w.label.update()
                 #gs.callbackBusy = False
 
                 #dqimg = ImageQt(dPILimg)
                 #qimg = QPixmap.fromImage(dqimg)
-                self.w.dynaview.w.label.setPixmap(self.tpixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
+
+                #self.vpainter[tins].end()
+                try:
+                    self.livePainter.end()
+                except Exception as e:
+                    print(e)
+                    pass
 
                 gs.callbackBusy = False
+                #result = data2
+                return self.pass_object
+            except Exception as e:
+                print(f"Exception: {e}")
+                return self.pass_object
+        #dynapixmap = QPixmap(QPixmap.fromImage(dqimg))
+    def pass_object(self, progress_callback=None):
+        pass
+    def image_cb(self, image, seed=None, upscaled=False, use_prefix=None, first_seed=None):
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+
+            try:
+
+                #gs.callbackBusy = True
+                #dimg = ImageQt(image)
+                #dpixmap = QPixmap(QPixmap.fromImage(dimg))
+                #iins = random.randint(10000, 99999)
+                #dpixmap = QPixmap(512, 512)
+
+                #self.vpainter[iins].device()
+
+                try:
+                    self.vpainter["iins"] = QPainter()
+                except:
+                    pass
+                try:
+                    self.vpainter["iins"].begin(self.ipixmap)
+                except:
+                    pass
+                qimage = ImageQt(image)
+                self.vpainter["iins"].drawImage(QRect(0, 0, 512, 512), qimage)
+
+
+
+                self.w.dynaimage.w.label.setPixmap(self.ipixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
+                #self.vpainter["iins"].end()
+                #gs.callbackBusy = False
+                #self.w.dynaimage.w.label.update()
             except:
                 pass
-        #dynapixmap = QPixmap(QPixmap.fromImage(dqimg))
-
-    def image_cb(self, image, seed=None, upscaled=False, use_prefix=None, first_seed=None):
-        try:
-
-            #gs.callbackBusy = True
-            #dimg = ImageQt(image)
-            #dpixmap = QPixmap(QPixmap.fromImage(dimg))
-            iins = random.randint(10000, 99999)
-
-            self.vpainter[iins] = QPainter()
-
-            dpixmap = QPixmap(512, 512)
-            #self.vpainter[iins] = QPainter(dpixmap)
-
-            self.vpainter[iins].begin(dpixmap)
-            #self.vpainter[iins].device()
-
-
-            qimage = ImageQt(image)
-            self.vpainter[iins].drawImage(QRect(0, 0, 512, 512), qimage)
-
-
-
-            self.w.dynaimage.w.label.setPixmap(dpixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
-            self.vpainter[iins].end()
-            #gs.callbackBusy = False
-            #self.w.dynaimage.w.label.update()
-        except:
-            pass
 
     def get_pic(self, clear=False): #from self.image_path
         #for item in self.w.preview.w.scene.items():
@@ -1067,6 +1132,23 @@ class GenerateWindow(QWidget):
         self.w.preview.w.graphicsView.scale(1.25, 1.25)
     def zoom_OUT(self):
         self.w.preview.w.graphicsView.scale(0.75, 0.75)
+
+
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.ContextMenu and source is self.w.thumbnails.thumbs:
+            menu = QMenu()
+            tileAction = QAction("Tile", self)
+            menu.addAction(tileAction)
+            menu.addAction('Action 2')
+            menu.addAction('Action 3')
+
+            if menu.exec_(event.globalPos()):
+                item = source.itemAt(event.pos())
+                self.tileImageClicked(item)
+                print(item.text())
+            return True
+        return super().eventFilter(source, event)
+
 
 """class CalculatorWin(CalculatorWindow):
     def __init__(self, *args, **kwargs):
@@ -1091,31 +1173,31 @@ if __name__ == "__main__":
 
     sshFile="frontend/style/QTDark.stylesheet"
 
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
 
+        mainWindow = GenerateWindow()
 
-    mainWindow = GenerateWindow()
-    threadpool = QThreadPool()
-    mainWindow.w.setWindowTitle("aiNodes")
-    mainWindow.w.setWindowIcon(QIcon('frontend/main/splash_2.png'))
-    with open(sshFile,"r") as fh:
-        mainWindow.w.setStyleSheet(fh.read())
-    #app.setIcon(QIcon('frontend/main/splash.png'))
-    mainWindow.w.show()
-    #mainWindow.nodeWindow.show()
-    mainWindow.w.resize(1280, 720)
-    splash.finish(mainWindow)
-    #mainWindow.progress_thread()
+        mainWindow.w.setWindowTitle("aiNodes")
+        mainWindow.w.setWindowIcon(QIcon('frontend/main/splash_2.png'))
+        with open(sshFile,"r") as fh:
+            mainWindow.w.setStyleSheet(fh.read())
+        #app.setIcon(QIcon('frontend/main/splash.png'))
+        mainWindow.w.show()
+        #mainWindow.nodeWindow.show()
+        mainWindow.w.resize(1280, 720)
+        splash.finish(mainWindow)
+        #mainWindow.progress_thread()
 
-    #mainWindow.thumbnails.setGeometry(680,0,800,600)
+        #mainWindow.thumbnails.setGeometry(680,0,800,600)
+        #mainWindow.w.thumbnails.tileAction.triggered.connect(mainWindow.tileImageClicked)
+        mainWindow.w.prompt.w.runButton.clicked.connect(mainWindow.txt2img_thread)
+        #mainWindow.runner.runButton.clicked.connect(mainWindow.progress_thread)
 
-    mainWindow.w.prompt.w.runButton.clicked.connect(mainWindow.txt2img_thread)
-    #mainWindow.runner.runButton.clicked.connect(mainWindow.progress_thread)
+        mainWindow.w.actionNodes.triggered.connect(mainWindow.nodeWindow.show)
+        mainWindow.w.sizer_count.w.scaleSlider.valueChanged.connect(mainWindow.update_scaleNumber)
+        mainWindow.w.sizer_count.w.gfpganSlider.valueChanged.connect(mainWindow.update_gfpganNumber)
 
-    mainWindow.w.actionNodes.triggered.connect(mainWindow.nodeWindow.show)
-    mainWindow.w.sizer_count.w.scaleSlider.valueChanged.connect(mainWindow.update_scaleNumber)
-    mainWindow.w.sizer_count.w.gfpganSlider.valueChanged.connect(mainWindow.update_gfpganNumber)
+        mainWindow.w.preview.w.zoomInButton.clicked.connect(mainWindow.zoom_IN)
+        mainWindow.w.preview.w.zoomOutButton.clicked.connect(mainWindow.zoom_OUT)
 
-    mainWindow.w.preview.w.zoomInButton.clicked.connect(mainWindow.zoom_IN)
-    mainWindow.w.preview.w.zoomOutButton.clicked.connect(mainWindow.zoom_OUT)
-
-    sys.exit(app.exec())
+        sys.exit(app.exec())

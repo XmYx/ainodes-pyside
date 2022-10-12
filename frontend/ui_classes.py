@@ -1,72 +1,81 @@
 #from PyQt6 import uic
 from PySide6 import QtUiTools
 from PySide6 import QtWidgets
-from PySide6.QtWidgets import QDockWidget, QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QWidget
-from PySide6.QtGui import QAction
-from PySide6 import QtCore
+from PySide6.QtWidgets import (QDockWidget, QGraphicsScene, QGraphicsPixmapItem,
+                              QGraphicsView, QWidget, QSizePolicy, QSlider, QPushButton,
+                              QAbstractItemView, QListView, QListWidget, QVBoxLayout,
+                               QMenu)
+from PySide6.QtGui import QAction, QPainter
+from PySide6.QtCore import (QMetaObject, QFile, QRectF,
+                            QCoreApplication, QSize, Qt,
+                            QEvent)
+
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+                           QFont, QFontDatabase, QGradient, QIcon,
+                           QImage, QKeySequence, QLinearGradient, QPainter,
+                           QPalette, QPixmap, QRadialGradient, QTransform)
+
+import concurrent.futures
+
 
 
 
 
 class SizerCount(QDockWidget):
-    loader = QtUiTools.QUiLoader()
-    file = QtCore.QFile("frontend/ui_widgets/sizer_count.ui")
-    file.open(QtCore.QFile.ReadOnly)
-    w = loader.load(file)
-    file.close()
+
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        loader = QtUiTools.QUiLoader()
+        file = QFile("frontend/ui_widgets/sizer_count.ui")
+        file.open(QFile.ReadOnly)
+        self.w = loader.load(file)
+        file.close()
+        #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
 class Dynaimage(QWidget):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/sampler.ui", self)
         loader = QtUiTools.QUiLoader()
-        file = QtCore.QFile("frontend/ui_widgets/dynaimage.ui")
-        file.open(QtCore.QFile.ReadOnly)
-        self.w = loader.load(file, self)
+        file = QFile("frontend/ui_widgets/dynaimage.ui")
+        file.open(QFile.ReadOnly)
+        self.w = loader.load(file)
         file.close()
 class Dynaview(QWidget):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/sampler.ui", self)
         loader = QtUiTools.QUiLoader()
-        file = QtCore.QFile("frontend/ui_widgets/dynaview.ui")
-        file.open(QtCore.QFile.ReadOnly)
-        self.w = loader.load(file, self)
+        file = QFile("frontend/ui_widgets/dynaview.ui")
+        file.open(QFile.ReadOnly)
+        self.w = loader.load(file)
         file.close()
 class Sampler(QWidget):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/sampler.ui", self)
         loader = QtUiTools.QUiLoader()
-        file = QtCore.QFile("frontend/ui_widgets/sampler.ui")
-        file.open(QtCore.QFile.ReadOnly)
-        self.w = loader.load(file, self)
+        file = QFile("frontend/ui_widgets/sampler.ui")
+        file.open(QFile.ReadOnly)
+        self.w = loader.load(file)
         file.close()
-
-class Runner(QWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/runner.ui", self)
 
 class Prompt(QWidget):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/prompt.ui", self)
         loader = QtUiTools.QUiLoader()
-        file = QtCore.QFile("frontend/ui_widgets/prompt.ui")
-        file.open(QtCore.QFile.ReadOnly)
-        self.w = loader.load(file, self)
+        file = QFile("frontend/ui_widgets/prompt.ui")
+        file.open(QFile.ReadOnly)
+        self.w = loader.load(file)
         file.close()
 class Anim(QWidget):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/anim.ui", self)
         loader = QtUiTools.QUiLoader()
-        file = QtCore.QFile("frontend/ui_widgets/anim.ui")
-        file.open(QtCore.QFile.ReadOnly)
-        self.w = loader.load(file, self)
+        file = QFile("frontend/ui_widgets/anim.ui")
+        file.open(QFile.ReadOnly)
+        self.w = loader.load(file)
         file.close()
 class PhotoViewer(QGraphicsView):
 
@@ -90,11 +99,11 @@ class PhotoViewer(QGraphicsView):
         return not self._empty
 
     def fitInView(self, scale=True):
-        rect = QtCore.QRectF(self._photo.pixmap().rect())
+        rect = QRectF(self._photo.pixmap().rect())
         if not rect.isNull():
             self.setSceneRect(rect)
             if self.hasPhoto():
-                unity = self.transform().mapRect(QtCore.QRectF(0, 0, 1, 1))
+                unity = self.transform().mapRect(QRectF(0, 0, 1, 1))
                 self.scale(1 / unity.width(), 1 / unity.height())
                 viewrect = self.viewport().rect()
                 scenerect = self.transform().mapRect(rect)
@@ -112,7 +121,7 @@ class PhotoViewer(QGraphicsView):
         else:
             self._empty = True
             self.setDragMode(QGraphicsView.NoDrag)
-            self._photo.setPixmap(QtGui.QPixmap())
+            self._photo.setPixmap(QPixmap())
         self.fitInView()
 
 
@@ -146,12 +155,12 @@ class PhotoViewer(QGraphicsView):
 
 class Preview(QWidget):
     loader = QtUiTools.QUiLoader()
-    file = QtCore.QFile("frontend/ui_widgets/preview.ui")
-    file.open(QtCore.QFile.ReadOnly)
+    file = QFile("frontend/ui_widgets/preview.ui")
+    file.open(QFile.ReadOnly)
     w = loader.load(file)
     file.close()
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/preview.ui", self)
 
         self._zoom = 0
@@ -188,26 +197,90 @@ class Preview(QWidget):
             self._zoom = 0
 
 
-class Thumbnails(QDockWidget):
+class Thumbnails(QWidget):
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/thumbnails.ui", self)
-        loader = QtUiTools.QUiLoader()
-        file = QtCore.QFile("frontend/ui_widgets/thumbnails.ui")
-        file.open(QtCore.QFile.ReadOnly)
-        self.w = loader.load(file, self)
-        file.close()
-        self.w.thumbs.installEventFilter(self)
-    def eventFilter(self, source, event):
-        if (event.type() == QtCore.QEvent.ContextMenu and
-                source is self.w.thumbs):
-            menu = QtWidgets.QMenu()
-            renameAction = QAction('Exit', self)
+        if not self.objectName():
+            self.setObjectName(u"thumbnails")
+        self.setWindowModality(Qt.WindowModal)
+        self.resize(759, 544)
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
+        self.setSizePolicy(sizePolicy)
+        self.setBaseSize(QSize(800, 680))
+        self.verticalLayout = QVBoxLayout(self)
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.dockWidget = QDockWidget(self)
+        self.dockWidget.setObjectName(u"dockWidget")
+        sizePolicy.setHeightForWidth(self.dockWidget.sizePolicy().hasHeightForWidth())
+        self.dockWidget.setSizePolicy(sizePolicy)
+        self.dockWidgetContents = QWidget()
+        self.dockWidgetContents.setObjectName(u"dockWidgetContents")
+        sizePolicy.setHeightForWidth(self.dockWidgetContents.sizePolicy().hasHeightForWidth())
+        self.dockWidgetContents.setSizePolicy(sizePolicy)
+        self.verticalLayout_2 = QVBoxLayout(self.dockWidgetContents)
+        self.verticalLayout_2.setSpacing(0)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.thumbs = QListWidget(self.dockWidgetContents)
+        self.thumbs.setObjectName(u"thumbs")
+        sizePolicy.setHeightForWidth(self.thumbs.sizePolicy().hasHeightForWidth())
+        self.thumbs.setSizePolicy(sizePolicy)
+        self.thumbs.setBaseSize(QSize(800, 680))
+        self.thumbs.setFocusPolicy(Qt.NoFocus)
+        #self.thumbs.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.thumbs.setAcceptDrops(False)
+        self.thumbs.setToolTip(u"")
+        self.thumbs.setAccessibleName(u"")
+        self.thumbs.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.thumbs.setProperty("showDropIndicator", False)
+        self.thumbs.setDragEnabled(False)
+        self.thumbs.setDragDropMode(QAbstractItemView.NoDragDrop)
+        self.thumbs.setDefaultDropAction(Qt.IgnoreAction)
+        self.thumbs.setIconSize(QSize(150, 150))
+        self.thumbs.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.thumbs.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.thumbs.setMovement(QListView.Free)
+        self.thumbs.setResizeMode(QListView.Adjust)
+        self.thumbs.setLayoutMode(QListView.Batched)
+        self.thumbs.setGridSize(QSize(150, 200))
+        self.thumbs.setViewMode(QListView.IconMode)
+        self.thumbs.setUniformItemSizes(True)
+        self.thumbs.setWordWrap(True)
+        self.thumbs.setSelectionRectVisible(False)
+        self.thumbs.setSortingEnabled(False)
 
-            menu.addAction(renameAction)
-            if menu.exec_(event.globalPos()):
-                item = source.itemAt(event.pos())
-                print(item.text())
-            return True
-        return super(Thumbnails, self).eventFilter(source, event)
+        self.verticalLayout_2.addWidget(self.thumbs)
+
+        self.refresh = QPushButton(self.dockWidgetContents)
+        self.refresh.setObjectName(u"refresh")
+
+        self.verticalLayout_2.addWidget(self.refresh)
+
+        self.thumbsZoom = QSlider(self.dockWidgetContents)
+        self.thumbsZoom.setObjectName(u"thumbsZoom")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.thumbsZoom.sizePolicy().hasHeightForWidth())
+        self.thumbsZoom.setSizePolicy(sizePolicy1)
+        self.thumbsZoom.setMinimumSize(QSize(0, 15))
+        self.thumbsZoom.setMinimum(5)
+        self.thumbsZoom.setMaximum(512)
+        self.thumbsZoom.setValue(150)
+        self.thumbsZoom.setOrientation(Qt.Horizontal)
+
+        self.verticalLayout_2.addWidget(self.thumbsZoom)
+
+        self.dockWidget.setWidget(self.dockWidgetContents)
+
+        self.verticalLayout.addWidget(self.dockWidget)
+
+
+        QMetaObject.connectSlotsByName(self)
 

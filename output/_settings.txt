@@ -1,0 +1,8 @@
+{
+    "prompts": {
+        "0": "a beautiful apple, trending on Artstation",
+        "20": "a beautiful banana, trending on Artstation",
+        "30": "a beautiful coconut, trending on Artstation",
+        "40": "a beautiful durian, trending on Artstation"
+    }
+}

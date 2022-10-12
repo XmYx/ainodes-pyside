@@ -124,7 +124,7 @@ gs.callbackBusy = False
 gs.album = getLatestGeneratedImagesFromPath()
 
 
-from backend.deforum.deforum_simplified import DeforumGenerator
+#from backend.deforum.deforum_simplified import DeforumGenerator
 
 #deforum = DeforumGenerator()
 def prepare_loading():
@@ -541,7 +541,7 @@ class NodeWindow(NodeEditorWindow):
     def setActiveSubWindow(self, window):
         if window:
             self.mdiArea.setActiveSubWindow(window)
-class GenerateWindow(QWidget):
+class GenerateWindow(QObject):
     loader = QtUiTools.QUiLoader()
     file = QtCore.QFile("frontend/main/main_window.ui")
     file.open(QtCore.QFile.ReadOnly)
@@ -1185,7 +1185,7 @@ if __name__ == "__main__":
         mainWindow.w.show()
         #mainWindow.nodeWindow.show()
         mainWindow.w.resize(1280, 720)
-        splash.finish(mainWindow)
+        splash.finish(mainWindow.w)
         #mainWindow.progress_thread()
 
         #mainWindow.thumbnails.setGeometry(680,0,800,600)

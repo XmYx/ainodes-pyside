@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (QDockWidget, QGraphicsScene, QGraphicsPixmapItem,
 from PySide6.QtGui import QAction, QPainter
 from PySide6.QtCore import (QMetaObject, QFile, QRectF,
                             QCoreApplication, QSize, Qt,
-                            QEvent)
+                            QEvent, QObject)
 
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
                            QFont, QFontDatabase, QGradient, QIcon,
@@ -21,7 +21,7 @@ import concurrent.futures
 
 
 
-class SizerCount(QDockWidget):
+class SizerCount(QObject):
 
     def __init__(self, *args, **kwargs):
         loader = QtUiTools.QUiLoader()
@@ -31,7 +31,7 @@ class SizerCount(QDockWidget):
         file.close()
         #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
-class Dynaimage(QWidget):
+class Dynaimage(QObject):
     def __init__(self, *args, **kwargs):
         #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/sampler.ui", self)
@@ -40,7 +40,7 @@ class Dynaimage(QWidget):
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
-class Dynaview(QWidget):
+class Dynaview(QObject):
     def __init__(self, *args, **kwargs):
         #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/sampler.ui", self)
@@ -49,7 +49,7 @@ class Dynaview(QWidget):
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
-class Sampler(QWidget):
+class Sampler(QObject):
     def __init__(self, *args, **kwargs):
         #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/sampler.ui", self)
@@ -59,7 +59,7 @@ class Sampler(QWidget):
         self.w = loader.load(file)
         file.close()
 
-class Prompt(QWidget):
+class Prompt(QObject):
     def __init__(self, *args, **kwargs):
         #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/prompt.ui", self)
@@ -68,7 +68,7 @@ class Prompt(QWidget):
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
-class Anim(QWidget):
+class Anim(QObject):
     def __init__(self, *args, **kwargs):
         #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/anim.ui", self)
@@ -153,7 +153,7 @@ class PhotoViewer(QGraphicsView):
 
 
 
-class Preview(QWidget):
+class Preview(QObject):
     loader = QtUiTools.QUiLoader()
     file = QFile("frontend/ui_widgets/preview.ui")
     file.open(QFile.ReadOnly)

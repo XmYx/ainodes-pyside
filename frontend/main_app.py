@@ -43,6 +43,15 @@ from ldm.generate import Generate
 from frontend.thumbnails_cl import Thumbnails
 from backend.deforum.deforum_simplified import DeforumGenerator
 
+import platform
+
+#Node Editor Functions - We have to make it a QWidget because its now a MainWindow object, which can only be created in a QApplication, which we already have.
+#from nodeeditor.utils import loadStylesheet
+#from nodeeditor.node_editor_window import NodeEditorWindow
+#from frontend.example_calculator.calc_window import CalculatorWindow
+#from qtpy.QtWidgets import QApplication as qapp
+#from nodeeditor.utils import loadStylesheets
+#from nodeeditor.node_editor_window import NodeEditorWindow
 ## imports end here
 
 
@@ -53,69 +62,6 @@ app = QApplication(sys.argv)
 from ui_classes import *
 
 
-pixmap = QPixmap('frontend/main/splash_2.png')
-splash = QSplashScreen(pixmap)
-splash.show()
-
-icon = QIcon('frontend/main/splash_2.png')
-
-
-if (os.name == 'nt'):
-    #This is needed to display the app icon on the taskbar on Windows 7
-    import ctypes
-    myappid = 'aiNodes' # arbitrary string
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-
-
-# Create the tray
-tray = QSystemTrayIcon()
-tray.setIcon(icon)
-tray.setVisible(True)
-
-# Create the menu
-menu = QMenu()
-action = QAction("A menu item")
-menu.addAction(action)
-
-# Add a Quit option to the menu.
-quit = QAction("Quit")
-quit.triggered.connect(app.quit)
-menu.addAction(quit)
-
-# Add the menu to the tray
-tray.setContextMenu(menu)
-
-
-
-
-
-
-
-
-#Node Editor Functions - We have to make it a QWidget because its now a MainWindow object, which can only be created in a QApplication, which we already have.
-#from nodeeditor.utils import loadStylesheet
-#from nodeeditor.node_editor_window import NodeEditorWindow
-#from frontend.example_calculator.calc_window import CalculatorWindow
-#from qtpy.QtWidgets import QApplication as qapp
-
-
-Edge.registerEdgeValidator(edge_validator_debug)
-Edge.registerEdgeValidator(edge_cannot_connect_two_outputs_or_two_inputs)
-Edge.registerEdgeValidator(edge_cannot_connect_input_and_output_of_same_node)
-
-
-#from nodeeditor.utils import loadStylesheets
-#from nodeeditor.node_editor_window import NodeEditorWindow
-
-settings.load_settings_json()
-
-
-
-gs = singleton
-gs.models = {}
-gs.result = ""
-gs.callbackBusy = False
-gs.album = getLatestGeneratedImagesFromPath()
 
 
 
@@ -249,10 +195,8 @@ It also takes the following parameters:
 '''
 
 
-
-
-
 #gr = Generate(gs)
+
 def prepare_loading():
     transformers.logging.set_verbosity_error()
 
@@ -331,13 +275,6 @@ def load_upscalers():
             print(traceback.format_exc())
 
 
-import platform
-
-if "macOS" in platform.platform():
-    gs.platform = "macOS"
-    #prepare_loading()
-
-load_upscalers()
 
 class WorkerSignals(QObject):
     '''
@@ -1305,6 +1242,59 @@ class GenerateWindow(QObject):
     #worker = Worker(CalculatorWin) # Any other args, kwargs are passed to the run function
     # Execute
     #threadpool.start(worker)"""
+
+pixmap = QPixmap('frontend/main/splash_2.png')
+splash = QSplashScreen(pixmap)
+splash.show()
+
+icon = QIcon('frontend/main/splash_2.png')
+
+
+if (os.name == 'nt'):
+    #This is needed to display the app icon on the taskbar on Windows 7
+    import ctypes
+    myappid = 'aiNodes' # arbitrary string
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
+
+
+# Create the tray
+tray = QSystemTrayIcon()
+tray.setIcon(icon)
+tray.setVisible(True)
+
+# Create the menu
+menu = QMenu()
+action = QAction("A menu item")
+menu.addAction(action)
+
+# Add a Quit option to the menu.
+quit = QAction("Quit")
+quit.triggered.connect(app.quit)
+menu.addAction(quit)
+
+# Add the menu to the tray
+tray.setContextMenu(menu)
+
+Edge.registerEdgeValidator(edge_validator_debug)
+Edge.registerEdgeValidator(edge_cannot_connect_two_outputs_or_two_inputs)
+Edge.registerEdgeValidator(edge_cannot_connect_input_and_output_of_same_node)
+
+
+
+settings.load_settings_json()
+
+gs = singleton
+gs.models = {}
+gs.result = ""
+gs.callbackBusy = False
+gs.album = getLatestGeneratedImagesFromPath()
+
+if "macOS" in platform.platform():
+    gs.platform = "macOS"
+    #prepare_loading()
+
+load_upscalers()
 
 if __name__ == "__main__":
 

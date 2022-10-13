@@ -1,23 +1,42 @@
-#from frontend import deforum_simplified
-from PySide6 import QtUiTools
+import concurrent.futures
+import os
+import random
+import sys
+import time
+import traceback
+import warnings
 
-from PySide6.QtWidgets import QApplication, QGraphicsView
-from PySide6.QtWidgets import *
+import numpy as np
+import torch
+import transformers
+from PIL import Image
+from PIL.ImageQt import ImageQt
+from PySide6 import QtCore
+from PySide6.QtCore import *
 from PySide6.QtGui import *
+from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtWidgets import *
+from einops import rearrange
+from transformers import BertTokenizerFast
+from transformers import CLIPTokenizer, CLIPTextModel
+from backend.ui_func import getLatestGeneratedImagesFromPath
+
+## imports end here
 
 
-import sys, os
-from PySide6.QtCore import QCoreApplication, Qt
 QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 
 app = QApplication(sys.argv)
+# this import is done after app has been initialized
+from ui_classes import *
+
+
 pixmap = QPixmap('frontend/main/splash_2.png')
 splash = QSplashScreen(pixmap)
 splash.show()
 
 icon = QIcon('frontend/main/splash_2.png')
 
-import concurrent.futures
 
 if (os.name == 'nt'):
     #This is needed to display the app icon on the taskbar on Windows 7
@@ -44,31 +63,8 @@ menu.addAction(quit)
 # Add the menu to the tray
 tray.setContextMenu(menu)
 
-#from PyQt6 import QtCore as qtc
-#from PyQt6 import QtWidgets as qtw
-#from PyQt6 import uic
-#from PyQt6.Qt import *
-from PySide6.QtCore import *
-from PySide6 import QtCore
-from PySide6.QtGui import QIcon, QPixmap
-import transformers
-from transformers import CLIPTokenizer, CLIPTextModel
-from transformers import BertTokenizerFast
-import warnings, random, traceback, time
 
 
-from ui_classes import *
-from backend.ui_func import getLatestGeneratedImagesFromPath
-
-import torch
-import torchvision
-import torchvision.transforms as T
-from PIL.ImageQt import ImageQt
-from PIL import Image
-from einops import rearrange
-import numpy as np
-import cv2
-import time
 
 
 
@@ -82,16 +78,13 @@ import time
 
 
 from PySide6.QtGui import QIcon, QKeySequence, QAction
-from PySide6.QtWidgets import QMdiArea, QWidget, QDockWidget, QMessageBox, QFileDialog
+from PySide6.QtWidgets import QMdiArea,  QDockWidget, QMessageBox, QFileDialog
 from PySide6.QtCore import Qt, QSignalMapper
-
-from nodeeditor.node_editor_window import NodeEditorWindow
 
 from nodeeditor.node_editor_window import NodeEditorWindow
 from frontend.example_calculator.calc_sub_window import CalculatorSubWindow
 from frontend.example_calculator.calc_drag_listbox import QDMDragListbox
-from nodeeditor.utils import dumpException, pp
-from frontend.example_calculator.calc_conf import CALC_NODES
+from nodeeditor.utils import dumpException
 
 # Enabling edge validators
 from nodeeditor.node_edge import Edge
@@ -125,7 +118,7 @@ from ldm.generate import Generate
 
 gs.album = getLatestGeneratedImagesFromPath()
 
-
+from frontend.thumbnails_cl import Thumbnails
 from backend.deforum.deforum_simplified import DeforumGenerator
 
 
@@ -277,7 +270,6 @@ def prepare_loading():
     print('preloading Kornia requirements (ignore the deprecation warnings)...')
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', category=DeprecationWarning)
-        import kornia
     print('...success')
 
     version = 'openai/clip-vit-large-patch14'

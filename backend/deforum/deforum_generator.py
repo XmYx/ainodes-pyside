@@ -356,19 +356,19 @@ class SamplerCallback(object):
     # Creates the callback function to be passed into the samplers for each step
     def __init__(self, mask=None, init_latent=None, sigmas=None, sampler=None,
                  verbose=False):
-        self.sampler_name = self.sampler
-        self.dynamic_threshold = self.dynamic_threshold
-        self.static_threshold = self.static_threshold
+        #self.sampler_name = args.sampler
+        """self.dynamic_threshold = args.dynamic_threshold
+        self.static_threshold = args.static_threshold
         self.mask = mask
         self.init_latent = init_latent
         self.sigmas = sigmas
         self.sampler = sampler
-        self.verbose = verbose
+        self.verbose = verbose"""
 
-        self.batch_size = self.n_samples
-        self.save_sample_per_step = self.save_sample_per_step
-        self.show_sample_per_step = self.show_sample_per_step
-        self.paths_to_image_steps = [os.path.join( self.outdir, f"{self.timestring}_{index:02}_{self.seed}") for index in range(self.n_samples) ]
+        self.batch_size = args.n_samples
+        self.save_sample_per_step = args.save_sample_per_step
+        self.show_sample_per_step = args.show_sample_per_step
+        self.paths_to_image_steps = [os.path.join( args.outdir, f"{args.timestring}_{index:02}_{args.seed}") for index in range(args.n_samples) ]
 
         if self.save_sample_per_step:
             for path in self.paths_to_image_steps:
@@ -378,7 +378,7 @@ class SamplerCallback(object):
 
         self.noise = None
         if init_latent is not None:
-            self.noise = torch.randn_like(init_latent, device='cuda')
+            self.noise = torch.randn_like(init_latent, device=device)
 
         self.mask_schedule = None
         if sigmas is not None and len(sigmas) > 0:
@@ -401,7 +401,7 @@ class SamplerCallback(object):
 
     def view_sample_step(self, latents, path_name_modifier=''):
         if self.save_sample_per_step or self.show_sample_per_step:
-            samples = gs.models['sd'].decode_first_stage(latents)
+            samples = model.decode_first_stage(latents)
             if self.save_sample_per_step:
                 fname = f'{path_name_modifier}_{self.step_index:05}.png'
                 for i, sample in enumerate(samples):
@@ -411,14 +411,14 @@ class SamplerCallback(object):
                     TF.to_pil_image(grid).save(os.path.join(self.paths_to_image_steps[i], fname))
             if self.show_sample_per_step:
                 print(path_name_modifier)
-                img = self.display_images(samples)
-        return img
+                #self.display_images(samples)
+        return samples
 
     def display_images(self, images):
         images = images.double().cpu().add(1).div(2).clamp(0, 1)
         images = torch.tensor(np.array(images))
         grid = make_grid(images, 4).cpu()
-        img = TF.to_pil_image(grid)
+        img = (TF.to_pil_image(grid))
         return img
 
     # The callback function is applied to the image at each step
@@ -462,7 +462,6 @@ class SamplerCallback(object):
             img.copy_(new_img)
 
         self.view_sample_step(img, "x")
-
 def sample_from_cv2(sample: np.ndarray) -> torch.Tensor:
     sample = ((sample.astype(float) / 255.0) * 2) - 1
     sample = sample[None].transpose(0, 3, 1, 2).astype(np.float16)

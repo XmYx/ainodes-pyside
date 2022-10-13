@@ -204,7 +204,7 @@ class Thumbnails(QWidget):
         if not self.objectName():
             self.setObjectName(u"thumbnails")
         self.setWindowModality(Qt.WindowModal)
-        self.resize(759, 544)
+        #self.resize(759, 544)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -254,7 +254,6 @@ class Thumbnails(QWidget):
         self.thumbs.setWordWrap(True)
         self.thumbs.setSelectionRectVisible(False)
         self.thumbs.setSortingEnabled(False)
-
         self.verticalLayout_2.addWidget(self.thumbs)
 
         self.refresh = QPushButton(self.dockWidgetContents)
@@ -264,7 +263,7 @@ class Thumbnails(QWidget):
 
         self.thumbsZoom = QSlider(self.dockWidgetContents)
         self.thumbsZoom.setObjectName(u"thumbsZoom")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.thumbsZoom.sizePolicy().hasHeightForWidth())

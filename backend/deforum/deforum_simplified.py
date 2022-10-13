@@ -1,5 +1,9 @@
 # InvokeAI Generator import
 import json
+import random
+import sys
+import time
+import traceback
 
 import cv2
 import numpy as np
@@ -7,6 +11,7 @@ import pandas as pd
 import torch, os
 from PIL import Image
 from einops import rearrange, repeat
+from omegaconf import OmegaConf
 from pytorch_lightning import seed_everything
 from scipy.ndimage import gaussian_filter
 from torch import autocast
@@ -16,6 +21,7 @@ from backend.deforum import DepthModel, sampler_fn
 from backend.deforum.deforum_generator import prepare_mask, get_uc_and_c, DeformAnimKeys, sample_from_cv2, \
     sample_to_cv2, anim_frame_warp_2d, anim_frame_warp_3d, maintain_colors, add_noise, next_seed, \
     load_img
+from ldm.dream.devices import choose_torch_device
 
 from ldm.generate import Generate
 from ldm.models.diffusion.ddim import DDIMSampler
@@ -34,6 +40,7 @@ from k_diffusion.external import CompVisDenoiser
 from k_diffusion import sampling
 from torch import nn
 
+from ldm.util import instantiate_from_config
 
 
 class DeforumGenerator():
@@ -163,22 +170,60 @@ class DeforumGenerator():
     resume_timestring = "20220829210106"  # @param {type:"string"}
 
     def __init__(self, gs, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        #self.gr = Generate(
+        #                   weights     = 'models/sd-v1-4.ckpt',
+        #                   config     = 'configs/stable-diffusion/v1-inference.yaml',
+        #                   gs = gs,
+        #)
         self.gs = gs
-        self.gr = Generate(
-                           weights     = 'models/sd-v1-4.ckpt',
-                           config     = 'configs/stable-diffusion/v1-inference.yaml',
-        )
-        self.render_animation()
-        print(locals())
+        #self.render_animation()
+        #print(locals())
     def torch_gc(self):
         gc.collect()
         torch.cuda.empty_cache()
         torch.cuda.ipc_collect()
 
+    def load_model(self):
+        """Load and initialize the model from configuration variables passed at object creation time"""
+
+        self.weights     = 'models/sd-v1-4.ckpt'
+        self.config     = 'configs/stable-diffusion/v1-inference.yaml'
+        self.device = 'cuda'
+        self.embedding_path = None
+
+
+
+        """Load and initialize the model from configuration variables passed at object creation time"""
+        if "sd" not in self.gs.models:
+            seed_everything(random.randrange(0, np.iinfo(np.uint32).max))
+            try:
+                config = OmegaConf.load(self.config)
+                self.gs.models["sd"] = self._load_model_from_config(config, self.weights)
+                if self.embedding_path is not None:
+                    self.gs.models["sd"].embedding_manager.load(
+                        self.embedding_path, self.full_precision
+                    )
+                self.gs.models["sd"] = self.gs.models["sd"].to(self.device)
+                # model.to doesn't change the cond_stage_model.device used to move the tokenizer output, so set it here
+                self.gs.models["sd"].cond_stage_model.device = self.device
+            except AttributeError as e:
+                print(f'>> Error loading model. {str(e)}', file=sys.stderr)
+                print(traceback.format_exc(), file=sys.stderr)
+                raise SystemExit from e
+
+            #self._set_sampler()
+
+            for m in self.gs.models["sd"].modules():
+                if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
+                    m._orig_padding_mode = m.padding_mode
+
+        return
 
     def render_animation(self):
         if "sd" not in self.gs.models:
-            self.gs.models["sd"] = self.gr.load_model()
+            self.load_model()
 
         # animations use key framed prompts
         self.prompts = self.animation_prompts
@@ -600,6 +645,46 @@ class DeforumGenerator():
         samples = sampler_map[self.sampler](**sampler_args)
         return samples
 
+    def _load_model_from_config(self, config, ckpt):
+        print(f'>> Loading model from {ckpt}')
+
+        # for usage statistics
+        device_type = choose_torch_device()
+        if device_type == 'cuda':
+            torch.cuda.reset_peak_memory_stats()
+        tic = time.time()
+
+        # this does the work
+        pl_sd = torch.load(ckpt, map_location='cpu')
+        sd = pl_sd['state_dict']
+        model = instantiate_from_config(config.model)
+        m, u = model.load_state_dict(sd, strict=False)
+
+        #if self.full_precision:
+        #    print(
+        #        '>> Using slower but more accurate full-precision math (--full_precision)'
+        #    )
+        #else:
+        #    print(
+        #        '>> Using half precision math. Call with --full_precision to use more accurate but VRAM-intensive full precision.'
+        #    )
+        model.half()
+        model.to(self.device)
+        model.eval()
+
+        # usage statistics
+        toc = time.time()
+        print(
+            f'>> Model loaded in', '%4.2fs' % (toc - tic)
+        )
+        if device_type == 'cuda':
+            print(
+                '>> Max VRAM used to load the model:',
+                '%4.2fG' % (torch.cuda.max_memory_allocated() / 1e9),
+                '\n>> Current VRAM usage:'
+                '%4.2fG' % (torch.cuda.memory_allocated() / 1e9),
+                )
+        return model
 
 class CFGDenoiser(nn.Module):
     def __init__(self, model):

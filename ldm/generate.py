@@ -28,7 +28,7 @@ from ldm.dream.image_util          import InitImageResizer
 from ldm.dream.devices             import choose_torch_device
 from ldm.dream.conditioning        import get_uc_and_c
 
-from backend import singleton as gs
+#from backend import singleton as gs
 import torch, gc
 """Simplified text to image API for stable diffusion/latent diffusion
 
@@ -96,13 +96,14 @@ gr = Generate(
 """
 
 
-class Generate:
+class Generate():
     """Generate class
     Stores default values for multiple configuration items
     """
 
     def __init__(
             self,
+            gs = {},
             iterations            = 1,
             steps                 = 50,
             cfg_scale             = 7.5,
@@ -120,13 +121,13 @@ class Generate:
             embedding_path        = None,
             device_type           = 'cuda',
             ignore_ctrl_c         = False,
-
             *args,
-            **kwargs
-        
+            **kwargs,
+            #single = None,
+
     ):
-        super(Generate,self).__init__( *args, **kwargs)
-        self.gs = gs
+        #super(Generate2).__init__(gs, *args, **kwargs)
+
         self.iterations               = iterations
         self.width                    = width
         self.height                   = height
@@ -150,6 +151,9 @@ class Generate:
         self.generators               = {}
         self.base_generator           = None
         self.seed                     = None
+        self.gs = gs
+
+
 
         if device_type == 'cuda' and not torch.cuda.is_available():
             device_type = choose_torch_device()
@@ -435,7 +439,7 @@ class Generate:
 
     def load_model(self):
         """Load and initialize the model from configuration variables passed at object creation time"""
-        if self.self.gs.models["sd"] is None:
+        if "sd" not in self.gs.models:
             seed_everything(random.randrange(0, np.iinfo(np.uint32).max))
             try:
                 config = OmegaConf.load(self.config)

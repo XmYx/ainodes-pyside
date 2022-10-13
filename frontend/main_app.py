@@ -57,7 +57,6 @@ from transformers import BertTokenizerFast
 import warnings, random, traceback, time
 
 
-from ldm.generate import Generate
 from ui_classes import *
 from backend.ui_func import getLatestGeneratedImagesFromPath
 
@@ -122,16 +121,13 @@ gs.models = {}
 gs.result = ""
 gs.callbackBusy = False
 
-gr = Generate(weights     = 'models/sd-v1-4.ckpt',
-                config     = 'configs/stable-diffusion/v1-inference.yaml',
-                )
+from ldm.generate import Generate
 
 gs.album = getLatestGeneratedImagesFromPath()
 
 
 from backend.deforum.deforum_simplified import DeforumGenerator
 
-#deforum = DeforumGenerator(gs)
 
 
 '''
@@ -468,9 +464,6 @@ class NodeWindow(NodeEditorWindow):
         self.readSettings()
 
         self.setWindowTitle("Calculator NodeEditor Example")
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-            self.print_task()
-
     def print_task(self):
         print("Successful Concurrent Run")
 
@@ -694,14 +687,27 @@ class GenerateWindow(QObject):
 
 
         self.image_path = ""
+        self.deforum = DeforumGenerator(gs)
+        self.gr = Generate(gs = gs,
+                           weights     = 'models/sd-v1-4.ckpt',
+                           config     = 'configs/stable-diffusion/v1-inference.yaml',)
+
+        #self.deforum.render_animation()
 
         #print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
         #uic.loadUi("frontend/main/main_window.ui", self)
 
 
+        self.w.thumbnails = Thumbnails()
 
         self.home()
+        #kislofasz = Generate(gs)
+        #self.gr = Generate(weights     = 'models/sd-v1-4.ckpt',
+        #                   config     = 'configs/stable-diffusion/v1-inference.yaml',
+        #                   gs = gs,
+        #                   )
+
         self.w.thumbnails.thumbs.installEventFilter(self)
         self.w.statusBar().showMessage('Ready')
         self.w.progressBar = QProgressBar()
@@ -766,7 +772,6 @@ class GenerateWindow(QObject):
         self.w.dynaview = Dynaview()
         self.w.dynaimage = Dynaimage()
 
-        self.w.thumbnails = Thumbnails()
 
         #app2  = qapp(sys.argv)
         #self.nodes = NodeEditorWindow()
@@ -797,17 +802,17 @@ class GenerateWindow(QObject):
         #self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.anim.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
 
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.thumbnails.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.thumbnails)
 
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaimage.w.dockWidget)
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(512, 512))
 
 
-        self.w.tabifyDockWidget(self.w.thumbnails.dockWidget, self.w.sampler.w.dockWidget)
+        self.w.tabifyDockWidget(self.w.thumbnails, self.w.sampler.w.dockWidget)
         self.w.tabifyDockWidget(self.w.dynaimage.w.dockWidget, self.w.dynaview.w.dockWidget)
 
-        self.w.thumbnails.dockWidget.setWindowTitle('Thumbnails')
+        self.w.thumbnails.setWindowTitle('Thumbnails')
         self.w.sampler.w.dockWidget.setWindowTitle('Sampler')
         self.w.sizer_count.w.dockWidget.setWindowTitle('Sliders')
         self.w.prompt.w.dockWidget.setWindowTitle('Prompt')
@@ -1007,7 +1012,7 @@ class GenerateWindow(QObject):
         #self.w.preview.w.scene.update()
 
     def run_txt2img(self, progress_callback=None):
-        self.w.thumbnails.setUpdatesEnabled(False)
+
         self.w.statusBar().showMessage("Loading model...")
 
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
@@ -1073,7 +1078,7 @@ class GenerateWindow(QObject):
             for prompt in prompt_list:
                 print(f"Full Precision {full_precision}")
 
-                results = gr.prompt2image(prompt   = prompt,
+                results = self.gr.prompt2image(prompt   = prompt,
                                           outdir   = outdir,
                                           cfg_scale = scale,
                                           width  = width,
@@ -1113,7 +1118,7 @@ class GenerateWindow(QObject):
             print(f"Exception: {e}")
             pass
     def txt2img_thread(self):
-
+        self.w.thumbnails.setUpdatesEnabled(False)
         #self.run_txt2img()
         # Pass the function to execute
         print()

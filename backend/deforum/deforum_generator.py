@@ -4,7 +4,7 @@ import subprocess
 
 import os
 
-from backend import singleton as gs
+from backend.singleton import singleton as gs
 
 """setup_environment = True #@param {type:"boolean"}
 print_subprocess = False #@param {type:"boolean"}
@@ -198,24 +198,24 @@ def warpMatrix(W, H, theta, phi, gamma, scale, fV):
 
     return M33, sideLength
 
-def anim_frame_warp_2d(prev_img_cv2, args, anim_args, keys, frame_idx):
+def anim_frame_warp_2d(prev_img_cv2, keys, frame_idx, W, H, flip_2d_perspective, border):
     angle = keys.angle_series[frame_idx]
     zoom = keys.zoom_series[frame_idx]
     translation_x = keys.translation_x_series[frame_idx]
     translation_y = keys.translation_y_series[frame_idx]
 
-    center = (args.W // 2, args.H // 2)
+    center = (W // 2, H // 2)
     trans_mat = np.float32([[1, 0, translation_x], [0, 1, translation_y]])
     rot_mat = cv2.getRotationMatrix2D(center, angle, zoom)
     trans_mat = np.vstack([trans_mat, [0,0,1]])
     rot_mat = np.vstack([rot_mat, [0,0,1]])
-    if anim_args.flip_2d_perspective:
+    if flip_2d_perspective:
         perspective_flip_theta = keys.perspective_flip_theta_series[frame_idx]
         perspective_flip_phi = keys.perspective_flip_phi_series[frame_idx]
         perspective_flip_gamma = keys.perspective_flip_gamma_series[frame_idx]
         perspective_flip_fv = keys.perspective_flip_fv_series[frame_idx]
-        M,sl = warpMatrix(args.W, args.H, perspective_flip_theta, perspective_flip_phi, perspective_flip_gamma, 1., perspective_flip_fv);
-        post_trans_mat = np.float32([[1, 0, (args.W-sl)/2], [0, 1, (args.H-sl)/2]])
+        M,sl = warpMatrix(W, H, perspective_flip_theta, perspective_flip_phi, perspective_flip_gamma, 1., perspective_flip_fv);
+        post_trans_mat = np.float32([[1, 0, (W-sl)/2], [0, 1, (H-sl)/2]])
         post_trans_mat = np.vstack([post_trans_mat, [0,0,1]])
         bM = np.matmul(M, post_trans_mat)
         xform = np.matmul(bM, rot_mat, trans_mat)
@@ -226,10 +226,10 @@ def anim_frame_warp_2d(prev_img_cv2, args, anim_args, keys, frame_idx):
         prev_img_cv2,
         xform,
         (prev_img_cv2.shape[1], prev_img_cv2.shape[0]),
-        borderMode=cv2.BORDER_WRAP if anim_args.border == 'wrap' else cv2.BORDER_REPLICATE
+        borderMode=cv2.BORDER_WRAP if border == 'wrap' else cv2.BORDER_REPLICATE
     )
 
-def anim_frame_warp_3d(prev_img_cv2, depth, anim_args, keys, frame_idx):
+def anim_frame_warp_3d(prev_img_cv2, depth, keys, frame_idx, near_plane, far_plane, fov, sampling_mode, padding_mode):
     TRANSLATION_SCALE = 1.0/200.0 # matches Disco
     translate_xyz = [
         -keys.translation_x_series[frame_idx] * TRANSLATION_SCALE,
@@ -241,8 +241,11 @@ def anim_frame_warp_3d(prev_img_cv2, depth, anim_args, keys, frame_idx):
         math.radians(keys.rotation_3d_y_series[frame_idx]),
         math.radians(keys.rotation_3d_z_series[frame_idx])
     ]
-    rot_mat = p3d.euler_angles_to_matrix(torch.tensor(rotate_xyz, device=device), "XYZ").unsqueeze(0)
-    result = transform_image_3d(prev_img_cv2, depth, rot_mat, translate_xyz, anim_args)
+    rot_mat = p3d.euler_angles_to_matrix(torch.tensor(rotate_xyz, device="cuda"), "XYZ").unsqueeze(0)
+
+
+    print(prev_img_cv2, depth, keys, frame_idx, near_plane, far_plane, fov, sampling_mode, padding_mode)
+    result = transform_image_3d(prev_img_cv2, depth, rot_mat, translate_xyz, near_plane, far_plane, fov, sampling_mode, padding_mode)
     torch.cuda.empty_cache()
     return result
 
@@ -325,8 +328,8 @@ def prepare_mask(mask_input, mask_shape, mask_brightness_adjust=1.0, mask_contra
     mask = np.expand_dims(mask,axis=0)
     mask = torch.from_numpy(mask)
 
-    if args.invert_mask:
-        mask = ( (mask - 0.5) * -1) + 0.5
+    #if args.invert_mask:
+    #    mask = ( (mask - 0.5) * -1) + 0.5
 
     mask = np.clip(mask,0,1)
     return mask
@@ -472,18 +475,18 @@ def sample_to_cv2(sample: torch.Tensor, type=np.uint8) -> np.ndarray:
     sample_int8 = (sample_f32 * 255)
     return sample_int8.astype(type)
 
-def transform_image_3d(prev_img_cv2, depth_tensor, rot_mat, translate, anim_args):
+def transform_image_3d(prev_img_cv2, depth_tensor, rot_mat, translate, near_plane, far_plane, fov, sampling_mode, padding_mode):
     # adapted and optimized version of transform_image_3d from Disco Diffusion https://github.com/alembics/disco-diffusion
     w, h = prev_img_cv2.shape[1], prev_img_cv2.shape[0]
 
     aspect_ratio = float(w)/float(h)
-    near, far, fov_deg = anim_args.near_plane, anim_args.far_plane, anim_args.fov
-    persp_cam_old = p3d.FoVPerspectiveCameras(near, far, aspect_ratio, fov=fov_deg, degrees=True, device=device)
-    persp_cam_new = p3d.FoVPerspectiveCameras(near, far, aspect_ratio, fov=fov_deg, degrees=True, R=rot_mat, T=torch.tensor([translate]), device=device)
+    near, far, fov_deg = near_plane, far_plane, fov
+    persp_cam_old = p3d.FoVPerspectiveCameras(near, far, aspect_ratio, fov=fov_deg, degrees=True, device=torch.device("cuda"))
+    persp_cam_new = p3d.FoVPerspectiveCameras(near, far, aspect_ratio, fov=fov_deg, degrees=True, R=rot_mat, T=torch.tensor([translate]), device=torch.device("cuda"))
 
     # range of [-1,1] is important to torch grid_sample's padding handling
-    y,x = torch.meshgrid(torch.linspace(-1.,1.,h,dtype=torch.float32,device=device),torch.linspace(-1.,1.,w,dtype=torch.float32,device=device))
-    z = torch.as_tensor(depth_tensor, dtype=torch.float32, device=device)
+    y,x = torch.meshgrid(torch.linspace(-1.,1.,h,dtype=torch.float32,device='cuda'),torch.linspace(-1.,1.,w,dtype=torch.float32,device=torch.device("cuda")))
+    z = torch.as_tensor(depth_tensor, dtype=torch.float32, device=torch.device("cuda"))
     xyz_old_world = torch.stack((x.flatten(), y.flatten(), z.flatten()), dim=1)
 
     xyz_old_cam_xy = persp_cam_old.get_full_projection_transform().transform_points(xyz_old_world)[:,0:2]
@@ -491,17 +494,17 @@ def transform_image_3d(prev_img_cv2, depth_tensor, rot_mat, translate, anim_args
 
     offset_xy = xyz_new_cam_xy - xyz_old_cam_xy
     # affine_grid theta param expects a batch of 2D mats. Each is 2x3 to do rotation+translation.
-    identity_2d_batch = torch.tensor([[1.,0.,0.],[0.,1.,0.]], device=device).unsqueeze(0)
+    identity_2d_batch = torch.tensor([[1.,0.,0.],[0.,1.,0.]], device=torch.device("cuda")).unsqueeze(0)
     # coords_2d will have shape (N,H,W,2).. which is also what grid_sample needs.
     coords_2d = torch.nn.functional.affine_grid(identity_2d_batch, [1,1,h,w], align_corners=False)
     offset_coords_2d = coords_2d - torch.reshape(offset_xy, (h,w,2)).unsqueeze(0)
 
-    image_tensor = rearrange(torch.from_numpy(prev_img_cv2.astype(np.float32)), 'h w c -> c h w').to(device)
+    image_tensor = rearrange(torch.from_numpy(prev_img_cv2.astype(np.float32)), 'h w c -> c h w').to(torch.device("cuda"))
     new_image = torch.nn.functional.grid_sample(
         image_tensor.add(1/512 - 0.0001).unsqueeze(0),
         offset_coords_2d,
-        mode=anim_args.sampling_mode,
-        padding_mode=anim_args.padding_mode,
+        mode=sampling_mode,
+        padding_mode=padding_mode,
         align_corners=False
     )
 

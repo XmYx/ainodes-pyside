@@ -112,21 +112,25 @@ from backend.singleton import singleton
 import backend.settings as settings
 settings.load_settings_json()
 
-gr = Generate(  weights     = 'models/sd-v1-4.ckpt',
-                config     = 'configs/stable-diffusion/v1-inference.yaml',
-                )
+
 
 gs = singleton
 gs.models = {}
 gs.result = ""
 gs.callbackBusy = False
 
+gr = Generate(weights     = 'models/sd-v1-4.ckpt',
+                config     = 'configs/stable-diffusion/v1-inference.yaml',
+                )
+
 gs.album = getLatestGeneratedImagesFromPath()
 
 
-#from backend.deforum.deforum_simplified import DeforumGenerator
+from backend.deforum.deforum_simplified import DeforumGenerator
 
-#deforum = DeforumGenerator()
+#deforum = DeforumGenerator(gs)
+
+#gr = Generate(gs)
 def prepare_loading():
     transformers.logging.set_verbosity_error()
 

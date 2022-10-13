@@ -29,7 +29,7 @@ from ldm.dream.devices             import choose_torch_device
 from ldm.dream.conditioning        import get_uc_and_c
 
 from backend import singleton as gs
-
+import torch, gc
 """Simplified text to image API for stable diffusion/latent diffusion
 
 Example Usage:
@@ -120,7 +120,13 @@ class Generate:
             embedding_path        = None,
             device_type           = 'cuda',
             ignore_ctrl_c         = False,
+
+            *args,
+            **kwargs
+        
     ):
+        super(Generate,self).__init__( *args, **kwargs)
+        self.gs = gs
         self.iterations               = iterations
         self.width                    = width
         self.height                   = height
@@ -154,6 +160,10 @@ class Generate:
         device_type          = choose_torch_device()
         self.session_peakmem = torch.cuda.max_memory_allocated() if device_type == 'cuda' else None
         transformers.logging.set_verbosity_error()
+    def torch_gc(self):
+        gc.collect()
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
 
     def prompt2png(self, prompt, outdir, **kwargs):
         """
@@ -170,10 +180,12 @@ class Generate:
             path = pngwriter.save_image_and_prompt_to_png(
                 image, f'{prompt} -S{seed}', name)
             outputs.append([path, seed])
+        self.torch_gc()
         return outputs
 
     def txt2img(self, prompt, **kwargs):
         outdir = kwargs.pop('outdir', 'outputs/img-samples')
+        self.torch_gc()
         return self.prompt2png(prompt, outdir, **kwargs)
 
     def img2img(self, prompt, **kwargs):
@@ -181,11 +193,12 @@ class Generate:
         assert (
             'init_img' in kwargs
         ), 'call to img2img() must include the init_img argument'
+        self.torch_gc()
         return self.prompt2png(prompt, outdir, **kwargs)
 
     def prompt2image(
             self,
-            # these are common
+            # these are common,
             prompt,
             iterations     =    None,
             steps          =    None,
@@ -261,11 +274,11 @@ class Generate:
         self.log_tokenization = log_tokenization
         with_variations = [] if with_variations is None else with_variations
 
-        gs.models["sd"] = (
+        self.gs.models["sd"] = (
             self.load_model()
         )  # will instantiate the model or return it from cache
 
-        for m in gs.models["sd"].modules():
+        for m in self.gs.models["sd"].modules():
             if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
                 m.padding_mode = 'circular' if seamless else m._orig_padding_mode
         
@@ -303,7 +316,7 @@ class Generate:
 
         try:
             uc, c = get_uc_and_c(
-                prompt, model=gs.models["sd"],
+                prompt, model=self.gs.models["sd"],
                 skip_normalize=skip_normalize,
                 log_tokens=self.log_tokenization
             )
@@ -374,6 +387,7 @@ class Generate:
                 f'>>   Max VRAM used since script start: ',
                 '%4.2fG' % (self.session_peakmem / 1e9),
             )
+        self.torch_gc()
         return results
 
     def _make_images(self, img_path, mask_path, width, height, fit=False):
@@ -404,24 +418,24 @@ class Generate:
     def _make_img2img(self):
         if not self.generators.get('img2img'):
             from ldm.dream.generator.img2img import Img2Img
-            self.generators['img2img'] = Img2Img(gs.models["sd"])
+            self.generators['img2img'] = Img2Img(self.gs.models["sd"])
         return self.generators['img2img']
 
     def _make_txt2img(self):
         if not self.generators.get('txt2img'):
             from ldm.dream.generator.txt2img import Txt2Img
-            self.generators['txt2img'] = Txt2Img(gs.models["sd"])
+            self.generators['txt2img'] = Txt2Img(self.gs.models["sd"])
         return self.generators['txt2img']
 
     def _make_inpaint(self):
         if not self.generators.get('inpaint'):
             from ldm.dream.generator.inpaint import Inpaint
-            self.generators['inpaint'] = Inpaint(gs.models["sd"])
+            self.generators['inpaint'] = Inpaint(self.gs.models["sd"])
         return self.generators['inpaint']
 
     def load_model(self):
         """Load and initialize the model from configuration variables passed at object creation time"""
-        if gs.models["sd"] is None:
+        if self.self.gs.models["sd"] is None:
             seed_everything(random.randrange(0, np.iinfo(np.uint32).max))
             try:
                 config = OmegaConf.load(self.config)
@@ -430,9 +444,9 @@ class Generate:
                     model.embedding_manager.load(
                         self.embedding_path, self.full_precision
                     )
-                gs.models["sd"] = model.to(self.device)
+                self.gs.models["sd"] = model.to(self.device)
                 # model.to doesn't change the cond_stage_model.device used to move the tokenizer output, so set it here
-                gs.models["sd"].cond_stage_model.device = self.device
+                self.gs.models["sd"].cond_stage_model.device = self.device
             except AttributeError as e:
                 print(f'>> Error loading model. {str(e)}', file=sys.stderr)
                 print(traceback.format_exc(), file=sys.stderr)
@@ -440,11 +454,11 @@ class Generate:
 
             self._set_sampler()
 
-            for m in gs.models["sd"].modules():
+            for m in self.gs.models["sd"].modules():
                 if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
                     m._orig_padding_mode = m.padding_mode
 
-        return gs.models["sd"]
+        return self.gs.models["sd"]
 
     def upscale_and_reconstruct(self,
                                 image_list,
@@ -495,34 +509,34 @@ class Generate:
     def _sample_to_image(self,samples):
         if not self.base_generator:
             from ldm.dream.generator import Generator
-            self.base_generator = Generator(gs.models["sd"])
+            self.base_generator = Generator(self.gs.models["sd"])
         return self.base_generator.sample_to_image(samples)
 
     def _set_sampler(self):
         msg = f'>> Setting Sampler to {self.sampler_name}'
         if self.sampler_name == 'plms':
-            self.sampler = PLMSSampler(gs.models["sd"], device=self.device)
+            self.sampler = PLMSSampler(self.gs.models["sd"], device=self.device)
         elif self.sampler_name == 'ddim':
-            self.sampler = DDIMSampler(gs.models["sd"], device=self.device)
+            self.sampler = DDIMSampler(self.gs.models["sd"], device=self.device)
         elif self.sampler_name == 'k_dpm_2_a':
             self.sampler = KSampler(
-                gs.models["sd"], 'dpm_2_ancestral', device=self.device
+                self.gs.models["sd"], 'dpm_2_ancestral', device=self.device
             )
         elif self.sampler_name == 'k_dpm_2':
-            self.sampler = KSampler(gs.models["sd"], 'dpm_2', device=self.device)
+            self.sampler = KSampler(self.gs.models["sd"], 'dpm_2', device=self.device)
         elif self.sampler_name == 'k_euler_a':
             self.sampler = KSampler(
-                gs.models["sd"], 'euler_ancestral', device=self.device
+                self.gs.models["sd"], 'euler_ancestral', device=self.device
             )
         elif self.sampler_name == 'k_euler':
-            self.sampler = KSampler(gs.models["sd"], 'euler', device=self.device)
+            self.sampler = KSampler(self.gs.models["sd"], 'euler', device=self.device)
         elif self.sampler_name == 'k_heun':
-            self.sampler = KSampler(gs.models["sd"], 'heun', device=self.device)
+            self.sampler = KSampler(self.gs.models["sd"], 'heun', device=self.device)
         elif self.sampler_name == 'k_lms':
-            self.sampler = KSampler(gs.models["sd"], 'lms', device=self.device)
+            self.sampler = KSampler(self.gs.models["sd"], 'lms', device=self.device)
         else:
             msg = f'>> Unsupported Sampler: {self.sampler_name}, Defaulting to plms'
-            self.sampler = PLMSSampler(gs.models["sd"], device=self.device)
+            self.sampler = PLMSSampler(self.gs.models["sd"], device=self.device)
 
         print(msg)
 

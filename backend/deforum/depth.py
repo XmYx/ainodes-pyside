@@ -24,12 +24,13 @@ class DepthModel():
         self.device = device
         self.midas_model = None
         self.midas_transform = None
+
     
     def load_adabins(self):
-        if not os.path.exists('pretrained/AdaBins_nyu.pt'):
+        if not os.path.exists('models/AdaBins_nyu.pt'):
             print("Downloading AdaBins_nyu.pt...")
-            os.makedirs('pretrained', exist_ok=True)
-            wget("https://cloudflare-ipfs.com/ipfs/Qmd2mMnDLWePKmgfS8m6ntAg4nhV5VkUyAydYBp8cWWeB7/AdaBins_nyu.pt", 'pretrained')
+            os.makedirs('models', exist_ok=True)
+            wget("https://cloudflare-ipfs.com/ipfs/Qmd2mMnDLWePKmgfS8m6ntAg4nhV5VkUyAydYBp8cWWeB7/AdaBins_nyu.pt", 'models')
         self.adabins_helper = InferenceHelper(dataset='nyu', device=self.device)
 
     def load_midas(self, models_path, half_precision=True):
@@ -63,11 +64,11 @@ class DepthModel():
             self.midas_model = self.midas_model.half()
         self.midas_model.to(self.device)
 
-    def predict(self, prev_img_cv2, anim_args) -> torch.Tensor:
+    def predict(self, prev_img_cv2, midas_weight) -> torch.Tensor:
         w, h = prev_img_cv2.shape[1], prev_img_cv2.shape[0]
 
         # predict depth with AdaBins    
-        use_adabins = anim_args.midas_weight < 1.0 and self.adabins_helper is not None
+        use_adabins = midas_weight < 1.0 and self.adabins_helper is not None
         if use_adabins:
             MAX_ADABINS_AREA = 500000
             MIN_ADABINS_AREA = 448*448
@@ -131,7 +132,7 @@ class DepthModel():
 
             # blend between MiDaS and AdaBins predictions
             if use_adabins:
-                depth_map = midas_depth*anim_args.midas_weight + adabins_depth*(1.0-anim_args.midas_weight)
+                depth_map = midas_depth*midas_weight + adabins_depth*(1.0-midas_weight)
             else:
                 depth_map = midas_depth
 

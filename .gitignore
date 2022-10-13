@@ -131,3 +131,6 @@ frontend/example_calculator/.DS_Store
 src/AdaBins/
 src/MiDaS/
 src/pytorch3d-lite/
+/src/AdaBins/
+/src/MiDaS/
+/src/pytorch3d-lite/

@@ -21,6 +21,28 @@ from transformers import BertTokenizerFast
 from transformers import CLIPTokenizer, CLIPTextModel
 from backend.ui_func import getLatestGeneratedImagesFromPath
 
+from PySide6.QtGui import QIcon, QKeySequence, QAction
+from PySide6.QtWidgets import QMdiArea,  QDockWidget, QMessageBox, QFileDialog
+from PySide6.QtCore import Qt, QSignalMapper
+
+from nodeeditor.node_editor_window import NodeEditorWindow
+from frontend.example_calculator.calc_sub_window import CalculatorSubWindow
+from frontend.example_calculator.calc_drag_listbox import QDMDragListbox
+from nodeeditor.utils import dumpException
+
+# Enabling edge validators
+from nodeeditor.node_edge import Edge
+from nodeeditor.node_edge_validators import (
+    edge_validator_debug,
+    edge_cannot_connect_two_outputs_or_two_inputs,
+    edge_cannot_connect_input_and_output_of_same_node
+)
+from backend.singleton import singleton
+import backend.settings as settings
+from ldm.generate import Generate
+from frontend.thumbnails_cl import Thumbnails
+from backend.deforum.deforum_simplified import DeforumGenerator
+
 ## imports end here
 
 
@@ -77,22 +99,6 @@ tray.setContextMenu(menu)
 #from qtpy.QtWidgets import QApplication as qapp
 
 
-from PySide6.QtGui import QIcon, QKeySequence, QAction
-from PySide6.QtWidgets import QMdiArea,  QDockWidget, QMessageBox, QFileDialog
-from PySide6.QtCore import Qt, QSignalMapper
-
-from nodeeditor.node_editor_window import NodeEditorWindow
-from frontend.example_calculator.calc_sub_window import CalculatorSubWindow
-from frontend.example_calculator.calc_drag_listbox import QDMDragListbox
-from nodeeditor.utils import dumpException
-
-# Enabling edge validators
-from nodeeditor.node_edge import Edge
-from nodeeditor.node_edge_validators import (
-    edge_validator_debug,
-    edge_cannot_connect_two_outputs_or_two_inputs,
-    edge_cannot_connect_input_and_output_of_same_node
-)
 Edge.registerEdgeValidator(edge_validator_debug)
 Edge.registerEdgeValidator(edge_cannot_connect_two_outputs_or_two_inputs)
 Edge.registerEdgeValidator(edge_cannot_connect_input_and_output_of_same_node)
@@ -101,10 +107,6 @@ Edge.registerEdgeValidator(edge_cannot_connect_input_and_output_of_same_node)
 #from nodeeditor.utils import loadStylesheets
 #from nodeeditor.node_editor_window import NodeEditorWindow
 
-
-from backend.singleton import singleton
-
-import backend.settings as settings
 settings.load_settings_json()
 
 
@@ -113,13 +115,7 @@ gs = singleton
 gs.models = {}
 gs.result = ""
 gs.callbackBusy = False
-
-from ldm.generate import Generate
-
 gs.album = getLatestGeneratedImagesFromPath()
-
-from frontend.thumbnails_cl import Thumbnails
-from backend.deforum.deforum_simplified import DeforumGenerator
 
 
 

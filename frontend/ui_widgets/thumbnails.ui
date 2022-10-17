@@ -95,14 +95,35 @@
            <height>680</height>
           </size>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="contextMenuPolicy">
-          <enum>Qt::ActionsContextMenu</enum>
+          <enum>Qt::CustomContextMenu</enum>
          </property>
          <property name="acceptDrops">
-          <bool>true</bool>
+          <bool>false</bool>
+         </property>
+         <property name="toolTip">
+          <string notr="true"/>
+         </property>
+         <property name="accessibleName">
+          <string notr="true"/>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+         <property name="showDropIndicator" stdset="0">
+          <bool>false</bool>
          </property>
          <property name="dragEnabled">
-          <bool>true</bool>
+          <bool>false</bool>
+         </property>
+         <property name="dragDropMode">
+          <enum>QAbstractItemView::NoDragDrop</enum>
+         </property>
+         <property name="defaultDropAction">
+          <enum>Qt::IgnoreAction</enum>
          </property>
          <property name="iconSize">
           <size>
@@ -110,11 +131,20 @@
            <height>150</height>
           </size>
          </property>
+         <property name="verticalScrollMode">
+          <enum>QAbstractItemView::ScrollPerPixel</enum>
+         </property>
+         <property name="horizontalScrollMode">
+          <enum>QAbstractItemView::ScrollPerPixel</enum>
+         </property>
          <property name="movement">
-          <enum>QListView::Snap</enum>
+          <enum>QListView::Free</enum>
          </property>
          <property name="resizeMode">
           <enum>QListView::Adjust</enum>
+         </property>
+         <property name="layoutMode">
+          <enum>QListView::Batched</enum>
          </property>
          <property name="gridSize">
           <size>
@@ -131,8 +161,11 @@
          <property name="wordWrap">
           <bool>true</bool>
          </property>
+         <property name="selectionRectVisible">
+          <bool>false</bool>
+         </property>
          <property name="sortingEnabled">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>

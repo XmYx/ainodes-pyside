@@ -46,7 +46,13 @@
      <item row="0" column="0" colspan="2">
       <widget class="QGraphicsView" name="graphicsView">
        <property name="mouseTracking">
-        <bool>true</bool>
+        <bool>false</bool>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="contextMenuPolicy">
+        <enum>Qt::ActionsContextMenu</enum>
        </property>
        <property name="verticalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -54,11 +60,14 @@
        <property name="horizontalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
+       <property name="renderHints">
+        <set>QPainter::Antialiasing|QPainter::HighQualityAntialiasing|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
+       </property>
        <property name="resizeAnchor">
         <enum>QGraphicsView::AnchorViewCenter</enum>
        </property>
        <property name="viewportUpdateMode">
-        <enum>QGraphicsView::FullViewportUpdate</enum>
+        <enum>QGraphicsView::MinimalViewportUpdate</enum>
        </property>
       </widget>
      </item>

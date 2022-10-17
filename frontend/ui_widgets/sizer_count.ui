@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>184</width>
-    <height>382</height>
+    <width>243</width>
+    <height>427</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -55,13 +55,13 @@
         <number>0</number>
        </property>
        <property name="leftMargin">
-        <number>0</number>
+        <number>5</number>
        </property>
        <property name="topMargin">
         <number>0</number>
        </property>
        <property name="rightMargin">
-        <number>0</number>
+        <number>5</number>
        </property>
        <property name="bottomMargin">
         <number>0</number>
@@ -202,13 +202,16 @@
          <item row="18" column="0">
           <widget class="QSlider" name="upscaleSlider">
            <property name="minimum">
-            <number>1</number>
+            <number>0</number>
            </property>
            <property name="maximum">
             <number>10</number>
            </property>
            <property name="pageStep">
             <number>1</number>
+           </property>
+           <property name="value">
+            <number>0</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -225,7 +228,10 @@
          <item row="13" column="0">
           <widget class="QSlider" name="scaleSlider">
            <property name="maximum">
-            <number>100</number>
+            <number>3000</number>
+           </property>
+           <property name="value">
+            <number>750</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -265,13 +271,16 @@
          <item row="22" column="0">
           <widget class="QSlider" name="gfpganSlider">
            <property name="minimum">
-            <number>1</number>
+            <number>0</number>
            </property>
            <property name="maximum">
             <number>10</number>
            </property>
            <property name="pageStep">
             <number>1</number>
+           </property>
+           <property name="value">
+            <number>0</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -316,6 +325,9 @@
          </item>
          <item row="28" column="0">
           <widget class="QSlider" name="previewSlider">
+           <property name="minimum">
+            <number>0</number>
+           </property>
            <property name="maximum">
             <number>25</number>
            </property>

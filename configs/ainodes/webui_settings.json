@@ -14,13 +14,20 @@
     "midasPath": "models/dpt_large-midas-2f21e586.pt",
     "sdClipPath": "models/sd-clip-vit-l14-img-embed_ema_only.ckpt",
     "sdPath": "models/sd-v1-4.ckpt",
-    "gfpganPath": "src/gfpgan/experiments/pretrained_models/GFPGANv1.3.pth",
-    "realesrganPath": "src/realesrgan/experiments/pretrained_models/RealESRGAN_x4plus.pth",
-    "realesrganAnimePath": "src/realesrgan/experiments/pretrained_models/RealESRGAN_x4plus_anime_6B.pth",
+    "sdInference": "configs/stable-diffusion/v1-inference.yaml",
+    "gfpganModelPath": "experiments/pretrained_models/GFPGANv1.3.pth",
+    "gfpganPath": "src/gfpgan",
+    "realesrganModelPath": "experiments/pretrained_models/RealESRGAN_x4plus.pth",
+    "realesrganPath": "src/realesrgan",
+    "realesrganAnimeModelPath": "experiments/pretrained_models/RealESRGAN_x4plus_anime_6B.pth",
     "ffmpegPath": "C:\\tools\\ffmpeg\\bin\\ffmpeg.exe",
     "settingsPath": "configs/ainodes/webui_settings.json",
-    "galleryMainPath": "output"
-
+    "galleryMainPath": "output",
+    "gpu": 0,
+    "gfpganCpu": false,
+    "realesrganCpu": false,
+    "extraModelsCpu": false,
+    "extraModelsGpu": false
   },
   "diffusion": {
     "angle": "0:(0)",

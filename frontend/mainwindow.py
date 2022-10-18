@@ -562,10 +562,8 @@ class GenerateWindow(QObject):
         else:
             seed = ''
 
-        if gs.defaults.general.default_path_mode == "subfolders":
-            outdir = gs.defaults.general.outdir
-        else:
-            outdir = f'{gs.defaults.general.outdir}/_batch_images'
+        outdir = gs.system.txt2imgOut
+
 
         """The full list of arguments to Generate() are:
         gr = Generate(

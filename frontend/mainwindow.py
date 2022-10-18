@@ -244,7 +244,8 @@ class GenerateWindow(QObject):
         self.vpainter["iins"] = QPainter()
         self.tpixmap = QPixmap(512, 512)
 
-        self.setup_defaults()
+        #self.setup_defaults()
+        self.load_settings()
 
     def setup_defaults(self):
         self.animKeys.w.angle.setText("0:(0)")
@@ -557,8 +558,8 @@ class GenerateWindow(QObject):
 
         self.onePercent = 100 / (batchsize * self.steps * samples * len(prompt_list))
 
-        if self.w.sampler.w.seedEdit.text() != '':
-            seed = int(self.w.sampler.w.seedEdit.text())
+        if self.w.sampler.w.seed.text() != '':
+            seed = int(self.w.sampler.w.seed.text())
         else:
             seed = ''
 
@@ -697,7 +698,7 @@ class GenerateWindow(QObject):
         os.makedirs(gs.system.img2imgOut, exist_ok=True)
         os.makedirs(gs.system.txt2vidSingleFrame, exist_ok=True)
         os.makedirs(gs.system.txt2vidOut, exist_ok=True)
-        os.makedirs(gs.system.vid2vidTm, exist_ok=True)
+        os.makedirs(gs.system.vid2vidTmp, exist_ok=True)
         os.makedirs(gs.system.vid2vidSingleFrame, exist_ok=True)
         os.makedirs(gs.system.vid2vidOut, exist_ok=True)
 
@@ -728,8 +729,24 @@ class GenerateWindow(QObject):
         self.w.sizer_count.w.scaleSlider.setValue(gs.diffusion.scale*100)
         self.w.sizer_count.w.batchSizeSlider.setValue(gs.diffusion.batch_size)
         self.w.sizer_count.w.stepsSlider.setValue(gs.diffusion.steps)
-        self.w.sizer_count.w.upScale.setValue(gs.diffusion.upScale)
+        self.w.sizer_count.w.upScale.setChecked(gs.diffusion.upScale)
         self.w.sizer_count.w.gfpganSlider.setValue(gs.diffusion.gfpgan_strength)
+
+        self.w.sampler.w.fullPrecision.setChecked(gs.diffusion.fullPrecision)
+        self.w.sampler.w.seamless.setChecked(gs.diffusion.seamless)
+
+        index = self.w.sampler.w.sampler.findData(gs.diffusion.sampler)
+        if index != -1:
+            self.w.sampler.w.sampler.setCurrentIndex(index)
+        index = self.w.sampler.w.sampleMode.findData(gs.diffusion.sampleMode)
+        if index != -1:
+            self.w.sampler.w.sampleMode.setCurrentIndex(index)
+
+        self.w.sampler.w.seed.setText(gs.diffusion.seed)
+
+        index = self.w.sampler.w.seedBehavior.findData(gs.diffusion.seedBehavior)
+        if index != -1:
+            self.w.sampler.w.seedBehavior.setCurrentIndex(index)
 
         self.path_setup.w.galleryMainPath.setText(gs.system.galleryMainPath)
         self.path_setup.w.txt2imgOut.setText(gs.system.txt2imgOut)
@@ -745,11 +762,22 @@ class GenerateWindow(QObject):
         self.path_setup.w.midasPath.setText(gs.system.midasPath)
         self.path_setup.w.sdClipPath.setText(gs.system.sdClipPath)
         self.path_setup.w.sdPath.setText(gs.system.sdPath)
+        self.path_setup.w.sdInference.setText(gs.system.sdInference)
         self.path_setup.w.gfpganPath.setText(gs.system.gfpganPath)
         self.path_setup.w.realesrganPath.setText(gs.system.realesrganPath)
-        self.path_setup.w.realesrganAnimePath.setText(gs.system.realesrganAnimePath)
+        self.path_setup.w.realesrganAnimeModelPath.setText(gs.system.realesrganAnimeModelPath)
         self.path_setup.w.ffmpegPath.setText(gs.system.ffmpegPath)
         self.path_setup.w.settingsPath.setText(gs.system.settingsPath)
+
+        self.path_setup.w.gfpganCpu.setChecked(gs.system.gfpganCpu)
+        self.path_setup.w.realesrganCpu.setChecked(gs.system.realesrganCpu)
+        self.path_setup.w.extraModelsCpu.setChecked(gs.system.extraModelsCpu)
+        self.path_setup.w.extraModelsGpu.setChecked(gs.system.extraModelsGpu)
+
+
+
+        self.path_setup.w.gpu.setText(str(gs.system.gpu))
+
 
         self.create_out_folders()
 

@@ -21,7 +21,7 @@
        <item>
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
-          <number>3</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="outputPath">
           <attribute name="title">
@@ -299,6 +299,34 @@
                 </widget>
                </item>
                <item>
+                <widget class="QLabel" name="label_21">
+                 <property name="text">
+                  <string>Stable Diffusion Inference</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="sdInference">
+                 <property name="text">
+                  <string>configs/stable-diffusion/v1-inference.yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>GFPGAN Path</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="gfpganPath">
+                 <property name="text">
+                  <string>src/gfpgan</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QLabel" name="label_19">
                  <property name="text">
                   <string>GFPGAN Model Path</string>
@@ -313,16 +341,16 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_15">
+                <widget class="QLabel" name="label_16">
                  <property name="text">
-                  <string>GFPGAN Path</string>
+                  <string>RealESRGAN</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="gfpganPath">
+                <widget class="QLineEdit" name="realesrganPath">
                  <property name="text">
-                  <string>src/gfpgan/</string>
+                  <string>src/realesrgan</string>
                  </property>
                 </widget>
                </item>
@@ -341,30 +369,16 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_16">
-                 <property name="text">
-                  <string>RealESRGAN</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="realesrganPath">
-                 <property name="text">
-                  <string>src/realesrgan/</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <widget class="QLabel" name="label_17">
                  <property name="text">
-                  <string>RealESRGAN Anime</string>
+                  <string>RealESRGAN Anime Model Path</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="realesrganAnimePath">
+                <widget class="QLineEdit" name="realesrganAnimeModelPath">
                  <property name="text">
-                  <string>src/realesrgan/experiments/pretrained_models/RealESRGAN_x4plus_anime_6B.pth</string>
+                  <string>experiments/pretrained_models/RealESRGAN_x4plus_anime_6B.pth</string>
                  </property>
                 </widget>
                </item>
@@ -498,6 +512,20 @@
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_10">
+               <item>
+                <widget class="QLabel" name="label_22">
+                 <property name="text">
+                  <string>GPU</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="gpu">
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
                <item>
                 <widget class="QCheckBox" name="gfpganCpu">
                  <property name="text">

@@ -91,7 +91,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox">
+        <widget class="QComboBox" name="sampler">
          <item>
           <property name="text">
            <string>ddim</string>
@@ -142,7 +142,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_2">
+        <widget class="QComboBox" name="sampleMode">
          <item>
           <property name="text">
            <string>bicubic</string>
@@ -168,7 +168,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="seedEdit"/>
+        <widget class="QLineEdit" name="seed"/>
        </item>
        <item>
         <widget class="QLabel" name="label_6">
@@ -178,7 +178,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_3">
+        <widget class="QComboBox" name="seedBehavior">
          <item>
           <property name="text">
            <string>iter</string>

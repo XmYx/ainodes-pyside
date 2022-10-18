@@ -52,6 +52,18 @@ class AnimDials(QObject):
         #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
 
 
+class PathSetup(QObject):
+
+    def __init__(self, *args, **kwargs):
+        loader = QtUiTools.QUiLoader()
+        file = QFile("frontend/ui_widgets/path_config.ui")
+        file.open(QFile.ReadOnly)
+        self.w = loader.load(file)
+        file.close()
+        #super().__init__(*args, **kwargs)
+        #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
+
+
 class SizerCount(QObject):
 
     def __init__(self, *args, **kwargs):
@@ -62,6 +74,7 @@ class SizerCount(QObject):
         file.close()
         #super().__init__(*args, **kwargs)
         #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
+
 class Dynaimage(QObject):
     def __init__(self, *args, **kwargs):
         #super().__init__(*args, **kwargs)
@@ -786,6 +799,3 @@ class Timeline(QDockWidget):
         #self.timeline.timeline.start()
     def update_timelineZoom(self):
         self.timeline.scale = self.tZoom.value()
-
-
-

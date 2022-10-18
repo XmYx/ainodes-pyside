@@ -95,6 +95,7 @@ class GenerateWindow(QObject):
     def __init__(self, *args, **kwargs):
         super(GenerateWindow, self).__init__(*args, **kwargs)
 
+        self.path_setup = None
         self.ipixmap = None
         self.painter = None
         self.data2 = None
@@ -202,6 +203,7 @@ class GenerateWindow(QObject):
         self.animDials = AnimDials()
         self.animKeys = AnimKeys()
         self.animKeyEditor = AnimKeyEditor()
+        self.path_setup = PathSetup()
 
         # self.nodes = NodeEditorWindow()
         # self.nodes.nodeeditor.addNodes()
@@ -237,6 +239,7 @@ class GenerateWindow(QObject):
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animKeys.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animKeyEditor.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.path_setup.w.dockWidget)
 
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(256, 256))
 

@@ -280,7 +280,7 @@
                <item>
                 <widget class="QLineEdit" name="sdPath">
                  <property name="text">
-                  <string>sd-v1-4.ckpt</string>
+                  <string>models/sd-v1-4.ckpt</string>
                  </property>
                 </widget>
                </item>
@@ -380,12 +380,30 @@
                <item>
                 <widget class="QLabel" name="label_9">
                  <property name="text">
-                  <string>ffmpeg</string>
+                  <string>ffmpeg Path</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="ffmpegPath"/>
+                <widget class="QLineEdit" name="ffmpegPath">
+                 <property name="text">
+                  <string>C:\\tools\\ffmpeg\\bin\\ffmpeg.exe</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>Settings Path</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="settingsPath">
+                 <property name="text">
+                  <string>configs/ainodes/webui_settings.json</string>
+                 </property>
+                </widget>
                </item>
                <item>
                 <spacer name="verticalSpacer_3">

@@ -51,10 +51,6 @@ class Keyframes(object):
 
             self.keyframes[valueType][timePosition] = {}
             self.keyframes[valueType][timePosition]["keyframe"] = value
-            # print(type(self.keyframes))
-            # print(type(self.keyframes[valueType]))
-            # print(type(self.keyframes[valueType][str(timePosition)]))
-            # print(type(self.keyframes[valueType][str(timePosition)]["keyframe"]))
 
         if self.keyframes[valueType] != {}:
             self.keyframes[valueType] = dict(sorted(self.keyframes[valueType].items()))
@@ -66,15 +62,12 @@ class Keyframes(object):
             var += 1
             print(self.tempList)
 
-        # print(self.keyframes[valueType][i])\
-        # print(self.tempList)
         for keys in self.tempList.items():
             print(keys)
             print(keys[0])
             print(keys[1])
             print(keys[1][1]['keyframe'])
 
-        # print(self.keyframes[valueType])
 
 
 class Callbacks(QObject):
@@ -163,31 +156,6 @@ class GenerateWindow(QObject):
         self.w.actionSampler.triggered.connect(self.show_sampler)
         self.w.actionSliders.triggered.connect(self.show_sizer_count)
         self.w.actionThumbnails.triggered.connect(self.show_thumbnails)
-
-        """self.global_factor = 1
-        self.pix_map_item = QGraphicsPixmapItem()
-
-    def scaleImage(self, factor):
-        _pixmap = self.pic.scaledToHeight(int(factor*self.viewport().geometry().height()), Qt.SmoothTransformation)
-        self.pix_map_item.setPixmap(_pixmap)
-        self.preview.scene.setSceneRect(QRectF(_pixmap.rect()))
-
-    def wheelEvent(self, event):
-        factor = 1.5
-
-        if QApplication.keyboardModifiers() == Qt.ControlModifier:
-            view_pos = event.pos()
-            scene_pos = self.mapToScene(view_pos)
-            self.centerOn(scene_pos)
-
-            if event.angleDelta().y() > 0 and self.global_factor < 20:
-                self.global_factor *= factor
-                self.scaleImage(self.global_factor)
-            elif event.angleDelta().y() < 0 and self.global_factor > 0.2:
-                self.global_factor /= factor
-                self.scaleImage(self.global_factor)
-        else:
-            return super().wheelEvent(event)"""
 
     def home(self):
         self.w.thumbnails = Thumbnails()
@@ -278,27 +246,6 @@ class GenerateWindow(QObject):
 
         self.setup_defaults()
 
-        # KeyFrame mechanism test
-        # self.kf.addKeyframe(self.timeline.timeline.pointerTimePos, "test", 10)
-
-    def addCurrentFrame(self):
-        self.value = self.animKeyEditor.w.valueText.toPlainText()
-        self.selection = "Contrast"
-        # print(self.timeline.timeline.width)
-        # scale = self.timeline.timeline.getScale()
-        # timepos = self.timeline.timeline.duration / (self.timeline.timeline.pointerTimePos / scale)
-        timepos = int(self.timeline.timeline.pointerTimePos)
-        # print(scale)
-        print("START OF DEBUG")
-        print(f"pointer pos {self.timeline.timeline.pointerTimePos}")
-        # print(f"scale {scale}")
-        print(f"duration {self.timeline.timeline.duration}")
-        print(f"timepos {timepos}")
-        # print(f"{}")
-        self.kf.addKeyframe(timepos, self.selection, self.value)
-        self.timeline.timeline.keyFrameList = self.kf.tempList
-        self.timeline.timeline.update()
-
     def setup_defaults(self):
         self.animKeys.w.angle.setText("0:(0)")
         self.animKeys.w.zoom.setText("0:(0)")
@@ -316,6 +263,25 @@ class GenerateWindow(QObject):
         self.animKeys.w.strength_sched.setText("0:(0.65)")
         self.animKeys.w.contrast_sched.setText("0:(1)")
 
+
+    def addCurrentFrame(self):
+        self.value = self.animKeyEditor.w.valueText.toPlainText()
+        self.selection = "Contrast"
+
+        timepos = int(self.timeline.timeline.pointerTimePos)
+
+        print("START OF DEBUG")
+        print(f"pointer pos {self.timeline.timeline.pointerTimePos}")
+
+        print(f"duration {self.timeline.timeline.duration}")
+        print(f"timepos {timepos}")
+
+        self.kf.addKeyframe(timepos, self.selection, self.value)
+        self.timeline.timeline.keyFrameList = self.kf.tempList
+        self.timeline.timeline.update()
+
+
+    #updates
     def update_timeline(self):
         self.timeline.timeline.duration = self.animDials.w.frames.value()
         self.timeline.timeline.update()
@@ -340,6 +306,7 @@ class GenerateWindow(QObject):
         float = self.w.sizer_count.w.gfpganSlider.value() / 10
         self.w.sizer_count.w.gfpganNumber.display(str(float))
 
+    #show
     def show_anim(self):
         self.w.anim.w.show()
 
@@ -349,8 +316,6 @@ class GenerateWindow(QObject):
     def show_prompt(self):
         self.w.prompt.w.show()
 
-    # def show_runner(self):
-    # self.runner.show()
     def show_sampler(self):
         self.w.sampler.w.show()
 
@@ -360,82 +325,16 @@ class GenerateWindow(QObject):
     def show_thumbnails(self):
         self.w.thumbnails.show()
 
-    def load_history(self):
-        self.w.thumbnails.thumbs.clear()
-        for image in gs.album:
-            self.w.thumbnails.thumbs.addItem(QListWidgetItem(QIcon(image), str(image)))
+    def show_path_settings(self):
+        self.w.path_setup.show()
 
-    def viewThread(self, item):
-        self.viewImageClicked(item)
-        # worker = Worker(self.viewImageClicked(item))
-        # threadpool.start(worker)
 
-    def tileImageClicked(self, item):
-
-        vins = random.randint(10000, 99999)
-        imageSize = item.icon().actualSize(QSize(10000, 10000))
-        qimage = QImage(item.icon().pixmap(imageSize).toImage())
-        self.newPixmap[vins] = QPixmap(QSize(2048, 2048))
-
-        self.vpainter[vins] = QPainter(self.newPixmap[vins])
-
-        newItem = QGraphicsPixmapItem()
-        # vpixmap = self.w.imageItem.pixmap()
-
-        # self.vpainter[vins].device()
-        self.vpainter[vins].beginNativePainting()
-
-        self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
-        self.vpainter[vins].drawImage(QRect(QPoint(512, 0), QSize(qimage.size())), qimage)
-        self.vpainter[vins].drawImage(QRect(QPoint(0, 512), QSize(qimage.size())), qimage)
-        self.vpainter[vins].drawImage(QRect(QPoint(512, 512), QSize(qimage.size())), qimage)
-
-        newItem.setPixmap(self.newPixmap[vins])
-
-        # self.w.imageItem.setPixmap(vpixmap)
-        # self.w.preview.w.graphicsView.modified = True
-        for items in self.w.preview.w.scene.items():
-            self.w.preview.w.scene.removeItem(items)
-        self.w.preview.w.scene.addItem(newItem)
-        self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
-        self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
-        self.vpainter[vins].endNativePainting()
-        # gs.callbackBusy = False
-
-    def viewImageClicked(self, item):
-
-        vins = random.randint(10000, 99999)
-        imageSize = item.icon().actualSize(QSize(10000, 10000))
-        qimage = QImage(item.icon().pixmap(imageSize).toImage())
-        self.newPixmap[vins] = QPixmap(qimage.size())
-        self.vpainter[vins] = QPainter()
-        newItem = QGraphicsPixmapItem()
-        self.vpainter[vins].begin(self.newPixmap[vins])
-        self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
-        newItem.setPixmap(self.newPixmap[vins])
-
-        # self.w.imageItem.setPixmap(vpixmap)
-        # self.w.preview.w.graphicsView.modified = True
-        for items in self.w.preview.w.scene.items():
-            self.w.preview.w.scene.removeItem(items)
-        self.w.preview.w.scene.addItem(newItem)
-        self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
-        self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
-        self.vpainter[vins].end()
-
-    def taskSwitcher(self):
-        self.choice = self.w.sampler.w.comboBox_4.currentText()
-        if self.choice == "Text to Video":
-            self.deforum_thread()
-        elif self.choice == "Text to Image":
-            self.txt2img_thread()
-
+    #deforum
     def run_deforum(self, progress_callback=None):
 
         self.currentFrames = []
         self.renderedFrames = 0
         self.now = 0
-        # self.videoPreview = True
 
         use_init = self.animDials.w.useInit.isChecked()
         adabins = self.animDials.w.adabins.isChecked()
@@ -482,10 +381,6 @@ class GenerateWindow(QObject):
         new_key = list(key.split("\n"))
 
         prompts = dict(zip(new_key, new_prom))
-
-        # for i in animation_prompts:
-        #    prompt_series[i] = animation_prompts
-        #    print(prompt_series[i])
 
         for i, prompt in prompts.items():
             n = int(i)
@@ -541,20 +436,13 @@ class GenerateWindow(QObject):
 
                                       )
         self.stop_painters()
-        # self.w.thumbnails.setUpdatesEnabled(True)
+
         self.signals.reenable_runbutton.emit()
 
     def deforumTest(self, *args, **kwargs):
         saved_args = locals()
         # print(callback.x)
         print("saved_args is", saved_args)
-
-    def imageCallback_signal(self, image, *args, **kwargs):
-        self.currentFrames.append(image)
-        self.renderedFrames += 1
-        self.image = image
-
-        self.signals.txt2img_image_cb.emit()
 
     def deforumstepCallback_signal(self, data, data2=None):
         self.data = data
@@ -565,39 +453,19 @@ class GenerateWindow(QObject):
 
         self.signals.deforum_step.emit()
 
-    def start_timer(self, *args, **kwargs):
-        self.ftimer.timeout.connect(self.imageCallback_func)
+    def deforum_thread(self):
 
-        self.videoPreview = True
-        self.ftimer.start(80)
+        self.w.prompt.w.runButton.setEnabled(False)
+        QTimer.singleShot(100, lambda: self.pass_object()) # todo why we need that timer here doing nothing?
 
-    def stop_timer(self):
-        self.ftimer.stop()
-        self.videoPreview = False
+        worker = Worker(self.run_deforum)
+        # Execute
+        self.threadpool.start(worker)
 
-    def prevFrame(self):
-        if self.now > 0:
-            self.now -= 2
-            advance = False
-            self.videoPreview = True
-            self.imageCallback_func(advance)
-            self.videoPreview = False
 
-    def nextFrame(self):
-        if self.now < self.renderedFrames:
-            self.now += 1
-            advance = False
-            self.videoPreview = True
-            self.imageCallback_func(advance)
-
+    #slots
     @Slot()
     def deforumstepCallback_func(self):
-        # print(type(data['x']))
-        # print(type(data['i']))
-        # print(type(data['sigma']))
-        # print(type(data['sigma_hat']))
-        # print(type(data['denoised']))
-
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
         self.progress = self.progress + self.onePercent
         self.w.progressBar.setValue(self.progress)
@@ -634,6 +502,37 @@ class GenerateWindow(QObject):
         self.w.dynaimage.w.label.setPixmap(self.ipixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
         self.painter.end()
 
+    @Slot()
+    def reenableRunButton(self):
+        try:
+            self.w.prompt.w.runButton.setEnabled(True)
+        except:
+            pass
+        try:
+            self.stop_timer()
+        except:
+            pass
+
+    #timer
+    def start_timer(self, *args, **kwargs):
+        self.ftimer.timeout.connect(self.imageCallback_func)
+
+        self.videoPreview = True
+        self.ftimer.start(80)
+
+    def stop_timer(self):
+        self.ftimer.stop()
+        self.videoPreview = False
+
+    #callback
+    def imageCallback_signal(self, image, *args, **kwargs):
+        self.currentFrames.append(image)
+        self.renderedFrames += 1
+        self.image = image
+
+        self.signals.txt2img_image_cb.emit()
+
+    #text2img
     def run_txt2img(self, progress_callback=None):
 
         self.w.statusBar().showMessage("Loading model...")
@@ -724,34 +623,175 @@ class GenerateWindow(QObject):
                     # self.get_pic(clear=False)
         self.signals.reenable_runbutton.emit()
         # self.stop_painters()
-
-    @Slot()
-    def reenableRunButton(self):
-        try:
-            self.w.prompt.w.runButton.setEnabled(True)
-        except:
-            pass
-        try:
-            self.stop_timer()
-        except:
-            pass
-
-    def deforum_thread(self):
-        # self.w.thumbnails.setUpdatesEnabled(False)
-
-        self.w.prompt.w.runButton.setEnabled(False)
-        QTimer.singleShot(100, lambda: self.pass_object())
-
-        worker = Worker(self.run_deforum)
+    def txt2img_thread(self):
+        self.w.thumbnails.setUpdatesEnabled(False)
+        # self.run_txt2img()
+        # Pass the function to execute
+        worker = Worker(self.run_txt2img)
         # worker.signals.progress.connect(self.testThread)
         # worker.signals.result.connect(self.stop_painters)
 
         # Execute
         self.threadpool.start(worker)
-        # self.timer()
 
         # progress bar test:
         # self.progress_thread()
+
+    #gallery ??
+    def tileImageClicked(self, item):
+
+        vins = random.randint(10000, 99999)
+        imageSize = item.icon().actualSize(QSize(10000, 10000))
+        qimage = QImage(item.icon().pixmap(imageSize).toImage())
+        self.newPixmap[vins] = QPixmap(QSize(2048, 2048))
+
+        self.vpainter[vins] = QPainter(self.newPixmap[vins])
+
+        newItem = QGraphicsPixmapItem()
+
+        self.vpainter[vins].beginNativePainting()
+
+        self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
+        self.vpainter[vins].drawImage(QRect(QPoint(512, 0), QSize(qimage.size())), qimage)
+        self.vpainter[vins].drawImage(QRect(QPoint(0, 512), QSize(qimage.size())), qimage)
+        self.vpainter[vins].drawImage(QRect(QPoint(512, 512), QSize(qimage.size())), qimage)
+
+        newItem.setPixmap(self.newPixmap[vins])
+
+        for items in self.w.preview.w.scene.items():
+            self.w.preview.w.scene.removeItem(items)
+        self.w.preview.w.scene.addItem(newItem)
+        self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
+        self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+        self.vpainter[vins].endNativePainting()
+
+    def viewImageClicked(self, item):
+
+        vins = random.randint(10000, 99999)
+        imageSize = item.icon().actualSize(QSize(10000, 10000))
+        qimage = QImage(item.icon().pixmap(imageSize).toImage())
+        self.newPixmap[vins] = QPixmap(qimage.size())
+        self.vpainter[vins] = QPainter()
+        newItem = QGraphicsPixmapItem()
+        self.vpainter[vins].begin(self.newPixmap[vins])
+        self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
+        newItem.setPixmap(self.newPixmap[vins])
+
+        for items in self.w.preview.w.scene.items():
+            self.w.preview.w.scene.removeItem(items)
+        self.w.preview.w.scene.addItem(newItem)
+        self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
+        self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+        self.vpainter[vins].end()
+
+    def zoom_IN(self):
+        self.w.preview.w.graphicsView.scale(1.25, 1.25)
+
+    def zoom_OUT(self):
+        self.w.preview.w.graphicsView.scale(0.75, 0.75)
+
+    #settings
+
+    def create_out_folders(self):
+        os.makedirs(gs.system.galleryMainPath, exist_ok=True)
+        os.makedirs(gs.system.txt2imgOut, exist_ok=True)
+        os.makedirs(gs.system.img2imgTmp, exist_ok=True)
+        os.makedirs(gs.system.img2imgOut, exist_ok=True)
+        os.makedirs(gs.system.txt2vidSingleFrame, exist_ok=True)
+        os.makedirs(gs.system.txt2vidOut, exist_ok=True)
+        os.makedirs(gs.system.vid2vidTm, exist_ok=True)
+        os.makedirs(gs.system.vid2vidSingleFrame, exist_ok=True)
+        os.makedirs(gs.system.vid2vidOut, exist_ok=True)
+
+
+    def load_settings(self):
+        settings.load_settings_json()
+
+        self.animKeys.w.angle.setText(gs.diffusion.angle)
+        self.animKeys.w.zoom.setText(gs.diffusion.zoom)
+        self.animKeys.w.trans_x.setText(gs.diffusion.trans_x)
+        self.animKeys.w.trans_y.setText(gs.diffusion.trans_y)
+        self.animKeys.w.trans_z.setText(gs.diffusion.trans_z)
+        self.animKeys.w.rot_x.setText(gs.diffusion.rot_x)
+        self.animKeys.w.rot_y.setText(gs.diffusion.rot_y)
+        self.animKeys.w.rot_z.setText(gs.diffusion.rot_z)
+        self.animKeys.w.persp_theta.setText(gs.diffusion.persp_theta)
+        self.animKeys.w.persp_phi.setText(gs.diffusion.persp_phi)
+        self.animKeys.w.persp_gamma.setText(gs.diffusion.persp_gamma)
+        self.animKeys.w.persp_fv.setText(gs.diffusion.persp_fv)
+        self.animKeys.w.noise_sched.setText(gs.diffusion.noise_sched)
+        self.animKeys.w.strength_sched.setText(gs.diffusion.strength_sched)
+        self.animKeys.w.contrast_sched.setText(gs.diffusion.contrast_sched)
+
+        self.w.sizer_count.w.heightSlider.setValue(gs.diffusion.H)
+        self.w.sizer_count.w.widthSlider.setValue(gs.diffusion.W)
+        self.w.sizer_count.w.samplesSlider.setValue(gs.diffusion.n_samples)
+        self.w.sizer_count.w.batchSizeSlider.setValue(gs.diffusion.batch_size)
+        self.w.sizer_count.w.scaleSlider.setValue(gs.diffusion.scale*100)
+        self.w.sizer_count.w.batchSizeSlider.setValue(gs.diffusion.batch_size)
+        self.w.sizer_count.w.stepsSlider.setValue(gs.diffusion.steps)
+        self.w.sizer_count.w.upScale.setValue(gs.diffusion.upScale)
+        self.w.sizer_count.w.gfpganSlider.setValue(gs.diffusion.gfpgan_strength)
+
+        self.path_setup.w.galleryMainPath.setText(gs.system.galleryMainPath)
+        self.path_setup.w.txt2imgOut.setText(gs.system.txt2imgOut)
+        self.path_setup.w.img2imgTmp.setText(gs.system.img2imgTmp)
+        self.path_setup.w.img2imgOut.setText(gs.system.img2imgOut)
+        self.path_setup.w.txt2vidSingleFrame.setText(gs.system.txt2vidSingleFrame)
+        self.path_setup.w.txt2vidOut.setText(gs.system.txt2vidOut)
+        self.path_setup.w.vid2vidTmp.setText(gs.system.vid2vidTmp)
+        self.path_setup.w.vid2vidSingleFrame.setText(gs.system.vid2vidSingleFrame)
+        self.path_setup.w.vid2vidOut.setText(gs.system.vid2vidOut)
+
+        self.path_setup.w.adabinsPath.setText(gs.system.adabinsPath)
+        self.path_setup.w.midasPath.setText(gs.system.midasPath)
+        self.path_setup.w.sdClipPath.setText(gs.system.sdClipPath)
+        self.path_setup.w.sdPath.setText(gs.system.sdPath)
+        self.path_setup.w.gfpganPath.setText(gs.system.gfpganPath)
+        self.path_setup.w.realesrganPath.setText(gs.system.realesrganPath)
+        self.path_setup.w.realesrganAnimePath.setText(gs.system.realesrganAnimePath)
+        self.path_setup.w.ffmpegPath.setText(gs.system.ffmpegPath)
+        self.path_setup.w.settingsPath.setText(gs.system.settingsPath)
+
+        self.create_out_folders()
+
+
+
+
+    #def save_settings(self):
+
+
+
+    #dont know yet
+    def load_history(self):
+        self.w.thumbnails.thumbs.clear()
+        for image in gs.album:
+            self.w.thumbnails.thumbs.addItem(QListWidgetItem(QIcon(image), str(image)))
+
+    def viewThread(self, item):
+        self.viewImageClicked(item)
+
+
+    def taskSwitcher(self):
+        self.choice = self.w.sampler.w.comboBox_4.currentText()
+        if self.choice == "Text to Video":
+            self.deforum_thread()
+        elif self.choice == "Text to Image":
+            self.txt2img_thread()
+    def prevFrame(self):
+        if self.now > 0:
+            self.now -= 2
+            advance = False
+            self.videoPreview = True
+            self.imageCallback_func(advance)
+            self.videoPreview = False
+
+    def nextFrame(self):
+        if self.now < self.renderedFrames:
+            self.now += 1
+            advance = False
+            self.videoPreview = True
+            self.imageCallback_func(advance)
 
     def load_upscalers(self):
         gfpgan = False
@@ -838,20 +878,6 @@ class GenerateWindow(QObject):
             print(f"Exception: {e}")
             pass
 
-    def txt2img_thread(self):
-        self.w.thumbnails.setUpdatesEnabled(False)
-        # self.run_txt2img()
-        # Pass the function to execute
-        worker = Worker(self.run_txt2img)
-        # worker.signals.progress.connect(self.testThread)
-        # worker.signals.result.connect(self.stop_painters)
-
-        # Execute
-        self.threadpool.start(worker)
-
-        # progress bar test:
-        # self.progress_thread()
-
     def testThread(self, data1=None, data2=None):
 
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
@@ -877,12 +903,9 @@ class GenerateWindow(QObject):
             except Exception as e:
                 print(f"Exception: {e}")
                 self.update = 0
-                pass
+            finally:
+                return
 
-        else:
-
-            return self.pass_object
-        return self.pass_object
 
     def test_output(self, data1, data2):
 
@@ -921,12 +944,6 @@ class GenerateWindow(QObject):
         self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         # gs.obj_to_delete = self.w.preview.pic
 
-    def zoom_IN(self):
-        self.w.preview.w.graphicsView.scale(1.25, 1.25)
-
-    def zoom_OUT(self):
-        self.w.preview.w.graphicsView.scale(0.75, 0.75)
-
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.w.thumbnails.thumbs:
             menu = QMenu()
@@ -941,152 +958,3 @@ class GenerateWindow(QObject):
                 # print(item.text())
             return True
         return super().eventFilter(source, event)
-
-
-"""class CalculatorWin(CalculatorWindow):
-    def __init__(self, *args, **kwargs):
-
-
-
-
-        app2 = qapp(sys.argv)
-        nodes = CalculatorWindow()
-        nodes.show()
-        app2.exec()"""
-"""def show_nodes():
-    #in main thread:
-    CalculatorWin()
-
-    #in a separate thread
-    #worker = Worker(CalculatorWin) # Any other args, kwargs are passed to the run function
-    # Execute
-    #threadpool.start(worker)"""
-
-'''
-Deforum Generator Class is used to generate Animations with Stable Diffusion
-to use it, just call:
-
-mp4 = DeforumGenerator(gs) (makevideo implementation needed)
-
-It also takes the following parameters:
-
-
-    prompts = [
-        "a beautiful forest by Asher Brown Durand, trending on Artstation",  # the first prompt I want
-        "a beautiful portrait of a woman by Artgerm, trending on Artstation",  # the second prompt I want
-        # "this prompt I don't want it I commented it out",
-        # "a nousr robot, trending on Artstation", # use "nousr robot" with the robot diffusion model (see model_checkpoint setting)
-        # "touhou 1girl komeiji_koishi portrait, green hair", # waifu diffusion prompts can use danbooru tag groups (see model_checkpoint)
-        # "this prompt has weights if prompt weighting enabled:2 can also do negative:-2", # (see prompt_weighting)
-    ]
-    animation_prompts = {
-        0: "The perfect symmetric violin",
-        20: "the perfect symmetric violin",
-        30: "a beautiful coconut, trending on Artstation",
-        40: "a beautiful durian, trending on Artstation",
-    }
-    W = 512  # @param
-    H = 512  # @param
-    W, H = map(lambda x: x - x % 64, (W, H))  # resize to integer multiple of 64
-    seed = -1  # @param
-    sampler = 'klms'  # @param ["klms","dpm2","dpm2_ancestral","heun","euler","euler_ancestral","plms", "ddim"]
-    steps = 20  # @param
-    scale = 7  # @param
-    ddim_eta = 0.0  # @param
-    dynamic_threshold = None
-    static_threshold = None
-    # @markdown **Save & Display Settings**
-    save_samples = True  # @param {type:"boolean"}
-    save_settings = True  # @param {type:"boolean"}
-    display_samples = True  # @param {type:"boolean"}
-    save_sample_per_step = False  # @param {type:"boolean"}
-    show_sample_per_step = False  # @param {type:"boolean"}
-    prompt_weighting = False  # @param {type:"boolean"}
-    normalize_prompt_weights = True  # @param {type:"boolean"}
-    log_weighted_subprompts = False  # @param {type:"boolean"}
-
-    n_batch = 1  # @param
-    batch_name = "StableFun"  # @param {type:"string"}
-    filename_format = "{timestring}_{index}_{prompt}.png"  # @param ["{timestring}_{index}_{seed}.png","{timestring}_{index}_{prompt}.png"]
-    seed_behavior = "iter"  # @param ["iter","fixed","random"]
-    make_grid = False  # @param {type:"boolean"}
-    grid_rows = 2  # @param
-    outdir = "output"
-    use_init = False  # @param {type:"boolean"}
-    strength = 0.0  # @param {type:"number"}
-    strength_0_no_init = True  # Set the strength to 0 automatically when no init image is used
-    init_image = "https://cdn.pixabay.com/photo/2022/07/30/13/10/green-longhorn-beetle-7353749_1280.jpg"  # @param {type:"string"}
-    # Whiter areas of the mask are areas that change more
-    use_mask = False  # @param {type:"boolean"}
-    use_alpha_as_mask = False  # use the alpha channel of the init image as the mask
-    mask_file = "https://www.filterforge.com/wiki/images/archive/b/b7/20080927223728%21Polygonal_gradient_thumb.jpg"  # @param {type:"string"}
-    invert_mask = False  # @param {type:"boolean"}
-    # Adjust mask image, 1.0 is no adjustment. Should be positive numbers.
-    mask_brightness_adjust = 1.0  # @param {type:"number"}
-    mask_contrast_adjust = 1.0  # @param {type:"number"}
-    # Overlay the masked image at the end of the generation so it does not get degraded by encoding and decoding
-    overlay_mask = True  # {type:"boolean"}
-    # Blur edges of final overlay mask, if used. Minimum = 0 (no blur)
-    mask_overlay_blur = 5  # {type:"number"}
-
-    n_samples = 1  # doesnt do anything
-    precision = 'autocast'
-    C = 4
-    f = 8
-
-    prompt = ""
-    timestring = ""
-    init_latent = None
-    init_sample = None
-    init_c = None
-
-    # Anim Args
-
-    animation_mode = '3D'  # @param ['None', '2D', '3D', 'Video Input', 'Interpolation'] {type:'string'}
-    max_frames = 10  # @Dparam {type:"number"}
-    border = 'replicate'  # @param ['wrap', 'replicate'] {type:'string'}
-    # @markdown ####**Motion Parameters:**
-    angle = "0:(0)"  # @param {type:"string"}
-    zoom = "0:(1.04)"  # @param {type:"string"}
-    translation_x = "0:(10*sin(2*3.14*t/10))"  # @param {type:"string"}
-    translation_y = "0:(0)"  # @param {type:"string"}
-    translation_z = "0:(10)"  # @param {type:"string"}
-    rotation_3d_x = "0:(0)"  # @param {type:"string"}
-    rotation_3d_y = "0:(0)"  # @param {type:"string"}
-    rotation_3d_z = "0:(0)"  # @param {type:"string"}
-    flip_2d_perspective = False  # @param {type:"boolean"}
-    perspective_flip_theta = "0:(0)"  # @param {type:"string"}
-    perspective_flip_phi = "0:(t%15)"  # @param {type:"string"}
-    perspective_flip_gamma = "0:(0)"  # @param {type:"string"}
-    perspective_flip_fv = "0:(53)"  # @param {type:"string"}
-    noise_schedule = "0: (0.02)"  # @param {type:"string"}
-    strength_schedule = "0: (0.65)"  # @param {type:"string"}
-    contrast_schedule = "0: (1.0)"  # @param {type:"string"}
-    # @markdown ####**Coherence:**
-    color_coherence = 'Match Frame 0 LAB'  # @param ['None', 'Match Frame 0 HSV', 'Match Frame 0 LAB', 'Match Frame 0 RGB'] {type:'string'}
-    diffusion_cadence = '1'  # @param ['1','2','3','4','5','6','7','8'] {type:'string'}
-    # @markdown ####**3D Depth Warping:**
-    use_depth_warping = True  # @param {type:"boolean"}
-    midas_weight = 0.3  # @param {type:"number"}
-    near_plane = 200
-    far_plane = 10000
-    fov = 40  # @param {type:"number"}
-    padding_mode = 'border'  # @param ['border', 'reflection', 'zeros'] {type:'string'}
-    sampling_mode = 'bicubic'  # @param ['bicubic', 'bilinear', 'nearest'] {type:'string'}
-    save_depth_maps = False  # @param {type:"boolean"}
-
-    # @markdown ####**Video Input:**
-    video_init_path = '/content/video_in.mp4'  # @param {type:"string"}
-    extract_nth_frame = 1  # @param {type:"number"}
-    overwrite_extracted_frames = True  # @param {type:"boolean"}
-    use_mask_video = False  # @param {type:"boolean"}
-    video_mask_path = '/content/video_in.mp4'  # @param {type:"string"}
-
-    # @markdown ####**Interpolation:**
-    interpolate_key_frames = False  # @param {type:"boolean"}
-    interpolate_x_frames = 4  # @param {type:"number"}
-
-    # @markdown ####**Resume Animation:**
-    resume_from_timestring = False  # @param {type:"boolean"}
-    resume_timestring = "20220829210106"  # @param {type:"string"}
-'''

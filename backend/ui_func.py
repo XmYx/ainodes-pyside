@@ -10,12 +10,9 @@ def getLatestGeneratedImagesFromPath():
     # get the path to the generated images folder
     # generatedImagesPath = os.path.join(os.getcwd(), st.session_state['defaults'].general.sd_concepts_library_folder)
     # test path till we have defaults
-    if gs.defaults.general.default_path_mode == "subfolders":
-        generatedImagesPath = gs.defaults.general.outdir
-    else:
-        generatedImagesPath = f'{gs.defaults.general.outdir}/_batch_images'
 
-    print(gs.defaults.general.default_path_mode)
+    generatedImagesPath = gs.system.galleryMainPath
+
     print(generatedImagesPath)
     os.makedirs(generatedImagesPath, exist_ok=True)
     # get all the files from the folders and subfolders

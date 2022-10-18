@@ -1,10 +1,7 @@
 import threading
 
-defaults = {}
-txt2img = {}
-vid2vid = {}
-txt2vid = {}
-img2img = {}
+system = {}
+diffusion = {}
 models = {}
 current_images = []
 current_video_frames = []

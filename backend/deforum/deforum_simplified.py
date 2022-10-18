@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 import time
+from time import gmtime, strftime
 import traceback
 from types import SimpleNamespace
 
@@ -175,8 +176,8 @@ class DeforumGenerator():
 
     def __init__(self):
         self.device = 'cuda'
-        self.outdir = "output"
         self.gs = gs
+        self.outdir = gs.system.txt2vidSingleFrame
         self.shouldStop = False
 
 
@@ -267,7 +268,7 @@ class DeforumGenerator():
 
         # make video
         cmd = [
-            'ffmpeg',
+            gs.system.ffmpegPath,
             '-y',
             '-vcodec', 'png',
             '-r', str(fps),
@@ -425,7 +426,13 @@ class DeforumGenerator():
         fov = fov
         sampling_mode = sampling_mode
         padding_mode = padding_mode
-        outdir = self.outdir
+        self.creation_timestamp = strftime("%d_%b_%Y_%H_%M_%S", gmtime())
+        outdir = os.path.join(self.outdir, self.creation_timestamp)
+
+        # create output folder for the batch
+        os.makedirs(outdir, exist_ok=True)
+        print(f"Saving animation frames to {outdir}")
+
 
         if clear_latent:
             init_latent = None
@@ -473,9 +480,7 @@ class DeforumGenerator():
                     start_frame += 1
             start_frame = start_frame - 1
 
-        # create output folder for the batch
-        os.makedirs(outdir, exist_ok=True)
-        print(f"Saving animation frames to {outdir}")
+
 
         # save settings for the batch
         # settings_filename = os.path.join(outdir, f"{timestring}_settings.txt")
@@ -713,17 +718,16 @@ class DeforumGenerator():
                             os.path.join(outdir, f"{batch_name}_{timestring}_depth_{frame_idx:05}.png"), depth)
                     frame_idx += 1
 
-                # display.clear_output(wait=True)
-                # display.display(image)
-
                 seed = self.next_seed(seed_behavior, seed)
                 image_path = os.path.join(outdir, f"{batch_name}_{timestring}_%05d.png")
-                mp4_path = os.path.join(outdir, f"{batch_name}_{timestring}.mp4")
-                self.signals.deforum_image_cb.emit()
+                mp4_path = os.path.join(gs.system.txt2vidOut, f"{batch_name}_{self.creation_timestamp}.mp4")
+                #self.signals.deforum_image_cb.emit()
             else:
-                self.signals.deforum_image_cb.emit()
+                mp4_path = os.path.join(gs.system.txt2vidOut, f"{batch_name}_{self.creation_timestamp}.mp4")
+                image_path = os.path.join(outdir, f"{batch_name}_{timestring}_%05d.png")
+                max_frames = frame_idx
         # max_frames = frame_idx
-        #self.produce_video(image_path, mp4_path, max_frames)
+        self.produce_video(image_path, mp4_path, max_frames)
         try:
             del depth_model
         except:

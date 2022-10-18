@@ -76,7 +76,7 @@ if __name__ == "__main__":
     #mainWindow.thumbnails.setGeometry(680,0,800,600)
     #mainWindow.w.thumbnails.tileAction.triggered.connect(mainWindow.tileImageClicked)
     mainWindow.w.prompt.w.runButton.clicked.connect(mainWindow.taskSwitcher)
-    mainWindow.w.prompt.w.stopButton.clicked.connect(mainWindow.deforum.setStop)
+
 
     #mainWindow.runner.runButton.clicked.connect(mainWindow.progress_thread)
 

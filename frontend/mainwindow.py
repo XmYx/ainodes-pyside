@@ -120,7 +120,6 @@ class GenerateWindow(QObject):
         settings.load_settings_json()
         self.videoPreview = False
         self.image_path = ""
-        self.deforum = DeforumGenerator()
         self.gr = Generate(
             weights='models/sd-v1-4.ckpt',
             config='configs/stable-diffusion/v1-inference.yaml', )
@@ -131,7 +130,6 @@ class GenerateWindow(QObject):
         self.now = 0
         self.home()
 
-        self.deforum.signals = Callbacks()
         self.signals.reenable_runbutton.connect(self.reenableRunButton)
         self.signals.txt2img_image_cb.connect(self.imageCallback_func)
         self.signals.deforum_step.connect(self.deforumstepCallback_func)
@@ -458,6 +456,9 @@ class GenerateWindow(QObject):
         self.signals.deforum_step.emit()
 
     def deforum_thread(self):
+        self.deforum = DeforumGenerator()
+        self.deforum.signals = Callbacks()
+        self.w.prompt.w.stopButton.clicked.connect(self.deforum.setStop)
 
         self.w.prompt.w.runButton.setEnabled(False)
         QTimer.singleShot(100, lambda: self.pass_object()) # todo why we need that timer here doing nothing?
@@ -555,7 +556,7 @@ class GenerateWindow(QObject):
         batchsize = self.w.sizer_count.w.batchSizeSlider.value()
         seamless = self.w.sampler.w.seamless.isChecked()
         full_precision = self.w.sampler.w.fullPrecision.isChecked()
-        sampler = self.w.sampler.w.comboBox.currentText()
+        sampler = self.w.sampler.w.sampler.currentText()
         upscale = [self.w.sizer_count.w.upscaleSlider.value()]
         gfpgan_strength = self.w.sizer_count.w.gfpganSlider.value() / 100
 
@@ -861,7 +862,7 @@ class GenerateWindow(QObject):
 
 
     def taskSwitcher(self):
-        self.choice = self.w.sampler.w.comboBox_4.currentText()
+        self.choice = self.w.sampler.w.processType.currentText()
         if self.choice == "Text to Video":
             self.deforum_thread()
         elif self.choice == "Text to Image":

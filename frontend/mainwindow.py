@@ -784,8 +784,81 @@ class GenerateWindow(QObject):
 
 
 
-    #def save_settings(self):
+    def save_settings(self):
 
+        gs.diffusion.angle = self.animKeys.w.angle.text()
+        gs.diffusion.angle = self.animKeys.w.angle.text()
+        gs.diffusion.zoom = self.animKeys.w.zoom.text()
+        gs.diffusion.trans_x = self.animKeys.w.trans_x.text()
+        gs.diffusion.trans_y = self.animKeys.w.trans_y.text()
+        gs.diffusion.trans_z = self.animKeys.w.trans_z.text()
+        gs.diffusion.rot_x = self.animKeys.w.rot_x.text()
+        gs.diffusion.rot_y = self.animKeys.w.rot_y.text()
+        gs.diffusion.rot_z = self.animKeys.w.rot_z.text()
+        gs.diffusion.persp_theta = self.animKeys.w.persp_theta.text()
+        gs.diffusion.persp_phi = self.animKeys.w.persp_phi.text()
+        gs.diffusion.persp_gamma = self.animKeys.w.persp_gamma.text()
+        gs.diffusion.persp_fv = self.animKeys.w.persp_fv.text()
+        gs.diffusion.noise_sched = self.animKeys.w.noise_sched.text()
+        gs.diffusion.strength_sched = self.animKeys.w.strength_sched.text()
+        gs.diffusion.contrast_sched = self.animKeys.w.contrast_sched.text()
+
+        gs.diffusion.H = self.w.sizer_count.w.heightSlider.value()
+        gs.diffusion.W = self.w.sizer_count.w.widthSlider.value()
+        gs.diffusion.n_samples = self.w.sizer_count.w.samplesSlider.value()
+        gs.diffusion.batch_size = self.w.sizer_count.w.batchSizeSlider.value()
+        gs.diffusion.scale = self.w.sizer_count.w.scaleSlider.value()
+        gs.diffusion.batch_size = self.w.sizer_count.w.batchSizeSlider.value()
+        gs.diffusion.steps = self.w.sizer_count.w.stepsSlider.value()
+        gs.diffusion.upScale = self.w.sizer_count.w.upScale.setChecked()
+        gs.diffusion.gfpgan_strength = self.w.sizer_count.w.gfpganSlider.value()
+
+        gs.diffusion.fullPrecision = self.w.sampler.w.fullPrecision.setChecked()
+        gs.diffusion.seamless = self.w.sampler.w.seamless.setChecked()
+        gs.diffusion.seed = self.w.sampler.w.seed.text()
+
+gs.diffusion.sampler    index = self.w.sampler.w.sampler.findData()
+        if index != -1:
+            self.w.sampler.w.sampler.setCurrentIndex(index)
+        index = self.w.sampler.w.sampleMode.findData(gs.diffusion.sampleMode)
+        if index != -1:
+            self.w.sampler.w.sampleMode.setCurrentIndex(index)
+
+
+
+        index = self.w.sampler.w.seedBehavior.findData(gs.diffusion.seedBehavior)
+        if index != -1:
+            self.w.sampler.w.seedBehavior.setCurrentIndex(index)
+
+        gs.system.galleryMainPath = self.path_setup.w.galleryMainPath.text()
+        gs.system.txt2imgOut = self.path_setup.w.txt2imgOut.text()
+        gs.system.img2imgTmp = self.path_setup.w.img2imgTmp.text()
+        gs.system.img2imgOut = self.path_setup.w.img2imgOut.text()
+        gs.system.txt2vidSingleFrame = self.path_setup.w.txt2vidSingleFrame.text()
+        gs.system.txt2vidOut = self.path_setup.w.txt2vidOut.text()
+        gs.system.vid2vidTmp = self.path_setup.w.vid2vidTmp.text()
+        gs.system.vid2vidSingleFrame = self.path_setup.w.vid2vidSingleFrame.text()
+        gs.system.vid2vidOut = self.path_setup.w.vid2vidOut.text()
+
+        gs.system.adabinsPath = self.path_setup.w.adabinsPath.text()
+        gs.system.midasPath = self.path_setup.w.midasPath.text()
+        gs.system.sdClipPath = self.path_setup.w.sdClipPath.text()
+        gs.system.sdPath = self.path_setup.w.sdPath.text()
+        gs.system.sdInference = self.path_setup.w.sdInference.text()
+        gs.system.gfpganPath = self.path_setup.w.gfpganPath.text()
+        gs.system.realesrganPath = self.path_setup.w.realesrganPath.text()
+        gs.system.realesrganAnimeModelPath = self.path_setup.w.realesrganAnimeModelPath.text()
+        gs.system.ffmpegPath = self.path_setup.w.ffmpegPath.text()
+        gs.system.settingsPath = self.path_setup.w.settingsPath.text()
+
+        gs.system.gfpganCpu = self.path_setup.w.gfpganCpu.setChecked()
+        gs.system.realesrganCpu = self.path_setup.w.realesrganCpu.setChecked()
+        gs.system.extraModelsCpu = self.path_setup.w.extraModelsCpu.setChecked()
+        gs.system.extraModelsGpu = self.path_setup.w.extraModelsGpu.setChecked()
+
+
+
+        gs.system.gpu = int(self.path_setup.w.gpu.text())
 
 
     #dont know yet

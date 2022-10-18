@@ -15,6 +15,7 @@ from PySide6.QtCore import QCoreApplication, Qt
 QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 app = QApplication(sys.argv)
 
+
 from frontend.mainwindow import *
 
 #from ui_classes import *
@@ -87,5 +88,6 @@ if __name__ == "__main__":
     mainWindow.w.preview.w.zoomOutButton.clicked.connect(mainWindow.zoom_OUT)
     #mainWindow.timeline.timeline.start()
     #mainWindow.deforum_thread()
+
 
     sys.exit(app.exec())

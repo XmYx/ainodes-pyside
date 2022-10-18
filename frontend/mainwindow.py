@@ -156,6 +156,8 @@ class GenerateWindow(QObject):
         self.w.actionSampler.triggered.connect(self.show_sampler)
         self.w.actionSliders.triggered.connect(self.show_sizer_count)
         self.w.actionThumbnails.triggered.connect(self.show_thumbnails)
+        self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings())
+        self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings())
 
     def home(self):
         self.w.thumbnails = Thumbnails()
@@ -246,6 +248,7 @@ class GenerateWindow(QObject):
 
         #self.setup_defaults()
         self.load_settings()
+
 
     def setup_defaults(self):
         self.animKeys.w.angle.setText("0:(0)")
@@ -734,19 +737,12 @@ class GenerateWindow(QObject):
 
         self.w.sampler.w.fullPrecision.setChecked(gs.diffusion.fullPrecision)
         self.w.sampler.w.seamless.setChecked(gs.diffusion.seamless)
-
-        index = self.w.sampler.w.sampler.findData(gs.diffusion.sampler)
-        if index != -1:
-            self.w.sampler.w.sampler.setCurrentIndex(index)
-        index = self.w.sampler.w.sampleMode.findData(gs.diffusion.sampleMode)
-        if index != -1:
-            self.w.sampler.w.sampleMode.setCurrentIndex(index)
-
         self.w.sampler.w.seed.setText(gs.diffusion.seed)
 
-        index = self.w.sampler.w.seedBehavior.findData(gs.diffusion.seedBehavior)
-        if index != -1:
-            self.w.sampler.w.seedBehavior.setCurrentIndex(index)
+        self.w.sampler.w.processType.setCurrentIndex(gs.diffusion.processType)
+        self.w.sampler.w.sampler.setCurrentIndex(gs.diffusion.sampler)
+        self.w.sampler.w.sampleMode.setCurrentIndex(gs.diffusion.sampleMode)
+        self.w.sampler.w.seedBehavior.setCurrentIndex(gs.diffusion.seedBehavior)
 
         self.path_setup.w.galleryMainPath.setText(gs.system.galleryMainPath)
         self.path_setup.w.txt2imgOut.setText(gs.system.txt2imgOut)
@@ -782,54 +778,48 @@ class GenerateWindow(QObject):
         self.create_out_folders()
 
 
-
-
-    def save_settings(self):
-
-        gs.diffusion.angle = self.animKeys.w.angle.text()
-        gs.diffusion.angle = self.animKeys.w.angle.text()
-        gs.diffusion.zoom = self.animKeys.w.zoom.text()
-        gs.diffusion.trans_x = self.animKeys.w.trans_x.text()
-        gs.diffusion.trans_y = self.animKeys.w.trans_y.text()
-        gs.diffusion.trans_z = self.animKeys.w.trans_z.text()
-        gs.diffusion.rot_x = self.animKeys.w.rot_x.text()
-        gs.diffusion.rot_y = self.animKeys.w.rot_y.text()
-        gs.diffusion.rot_z = self.animKeys.w.rot_z.text()
-        gs.diffusion.persp_theta = self.animKeys.w.persp_theta.text()
-        gs.diffusion.persp_phi = self.animKeys.w.persp_phi.text()
-        gs.diffusion.persp_gamma = self.animKeys.w.persp_gamma.text()
-        gs.diffusion.persp_fv = self.animKeys.w.persp_fv.text()
-        gs.diffusion.noise_sched = self.animKeys.w.noise_sched.text()
-        gs.diffusion.strength_sched = self.animKeys.w.strength_sched.text()
-        gs.diffusion.contrast_sched = self.animKeys.w.contrast_sched.text()
+    def save_diffusion_settings(self):
+        gs.diffusion.angle = self.animKeys.w.angle.toPlainText()
+        gs.diffusion.angle = self.animKeys.w.angle.toPlainText()
+        gs.diffusion.zoom = self.animKeys.w.zoom.toPlainText()
+        gs.diffusion.trans_x = self.animKeys.w.trans_x.toPlainText()
+        gs.diffusion.trans_y = self.animKeys.w.trans_y.toPlainText()
+        gs.diffusion.trans_z = self.animKeys.w.trans_z.toPlainText()
+        gs.diffusion.rot_x = self.animKeys.w.rot_x.toPlainText()
+        gs.diffusion.rot_y = self.animKeys.w.rot_y.toPlainText()
+        gs.diffusion.rot_z = self.animKeys.w.rot_z.toPlainText()
+        gs.diffusion.persp_theta = self.animKeys.w.persp_theta.toPlainText()
+        gs.diffusion.persp_phi = self.animKeys.w.persp_phi.toPlainText()
+        gs.diffusion.persp_gamma = self.animKeys.w.persp_gamma.toPlainText()
+        gs.diffusion.persp_fv = self.animKeys.w.persp_fv.toPlainText()
+        gs.diffusion.noise_sched = self.animKeys.w.noise_sched.toPlainText()
+        gs.diffusion.strength_sched = self.animKeys.w.strength_sched.toPlainText()
+        gs.diffusion.contrast_sched = self.animKeys.w.contrast_sched.toPlainText()
 
         gs.diffusion.H = self.w.sizer_count.w.heightSlider.value()
         gs.diffusion.W = self.w.sizer_count.w.widthSlider.value()
         gs.diffusion.n_samples = self.w.sizer_count.w.samplesSlider.value()
         gs.diffusion.batch_size = self.w.sizer_count.w.batchSizeSlider.value()
-        gs.diffusion.scale = self.w.sizer_count.w.scaleSlider.value()
+        gs.diffusion.scale = self.w.sizer_count.w.scaleSlider.value() / 100
         gs.diffusion.batch_size = self.w.sizer_count.w.batchSizeSlider.value()
         gs.diffusion.steps = self.w.sizer_count.w.stepsSlider.value()
-        gs.diffusion.upScale = self.w.sizer_count.w.upScale.setChecked()
+        gs.diffusion.upScale = self.w.sizer_count.w.upScale.isChecked()
         gs.diffusion.gfpgan_strength = self.w.sizer_count.w.gfpganSlider.value()
 
-        gs.diffusion.fullPrecision = self.w.sampler.w.fullPrecision.setChecked()
-        gs.diffusion.seamless = self.w.sampler.w.seamless.setChecked()
+        gs.diffusion.fullPrecision = self.w.sampler.w.fullPrecision.isChecked()
+        gs.diffusion.seamless = self.w.sampler.w.seamless.isChecked()
         gs.diffusion.seed = self.w.sampler.w.seed.text()
 
-gs.diffusion.sampler    index = self.w.sampler.w.sampler.findData()
-        if index != -1:
-            self.w.sampler.w.sampler.setCurrentIndex(index)
-        index = self.w.sampler.w.sampleMode.findData(gs.diffusion.sampleMode)
-        if index != -1:
-            self.w.sampler.w.sampleMode.setCurrentIndex(index)
+        gs.diffusion.sampler = self.w.sampler.w.sampler.currentIndex()
+
+        gs.diffusion.sampleMode = self.w.sampler.w.sampleMode.currentIndex()
+
+        gs.diffusion.seedBehavior = self.w.sampler.w.seedBehavior.currentIndex()
+        gs.diffusion.processType = self.w.sampler.w.processType.currentIndex()
+        settings.save_settings_json()
 
 
-
-        index = self.w.sampler.w.seedBehavior.findData(gs.diffusion.seedBehavior)
-        if index != -1:
-            self.w.sampler.w.seedBehavior.setCurrentIndex(index)
-
+    def save_system_settings(self):
         gs.system.galleryMainPath = self.path_setup.w.galleryMainPath.text()
         gs.system.txt2imgOut = self.path_setup.w.txt2imgOut.text()
         gs.system.img2imgTmp = self.path_setup.w.img2imgTmp.text()
@@ -851,14 +841,13 @@ gs.diffusion.sampler    index = self.w.sampler.w.sampler.findData()
         gs.system.ffmpegPath = self.path_setup.w.ffmpegPath.text()
         gs.system.settingsPath = self.path_setup.w.settingsPath.text()
 
-        gs.system.gfpganCpu = self.path_setup.w.gfpganCpu.setChecked()
-        gs.system.realesrganCpu = self.path_setup.w.realesrganCpu.setChecked()
-        gs.system.extraModelsCpu = self.path_setup.w.extraModelsCpu.setChecked()
-        gs.system.extraModelsGpu = self.path_setup.w.extraModelsGpu.setChecked()
-
-
+        gs.system.gfpganCpu = self.path_setup.w.gfpganCpu.isChecked()
+        gs.system.realesrganCpu = self.path_setup.w.realesrganCpu.isChecked()
+        gs.system.extraModelsCpu = self.path_setup.w.extraModelsCpu.isChecked()
+        gs.system.extraModelsGpu = self.path_setup.w.extraModelsGpu.isChecked()
 
         gs.system.gpu = int(self.path_setup.w.gpu.text())
+        settings.save_settings_json()
 
 
     #dont know yet

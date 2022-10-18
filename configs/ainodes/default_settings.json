@@ -30,6 +30,7 @@
     "extraModelsGpu": false
   },
   "diffusion": {
+    "processType": 1,
     "angle": "0:(0)",
     "zoom": "0:(1.04)",
     "trans_x": "0:(0)",
@@ -56,9 +57,9 @@
     "gfpgan_strength": 0,
     "fullPrecision": false,
     "seamless": false,
-    "sampler": "ddim",
-    "sampleMode": "bicubic",
+    "sampler": 1,
+    "sampleMode": 1,
     "seed": "",
-    "seedBehavior": "iter"
+    "seedBehavior":1
   }
 }

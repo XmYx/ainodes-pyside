@@ -46,7 +46,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QComboBox" name="comboBox_4">
+        <widget class="QComboBox" name="processType">
          <item>
           <property name="text">
            <string>Text to Image</string>

@@ -60,6 +60,20 @@
     "sampler": 1,
     "sampleMode": 1,
     "seed": "",
-    "seedBehavior":1
+    "seedBehavior":1,
+    "frames": 10,
+    "ddim_eta": 0,
+    "strenght": 65,
+    "mask_contrast": 100,
+    "mask_brightness": 100,
+    "mask_blur": 100,
+    "fov": 70,
+    "midas_weight": 60,
+    "near_plane": 200,
+    "far_plane": 2000,
+    "useInit": false,
+    "adabins": true,
+    "clearLatent": true,
+    "clearSample": true
   }
 }

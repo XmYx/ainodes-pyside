@@ -759,6 +759,23 @@ class GenerateWindow(QObject):
         self.w.sampler.w.sampleMode.setCurrentIndex(gs.diffusion.sampleMode)
         self.w.sampler.w.seedBehavior.setCurrentIndex(gs.diffusion.seedBehavior)
 
+
+        self.animSliders.w.frames.setValue(gs.diffusion.frames)
+        self.animSliders.w.ddim_eta.setValue(gs.diffusion.ddim_eta)
+        self.animSliders.w.strenght.setValue(gs.diffusion.strenght)
+        self.animSliders.w.mask_contrast.setValue(gs.diffusion.mask_contrast)
+        self.animSliders.w.mask_brightness.setValue(gs.diffusion.mask_brightness)
+        self.animSliders.w.mask_blur.setValue(gs.diffusion.mask_blur)
+        self.animSliders.w.fov.setValue(gs.diffusion.fov)
+        self.animSliders.w.midas_weight.setValue(gs.diffusion.midas_weight)
+        self.animSliders.w.near_plane.setValue(gs.diffusion.near_plane)
+        self.animSliders.w.far_plane.setValue(gs.diffusion.far_plane)
+
+        self.animSliders.w.useInit.setChecked(gs.diffusion.useInit)
+        self.animSliders.w.adabins.setChecked(gs.diffusion.adabins)
+        self.animSliders.w.clearLatent.setChecked(gs.diffusion.clearLatent)
+        self.animSliders.w.clearSample.setChecked(gs.diffusion.clearSample)
+
         self.path_setup.w.galleryMainPath.setText(gs.system.galleryMainPath)
         self.path_setup.w.txt2imgOut.setText(gs.system.txt2imgOut)
         self.path_setup.w.img2imgTmp.setText(gs.system.img2imgTmp)
@@ -830,6 +847,23 @@ class GenerateWindow(QObject):
 
         gs.diffusion.seedBehavior = self.w.sampler.w.seedBehavior.currentIndex()
         gs.diffusion.processType = self.w.sampler.w.processType.currentIndex()
+
+        gs.diffusion.frames = self.animSliders.w.frames.value()
+        gs.diffusion.ddim_eta = self.animSliders.w.ddim_eta.value()
+        gs.diffusion.strenght = self.animSliders.w.strenght.value()
+        gs.diffusion.mask_contrast = self.animSliders.w.mask_contrast.value()
+        gs.diffusion.mask_brightness = self.animSliders.w.mask_brightness.value()
+        gs.diffusion.mask_blur = self.animSliders.w.mask_blur.value()
+        gs.diffusion.fov = self.animSliders.w.fov.value()
+        gs.diffusion.midas_weight = self.animSliders.w.midas_weight.value()
+        gs.diffusion.near_plane = self.animSliders.w.near_plane.value()
+        gs.diffusion.far_plane = self.animSliders.w.far_plane.value()
+
+        gs.diffusion.useInit = self.animSliders.w.useInit.isChecked()
+        gs.diffusion.adabins = self.animSliders.w.adabins.isChecked()
+        gs.diffusion.clearLatent = self.animSliders.w.clearLatent.isChecked()
+        gs.diffusion.clearSample = self.animSliders.w.clearSample.isChecked()
+
         settings.save_settings_json()
 
 

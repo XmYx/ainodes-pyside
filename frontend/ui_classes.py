@@ -44,7 +44,18 @@ class AnimDials(QObject):
 
     def __init__(self, *args, **kwargs):
         loader = QtUiTools.QUiLoader()
-        file = QFile("frontend/ui_widgets/animDials.ui")
+        file = QFile("frontend/ui_widgets/animSliders.ui")
+        file.open(QFile.ReadOnly)
+        self.w = loader.load(file)
+        file.close()
+        #super().__init__(*args, **kwargs)
+        #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
+
+class AnimSliders(QObject):
+
+    def __init__(self, *args, **kwargs):
+        loader = QtUiTools.QUiLoader()
+        file = QFile("frontend/ui_widgets/animSliders.ui")
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()

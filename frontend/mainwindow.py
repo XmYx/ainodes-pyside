@@ -96,7 +96,7 @@ class GenerateWindow(QObject):
         self.image = None
         self.threadpool = None
         self.timeline = None
-        self.animDials = None
+        self.animSliders = None
         self.animKeys = None
         self.animKeyEditor = None
         self.vpainter = None
@@ -168,7 +168,7 @@ class GenerateWindow(QObject):
         self.w.dynaview = Dynaview()
         self.w.dynaimage = Dynaimage()
         self.timeline = Timeline()
-        self.animDials = AnimDials()
+        self.animSliders = AnimSliders()
         self.animKeys = AnimKeys()
         self.animKeyEditor = AnimKeyEditor()
         self.path_setup = PathSetup()
@@ -183,7 +183,7 @@ class GenerateWindow(QObject):
         self.w.dynaimage.w.playButton.clicked.connect(self.start_timer)
         self.animKeyEditor.w.keyButton.clicked.connect(self.addCurrentFrame)
 
-        self.animDials.w.frames.valueChanged.connect(self.update_timeline)
+        self.animSliders.w.frames.valueChanged.connect(self.update_timeline)
 
         self.w.thumbnails.thumbs.itemClicked.connect(self.viewImageClicked)
         self.w.thumbnails.thumbs.itemDoubleClicked.connect(self.tileImageClicked)
@@ -195,6 +195,21 @@ class GenerateWindow(QObject):
         self.w.sizer_count.w.stepsNumber.display(str(self.w.sizer_count.w.stepsSlider.value()))
         self.w.sizer_count.w.scaleNumber.display(str(self.w.sizer_count.w.scaleSlider.value()))
 
+
+        self.animSliders.w.framesNumber.display(str(self.animSliders.w.frames.value()))
+        self.animSliders.w.ddim_etaNumber.display(str(self.animSliders.w.ddim_eta.value()))
+        self.animSliders.w.strenghtNumber.display(str(self.animSliders.w.strenght.value()))
+        self.animSliders.w.mask_contrastNumber.display(str(self.animSliders.w.mask_contrast.value()))
+        self.animSliders.w.mask_brightnessNumber.display(str(self.animSliders.w.mask_brightness.value()))
+        self.animSliders.w.mask_blurNumber.display(str(self.animSliders.w.mask_blur.value()))
+        self.animSliders.w.fovNumber.display(str(self.animSliders.w.fov.value()))
+        self.animSliders.w.midas_weightNumber.display(str(self.animSliders.w.midas_weight.value()))
+        self.animSliders.w.near_planeNumber.display(str(self.animSliders.w.near_plane.value()))
+        self.animSliders.w.far_planeNumber.display(str(self.animSliders.w.far_plane.value()))
+
+
+
+
         # self.w.setCentralWidget(self.w.preview.w)
         self.w.setCentralWidget(self.w.dynaimage.w)
 
@@ -203,7 +218,7 @@ class GenerateWindow(QObject):
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.timeline)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.thumbnails)
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animDials.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animSliders.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animKeys.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animKeyEditor.w.dockWidget)
@@ -211,8 +226,8 @@ class GenerateWindow(QObject):
 
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(256, 256))
 
-        self.w.tabifyDockWidget(self.w.sizer_count.w.dockWidget, self.animDials.w.dockWidget)
-        self.w.tabifyDockWidget(self.animDials.w.dockWidget, self.w.sampler.w.dockWidget)
+        self.w.tabifyDockWidget(self.w.sizer_count.w.dockWidget, self.animSliders.w.dockWidget)
+        self.w.tabifyDockWidget(self.animSliders.w.dockWidget, self.w.sampler.w.dockWidget)
         self.w.tabifyDockWidget(self.w.sampler.w.dockWidget, self.animKeys.w.dockWidget)
         self.w.tabifyDockWidget(self.w.thumbnails, self.w.dynaview.w.dockWidget)
         self.w.tabifyDockWidget(self.timeline, self.w.prompt.w.dockWidget)
@@ -221,7 +236,7 @@ class GenerateWindow(QObject):
         self.w.thumbnails.setWindowTitle('Thumbnails')
         self.w.sampler.w.dockWidget.setWindowTitle('Sampler')
         self.w.sizer_count.w.dockWidget.setWindowTitle('Sliders')
-        self.animDials.w.dockWidget.setWindowTitle('Dials')
+        self.animSliders.w.dockWidget.setWindowTitle('Anim Setup')
         self.timeline.setWindowTitle('Timeline')
         self.w.prompt.w.dockWidget.setWindowTitle('Prompt')
         self.w.dynaview.w.dockWidget.setWindowTitle('Tensor Preview')
@@ -285,7 +300,7 @@ class GenerateWindow(QObject):
 
     #updates
     def update_timeline(self):
-        self.timeline.timeline.duration = self.animDials.w.frames.value()
+        self.timeline.timeline.duration = self.animSliders.w.frames.value()
         self.timeline.timeline.update()
 
     def updateThumbsZoom(self):
@@ -338,22 +353,22 @@ class GenerateWindow(QObject):
         self.renderedFrames = 0
         self.now = 0
 
-        use_init = self.animDials.w.useInit.isChecked()
-        adabins = self.animDials.w.adabins.isChecked()
-        scale = self.animDials.w.scale.value()
-        ddim_eta = self.animDials.w.ddim_eta.value() / 1000
-        strength = self.animDials.w.strength.value() / 1000
-        mask_contrast_adjust = self.animDials.w.mask_contrast.value() / 1000
-        mask_brightness_adjust = self.animDials.w.mask_brightness.value() / 1000
-        mask_blur = self.animDials.w.mask_blur.value() / 1000
-        fov = self.animDials.w.fov.value()
-        max_frames = self.animDials.w.frames.value()
-        midas_weight = self.animDials.w.midas_weight.value() / 1000
-        near_plane = self.animDials.w.near_plane.value()
-        far_plane = self.animDials.w.far_plane.value()
+        use_init = self.animSliders.w.useInit.isChecked()
+        adabins = self.animSliders.w.adabins.isChecked()
+        scale = self.w.sizer_count.w.scaleSlider.value()
+        ddim_eta = self.animSliders.w.ddim_eta.value() / 1000
+        strength = self.animSliders.w.strength.value() / 1000
+        mask_contrast_adjust = self.animSliders.w.mask_contrast.value() / 1000
+        mask_brightness_adjust = self.animSliders.w.mask_brightness.value() / 1000
+        mask_blur = self.animSliders.w.mask_blur.value() / 1000
+        fov = self.animSliders.w.fov.value()
+        max_frames = self.animSliders.w.frames.value()
+        midas_weight = self.animSliders.w.midas_weight.value() / 1000
+        near_plane = self.animSliders.w.near_plane.value()
+        far_plane = self.animSliders.w.far_plane.value()
         cadence = self.animKeys.w.cadenceSlider.value()
-        clearLatent = self.animDials.w.clearLatent.isChecked()
-        clearSample = self.animDials.w.clearSample.isChecked()
+        clearLatent = self.animSliders.w.clearLatent.isChecked()
+        clearSample = self.animSliders.w.clearSample.isChecked()
         angle = self.animKeys.w.angle.toPlainText()
         zoom = self.animKeys.w.zoom.toPlainText()
         translation_x = self.animKeys.w.trans_x.toPlainText()
@@ -731,7 +746,6 @@ class GenerateWindow(QObject):
         self.w.sizer_count.w.samplesSlider.setValue(gs.diffusion.n_samples)
         self.w.sizer_count.w.batchSizeSlider.setValue(gs.diffusion.batch_size)
         self.w.sizer_count.w.scaleSlider.setValue(gs.diffusion.scale*100)
-        self.w.sizer_count.w.batchSizeSlider.setValue(gs.diffusion.batch_size)
         self.w.sizer_count.w.stepsSlider.setValue(gs.diffusion.steps)
         self.w.sizer_count.w.upScale.setChecked(gs.diffusion.upScale)
         self.w.sizer_count.w.gfpganSlider.setValue(gs.diffusion.gfpgan_strength)
@@ -802,7 +816,6 @@ class GenerateWindow(QObject):
         gs.diffusion.n_samples = self.w.sizer_count.w.samplesSlider.value()
         gs.diffusion.batch_size = self.w.sizer_count.w.batchSizeSlider.value()
         gs.diffusion.scale = self.w.sizer_count.w.scaleSlider.value() / 100
-        gs.diffusion.batch_size = self.w.sizer_count.w.batchSizeSlider.value()
         gs.diffusion.steps = self.w.sizer_count.w.stepsSlider.value()
         gs.diffusion.upScale = self.w.sizer_count.w.upScale.isChecked()
         gs.diffusion.gfpgan_strength = self.w.sizer_count.w.gfpganSlider.value()

@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>678</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QDockWidget" name="dockWidget">
+     <widget class="QWidget" name="dockWidgetContents">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>398</width>
+            <height>652</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="12" column="0">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Mask Overlay Blur</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <layout class="QFormLayout" name="formLayout">
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="useInit">
+                 <property name="text">
+                  <string>Use Init / Last</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QCheckBox" name="clearLatent">
+                 <property name="text">
+                  <string>Clear Latent</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QCheckBox" name="adabins">
+                 <property name="text">
+                  <string>Use AdaBins</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QCheckBox" name="clearSample">
+                 <property name="text">
+                  <string>Clear Sample</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="10" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Mask Brightness</string>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Mask Contrast</string>
+               </property>
+              </widget>
+             </item>
+             <item row="19" column="0">
+              <widget class="QSlider" name="near_plane">
+               <property name="maximum">
+                <number>2000</number>
+               </property>
+               <property name="value">
+                <number>200</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="0">
+              <widget class="QSlider" name="strenght">
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>65</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Strength</string>
+               </property>
+              </widget>
+             </item>
+             <item row="18" column="0">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>Near Plane</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>DDIM_ETA</string>
+               </property>
+              </widget>
+             </item>
+             <item row="14" column="0">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>FOV</string>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="0">
+              <widget class="QSlider" name="mask_contrast">
+               <property name="maximum">
+                <number>200</number>
+               </property>
+               <property name="value">
+                <number>100</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="21" column="0">
+              <widget class="QSlider" name="far_plane">
+               <property name="maximum">
+                <number>10000</number>
+               </property>
+               <property name="value">
+                <number>2000</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="13" column="0">
+              <widget class="QSlider" name="mask_blur">
+               <property name="maximum">
+                <number>200</number>
+               </property>
+               <property name="value">
+                <number>100</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="17" column="0">
+              <widget class="QSlider" name="midas_weight">
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>60</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QSlider" name="ddim_eta">
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="20" column="0">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>Far Plane</string>
+               </property>
+              </widget>
+             </item>
+             <item row="11" column="0">
+              <widget class="QSlider" name="mask_brightness">
+               <property name="maximum">
+                <number>200</number>
+               </property>
+               <property name="value">
+                <number>100</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Frames</string>
+               </property>
+              </widget>
+             </item>
+             <item row="16" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>Midas Weight</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QSlider" name="frames">
+               <property name="maximum">
+                <number>5000</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="15" column="0">
+              <widget class="QSlider" name="fov">
+               <property name="maximum">
+                <number>360</number>
+               </property>
+               <property name="value">
+                <number>70</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLCDNumber" name="framesNumber"/>
+             </item>
+             <item row="5" column="1">
+              <widget class="QLCDNumber" name="ddim_etaNumber"/>
+             </item>
+             <item row="7" column="1">
+              <widget class="QLCDNumber" name="strenghtNumber"/>
+             </item>
+             <item row="9" column="1">
+              <widget class="QLCDNumber" name="mask_contrastNumber"/>
+             </item>
+             <item row="11" column="1">
+              <widget class="QLCDNumber" name="mask_brightnessNumber"/>
+             </item>
+             <item row="13" column="1">
+              <widget class="QLCDNumber" name="mask_blurNumber"/>
+             </item>
+             <item row="15" column="1">
+              <widget class="QLCDNumber" name="fovNumber"/>
+             </item>
+             <item row="17" column="1">
+              <widget class="QLCDNumber" name="midas_weightNumber"/>
+             </item>
+             <item row="19" column="1">
+              <widget class="QLCDNumber" name="near_planeNumber"/>
+             </item>
+             <item row="21" column="1">
+              <widget class="QLCDNumber" name="far_planeNumber"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>65</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>ddim_eta</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ddim_etaNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>172</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>173</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>far_plane</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>far_planeNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>580</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>581</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fov</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>fovNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>427</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>428</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frames</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>framesNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>121</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mask_blur</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>mask_blurNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>376</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>377</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mask_brightness</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>mask_brightnessNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>325</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>326</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mask_contrast</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>mask_contrastNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>274</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>275</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>midas_weight</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>midas_weightNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>478</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>479</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>near_plane</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>near_planeNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>529</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>530</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>strenght</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>strenghtNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>224</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

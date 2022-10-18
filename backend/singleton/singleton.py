@@ -11,6 +11,7 @@ render_mode = ''
 device = ''
 modelFS = ''
 modelCS = ''
+callbackBusy = False
 
 class Singleton:
 	_instance = None

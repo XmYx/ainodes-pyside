@@ -87,7 +87,7 @@ class CalculatorSubWindow(NodeEditorWidget):
             dataStream = QDataStream(eventData, QIODevice.ReadOnly)
             pixmap = QPixmap()
             dataStream >> pixmap
-            op_code = dataStream.readInt()
+            op_code = dataStream.readInt8()
             text = dataStream.readQString()
 
             mouse_position = event.pos()

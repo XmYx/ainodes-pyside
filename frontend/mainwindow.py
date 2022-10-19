@@ -1159,3 +1159,12 @@ class GenerateWindow(QObject):
                 # print(item.text())
             return True
         return super().eventFilter(source, event)
+
+    def closeEvent(self, event):
+        print(f"close event{event.type()}")
+        try:
+            del self.nodeWindow
+        except:
+            pass
+        sys.exit(0)
+

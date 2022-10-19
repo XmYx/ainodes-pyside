@@ -1,5 +1,20 @@
-from frontend.example_calculator.calc_conf import register_node, OP_NODE_ADD, OP_NODE_SUB, OP_NODE_MUL, OP_NODE_DIV
+from frontend.example_calculator.calc_conf import register_node, OP_NODE_ADD, OP_NODE_SUB, OP_NODE_MUL, OP_NODE_DIV, TEST_NODE
 from frontend.example_calculator.calc_node_base import CalcNode
+
+
+
+
+
+@register_node(TEST_NODE)
+class TestNode(CalcNode):
+    icon = "icons/add.png"
+    op_code = TEST_NODE
+    op_title = "Test"
+    content_label = "txt2img_hopefully"
+    content_label_objname = "calc_node_bg"
+
+    def evalOperation(self, input1, input2, input3, input4):
+        return input1 + input2
 
 
 @register_node(OP_NODE_ADD)

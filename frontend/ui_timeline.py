@@ -64,7 +64,6 @@ class OurTimeline(QWidget):
         self.moveSelectedKey = False
         self.posy = 50
 
-
         self.keyFrameList = []
         self.initUI()
 

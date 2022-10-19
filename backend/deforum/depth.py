@@ -20,7 +20,6 @@ def wget(url, outputdir):
 
 class DepthModel():
     def __init__(self, device):
-        self.gs = gs
         self.adabins_helper = None
         self.depth_min = 1000
         self.depth_max = -1000
@@ -38,15 +37,15 @@ class DepthModel():
             print("Downloading AdaBins_nyu.pt...")
             os.makedirs('models', exist_ok=True)
             wget("https://cloudflare-ipfs.com/ipfs/Qmd2mMnDLWePKmgfS8m6ntAg4nhV5VkUyAydYBp8cWWeB7/AdaBins_nyu.pt", 'models')
-        if "adabins" not in self.gs.models:
-            self.gs.models["adabins"] = InferenceHelper(dataset='nyu', device=self.device)
+        if "adabins" not in gs.models:
+            gs.models["adabins"] = InferenceHelper(dataset='nyu', device=self.device)
 
     def load_midas(self, models_path, half_precision=True):
         if not os.path.exists(os.path.join(models_path, 'dpt_large-midas-2f21e586.pt')):
             print("Downloading dpt_large-midas-2f21e586.pt...")
             wget("https://github.com/intel-isl/DPT/releases/download/1_0/dpt_large-midas-2f21e586.pt", models_path)
-        if "midas_model" not in self.gs.models:
-            self.gs.models["midas_model"] = DPTDepthModel(
+        if "midas_model" not in gs.models:
+            gs.models["midas_model"] = DPTDepthModel(
                 path=f"{models_path}/dpt_large-midas-2f21e586.pt",
                 backbone="vitl16_384",
                 non_negative=True,
@@ -66,17 +65,17 @@ class DepthModel():
                 PrepareForNet()
             ])
 
-            self.gs.models["midas_model"].eval()
+            gs.models["midas_model"].eval()
             if half_precision and self.device == torch.device("cuda"):
-                self.gs.models["midas_model"] = self.gs.models["midas_model"].to(memory_format=torch.channels_last)
-                self.gs.models["midas_model"] = self.gs.models["midas_model"].half()
-            self.gs.models["midas_model"].to(self.device)
+                gs.models["midas_model"] = gs.models["midas_model"].to(memory_format=torch.channels_last)
+                gs.models["midas_model"] = gs.models["midas_model"].half()
+            gs.models["midas_model"].to(self.device)
 
     def predict(self, prev_img_cv2, midas_weight) -> torch.Tensor:
         w, h = prev_img_cv2.shape[1], prev_img_cv2.shape[0]
 
         # predict depth with AdaBins    
-        use_adabins = midas_weight < 1.0 and self.gs.models["adabins"] is not None
+        use_adabins = midas_weight < 1.0 and gs.models["adabins"] is not None
         if use_adabins:
             MAX_ADABINS_AREA = 500000
             MIN_ADABINS_AREA = 448*448
@@ -100,7 +99,7 @@ class DepthModel():
             # predict depth and resize back to original dimensions
             try:
                 with torch.no_grad():
-                    _, adabins_depth = self.gs.models["adabins"].predict_pil(depth_input)
+                    _, adabins_depth = gs.models["adabins"].predict_pil(depth_input)
                 if resized:
                     adabins_depth = TF.resize(
                         torch.from_numpy(adabins_depth), 
@@ -113,7 +112,7 @@ class DepthModel():
                 use_adabins = False
             self.torch_gc()
 
-        if self.gs.models["midas_model"] is not None:
+        if gs.models["midas_model"] is not None:
             # convert image from 0->255 uint8 to 0->1 float for feeding to MiDaS
             img_midas = prev_img_cv2.astype(np.float32) / 255.0
             img_midas_input = self.midas_transform({"image": img_midas})["image"]
@@ -124,7 +123,7 @@ class DepthModel():
                 sample = sample.to(memory_format=torch.channels_last)  
                 sample = sample.half()
             with torch.no_grad():            
-                midas_depth = self.gs.models["midas_model"].forward(sample)
+                midas_depth = gs.models["midas_model"].forward(sample)
             midas_depth = torch.nn.functional.interpolate(
                 midas_depth.unsqueeze(1),
                 size=img_midas.shape[:2],

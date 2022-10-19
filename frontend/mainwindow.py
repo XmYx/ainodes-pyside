@@ -232,12 +232,16 @@ class GenerateWindow(QObject):
 
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(256, 256))
 
+
+        self.w.tabifyDockWidget(self.path_setup.w.dockWidget, self.w.sizer_count.w.dockWidget)
         self.w.tabifyDockWidget(self.w.sizer_count.w.dockWidget, self.animSliders.w.dockWidget)
         self.w.tabifyDockWidget(self.animSliders.w.dockWidget, self.w.sampler.w.dockWidget)
         self.w.tabifyDockWidget(self.w.sampler.w.dockWidget, self.animKeys.w.dockWidget)
         self.w.tabifyDockWidget(self.w.thumbnails, self.w.dynaview.w.dockWidget)
         self.w.tabifyDockWidget(self.timeline, self.w.prompt.w.dockWidget)
 
+
+        self.path_setup.w.dockWidget.setWindowTitle('Path Setup')
         self.animKeys.w.dockWidget.setWindowTitle('Anim Keys')
         self.w.thumbnails.setWindowTitle('Thumbnails')
         self.w.sampler.w.dockWidget.setWindowTitle('Sampler')
@@ -260,7 +264,7 @@ class GenerateWindow(QObject):
         self.w.imageItem = QGraphicsPixmapItem()
         self.newPixmap = {}
         self.tpixmap = {}
-        self.updateRate = self.w.sampler.w.steps.value() # todo whats that?
+        self.updateRate = self.w.sampler.w.steps.value() # todo whats that? todo is plans we might share there for us and contributors to see what to implement next
         self.livePainter = QPainter()
         self.vpainter["iins"] = QPainter()
         self.tpixmap = QPixmap(512, 512)
@@ -283,7 +287,7 @@ class GenerateWindow(QObject):
         self.animKeys.w.persp_gamma.setText("0:(0)")
         self.animKeys.w.persp_fv.setText("0:(0)")
         self.animKeys.w.noise_sched.setText("0:(0.02)")
-        self.animKeys.w.strength_sched.setText("0:(0.65)")
+        self.animKeys.w.strength_sched.setText("0:(0.55)")
         self.animKeys.w.contrast_sched.setText("0:(1)")
 
 

@@ -67,7 +67,7 @@
     "seedBehavior":0,
     "frames": 10,
     "ddim_eta": 0,
-    "strenght": 65,
+    "strength": 65,
     "mask_contrast": 100,
     "mask_brightness": 100,
     "mask_blur": 100,

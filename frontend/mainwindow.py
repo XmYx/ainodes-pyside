@@ -198,7 +198,7 @@ class GenerateWindow(QObject):
 
         self.animSliders.w.framesNumber.display(str(self.animSliders.w.frames.value()))
         self.animSliders.w.ddim_etaNumber.display(str(self.animSliders.w.ddim_eta.value()))
-        self.animSliders.w.strenghtNumber.display(str(self.animSliders.w.strenght.value()))
+        self.animSliders.w.strengthNumber.display(str(self.animSliders.w.strength.value()))
         self.animSliders.w.mask_contrastNumber.display(str(self.animSliders.w.mask_contrast.value()))
         self.animSliders.w.mask_brightnessNumber.display(str(self.animSliders.w.mask_brightness.value()))
         self.animSliders.w.mask_blurNumber.display(str(self.animSliders.w.mask_blur.value()))
@@ -408,7 +408,7 @@ class GenerateWindow(QObject):
         show_sample_per_step = True
         self.progress = 0.0
         self.update = 0
-        self.steps = self.w.sizer_count.w.stepsSlider.value()
+        self.steps = self.w.sampler.w.steps.value()
 
         self.onePercent = 100 / (1 * self.steps * max_frames * max_frames)
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
@@ -653,6 +653,10 @@ class GenerateWindow(QObject):
         self.w.thumbnails.setUpdatesEnabled(False)
         # self.run_txt2img()
         # Pass the function to execute
+        #self.livePainter.eraseRect(QRect(0, 0, 512, 512))
+        #pixmap = QPixmap(512, 512)
+        #pixmap.fill(Qt.black)
+        #self.w.dynaview.w.label.setPixmap(pixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
         worker = Worker(self.run_txt2img)
         # worker.signals.progress.connect(self.testThread)
         # worker.signals.result.connect(self.stop_painters)
@@ -774,7 +778,7 @@ class GenerateWindow(QObject):
 
         self.animSliders.w.frames.setValue(gs.diffusion.frames)
         self.animSliders.w.ddim_eta.setValue(gs.diffusion.ddim_eta)
-        self.animSliders.w.strenght.setValue(gs.diffusion.strenght)
+        self.animSliders.w.strength.setValue(gs.diffusion.strength)
         self.animSliders.w.mask_contrast.setValue(gs.diffusion.mask_contrast)
         self.animSliders.w.mask_brightness.setValue(gs.diffusion.mask_brightness)
         self.animSliders.w.mask_blur.setValue(gs.diffusion.mask_blur)
@@ -877,7 +881,7 @@ class GenerateWindow(QObject):
 
         gs.diffusion.frames = self.animSliders.w.frames.value()
         gs.diffusion.ddim_eta = self.animSliders.w.ddim_eta.value()
-        gs.diffusion.strenght = self.animSliders.w.strenght.value()
+        gs.diffusion.strength = self.animSliders.w.strength.value()
         gs.diffusion.mask_contrast = self.animSliders.w.mask_contrast.value()
         gs.diffusion.mask_brightness = self.animSliders.w.mask_brightness.value()
         gs.diffusion.mask_blur = self.animSliders.w.mask_blur.value()

@@ -135,7 +135,7 @@
               </widget>
              </item>
              <item row="7" column="0">
-              <widget class="QSlider" name="strenght">
+              <widget class="QSlider" name="strength">
                <property name="maximum">
                 <number>100</number>
                </property>
@@ -304,7 +304,7 @@
               <widget class="QLCDNumber" name="ddim_etaNumber"/>
              </item>
              <item row="7" column="1">
-              <widget class="QLCDNumber" name="strenghtNumber"/>
+              <widget class="QLCDNumber" name="strengthNumber"/>
              </item>
              <item row="9" column="1">
               <widget class="QLCDNumber" name="mask_contrastNumber"/>
@@ -499,9 +499,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>strenght</sender>
+   <sender>strength</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>strenghtNumber</receiver>
+   <receiver>strengthNumber</receiver>
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">

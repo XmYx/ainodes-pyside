@@ -574,7 +574,7 @@ class GenerateWindow(QObject):
             qimage = ImageQt(self.image)
             self.painter.drawImage(QRect(0, 0, 512, 512), qimage)
 
-        self.w.dynaimage.w.label.setPixmap(self.ipixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
+        self.dynaimage.w.label.setPixmap(self.ipixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
         self.painter.end()
 
     @Slot()
@@ -620,7 +620,7 @@ class GenerateWindow(QObject):
 
         prompt_list = self.w.prompt.w.textEdit.toPlainText()
         prompt_list = prompt_list.split('\n')
-        # self.w.setCentralWidget(self.w.dynaimage.w)
+        # self.w.setCentralWidget(self.dynaimage.w)
         width = self.w.sizer_count.w.widthSlider.value()
         height = self.w.sizer_count.w.heightSlider.value()
         scale = self.w.sampler.w.scale.value()/100

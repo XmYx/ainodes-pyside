@@ -15,7 +15,7 @@ import numpy as np
 import torch
 from PIL import Image
 from PIL.ImageQt import ImageQt
-from PySide6.QtWidgets import QProgressBar
+from PySide6.QtWidgets import QProgressBar, QMainWindow
 from PySide6 import QtUiTools, QtCore
 from PySide6.QtCore import QObject, QThreadPool
 from PySide6.QtWidgets import QSystemTrayIcon, QListWidgetItem
@@ -149,6 +149,22 @@ class GenerateWindow(QObject):
         self.path_setup = PathSetup()
         self.nodeWindow = NodeWindow()
 
+        self.centre = QMainWindow()
+        self.centre.setWindowFlags(QtCore.Qt.Widget)
+        self.centre.setDockOptions(
+            QMainWindow.AnimatedDocks |
+            QMainWindow.AllowNestedDocks)
+        self.w.setCentralWidget(self.centre)
+        self.centre.addDockWidget(
+            QtCore.Qt.LeftDockWidgetArea, self.w.dynaimage.w.dockWidget)
+        self.dockCentre2 = QDockWidget(self.centre)
+        self.dockCentre2.setWindowTitle('Centre 2')
+        self.centre.addDockWidget(
+            QtCore.Qt.RightDockWidgetArea, self.dockCentre2)
+
+
+
+
         self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
         self.timeline.timeline.selectedValueType = self.animKeyEditor.w.comboBox.currentText()        # self.nodes = NodeEditorWindow()
         # self.nodes.nodeeditor.addNodes()
@@ -188,7 +204,7 @@ class GenerateWindow(QObject):
 
 
         # self.w.setCentralWidget(self.w.preview.w)
-        self.w.setCentralWidget(self.w.dynaimage.w)
+        #self.w.setCentralWidget(self.w.dynaimage.w)
 
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sampler.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sizer_count.w.dockWidget)

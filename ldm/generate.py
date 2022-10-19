@@ -227,9 +227,12 @@ class Generate():
             fit            =    False,
             strength       =    None,
             # these are specific to GFPGAN/ESRGAN
+            use_gfpgan     =    False,
             gfpgan_strength=    0,
             save_original  =    False,
-            upscale        =    None,
+            upscale        =    False,
+            upscale_scale=0,
+            upscale_strength=0,
             **args,
     ):   # eat up additional cruft
         """
@@ -355,12 +358,18 @@ class Generate():
                 strength       = strength,
             )
 
-            if upscale is not None or gfpgan_strength > 0:
+            if upscale or gfpgan_strength > 0:
+                print('upscaling')
+                print(upscale)
+                print(gfpgan_strength)
                 self.upscale_and_reconstruct(results,
-                                             upscale        = upscale,
-                                             strength       = gfpgan_strength,
-                                             save_original  = save_original,
-                                             image_callback = image_callback)
+                                             upscale          = upscale,
+                                             upscale_scale    =upscale_scale,
+                                             upscale_strength =upscale_strength,
+                                             use_gfpgan       = use_gfpgan,
+                                             strength         = gfpgan_strength,
+                                             save_original    = save_original,
+                                             image_callback   = image_callback)
 
         except KeyboardInterrupt:
             print('*interrupted*')
@@ -468,12 +477,15 @@ class Generate():
 
     def upscale_and_reconstruct(self,
                                 image_list,
-                                upscale       = None,
+                                upscale       = False,
+                                upscale_scale = 0 ,
+                                upscale_strength= 0,
+                                use_gfpgan    = False,
                                 strength      =  0.0,
                                 save_original = False,
                                 image_callback = None):
         try:
-            if upscale is not None:
+            if upscale:
                 from ldm.gfpgan.gfpgan_tools import real_esrgan_upscale
             if strength > 0:
                 from ldm.gfpgan.gfpgan_tools import run_gfpgan
@@ -485,16 +497,16 @@ class Generate():
         for r in image_list:
             image, seed = r
             try:
-                if upscale is not None:
-                    if len(upscale) < 2:
-                        upscale.append(0.75)
+                if upscale:
+                    if upscale_strength == 0:
+                        upscale_strength = 0.75
                     image = real_esrgan_upscale(
                         image,
-                        upscale[1],
-                        int(upscale[0]),
+                        upscale_strength,
+                        int(upscale_scale),
                         seed,
                     )
-                if strength > 0:
+                if use_gfpgan and strength > 0:
                     image = run_gfpgan(
                         image, strength, seed, 1
                     )
@@ -713,5 +725,3 @@ class Generate():
             print(">> This input is larger than your defaults. If you run out of memory, please use a smaller image.")
 
         return width, height, resize_needed
-
-

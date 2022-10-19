@@ -6,17 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>170</width>
-    <height>304</height>
+    <width>189</width>
+    <height>520</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Sampler</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -32,7 +29,7 @@
    <item>
     <widget class="QDockWidget" name="dockWidget">
      <widget class="QWidget" name="dockWidgetContents">
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QGridLayout" name="gridLayout_2">
        <property name="leftMargin">
         <number>5</number>
        </property>
@@ -45,52 +42,111 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <item>
-        <widget class="QComboBox" name="processType">
-         <item>
-          <property name="text">
-           <string>Text to Image</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Text to Video</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Image to Image</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Video to Video</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="fullPrecision">
-         <property name="text">
-          <string>Full Precision</string>
+       <item row="6" column="0">
+        <widget class="QSlider" name="steps">
+         <property name="maximum">
+          <number>250</number>
+         </property>
+         <property name="value">
+          <number>10</number>
+         </property>
+         <property name="sliderPosition">
+          <number>10</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QCheckBox" name="seamless">
+       <item row="12" column="0">
+        <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Seamless</string>
+          <string>Seed</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="3" column="0">
         <widget class="QLabel" name="label_3">
          <property name="text">
           <string>Sampler</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="14" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Seed Behavior</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="fullPrecision">
+         <property name="text">
+          <string>Full Precision</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="seamless">
+         <property name="text">
+          <string>Seamless</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Sample Mode</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QSlider" name="scale">
+         <property name="maximum">
+          <number>3000</number>
+         </property>
+         <property name="value">
+          <number>750</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="0">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Scale</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Steps</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLCDNumber" name="stepsNumber"/>
+       </item>
+       <item row="9" column="1">
+        <widget class="QLCDNumber" name="scaleNumber"/>
+       </item>
+       <item row="4" column="0" colspan="2">
         <widget class="QComboBox" name="sampler">
          <item>
           <property name="text">
@@ -134,14 +190,31 @@
          </item>
         </widget>
        </item>
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Sample Mode</string>
-         </property>
+       <item row="0" column="0" colspan="2">
+        <widget class="QComboBox" name="processType">
+         <item>
+          <property name="text">
+           <string>Text to Image</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Text to Video</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Image to Image</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Video to Video</string>
+          </property>
+         </item>
         </widget>
        </item>
-       <item>
+       <item row="11" column="0" colspan="2">
         <widget class="QComboBox" name="sampleMode">
          <item>
           <property name="text">
@@ -160,24 +233,10 @@
          </item>
         </widget>
        </item>
-       <item>
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Seed</string>
-         </property>
-        </widget>
-       </item>
-       <item>
+       <item row="13" column="0" colspan="2">
         <widget class="QLineEdit" name="seed"/>
        </item>
-       <item>
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>Seed Behavior</string>
-         </property>
-        </widget>
-       </item>
-       <item>
+       <item row="15" column="0" colspan="2">
         <widget class="QComboBox" name="seedBehavior">
          <item>
           <property name="text">
@@ -196,19 +255,6 @@
          </item>
         </widget>
        </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
      </widget>
     </widget>
@@ -216,5 +262,22 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>steps</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>stepsNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>59</x>
+     <y>186</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>151</x>
+     <y>187</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

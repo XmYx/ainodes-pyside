@@ -81,7 +81,7 @@ if __name__ == "__main__":
     #mainWindow.runner.runButton.clicked.connect(mainWindow.progress_thread)
 
     #mainWindow.w.actionNodes.triggered.connect(mainWindow.nodeWindow.show)
-    mainWindow.w.sizer_count.w.scaleSlider.valueChanged.connect(mainWindow.update_scaleNumber)
+    mainWindow.w.sampler.w.scale.valueChanged.connect(mainWindow.update_scaleNumber)
     mainWindow.w.sizer_count.w.gfpganSlider.valueChanged.connect(mainWindow.update_gfpganNumber)
 
     mainWindow.w.preview.w.zoomInButton.clicked.connect(mainWindow.zoom_IN)

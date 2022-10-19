@@ -394,12 +394,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>761</x>
-     <y>282</y>
+     <x>531</x>
+     <y>593</y>
     </hint>
     <hint type="destinationlabel">
-     <x>52</x>
-     <y>282</y>
+     <x>63</x>
+     <y>594</y>
     </hint>
    </hints>
   </connection>

@@ -121,8 +121,8 @@ class GenerateWindow(QObject):
         self.videoPreview = False
         self.image_path = ""
         self.gr = Generate(
-            weights='models/sd-v1-4.ckpt',
-            config='configs/stable-diffusion/v1-inference.yaml', )
+            weights=gs.system.sdPath,
+            config=gs.system.sdInference, )
         gs.album = {}
         gs.models = {}
         gs.result = ""
@@ -192,8 +192,8 @@ class GenerateWindow(QObject):
         self.w.sizer_count.w.widthNumber.display(str(self.w.sizer_count.w.widthSlider.value()))
         self.w.sizer_count.w.samplesNumber.display(str(self.w.sizer_count.w.samplesSlider.value()))
         self.w.sizer_count.w.batchSizeNumber.display(str(self.w.sizer_count.w.batchSizeSlider.value()))
-        self.w.sizer_count.w.stepsNumber.display(str(self.w.sizer_count.w.stepsSlider.value()))
-        self.w.sizer_count.w.scaleNumber.display(str(self.w.sizer_count.w.scaleSlider.value()))
+        self.w.sampler.w.stepsNumber.display(str(self.w.sampler.w.steps.value()))
+        self.w.sampler.w.scaleNumber.display(str(self.w.sampler.w.scale.value()/100))
 
 
         self.animSliders.w.framesNumber.display(str(self.animSliders.w.frames.value()))
@@ -254,7 +254,7 @@ class GenerateWindow(QObject):
         self.w.imageItem = QGraphicsPixmapItem()
         self.newPixmap = {}
         self.tpixmap = {}
-        self.updateRate = self.w.sizer_count.w.stepsSlider.value()
+        self.updateRate = self.w.sampler.w.steps.value() # todo whats that?
         self.livePainter = QPainter()
         self.vpainter["iins"] = QPainter()
         self.tpixmap = QPixmap(512, 512)
@@ -316,8 +316,8 @@ class GenerateWindow(QObject):
             pass
 
     def update_scaleNumber(self):
-        float = self.w.sizer_count.w.scaleSlider.value() / 100
-        self.w.sizer_count.w.scaleNumber.display(str(float))
+        float = self.w.sampler.w.scale.value() / 100
+        self.w.sampler.w.scaleNumber.display(str(float))
 
     def update_gfpganNumber(self):
         float = self.w.sizer_count.w.gfpganSlider.value() / 10
@@ -355,7 +355,7 @@ class GenerateWindow(QObject):
 
         use_init = self.animSliders.w.useInit.isChecked()
         adabins = self.animSliders.w.adabins.isChecked()
-        scale = self.w.sizer_count.w.scaleSlider.value()
+        scale = self.w.sampler.w.scale.value()/100
         ddim_eta = self.animSliders.w.ddim_eta.value() / 1000
         strength = self.animSliders.w.strength.value() / 1000
         mask_contrast_adjust = self.animSliders.w.mask_contrast.value() / 1000
@@ -554,9 +554,11 @@ class GenerateWindow(QObject):
 
     #text2img
     def run_txt2img(self, progress_callback=None):
+        self.currentFrames = []
+        self.renderedFrames = 0
 
         self.w.statusBar().showMessage("Loading model...")
-        self.load_upscalers()
+        #self.load_upscalers()
 
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
 
@@ -565,14 +567,17 @@ class GenerateWindow(QObject):
         # self.w.setCentralWidget(self.w.dynaimage.w)
         width = self.w.sizer_count.w.widthSlider.value()
         height = self.w.sizer_count.w.heightSlider.value()
-        scale = self.w.sizer_count.w.scaleSlider.value()
-        self.steps = self.w.sizer_count.w.stepsSlider.value()
+        scale = self.w.sampler.w.scale.value()/100
+        self.steps = self.w.sampler.w.steps.value()
         samples = self.w.sizer_count.w.samplesSlider.value()
         batchsize = self.w.sizer_count.w.batchSizeSlider.value()
         seamless = self.w.sampler.w.seamless.isChecked()
         full_precision = self.w.sampler.w.fullPrecision.isChecked()
         sampler = self.w.sampler.w.sampler.currentText()
-        upscale = [self.w.sizer_count.w.upscaleSlider.value()]
+        upscale = self.w.sizer_count.w.upScale.isChecked()
+        upscale_scale =  self.w.sizer_count.w.upscaleScale.value()
+        upscale_strength =  self.w.sizer_count.w.upscaleStrength.value()
+        use_gfpgan = self.w.sizer_count.w.useGfpgan.isChecked()
         gfpgan_strength = self.w.sizer_count.w.gfpganSlider.value() / 100
 
         self.onePercent = 100 / (batchsize * self.steps * samples * len(prompt_list))
@@ -623,6 +628,9 @@ class GenerateWindow(QObject):
                                                sampler_name=sampler,
                                                seed=seed,
                                                upscale=upscale,
+                                               upscale_scale=upscale_scale,
+                                               upscale_strength=upscale_strength,
+                                               use_gfpgan=use_gfpgan,
                                                gfpgan_strength=gfpgan_strength,
                                                strength=0.0,
                                                full_precision=full_precision,
@@ -724,6 +732,7 @@ class GenerateWindow(QObject):
 
     def load_settings(self):
         settings.load_settings_json()
+        self.load_last_prompt()
 
         self.animKeys.w.angle.setText(gs.diffusion.angle)
         self.animKeys.w.zoom.setText(gs.diffusion.zoom)
@@ -740,14 +749,18 @@ class GenerateWindow(QObject):
         self.animKeys.w.noise_sched.setText(gs.diffusion.noise_sched)
         self.animKeys.w.strength_sched.setText(gs.diffusion.strength_sched)
         self.animKeys.w.contrast_sched.setText(gs.diffusion.contrast_sched)
+        self.animKeys.w.cadenceSlider.setValue(gs.diffusion.cadence)
 
         self.w.sizer_count.w.heightSlider.setValue(gs.diffusion.H)
         self.w.sizer_count.w.widthSlider.setValue(gs.diffusion.W)
         self.w.sizer_count.w.samplesSlider.setValue(gs.diffusion.n_samples)
         self.w.sizer_count.w.batchSizeSlider.setValue(gs.diffusion.batch_size)
-        self.w.sizer_count.w.scaleSlider.setValue(gs.diffusion.scale*100)
-        self.w.sizer_count.w.stepsSlider.setValue(gs.diffusion.steps)
+        self.w.sampler.w.scale.setValue(gs.diffusion.scale*100)
+        self.w.sampler.w.steps.setValue(gs.diffusion.steps)
         self.w.sizer_count.w.upScale.setChecked(gs.diffusion.upScale)
+        self.w.sizer_count.w.upscaleScale.setValue(gs.diffusion.upscale_scale)
+        self.w.sizer_count.w.upscaleStrength.setValue(gs.diffusion.upscale_strength)
+        self.w.sizer_count.w.useGfpgan.setChecked(gs.diffusion.use_gfpgan)
         self.w.sizer_count.w.gfpganSlider.setValue(gs.diffusion.gfpgan_strength)
 
         self.w.sampler.w.fullPrecision.setChecked(gs.diffusion.fullPrecision)
@@ -758,7 +771,6 @@ class GenerateWindow(QObject):
         self.w.sampler.w.sampler.setCurrentIndex(gs.diffusion.sampler)
         self.w.sampler.w.sampleMode.setCurrentIndex(gs.diffusion.sampleMode)
         self.w.sampler.w.seedBehavior.setCurrentIndex(gs.diffusion.seedBehavior)
-
 
         self.animSliders.w.frames.setValue(gs.diffusion.frames)
         self.animSliders.w.ddim_eta.setValue(gs.diffusion.ddim_eta)
@@ -802,13 +814,24 @@ class GenerateWindow(QObject):
         self.path_setup.w.extraModelsCpu.setChecked(gs.system.extraModelsCpu)
         self.path_setup.w.extraModelsGpu.setChecked(gs.system.extraModelsGpu)
 
-
-
         self.path_setup.w.gpu.setText(str(gs.system.gpu))
-
-
         self.create_out_folders()
 
+
+
+    def load_last_prompt(self):
+        data = ''
+        try:
+            with open('configs/ainodes/last_prompt.txt', 'r') as file:
+                data = file.read().replace('\n', '')
+        except:
+            pass
+        self.w.prompt.w.textEdit.setPlainText(data)
+
+    def save_last_prompt(self):
+        f = open('configs/ainodes/last_prompt.txt', 'w')
+        f.write(self.w.prompt.w.textEdit.toPlainText())
+        f.close()
 
     def save_diffusion_settings(self):
         gs.diffusion.angle = self.animKeys.w.angle.toPlainText()
@@ -827,24 +850,28 @@ class GenerateWindow(QObject):
         gs.diffusion.noise_sched = self.animKeys.w.noise_sched.toPlainText()
         gs.diffusion.strength_sched = self.animKeys.w.strength_sched.toPlainText()
         gs.diffusion.contrast_sched = self.animKeys.w.contrast_sched.toPlainText()
+        gs.diffusion.cadence = self.animKeys.w.cadenceSlider.value()
 
         gs.diffusion.H = self.w.sizer_count.w.heightSlider.value()
         gs.diffusion.W = self.w.sizer_count.w.widthSlider.value()
         gs.diffusion.n_samples = self.w.sizer_count.w.samplesSlider.value()
         gs.diffusion.batch_size = self.w.sizer_count.w.batchSizeSlider.value()
-        gs.diffusion.scale = self.w.sizer_count.w.scaleSlider.value() / 100
-        gs.diffusion.steps = self.w.sizer_count.w.stepsSlider.value()
+        gs.diffusion.scale = self.w.sampler.w.scale.value() / 100
+        gs.diffusion.steps = self.w.sampler.w.steps.value()
         gs.diffusion.upScale = self.w.sizer_count.w.upScale.isChecked()
+        gs.diffusion.upscale_scale = self.w.sizer_count.w.upscaleScale.value()
+        gs.diffusion.upscale_strength = self.w.sizer_count.w.upscaleStrength.value()
+        gs.diffusion.use_gfpgan = self.w.sizer_count.w.useGfpgan.isChecked()
         gs.diffusion.gfpgan_strength = self.w.sizer_count.w.gfpganSlider.value()
 
+
+        gs.diffusion.scale = self.w.sampler.w.scale.value() / 100
+        gs.diffusion.steps = self.w.sampler.w.steps.value()
         gs.diffusion.fullPrecision = self.w.sampler.w.fullPrecision.isChecked()
         gs.diffusion.seamless = self.w.sampler.w.seamless.isChecked()
         gs.diffusion.seed = self.w.sampler.w.seed.text()
-
         gs.diffusion.sampler = self.w.sampler.w.sampler.currentIndex()
-
         gs.diffusion.sampleMode = self.w.sampler.w.sampleMode.currentIndex()
-
         gs.diffusion.seedBehavior = self.w.sampler.w.seedBehavior.currentIndex()
         gs.diffusion.processType = self.w.sampler.w.processType.currentIndex()
 
@@ -908,7 +935,9 @@ class GenerateWindow(QObject):
         self.viewImageClicked(item)
 
 
+
     def taskSwitcher(self):
+        self.save_last_prompt()
         self.choice = self.w.sampler.w.processType.currentText()
         if self.choice == "Text to Video":
             self.deforum_thread()
@@ -998,7 +1027,7 @@ class GenerateWindow(QObject):
 
         print('preloading CLIP model (Ignore the deprecation warnings)...')
         sys.stdout.flush()
-        self.load_upscalers()
+        #self.load_upscalers()
         tokenizer = CLIPTokenizer.from_pretrained(version)
         transformer = CLIPTextModel.from_pretrained(version)
         print('\n\n...success')
@@ -1031,8 +1060,8 @@ class GenerateWindow(QObject):
     def liveUpdate(self, data1=None, data2=None):
         self.update += 1
         self.w.statusBar().showMessage(f"Generating... (step {data2} of {self.steps})")
-        self.updateRate = self.w.sizer_count.w.previewSlider.value()
-        if self.update >= self.updateRate:
+        updateRate = self.w.sizer_count.w.previewSlider.value()
+        if self.update >= updateRate:
             try:
                 self.update = 0
                 self.test_output(data1, data2)

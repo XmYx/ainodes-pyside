@@ -24,8 +24,15 @@ class AnimKeyEditor(QObject):
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
-        #super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
+
+class FetchPrompts(QObject):
+
+    def __init__(self, *args, **kwargs):
+        loader = QtUiTools.QUiLoader()
+        file = QFile("frontend/ui_widgets/prompt_fetcher.ui")
+        file.open(QFile.ReadOnly)
+        self.w = loader.load(file)
+        file.close()
 
 class AnimKeys(QObject):
 
@@ -35,9 +42,6 @@ class AnimKeys(QObject):
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
-        #super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
-
 
 class AnimDials(QObject):
 
@@ -47,8 +51,6 @@ class AnimDials(QObject):
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
-        #super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
 
 class AnimSliders(QObject):
 
@@ -58,9 +60,6 @@ class AnimSliders(QObject):
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
-        #super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
-
 
 class PathSetup(QObject):
 
@@ -70,9 +69,6 @@ class PathSetup(QObject):
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
-        #super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
-
 
 class SizerCount(QObject):
 
@@ -82,13 +78,9 @@ class SizerCount(QObject):
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
-        #super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/sizer_count.ui", self)
 
 class Dynaimage(QObject):
     def __init__(self, *args, **kwargs):
-        #super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/sampler.ui", self)
         loader = QtUiTools.QUiLoader()
         file = QFile("frontend/ui_widgets/dynaimage.ui")
         file.open(QFile.ReadOnly)
@@ -96,8 +88,6 @@ class Dynaimage(QObject):
         file.close()
 class Dynaview(QObject):
     def __init__(self, *args, **kwargs):
-        #super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/sampler.ui", self)
         loader = QtUiTools.QUiLoader()
         file = QFile("frontend/ui_widgets/dynaview.ui")
         file.open(QFile.ReadOnly)
@@ -105,8 +95,6 @@ class Dynaview(QObject):
         file.close()
 class Sampler(QObject):
     def __init__(self, *args, **kwargs):
-        #super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/sampler.ui", self)
         loader = QtUiTools.QUiLoader()
         file = QFile("frontend/ui_widgets/sampler.ui")
         file.open(QFile.ReadOnly)
@@ -115,8 +103,6 @@ class Sampler(QObject):
 
 class Prompt(QObject):
     def __init__(self, *args, **kwargs):
-        #super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/prompt.ui", self)
         loader = QtUiTools.QUiLoader()
         file = QFile("frontend/ui_widgets/prompt.ui")
         file.open(QFile.ReadOnly)
@@ -124,8 +110,6 @@ class Prompt(QObject):
         file.close()
 class Anim(QObject):
     def __init__(self, *args, **kwargs):
-        #super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/anim.ui", self)
         loader = QtUiTools.QUiLoader()
         file = QFile("frontend/ui_widgets/anim.ui")
         file.open(QFile.ReadOnly)
@@ -141,13 +125,6 @@ class PhotoViewer(QGraphicsView):
         self._photo = QGraphicsPixmapItem()
         self._scene.addItem(self._photo)
         self.setScene(self._scene)
-        #self.setDragMode(QtWidgets.QGraphicsView.RubberBandDrag)
-        #self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
-        #self.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
-        #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        #self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        #self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(30, 30, 30)))
-        #self.setFrameShape(QtWidgets.QFrame.NoFrame)
 
     def hasPhoto(self):
         return not self._empty
@@ -178,22 +155,6 @@ class PhotoViewer(QGraphicsView):
             self._photo.setPixmap(QPixmap())
         self.fitInView()
 
-
-    """def wheelEvent(self, event):
-        if self.hasPhoto():
-            if event.angleDelta().y() > 0:
-                factor = 1.25
-                self._zoom += 1
-            else:
-                factor = 0.8
-                self._zoom -= 1
-            if self._zoom > 0:
-                self.scale(factor, factor)
-            elif self._zoom == 0:
-                self.fitInView()
-            else:
-                self._zoom = 0"""
-
     def toggleDragMode(self):
         if self.dragMode() == QtWidgets.QGraphicsView.ScrollHandDrag:
             self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
@@ -214,14 +175,7 @@ class Preview(QObject):
     w = loader.load(file)
     file.close()
     def __init__(self, *args, **kwargs):
-        #super().__init__(*args, **kwargs)
-        #uic.loadUi("frontend/ui_widgets/preview.ui", self)
-
         self._zoom = 0
-
-        #self.graphicsView = PhotoViewer(self)
-        #self.scene = QGraphicsScene()
-        #self.graphicsView.setScene(self.scene)
         self.zoom = 1
         self.rotate = 0
 
@@ -418,9 +372,5 @@ class Thumbnails(QDockWidget):
         self.setWidget(self.dockWidgetContents)
         self.thumbs.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.thumbs.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
-        #self.verticalLayout.addWidget(self)
-
 
         QMetaObject.connectSlotsByName(self)
-
-

@@ -974,6 +974,7 @@ class DeforumGenerator():
                             x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
                             image = Image.fromarray(x_sample.astype(np.uint8))
                             results.append(image)
+                    self.torch_gc()
         return results
 
     def sampler_fn(self,

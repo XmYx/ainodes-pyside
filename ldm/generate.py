@@ -166,6 +166,7 @@ class Generate():
         device_type          = choose_torch_device()
         self.session_peakmem = torch.cuda.max_memory_allocated() if device_type == 'cuda' else None
         transformers.logging.set_verbosity_error()
+
     def torch_gc(self):
         gc.collect()
         torch.cuda.empty_cache()
@@ -364,8 +365,8 @@ class Generate():
                 print(gfpgan_strength)
                 self.upscale_and_reconstruct(results,
                                              upscale          = upscale,
-                                             upscale_scale    =upscale_scale,
-                                             upscale_strength =upscale_strength,
+                                             upscale_scale    = upscale_scale,
+                                             upscale_strength = upscale_strength,
                                              use_gfpgan       = use_gfpgan,
                                              strength         = gfpgan_strength,
                                              save_original    = save_original,
@@ -481,7 +482,7 @@ class Generate():
                                 upscale_scale = 0 ,
                                 upscale_strength= 0,
                                 use_gfpgan    = False,
-                                strength      =  0.0,
+                                strength      = 0.0,
                                 save_original = False,
                                 image_callback = None):
         try:

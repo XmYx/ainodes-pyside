@@ -9,16 +9,15 @@ settings.load_settings_json()
 gs = singleton
 
 import random
-import time, os, sys
+import time, sys, gc
 
 import numpy as np
 import torch
 from PIL import Image
 from PIL.ImageQt import ImageQt
 from PySide6.QtWidgets import QProgressBar, QMainWindow
-from PySide6 import QtUiTools, QtCore
-from PySide6.QtCore import QObject, QThreadPool
-from PySide6.QtWidgets import QSystemTrayIcon, QListWidgetItem
+from PySide6.QtCore import QThreadPool
+from PySide6.QtWidgets import QListWidgetItem
 from einops import rearrange
 
 import transformers
@@ -141,13 +140,14 @@ class GenerateWindow(QObject):
         self.w.anim = Anim()
         self.w.prompt = Prompt()
         self.w.dynaview = Dynaview()
-        
+
         self.timeline = Timeline()
         self.animSliders = AnimSliders()
         self.animKeys = AnimKeys()
         self.animKeyEditor = AnimKeyEditor()
         self.path_setup = PathSetup()
         self.nodeWindow = NodeWindow()
+        self.prompt_fetcher = FetchPrompts()
         self.dynaimage = Dynaimage()
 
 
@@ -193,11 +193,6 @@ class GenerateWindow(QObject):
         self.animSliders.w.far_planeNumber.display(str(self.animSliders.w.far_plane.value()))
 
 
-
-
-        # self.w.setCentralWidget(self.w.preview.w)
-        #self.w.setCentralWidget(self.dynaimage.w)
-
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sampler.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sizer_count.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
@@ -208,6 +203,7 @@ class GenerateWindow(QObject):
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animKeyEditor.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.path_setup.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.prompt_fetcher.w.dockWidget)
 
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(256, 256))
 
@@ -231,6 +227,7 @@ class GenerateWindow(QObject):
         self.w.dynaview.w.dockWidget.setWindowTitle('Tensor Preview')
         self.dynaimage.w.dockWidget.setWindowTitle('Image Preview')
         self.w.preview.w.setWindowTitle('Canvas')
+        self.prompt_fetcher.w.setWindowTitle('Prompt Fetcher')
 
         self.vpainter = {}
         self.w.preview.w.scene = QGraphicsScene()
@@ -248,27 +245,7 @@ class GenerateWindow(QObject):
         self.vpainter["iins"] = QPainter()
         self.tpixmap = QPixmap(512, 512)
 
-        #self.setup_defaults()
         self.load_settings()
-
-
-    def setup_defaults(self):
-        self.animKeys.w.angle.setText("0:(0)")
-        self.animKeys.w.zoom.setText("0:(0)")
-        self.animKeys.w.trans_x.setText("0:(0)")
-        self.animKeys.w.trans_y.setText("0:(0)")
-        self.animKeys.w.trans_z.setText("0:(0)")
-        self.animKeys.w.rot_x.setText("0:(0)")
-        self.animKeys.w.rot_y.setText("0:(0)")
-        self.animKeys.w.rot_z.setText("0:(0)")
-        self.animKeys.w.persp_theta.setText("0:(0)")
-        self.animKeys.w.persp_phi.setText("0:(0)")
-        self.animKeys.w.persp_gamma.setText("0:(0)")
-        self.animKeys.w.persp_fv.setText("0:(0)")
-        self.animKeys.w.noise_sched.setText("0:(0.02)")
-        self.animKeys.w.strength_sched.setText("0:(0.55)")
-        self.animKeys.w.contrast_sched.setText("0:(1)")
-
 
     def showTypeKeyframes(self):
         valueType = self.animKeyEditor.w.comboBox.currentText()
@@ -386,6 +363,11 @@ class GenerateWindow(QObject):
         self.w.path_setup.show()
 
 
+    def torch_gc(self):
+        gc.collect()
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
+
     #deforum
     def run_deforum(self, progress_callback=None):
 
@@ -452,6 +434,7 @@ class GenerateWindow(QObject):
 
         self.onePercent = 100 / (1 * self.steps * max_frames * max_frames)
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
+        self.torch_gc()
         self.deforum.render_animation(animation_prompts=prompt_series,
                                       steps=self.steps,
                                       adabins = adabins,
@@ -492,6 +475,7 @@ class GenerateWindow(QObject):
                                       shouldStop=False,
 
                                       )
+        self.torch_gc()
         self.stop_painters()
 
         self.signals.reenable_runbutton.emit()
@@ -559,7 +543,7 @@ class GenerateWindow(QObject):
             qimage = ImageQt(self.image)
             self.painter.drawImage(QRect(0, 0, 512, 512), qimage)
 
-        self.dynaimage.w.label.setPixmap(self.ipixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
+        self.w.dynaimage.w.label.setPixmap(self.ipixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
         self.painter.end()
 
     @Slot()
@@ -605,7 +589,7 @@ class GenerateWindow(QObject):
 
         prompt_list = self.w.prompt.w.textEdit.toPlainText()
         prompt_list = prompt_list.split('\n')
-        # self.w.setCentralWidget(self.dynaimage.w)
+        # self.w.setCentralWidget(self.w.dynaimage.w)
         width = self.w.sizer_count.w.widthSlider.value()
         height = self.w.sizer_count.w.heightSlider.value()
         scale = self.w.sampler.w.scale.value()/100
@@ -656,7 +640,7 @@ class GenerateWindow(QObject):
         self.update = 0
         for i in range(batchsize):
             for prompt in prompt_list:
-
+                self.torch_gc()
                 results = self.gr.prompt2image(prompt=prompt,
                                                outdir=outdir,
                                                cfg_scale=scale,
@@ -687,6 +671,7 @@ class GenerateWindow(QObject):
                     # print("We did set the image")
                     #
                     # self.get_pic(clear=False)
+            self.torch_gc()
         self.signals.reenable_runbutton.emit()
         # self.stop_painters()
     def txt2img_thread(self):
@@ -1064,7 +1049,6 @@ class GenerateWindow(QObject):
         print('preloading Kornia requirements (ignore the deprecation warnings)...')
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore', category=DeprecationWarning)
-            import kornia
         print('...success')
 
         version = 'openai/clip-vit-large-patch14'
@@ -1175,4 +1159,3 @@ class GenerateWindow(QObject):
         except:
             pass
         sys.exit(0)
-

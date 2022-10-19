@@ -262,8 +262,8 @@ class GenerateWindow(QObject):
 
     def use_prompt(self):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
-        self.w.prompt.w.textEdit.setPlainText(prompt)
-        print(prompt)
+        self.w.prompt.w.textEdit.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
+
 
     def get_prompts(self):
         out_text = ''

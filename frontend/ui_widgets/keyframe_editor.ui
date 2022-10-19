@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>478</width>
-    <height>335</height>
+    <width>431</width>
+    <height>446</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,35 +28,12 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>440</width>
-            <height>275</height>
+            <width>405</width>
+            <height>404</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="3" column="2">
-            <widget class="QSpinBox" name="valueSpin"/>
-           </item>
-           <item row="2" column="2">
-            <widget class="QPushButton" name="keyButton">
-             <property name="text">
-              <string>PushButton</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1" rowspan="4">
-            <widget class="QTextEdit" name="valueText"/>
-           </item>
            <item row="4" column="2">
-            <widget class="QDoubleSpinBox" name="valueDoubleSpin"/>
-           </item>
-           <item row="1" column="2">
-            <widget class="QCheckBox" name="keyCheckbox">
-             <property name="text">
-              <string>CheckBox</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="2">
             <spacer name="verticalSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -68,6 +45,86 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="keyButton">
+             <property name="text">
+              <string>Add / Edit Keyframe</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDoubleSpinBox" name="valueText">
+             <property name="minimum">
+              <double>-100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QComboBox" name="comboBox">
+             <item>
+              <property name="text">
+               <string>Strength</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Noise</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Contrast</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Rotation X</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Rotation Y</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Rotation Z</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Translation X</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Translation Y</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Translation Z</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Select Value Type to view/edit</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Keyframe value:</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>

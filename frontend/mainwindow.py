@@ -194,27 +194,38 @@ class GenerateWindow(QObject):
         self.animSliders.w.far_planeNumber.display(str(self.animSliders.w.far_plane.value()))
 
 
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sampler.w.dockWidget)
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sizer_count.w.dockWidget)
-        self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
-        self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.timeline)
-        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.thumbnails)
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animSliders.w.dockWidget)
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animKeys.w.dockWidget)
-        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animKeyEditor.w.dockWidget)
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.path_setup.w.dockWidget)
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.prompt_fetcher.w.dockWidget)
+
 
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(256, 256))
 
 
-        self.w.tabifyDockWidget(self.path_setup.w.dockWidget, self.w.sizer_count.w.dockWidget)
-        self.w.tabifyDockWidget(self.w.sizer_count.w.dockWidget, self.animSliders.w.dockWidget)
-        self.w.tabifyDockWidget(self.animSliders.w.dockWidget, self.w.sampler.w.dockWidget)
-        self.w.tabifyDockWidget(self.w.sampler.w.dockWidget, self.animKeys.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sampler.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sizer_count.w.dockWidget)
+
+        self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.animKeys.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.prompt_fetcher.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.timeline)
+
+
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.thumbnails)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.path_setup.w.dockWidget)
+
+        self.dynaimage.w.setMinimumSize(QtCore.QSize(400, 256))
+
+
+        self.w.tabifyDockWidget(self.path_setup.w.dockWidget, self.w.thumbnails)
         self.w.tabifyDockWidget(self.w.thumbnails, self.w.dynaview.w.dockWidget)
+        self.w.tabifyDockWidget(self.w.dynaview.w.dockWidget, self.animSliders.w.dockWidget)
+
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animKeyEditor.w.dockWidget)
+
         self.w.tabifyDockWidget(self.timeline, self.w.prompt.w.dockWidget)
+
+
+
 
 
         self.path_setup.w.dockWidget.setWindowTitle('Path Setup')

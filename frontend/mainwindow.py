@@ -36,8 +36,11 @@ from ldm.generate import Generate
 
 from PySide6.QtCore import *
 
+from datetime import datetime
+from uuid import uuid4
 
-class Keyframes(object):
+
+"""class Keyframes(object):
     def __init__(self):
         self.keyframes = {}
         super().__init__()
@@ -66,7 +69,7 @@ class Keyframes(object):
             print(keys)
             print(keys[0])
             print(keys[1])
-            print(keys[1][1]['keyframe'])
+            print(keys[1][1]['keyframe'])"""
 
 
 
@@ -115,7 +118,7 @@ class GenerateWindow(QObject):
         self.progress = None
         self.ftimer = QTimer(self)
         self.signals = Callbacks()
-        self.kf = Keyframes()
+        #self.kf = Keyframes()
 
         settings.load_settings_json()
         self.videoPreview = False
@@ -157,6 +160,9 @@ class GenerateWindow(QObject):
         self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings())
         self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings())
 
+        self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
+
+
     def home(self):
         self.w.thumbnails = Thumbnails()
         self.threadpool = QThreadPool()
@@ -172,8 +178,8 @@ class GenerateWindow(QObject):
         self.animKeys = AnimKeys()
         self.animKeyEditor = AnimKeyEditor()
         self.path_setup = PathSetup()
-
-        # self.nodes = NodeEditorWindow()
+        self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
+        self.timeline.timeline.selectedValueType = self.animKeyEditor.w.comboBox.currentText()        # self.nodes = NodeEditorWindow()
         # self.nodes.nodeeditor.addNodes()
         self.timeline.timeline.update()
 
@@ -281,22 +287,73 @@ class GenerateWindow(QObject):
         self.animKeys.w.contrast_sched.setText("0:(1)")
 
 
+    def showTypeKeyframes(self):
+        valueType = self.animKeyEditor.w.comboBox.currentText()
+        print(valueType)
+        self.timeline.timeline.selectedValueType = valueType
+        self.updateAnimKeys()
+    def sort_keys(self, e):
+        return e.position
+
+    def updateAnimKeys(self):
+        tempString = ""
+        valueType = self.animKeyEditor.w.comboBox.currentText()
+        self.timeline.timeline.keyFrameList.sort(key=self.sort_keys)
+        for item in self.timeline.timeline.keyFrameList:
+            if item.valueType == valueType:
+                if tempString == "":
+                    tempString = f'{item.position}:({item.value})'
+                else:
+                    tempString = f'{tempString}, {item.position}:({item.value})'
+        selection = self.animKeyEditor.w.comboBox.currentText()
+        if tempString != "":
+            if "Contrast" in selection:
+                self.animKeys.w.contrast_sched.setText(tempString)
+            if "Noise" in selection:
+                self.animKeys.w.noise_sched.setText(tempString)
+            if "Strength" in selection:
+                self.animKeys.w.strength_sched.setText(tempString)
+            if "Rotation X" in selection:
+                self.animKeys.w.rot_x.setText(tempString)
+            if "Rotation Y" in selection:
+                self.animKeys.w.rot_y.setText(tempString)
+            if "Rotation Z" in selection:
+                self.animKeys.w.rot_z.setText(tempString)
+            if "Translation X" in selection:
+                self.animKeys.w.trans_x.setText(tempString)
+            if "Translation Y" in selection:
+                self.animKeys.w.trans_y.setText(tempString)
+            if "Translation Z" in selection:
+                self.animKeys.w.trans_z.setText(tempString)
+            if "Angle" in selection:
+                self.animKeys.w.angle.setText(tempString)
+            if "Zoom" in selection:
+                self.animKeys.w.zoom.setText(tempString)
+        #perspective_flip_theta = self.animKeys.w.persp_theta.toPlainText()
+        #perspective_flip_phi = self.animKeys.w.persp_phi.toPlainText()
+        #perspective_flip_gamma = self.animKeys.w.persp_gamma.toPlainText()
+        #perspective_flip_fv = self.animKeys.w.persp_fv.toPlainText()
+    @Slot()
+    def updateKeyFramesFromTemp(self):
+        self.updateAnimKeys()
+
     def addCurrentFrame(self):
-        self.value = self.animKeyEditor.w.valueText.toPlainText()
-        self.selection = "Contrast"
-
-        timepos = int(self.timeline.timeline.pointerTimePos)
-
-        print("START OF DEBUG")
-        print(f"pointer pos {self.timeline.timeline.pointerTimePos}")
-
-        print(f"duration {self.timeline.timeline.duration}")
-        print(f"timepos {timepos}")
-
-        self.kf.addKeyframe(timepos, self.selection, self.value)
-        self.timeline.timeline.keyFrameList = self.kf.tempList
+        matchFound = False
+        value = self.animKeyEditor.w.valueText.value()
+        valueType = self.animKeyEditor.w.comboBox.currentText()
+        position = int(self.timeline.timeline.pointerTimePos)
+        keyframe = {}
+        uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
+        keyframe[position] = KeyFrame(uid, valueType, position, value)
+        for items in self.timeline.timeline.keyFrameList:
+            if items.valueType == valueType:
+                if items.position == position:
+                    items.value = value
+                    matchFound = True
+        if matchFound == False:
+            self.timeline.timeline.keyFrameList.append(keyframe[position])
         self.timeline.timeline.update()
-
+        self.updateAnimKeys()
 
     #updates
     def update_timeline(self):

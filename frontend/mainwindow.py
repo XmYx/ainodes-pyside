@@ -592,6 +592,7 @@ class GenerateWindow(QObject):
         self.w.statusBar().showMessage("Loading model...")
         #self.load_upscalers()
 
+
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
 
         prompt_list = self.w.prompt.w.textEdit.toPlainText()
@@ -620,7 +621,6 @@ class GenerateWindow(QObject):
             seed = ''
 
         outdir = gs.system.txt2imgOut
-
 
         """The full list of arguments to Generate() are:
         gr = Generate(

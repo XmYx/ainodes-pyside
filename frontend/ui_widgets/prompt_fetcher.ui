@@ -43,6 +43,13 @@
        <item>
         <widget class="QTextEdit" name="output"/>
        </item>
+       <item>
+        <widget class="QPushButton" name="usePrompt">
+         <property name="text">
+          <string>Use selected Prompt</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>

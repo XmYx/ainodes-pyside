@@ -2,9 +2,9 @@
 """
 A module containing the Edge Dragging functionality
 """
-from nodeeditor.node_graphics_socket import QDMGraphicsSocket
-from nodeeditor.node_edge import EDGE_TYPE_DEFAULT
-from nodeeditor.utils import dumpException
+from sd_nodeeditor.node_graphics_socket import QDMGraphicsSocket
+from sd_nodeeditor.node_edge import EDGE_TYPE_DEFAULT
+from sd_nodeeditor.utils import dumpException
 
 
 DEBUG = False

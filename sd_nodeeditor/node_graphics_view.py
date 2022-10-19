@@ -6,14 +6,14 @@ from PySide6.QtWidgets import QGraphicsView, QApplication
 from PySide6.QtCore import Signal, QPoint, Qt, QEvent, QPointF, QRectF
 from PySide6.QtGui import QPainter, QDragEnterEvent, QDropEvent, QMouseEvent, QKeyEvent, QWheelEvent
 
-from nodeeditor.node_graphics_socket import QDMGraphicsSocket
-from nodeeditor.node_graphics_edge import QDMGraphicsEdge
-from nodeeditor.node_edge_dragging import EdgeDragging
-from nodeeditor.node_edge_rerouting import EdgeRerouting
-from nodeeditor.node_edge_intersect import EdgeIntersect
-from nodeeditor.node_edge_snapping import EdgeSnapping
-from nodeeditor.node_graphics_cutline import QDMCutLine
-from nodeeditor.utils import dumpException, pp
+from sd_nodeeditor.node_graphics_socket import QDMGraphicsSocket
+from sd_nodeeditor.node_graphics_edge import QDMGraphicsEdge
+from sd_nodeeditor.node_edge_dragging import EdgeDragging
+from sd_nodeeditor.node_edge_rerouting import EdgeRerouting
+from sd_nodeeditor.node_edge_intersect import EdgeIntersect
+from sd_nodeeditor.node_edge_snapping import EdgeSnapping
+from sd_nodeeditor.node_graphics_cutline import QDMCutLine
+from sd_nodeeditor.utils import dumpException, pp
 
 
 MODE_NOOP = 1               #: Mode representing ready state

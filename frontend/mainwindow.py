@@ -32,44 +32,13 @@ from backend.ui_func import getLatestGeneratedImagesFromPath
 from backend.worker import Worker
 
 from frontend.ui_classes import *
+from frontend.nodeeditor import *
 from ldm.generate import Generate
 
 from PySide6.QtCore import *
 
 from datetime import datetime
 from uuid import uuid4
-
-
-"""class Keyframes(object):
-    def __init__(self):
-        self.keyframes = {}
-        super().__init__()
-
-    def addKeyframe(self, timePosition, valueType, value):
-        if valueType not in self.keyframes:
-            self.keyframes[valueType] = {}
-
-        if timePosition is not None:
-            self.tempList = {}
-
-            self.keyframes[valueType][timePosition] = {}
-            self.keyframes[valueType][timePosition]["keyframe"] = value
-
-        if self.keyframes[valueType] != {}:
-            self.keyframes[valueType] = dict(sorted(self.keyframes[valueType].items()))
-
-        var = 0
-        for key, value in self.keyframes[valueType].items():
-            tup = (key, value)
-            self.tempList[var] = tup
-            var += 1
-            print(self.tempList)
-
-        for keys in self.tempList.items():
-            print(keys)
-            print(keys[0])
-            print(keys[1])
-            print(keys[1][1]['keyframe'])"""
 
 
 
@@ -178,6 +147,8 @@ class GenerateWindow(QObject):
         self.animKeys = AnimKeys()
         self.animKeyEditor = AnimKeyEditor()
         self.path_setup = PathSetup()
+        self.nodeWindow = NodeWindow()
+
         self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
         self.timeline.timeline.selectedValueType = self.animKeyEditor.w.comboBox.currentText()        # self.nodes = NodeEditorWindow()
         # self.nodes.nodeeditor.addNodes()

@@ -3,7 +3,7 @@ from PySide6.QtCore import QSize, Qt, QByteArray, QDataStream, QMimeData, QIODev
 from PySide6.QtWidgets import QListWidget, QAbstractItemView, QListWidgetItem
 
 from frontend.example_calculator.calc_conf import CALC_NODES, get_class_from_opcode, LISTBOX_MIMETYPE
-from nodeeditor.utils import dumpException
+from sd_nodeeditor.utils import dumpException
 
 
 class QDMDragListbox(QListWidget):

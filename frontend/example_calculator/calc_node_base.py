@@ -2,11 +2,11 @@ from PySide6.QtGui import QImage
 from PySide6.QtCore import QRectF
 from PySide6.QtWidgets import QLabel
 
-from nodeeditor.node_node import Node
-from nodeeditor.node_content_widget import QDMNodeContentWidget
-from nodeeditor.node_graphics_node import QDMGraphicsNode
-from nodeeditor.node_socket import LEFT_CENTER, RIGHT_CENTER
-from nodeeditor.utils import dumpException
+from sd_nodeeditor.node_node import Node
+from sd_nodeeditor.node_content_widget import QDMNodeContentWidget
+from sd_nodeeditor.node_graphics_node import QDMGraphicsNode
+from sd_nodeeditor.node_socket import LEFT_CENTER, RIGHT_CENTER
+from sd_nodeeditor.utils import dumpException
 
 
 class CalcGraphicsNode(QDMGraphicsNode):

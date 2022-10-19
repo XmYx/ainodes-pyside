@@ -7,11 +7,11 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QPen, QFont, QColor
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication, QMessageBox, QLabel, QGraphicsItem, QTextEdit, QPushButton
 
-from nodeeditor.node_scene import Scene, InvalidFile
-from nodeeditor.node_node import Node
-from nodeeditor.node_edge import Edge, EDGE_TYPE_BEZIER
-from nodeeditor.node_graphics_view import QDMGraphicsView
-from nodeeditor.utils import dumpException
+from sd_nodeeditor.node_scene import Scene, InvalidFile
+from sd_nodeeditor.node_node import Node
+from sd_nodeeditor.node_edge import Edge, EDGE_TYPE_BEZIER
+from sd_nodeeditor.node_graphics_view import QDMGraphicsView
+from sd_nodeeditor.utils import dumpException
 
 
 class NodeEditorWidget(QWidget):
@@ -170,8 +170,8 @@ class NodeEditorWidget(QWidget):
 
     def addCustomNode(self):
         """Testing method to create a custom Node with custom content"""
-        from nodeeditor.node_content_widget import QDMNodeContentWidget
-        from nodeeditor.node_serializable import Serializable
+        from sd_nodeeditor.node_content_widget import QDMNodeContentWidget
+        from sd_nodeeditor.node_serializable import Serializable
 
         class NNodeContent(QLabel):  # , Serializable):
             def __init__(self, node, parent=None):

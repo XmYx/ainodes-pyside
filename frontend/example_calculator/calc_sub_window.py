@@ -3,10 +3,10 @@ from PySide6.QtCore import QDataStream, QIODevice, Qt
 from PySide6.QtWidgets import QGraphicsProxyWidget, QMenu
 
 from frontend.example_calculator.calc_conf import CALC_NODES, get_class_from_opcode, LISTBOX_MIMETYPE
-from nodeeditor.node_editor_widget import NodeEditorWidget
-from nodeeditor.node_edge import EDGE_TYPE_DIRECT, EDGE_TYPE_BEZIER, EDGE_TYPE_SQUARE
-from nodeeditor.node_graphics_view import MODE_EDGE_DRAG
-from nodeeditor.utils import dumpException
+from sd_nodeeditor.node_editor_widget import NodeEditorWidget
+from sd_nodeeditor.node_edge import EDGE_TYPE_DIRECT, EDGE_TYPE_BEZIER, EDGE_TYPE_SQUARE
+from sd_nodeeditor.node_graphics_view import MODE_EDGE_DRAG
+from sd_nodeeditor.utils import dumpException
 
 DEBUG = False
 DEBUG_CONTEXT = False

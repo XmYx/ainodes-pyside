@@ -5,7 +5,7 @@ Module with some helper functions
 from PySide6.QtCore import QFile
 from PySide6.QtWidgets import QApplication
 
-from nodeeditor.utils_no_qt import pp, dumpException
+from sd_nodeeditor.utils_no_qt import pp, dumpException
 
 
 def loadStylesheet(filename: str):

@@ -5,7 +5,7 @@ A module containing the Edge Snapping functions which are used in :class:`~nodee
 
 
 from PySide6.QtCore import QPointF, QRectF
-from nodeeditor.node_graphics_socket import QDMGraphicsSocket
+from sd_nodeeditor.node_graphics_socket import QDMGraphicsSocket
 
 
 class EdgeSnapping():

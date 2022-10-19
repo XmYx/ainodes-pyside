@@ -1,17 +1,19 @@
 import os
+from PySide6.QtGui import QIcon, QKeySequence, QAction
+from PySide6.QtWidgets import QMdiArea, QWidget, QDockWidget, QMessageBox, QFileDialog
+from PySide6.QtCore import Qt, QSignalMapper
 
-from PySide6.QtCore import QSignalMapper
-from PySide6.QtGui import QIcon, Qt, QAction
-from PySide6.QtWidgets import QMdiArea, QFileDialog, QMessageBox, QDockWidget
+from sd_nodeeditor.node_editor_window import NodeEditorWindow
 
-from nodeeditor.node_editor_window import NodeEditorWindow
+from sd_nodeeditor.node_editor_window import NodeEditorWindow
 from frontend.example_calculator.calc_sub_window import CalculatorSubWindow
 from frontend.example_calculator.calc_drag_listbox import QDMDragListbox
-from nodeeditor.utils import dumpException
+from sd_nodeeditor.utils import dumpException, pp
+from frontend.example_calculator.calc_conf import CALC_NODES
 
 # Enabling edge validators
-from nodeeditor.node_edge import Edge
-from nodeeditor.node_edge_validators import (
+from sd_nodeeditor.node_edge import Edge
+from sd_nodeeditor.node_edge_validators import (
     edge_validator_debug,
     edge_cannot_connect_two_outputs_or_two_inputs,
     edge_cannot_connect_input_and_output_of_same_node
@@ -65,11 +67,6 @@ class NodeWindow(NodeEditorWindow):
 
         self.setWindowTitle("Calculator NodeEditor Example")
 
-    def print_task(self):
-        print("Successful Concurrent Run")
-
-
-
     def closeEvent(self, event):
         self.mdiArea.closeAllSubWindows()
         if self.mdiArea.currentSubWindow():
@@ -79,7 +76,8 @@ class NodeWindow(NodeEditorWindow):
             event.accept()
             # hacky fix for PyQt 5.14.x
             import sys
-            sys.exit(0)
+            self.destroy()
+            #sys.exit(0)
 
 
     def createActions(self):
@@ -265,11 +263,13 @@ class NodeWindow(NodeEditorWindow):
         else:
             event.ignore()
 
+
     def findMdiChild(self, filename):
         for window in self.mdiArea.subWindowList():
             if window.widget().filename == filename:
                 return window
         return None
+
 
     def setActiveSubWindow(self, window):
         if window:

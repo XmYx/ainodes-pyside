@@ -6,8 +6,8 @@ import math
 from PySide6.QtWidgets import QGraphicsScene, QWidget
 from PySide6.QtCore import Signal, QRect, QLine, Qt
 from PySide6.QtGui import QColor, QPen, QFont, QPainter
-from nodeeditor.utils import dumpException
-from nodeeditor.node_graphics_view import STATE_STRING, DEBUG_STATE
+from sd_nodeeditor.utils import dumpException
+from sd_nodeeditor.node_graphics_view import STATE_STRING, DEBUG_STATE
 
 
 class QDMGraphicsScene(QGraphicsScene):

@@ -6,7 +6,7 @@ import os, json
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QSize, QSettings, QPoint
 from PySide6.QtWidgets import QMainWindow, QLabel, QMessageBox, QFileDialog, QApplication
-from nodeeditor.node_editor_widget import NodeEditorWidget
+from sd_nodeeditor.node_editor_widget import NodeEditorWidget
 
 
 

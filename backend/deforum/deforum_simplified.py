@@ -176,7 +176,6 @@ class DeforumGenerator():
 
     def __init__(self):
         self.device = 'cuda'
-        self.gs = gs
         self.outdir = gs.system.txt2vidSingleFrame
         self.shouldStop = False
 
@@ -203,7 +202,7 @@ class DeforumGenerator():
             config = OmegaConf.load(config)
             model = self._load_model_from_config(config, weights)
             if embedding_path is not None:
-                self.gs.models["sd"].embedding_manager.load(
+                gs.models["sd"].embedding_manager.load(
                     embedding_path, self.full_precision
                 )
             # model = model.half().to(self.device)
@@ -443,8 +442,8 @@ class DeforumGenerator():
 
         # if not use_init:
 
-        if "sd" not in self.gs.models:
-            self.gs.models["sd"] = self.load_model()
+        if "sd" not in gs.models:
+            gs.models["sd"] = self.load_model()
 
         # animations use key framed prompts
         # prompts = animation_prompts
@@ -504,14 +503,14 @@ class DeforumGenerator():
         # load depth model for 3D
         predict_depths = (animation_mode == '3D' and use_depth_warping) or save_depth_maps
         if predict_depths:
-            if "depth_model" not in self.gs.models:
+            if "depth_model" not in gs.models:
                 depth_model = DepthModel('cuda')
                 depth_model.load_midas('models/')
                 if midas_weight < 1.0:
                     if adabins:
                         depth_model.load_adabins()
                     else:
-                        self.gs.models["adabins"] = None
+                        gs.models["adabins"] = None
         else:
             depth_model = None
             save_depth_maps = False
@@ -734,8 +733,8 @@ class DeforumGenerator():
             pass
         try:
 
-            del self.gs.models["midas_model"]
-            del self.gs.models["adabins"]
+            del gs.models["midas_model"]
+            del gs.models["adabins"]
         except:
             pass
         self.torch_gc()
@@ -1144,7 +1143,7 @@ class SamplerCallback(object):
         print("view_sample_step")
         if self.save_sample_per_step or self.show_sample_per_step:
             self.step_callback(latents)
-            # samples = self.gs.models["sd"].decode_first_stage(latents)
+            # samples = gs.models["sd"].decode_first_stage(latents)
             if self.save_sample_per_step:
                 fname = f'{path_name_modifier}_{self.step_index:05}.png'
                 for i, sample in enumerate(samples):

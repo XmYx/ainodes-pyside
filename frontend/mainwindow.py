@@ -141,27 +141,19 @@ class GenerateWindow(QObject):
         self.w.anim = Anim()
         self.w.prompt = Prompt()
         self.w.dynaview = Dynaview()
-        self.w.dynaimage = Dynaimage()
+        
         self.timeline = Timeline()
         self.animSliders = AnimSliders()
         self.animKeys = AnimKeys()
         self.animKeyEditor = AnimKeyEditor()
         self.path_setup = PathSetup()
         self.nodeWindow = NodeWindow()
+        self.dynaimage = Dynaimage()
 
-        self.centre = QMainWindow()
-        self.centre.setWindowFlags(QtCore.Qt.Widget)
-        self.centre.setDockOptions(
-            QMainWindow.AnimatedDocks |
-            QMainWindow.AllowNestedDocks)
-        self.w.setCentralWidget(self.centre)
-        self.centre.addDockWidget(
-            QtCore.Qt.LeftDockWidgetArea, self.w.dynaimage.w.dockWidget)
-        self.dockCentre2 = QDockWidget(self.centre)
-        self.dockCentre2.setWindowTitle('Centre 2')
-        self.centre.addDockWidget(
-            QtCore.Qt.RightDockWidgetArea, self.dockCentre2)
 
+
+        self.w.setCentralWidget(self.nodeWindow)
+        self.nodeWindow.addDockWidget(Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
 
 
 
@@ -170,10 +162,10 @@ class GenerateWindow(QObject):
         # self.nodes.nodeeditor.addNodes()
         self.timeline.timeline.update()
 
-        self.w.dynaimage.w.prevFrame.clicked.connect(self.prevFrame)
-        self.w.dynaimage.w.nextFrame.clicked.connect(self.nextFrame)
-        self.w.dynaimage.w.stopButton.clicked.connect(self.stop_timer)
-        self.w.dynaimage.w.playButton.clicked.connect(self.start_timer)
+        self.dynaimage.w.prevFrame.clicked.connect(self.prevFrame)
+        self.dynaimage.w.nextFrame.clicked.connect(self.nextFrame)
+        self.dynaimage.w.stopButton.clicked.connect(self.stop_timer)
+        self.dynaimage.w.playButton.clicked.connect(self.start_timer)
         self.animKeyEditor.w.keyButton.clicked.connect(self.addCurrentFrame)
 
         self.animSliders.w.frames.valueChanged.connect(self.update_timeline)
@@ -204,7 +196,7 @@ class GenerateWindow(QObject):
 
 
         # self.w.setCentralWidget(self.w.preview.w)
-        #self.w.setCentralWidget(self.w.dynaimage.w)
+        #self.w.setCentralWidget(self.dynaimage.w)
 
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sampler.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sizer_count.w.dockWidget)
@@ -237,7 +229,7 @@ class GenerateWindow(QObject):
         self.timeline.setWindowTitle('Timeline')
         self.w.prompt.w.dockWidget.setWindowTitle('Prompt')
         self.w.dynaview.w.dockWidget.setWindowTitle('Tensor Preview')
-        self.w.dynaimage.w.dockWidget.setWindowTitle('Image Preview')
+        self.dynaimage.w.dockWidget.setWindowTitle('Image Preview')
         self.w.preview.w.setWindowTitle('Canvas')
 
         self.vpainter = {}
@@ -567,7 +559,7 @@ class GenerateWindow(QObject):
             qimage = ImageQt(self.image)
             self.painter.drawImage(QRect(0, 0, 512, 512), qimage)
 
-        self.w.dynaimage.w.label.setPixmap(self.ipixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
+        self.dynaimage.w.label.setPixmap(self.ipixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
         self.painter.end()
 
     @Slot()
@@ -613,7 +605,7 @@ class GenerateWindow(QObject):
 
         prompt_list = self.w.prompt.w.textEdit.toPlainText()
         prompt_list = prompt_list.split('\n')
-        # self.w.setCentralWidget(self.w.dynaimage.w)
+        # self.w.setCentralWidget(self.dynaimage.w)
         width = self.w.sizer_count.w.widthSlider.value()
         height = self.w.sizer_count.w.heightSlider.value()
         scale = self.w.sampler.w.scale.value()/100

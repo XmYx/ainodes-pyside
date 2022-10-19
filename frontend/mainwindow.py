@@ -1,5 +1,4 @@
 import pandas as pd
-from PySide6.examples.webenginewidgets.markdowneditor.ui_mainwindow import Ui_MainWindow
 
 import backend.settings as settings
 from backend.singleton import singleton
@@ -7,15 +6,17 @@ from backend.singleton import singleton
 settings.load_settings_json()
 
 gs = singleton
-
+import requests
+import urllib
+import json
+from types import SimpleNamespace
 import random
 import time, sys, gc
-
 import numpy as np
 import torch
 from PIL import Image
 from PIL.ImageQt import ImageQt
-from PySide6.QtWidgets import QProgressBar, QMainWindow
+from PySide6.QtWidgets import QProgressBar
 from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import QListWidgetItem
 from einops import rearrange
@@ -250,9 +251,21 @@ class GenerateWindow(QObject):
 
 
     def get_prompts(self):
+        out_text = ''
         prompts_txt = self.prompt_fetcher.w.input.toPlainText()
-        promts_array = prompts_txt.split('\n')
-        print(promts_array)
+        prompts_array = prompts_txt.split('\n')
+        for prompt in prompts_array:
+            prompt = urllib.parse.quote_plus(prompt)
+            response = requests.get("https://lexica.art/api/v1/search?q=" + prompt)
+            res = response.text
+            res = json.loads(res)
+            if 'images' in res:
+                res = SimpleNamespace(**res)
+                for image in res.images:
+                    image = SimpleNamespace(**image)
+                    out_text = out_text + str(image.prompt)+'\n\n'
+        self.prompt_fetcher.w.output.setPlainText(out_text)
+
 
     def showTypeKeyframes(self):
         valueType = self.animKeyEditor.w.comboBox.currentText()

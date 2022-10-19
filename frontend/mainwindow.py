@@ -244,8 +244,15 @@ class GenerateWindow(QObject):
         self.livePainter = QPainter()
         self.vpainter["iins"] = QPainter()
         self.tpixmap = QPixmap(512, 512)
+        self.prompt_fetcher.w.getPrompts.clicked.connect(self.get_prompts)
 
         self.load_settings()
+
+
+    def get_prompts(self):
+        prompts_txt = self.prompt_fetcher.w.input.toPlainText()
+        promts_array = prompts_txt.split('\n')
+        print(promts_array)
 
     def showTypeKeyframes(self):
         valueType = self.animKeyEditor.w.comboBox.currentText()

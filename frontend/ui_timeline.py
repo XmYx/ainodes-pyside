@@ -278,8 +278,6 @@ class OurTimeline(QWidget):
             if self.hoverKey is item.uid:
                 self.selectedKey = self.hoverKey
                 self.keyHover = True
-            else:
-                self.selectedKey = None
         self.update()
 
     def mousePressEvent(self, e):

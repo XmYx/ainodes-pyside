@@ -137,8 +137,8 @@ class GenerateWindow(QObject):
         self.w.actionSampler.triggered.connect(self.show_sampler)
         self.w.actionSliders.triggered.connect(self.show_sizer_count)
         self.w.actionThumbnails.triggered.connect(self.show_thumbnails)
-        self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings())
-        self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings())
+        self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings)
+        self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings)
         self.w.actionRestart.triggered.connect(self.restart)
         self.w.actionOutpaint.triggered.connect(self.show_paint)
 
@@ -323,7 +323,7 @@ class GenerateWindow(QObject):
             res = json.loads(res)
             if 'images' in res:
                 for image in res['images']:
-                    out_text = out_text + str(image['prompt'])+'\n\n'
+                    out_text = out_text + str(image['prompt'])+'\n'
         self.prompt_fetcher.w.output.setPlainText(out_text)
 
 
@@ -545,7 +545,29 @@ class GenerateWindow(QObject):
         self.onePercent = 100 / (1 * self.steps * max_frames * max_frames)
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
         self.torch_gc()
-        self.deforum.render_animation(animation_prompts=prompt_series,
+        sampler = self.w.sampler.w.sampler.currentText()
+        if sampler == "k_lms":
+            sampler = "klms"
+        elif sampler == "k_dpm_2":
+            sampler = "dpm2"
+        elif sampler == "k_dpm_2_a":
+            sampler = "dpm2_ancestral"
+        elif sampler == "k_heun":
+            sampler = "heun"
+        elif sampler == "k_euler":
+            sampler = "euler"
+        elif sampler == "k_euler_a":
+            sampler = "euler_ancestral"
+        else:
+            sampler = sampler
+        W=self.w.sizer_count.w.widthSlider.value()
+        H=self.w.sizer_count.w.heightSlider.value()
+
+
+
+        self.deforum.render_animation(H = H,
+                                      W = W,
+                                      animation_prompts=prompt_series,
                                       steps=self.steps,
                                       adabins = adabins,
                                       scale=scale,
@@ -554,6 +576,7 @@ class GenerateWindow(QObject):
                                       mask_contrast_adjust = mask_contrast_adjust,
                                       mask_brightness_adjust = mask_brightness_adjust,
                                       #mask_blur = mask_blur,
+                                      sampler_name = sampler,
                                       fov=fov,
                                       max_frames=max_frames,
                                       midas_weight=midas_weight,
@@ -1030,6 +1053,7 @@ class GenerateWindow(QObject):
         gs.diffusion.clearSample = self.animSliders.w.clearSample.isChecked()
 
         settings.save_settings_json()
+        print("settings saved")
 
 
     def save_system_settings(self):
@@ -1061,7 +1085,7 @@ class GenerateWindow(QObject):
 
         gs.system.gpu = int(self.path_setup.w.gpu.text())
         settings.save_settings_json()
-
+        print("settings saved")
 
     #dont know yet
     def load_history(self):

@@ -134,3 +134,4 @@ ldm/modules/attention.py
 *.sha256
 *.mp4
 *.png
+/configs/ainodes/last_prompt.txt

@@ -1,19 +1,71 @@
 from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect
-from PySide6.QtGui import Qt, QColor, QFont, QPalette, QPainter, QPen, QPolygon, QBrush, QPainterPath, QAction, QCursor
-from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockWidget, QMenu
+from PySide6.QtGui import Qt, QColor, QFont, QPalette, QPainter, QPen, QPolygon, QBrush, QPainterPath, QAction, QCursor, \
+    QPixmap
+from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockWidget, QMenu, QGraphicsScene, \
+    QGraphicsView, QGraphicsItem, QGraphicsWidget, QLabel
 
 __textColor__ = QColor(187, 187, 187)
 __backgroudColor__ = QColor(60, 63, 65)
 __font__ = QFont('Decorative', 10)
 
 
-class OutpaintUI(QWidget):
+class Rectangle(object):
+    def __init__(self, x, y, w, h, id):
+        self.id = id
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+
+class Canvas(QLabel):
+
+    def __init__(self):
+        super().__init__()
+        self.pixmap = QPixmap(600, 300)
+        self.setPixmap(self.pixmap)
+
+        self.last_x, self.last_y = None, None
+        self.pen_color = QColor('#000000')
+
+    def set_pen_color(self, c):
+        self.pen_color = QColor(c)
+
+    def mouseMoveEvent(self, e):
+        if self.last_x is None: # First event.
+            self.last_x = e.x()
+            self.last_y = e.y()
+            return # Ignore the first time.
+
+        painter = QPainter(self.pixmap)
+        painter.begin(self.pixmap)
+        p = painter.pen()
+        p.setWidth(4)
+        p.setColor(self.pen_color)
+        painter.setPen(p)
+        painter.drawLine(self.last_x, self.last_y, e.x(), e.y())
+        painter.end()
+        #self.update()
+
+        # Update the origin for next time.
+        self.last_x = e.x()
+        self.last_y = e.y()
+
+    def mouseReleaseEvent(self, e):
+        self.last_x = None
+        self.last_y = None
+
+
+"""class Outpaint(QGraphicsWidget):
 
     keyFramesUpdated = Signal()
     #selectionChanged = Signal(VideoSample)
 
     def __init__(self):
         super().__init__()
+        self.scene = QGraphicsScene()
+        self.canvas = QPixmap(4096, 4096)
+        self.scene.addPixmap(self.canvas)
+
         self.duration = 1000
         self.length = 1000
 
@@ -23,12 +75,13 @@ class OutpaintUI(QWidget):
         self.font = __font__
         self.clicking = False  # Check if mouse left button is being pressed
         self.is_in = False  # check if user is in the widget
-        self.setMouseTracking(True)  # Mouse events
-        self.setAutoFillBackground(True)  # background
+        #self.setMouseTracking(False)  # Mouse events
+        #self.setAutoFillBackground(True)  # background
         self.pos = None
 
         self.posy = None
         self.rectangle = None
+        self.rectList = []
         self.initUI()
 
     def initUI(self):
@@ -46,34 +99,34 @@ class OutpaintUI(QWidget):
 
     def paintEvent(self, event):
 
-        qp = QPainter()
-        #qp.device()
-        qp.begin(self)
+        qp = QPainter(self.canvas)
+        qp.device()
+        #qp.begin()
         qp.setPen(self.textColor)
         qp.setFont(self.font)
         qp.setRenderHint(QPainter.Antialiasing)
         w = 0
         # Draw time
         scale = self.getScale()
-        qp.setPen(QPen(Qt.darkCyan, 5, Qt.SolidLine))
+        qp.setPen(QPen(Qt.darkGreen, 5, Qt.SolidLine))
         #qp.drawLine(0, 500, self.width(), 40)
         if self.rectangle is not None:
             qp.drawRect(self.rectangle)
 
 
-        qp.end()
+        #qp.end()
 
     # Mouse movement
     def mouseMoveEvent(self, e):
 
-        print("outpaint moveEvent")
+        print("5135435")
 
         self.pos = e.pos().x()
         self.posy = e.pos().y()
 
         # if mouse is being pressed, update pointer
         self.pos = e.pos()
-        self.rectangleDraw()
+        #self.rectangleDraw()
 
         if self.clicking:
             pass
@@ -151,7 +204,8 @@ class OutpaintUI(QWidget):
 
     # Get scale from length
     def getScale(self):
-        return float(self.duration)/float(self.width())
+        #return float(self.duration)/float(self.width())
+        pass
 
 
     # Set background color
@@ -164,7 +218,7 @@ class OutpaintUI(QWidget):
 
     # Set Font
     def setTextFont(self, font):
-        self.font = font
+        self.font = font"""
 
 
 
@@ -173,7 +227,7 @@ class OutpaintUI(QWidget):
 
 
 
-class OutpaintUI_nogoodyet(QDockWidget):
+class OutpaintUI(QDockWidget):
 
 
     def __init__(self, *args, **kwargs):
@@ -181,6 +235,8 @@ class OutpaintUI_nogoodyet(QDockWidget):
         if not self.objectName():
             self.setObjectName(u"thumbnails")
         self.setWindowModality(Qt.WindowModal)
+        self.setMouseTracking(True)  # Mouse events
+
         #self.resize(759, 544)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -202,11 +258,18 @@ class OutpaintUI_nogoodyet(QDockWidget):
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(5, 0, 5, 0)
-        self.timeline = Outpaint()
+        self.canvas = Canvas()
+        #self.item = QGraphicsItem(self.outpaint.canvas)
+
+        #self.graphicsView = QGraphicsView()
+
+
+        #self.graphicsView.setScene(self.outpaint.scene)
 
         #self.sample_1 = VideoSample(20)
         #self.timeline.videoSamples.append(self.sample_1)
         self.tZoom = QSlider()
+        
         self.tZoom.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.tZoom.setMinimumSize(QSize(100, 15))
         self.tZoom.setMaximumSize(QSize(1000, 15))
@@ -215,15 +278,44 @@ class OutpaintUI_nogoodyet(QDockWidget):
         self.tZoom.setValue(1.0)
         self.tZoom.setOrientation(Qt.Horizontal)
 
-        self.verticalLayout_2.addWidget(self.timeline)
-        self.verticalLayout_2.addWidget(self.tZoom)
+        self.verticalLayout_2.addWidget(self.canvas)
+        #self.verticalLayout_2.addWidget(self.tZoom)
 
         self.setWidget(self.dockWidgetContents)
         #self.tZoom.valueChanged.connect(self.update_timelineZoom)
         #self.timeline.scale = 1
 
-        #self.timeline.timeline.start()
 
+    def rectangleDraw(self):
+        self.outpaint.rectangle = QRect(self.pos.x(), self.pos.y(), 400, 400)
+
+    """def mouseMoveEvent(self, e):
+        print('event is still there...')
+        self.pos = e.pos().x()
+        self.posy = e.pos().y()
+
+        # if mouse is being pressed, update pointer
+        self.pos = e.pos()
+        self.rectangleDraw()
+
+        #if self.clicking:
+            #pass
+    def paintEvent(self, event):
+
+        qp = QPainter(self.outpaint.canvas)
+        #qp.device()
+        qp.begin(self.outpaint.canvas)
+        qp.setPen(self.outpaint.textColor)
+        qp.setFont(self.outpaint.font)
+        qp.setRenderHint(QPainter.Antialiasing)
+        w = 0
+        # Draw time
+        #scale = self.outpaint.getScale()
+        qp.setPen(QPen(Qt.darkGreen, 5, Qt.SolidLine))
+        #qp.drawLine(0, 500, self.width(), 40)
+        if self.outpaint.rectangle is not None:
+            qp.drawRect(self.outpaint.rectangle)
+        qp.end()
 class Outpaint(QWidget):
 
     #keyFramesUpdated = Signal()
@@ -309,7 +401,7 @@ class Outpaint(QWidget):
 
 
         #self.update()
-    """def setTextFont(self, font):
+    def setTextFont(self, font):
         self.font = font
         
         point = 0

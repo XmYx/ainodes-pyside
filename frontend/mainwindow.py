@@ -168,6 +168,9 @@ class GenerateWindow(QObject):
         widget = QWidget.createWindowContainer(self.camera)
         widget.setMaximumSize( 200 ,  200 )
         widget.setMinimumSize( 100 ,  100 )
+
+        widget.mouseMoveEvent
+
         self.compass.w.camlayout.addWidget(widget)
 
 

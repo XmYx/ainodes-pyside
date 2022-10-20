@@ -88,12 +88,7 @@ class Window(Qt3DExtras.Qt3DWindow):
         self.camEntity = Qt3DCore.QEntity(self.rootEntity)
         self.mesh = Qt3DRender.QSceneLoader(self.rootEntity)
         file = QUrl.fromLocalFile("camera_model/cam.obj")
-        #file = QUrl("qrc:G:\\sd\\ainodes-pyside\\camera_model\\camera_model\\test.obj")
         self.mesh.setSource(file)
-
-
-
-
         self.camEntity.addComponent(self.mesh)
         self.camEntity.addComponent(self.material)
 

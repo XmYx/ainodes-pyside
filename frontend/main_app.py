@@ -6,7 +6,7 @@ from itertools import chain
 
 from PySide6.QtGui import QIcon, QAction, QPixmap
 from PySide6.QtWidgets import *
-import sys, os
+import sys, os, time
 
 
 import concurrent.futures
@@ -27,6 +27,8 @@ app = QApplication(sys.argv)
 
 from frontend import mainwindow
 from frontend.mainwindow import gs
+
+from frontend import paintwindow_func
 #from ui_classes import *
 
 
@@ -39,6 +41,7 @@ def reloader_loop(extra_files=None, interval=1):
 
     :param extra_files: a list of additional files it should watch.
     """
+
     def iter_module_files():
         for module in sys.modules.values():
             filename = getattr(module, '__file__', None)
@@ -56,7 +59,9 @@ def reloader_loop(extra_files=None, interval=1):
 
     mtimes = {}
     while 1:
+        print('sdscess')
         for filename in chain(iter_module_files(), extra_files or ()):
+
             try:
                 mtime = os.stat(filename).st_mtime
             except OSError:
@@ -97,6 +102,7 @@ def restart_with_reloader():
 
 def run_with_reloader(main_func, extra_files=None, interval=1):
     """Run the given function in an independent python interpreter."""
+
     if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
         thread.start_new_thread(main_func, ())
         try:
@@ -104,16 +110,19 @@ def run_with_reloader(main_func, extra_files=None, interval=1):
         except KeyboardInterrupt:
             return
     try:
+        newdef()
         sys.exit(restart_with_reloader())
     except KeyboardInterrupt:
         pass
 
+def newdef():
+
+    pass
 
 
 
-
-def main():
-#if __name__ == "__main__":
+#def main():
+if __name__ == "__main__":
 
     # Create the tray
     tray = QSystemTrayIcon()
@@ -149,6 +158,8 @@ def main():
     #with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
 
     mainWindow = mainwindow.GenerateWindow()
+
+    #mainWindow = paintwindow_func.MainWindow()
     if "macOS" in platform.platform():
         gs.platform = "macOS"
         mainWindow.prepare_loading()
@@ -171,7 +182,7 @@ def main():
 
 
     #mainWindow.runner.runButton.clicked.connect(mainWindow.progress_thread)
-
+    mainWindow.w.actionSoft_Restart.triggered.connect(restart_with_reloader)
     mainWindow.w.actionNodes.triggered.connect(mainWindow.nodeWindow.show)
     mainWindow.w.sampler.w.scale.valueChanged.connect(mainWindow.update_scaleNumber)
     mainWindow.w.sizer_count.w.gfpganSlider.valueChanged.connect(mainWindow.update_gfpganNumber)
@@ -185,4 +196,6 @@ def main():
     sys.exit(app.exec())
 
 
-run_with_reloader(main())
+#run_with_reloader(main())
+
+

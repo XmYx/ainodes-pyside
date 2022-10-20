@@ -46,6 +46,7 @@ class OurTimeline(QWidget):
         self.pos = None
         self.oldPos = None
         self.pointerPos = None
+        self.pointerValue = None
         self.pointerTimePos = 0
         self.selectedSample = None
         self.clicking = False  # Check if mouse left button is being pressed
@@ -63,6 +64,8 @@ class OurTimeline(QWidget):
         self.selectedKey = None
         self.moveSelectedKey = False
         self.posy = 50
+        self.yMiddlePoint = 200
+        self.verticalScale = 10
 
         self.keyFrameList = []
         self.initUI()
@@ -76,8 +79,14 @@ class OurTimeline(QWidget):
         pal = QPalette()
         pal.setColor(QPalette.Base, self.backgroundColor)
         self.setPalette(pal)
+    def mixed_order(self, a):
+        return ( a.valueType, a.position )
+
 
     def paintEvent(self, event):
+        self.keyFrameList.sort( key=self.mixed_order )
+        self.yMiddlePoint = self.height() / 2
+
 
         qp = QPainter()
         #qp.device()
@@ -94,6 +103,10 @@ class OurTimeline(QWidget):
         # Draw down line
         qp.setPen(QPen(Qt.darkCyan, 5, Qt.SolidLine))
         qp.drawLine(0, 40, self.width(), 40)
+
+        #Draw Middle Line for 0 Value of Keyframes
+        qp.setPen(QPen(Qt.darkGreen, 2, Qt.SolidLine))
+        qp.drawLine(0, self.yMiddlePoint, self.width(), self.yMiddlePoint)
         # Draw dash lines
         point = 0
         qp.setPen(QPen(self.textColor))
@@ -118,19 +131,31 @@ class OurTimeline(QWidget):
         else:
             line = QLine(QPoint(0, 0), QPoint(0, self.height()))
             poly = QPolygon([QPoint(-10, 20), QPoint(10, 20), QPoint(0, 40)])
-
+        self.oldY = None
+        self.oldX = None
         if self.selectedValueType is not None:
             for i in self.keyFrameList:
                 if i is not None:
-                    if i.valueType == self.selectedValueType:
 
-                        kfbrush = QBrush(Qt.darkRed)
+                    if i.valueType == self.selectedValueType:
                         kfStartPoint = int(int(i.position) / self.getScale())
+                        kfYPos = int(self.yMiddlePoint - i.value * self.verticalScale)
+                        if self.oldY is not None:
+                            qp.setPen(QPen(Qt.darkMagenta, 2, Qt.SolidLine))
+                            #line = QLine(self.oldX, self.oldY, kfStartPoint, kfYPos)
+                            #print(self.oldX, self.oldY, kfStartPoint, kfYPos)
+                            qp.drawLine(self.oldX, self.oldY, kfStartPoint, kfYPos)
+                        kfbrush = QBrush(Qt.darkRed)
+
+                        #print(kfYPos)
                         scaleMod = 5
-                        kfPoly = QPolygon([QPoint(int(kfStartPoint - scaleMod), 50), QPoint(kfStartPoint, 45), QPoint(kfStartPoint + scaleMod, 50), QPoint(kfStartPoint, 55)])
+                        kfPoly = QPolygon([QPoint(int(kfStartPoint - scaleMod), kfYPos), QPoint(kfStartPoint, kfYPos - scaleMod), QPoint(kfStartPoint + scaleMod, kfYPos), QPoint(kfStartPoint, kfYPos + scaleMod)])
                         qp.setPen(Qt.darkRed)
                         qp.setBrush(kfbrush)
                         qp.drawPolygon(kfPoly)
+
+                        self.oldY = kfYPos
+                        self.oldX = kfStartPoint
 
         # Draw samples
         t = 0
@@ -185,6 +210,7 @@ class OurTimeline(QWidget):
         qp.drawLine(line)
         qp.end()
 
+
     # Mouse movement
     def mouseMoveEvent(self, e):
 
@@ -200,8 +226,11 @@ class OurTimeline(QWidget):
         if self.clicking:
 
             self.oldPos = self.pointerPos
+            self.oldValue = self.pointerValue
             x = self.pos
+            y = self.posy
             self.pointerPos = x
+            self.pointerValue = y
             self.pointerTimePos = self.pointerPos*self.getScale()
 
 
@@ -209,13 +238,18 @@ class OurTimeline(QWidget):
                 for item in self.keyFrameList:
                     if self.selectedKey is item.uid:
                         item.position = int(self.pointerPos*self.scale)
+                        if item.position <= 0:
+                            item.position = 0
+                        value = (self.pointerValue - self.yMiddlePoint) / self.verticalScale
+                        item.value = -value
+                        self.keyFramesUpdated.emit()
+                        print(item.value)
+                        print(self.posy)
+                        print(self.yMiddlePoint)
             if self.edgeGrabActive == True:
-
-
                 for sample in self.videoSamples:
                     sample.duration = sample.duration + ((self.pointerPos - self.oldPos) * self.scale)
             elif self.middleHoverActive == True:
-
                 self.scale = self.getScale()
                 for sample in self.videoSamples:
                     change = (x - self.oldPos)
@@ -223,16 +257,16 @@ class OurTimeline(QWidget):
                     #print(change)
                     sample.startPos = sample.startPos + change
                     sample.endPos = sample.endPos + change
-
-
-
         self.update()
 
     # Mouse pressed
     def checkKeyframeHover(self, x):
         for item in self.keyFrameList:
             kfStartPoint = int(int(item.position) / self.getScale())
-            if kfStartPoint - 5 < x < kfStartPoint + 5 and 55 > self.posy > 45:
+            kfYPos = int(self.yMiddlePoint - item.value * self.verticalScale)
+
+
+            if kfStartPoint - 5 < x < kfStartPoint + 5 and kfYPos + 5 > self.posy > kfYPos - 5:
                 self.keyHover = True
                 #print(item.uid)
                 self.hoverKey = item.uid
@@ -242,6 +276,7 @@ class OurTimeline(QWidget):
             if self.hoverKey is item.uid:
                 self.selectedKey = self.hoverKey
                 self.keyHover = True
+        self.update()
 
     def mousePressEvent(self, e):
         self.scale = self.getScale()
@@ -273,6 +308,7 @@ class OurTimeline(QWidget):
             self.popMenu.move(menuPosition)
             self.popMenu.show()
             self.popMenu.delete_action.triggered.connect(self.delete_action)
+        self.update()
 
     def populateBtnContext(self):
 
@@ -299,11 +335,13 @@ class OurTimeline(QWidget):
             self.selectedKey = None
             self.keyHover = False
             self.hoverKey = None
-            self.keyFramesUpdated.emit()
+
+        self.update()
 
     # Enter
     def enterEvent(self, e):
         self.is_in = True
+        self.update()
 
     # Leave
     def leaveEvent(self, e):
@@ -384,7 +422,7 @@ class Timeline(QDockWidget):
         super().__init__(*args, **kwargs)
         if not self.objectName():
             self.setObjectName(u"thumbnails")
-        self.setWindowModality(Qt.WindowModal)
+        #self.setWindowModality(Qt.WindowModal)
         #self.resize(759, 544)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -418,7 +456,7 @@ class Timeline(QDockWidget):
         self.tZoom.setMaximum(10.0)
         self.tZoom.setValue(1.0)
         self.tZoom.setOrientation(Qt.Horizontal)
-
+        self.dockWidgetContents.setFocusPolicy(Qt.NoFocus)
         self.verticalLayout_2.addWidget(self.timeline)
         self.verticalLayout_2.addWidget(self.tZoom)
 

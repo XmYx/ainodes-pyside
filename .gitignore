@@ -130,3 +130,7 @@ dmypy.json
 frontend/example_calculator/.DS_Store
 /src/
 ldm/modules/attention.py
+*.ckpt
+*.sha256
+*.mp4
+*.png

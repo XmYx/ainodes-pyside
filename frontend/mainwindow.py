@@ -35,6 +35,9 @@ from backend.worker import Worker
 
 from frontend.ui_classes import *
 from frontend.nodeeditor import *
+from frontend.ui_outpaint import OutpaintUI
+from frontend.ui_timeline import Timeline, KeyFrame
+from frontend import paintwindow_func
 from frontend.ui_camera_controller import Window
 from ldm.generate import Generate
 
@@ -163,12 +166,16 @@ class GenerateWindow(QObject):
         self.prompt_fetcher = FetchPrompts()
         self.dynaimage = Dynaimage()
         self.camera = Window()
-
-
-
-        self.w.setCentralWidget(self.nodeWindow)
-        self.nodeWindow.addDockWidget(Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
-
+        self.outpaint = paintwindow_func.PaintDock()
+        #self.pw = paintwindow_func.MainWindow()
+        #self.outpaint.show()
+        #self.camera.show()
+        #self.w.setCentralWidget(self.nodeWindow)
+        self.w.setCentralWidget(self.outpaint)
+        #self.pw.show()
+        #self.outpaint.update()
+        #self.nodeWindow.addDockWidget(Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
+        #self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.outpaint)
 
 
         self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
@@ -211,13 +218,16 @@ class GenerateWindow(QObject):
 
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(512, 256))
 
-
+        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animKeys.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sampler.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sizer_count.w.dockWidget)
 
+        self.w.tabifyDockWidget(self.animKeys.w.dockWidget, self.w.sampler.w.dockWidget)
+        self.w.tabifyDockWidget(self.w.sampler.w.dockWidget, self.w.sizer_count.w.dockWidget)
+
         #self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.camera)
 
-        self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.animKeys.w.dockWidget)
+
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.prompt_fetcher.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.timeline)
@@ -240,7 +250,6 @@ class GenerateWindow(QObject):
         self.w.tabifyDockWidget(self.timeline, self.w.prompt.w.dockWidget)
 
 
-        self.camera.show()
 
 
         self.path_setup.w.dockWidget.setWindowTitle('Path Setup')
@@ -255,6 +264,7 @@ class GenerateWindow(QObject):
         self.dynaimage.w.dockWidget.setWindowTitle('Image Preview')
         self.w.preview.w.setWindowTitle('Canvas')
         self.prompt_fetcher.w.setWindowTitle('Prompt Fetcher')
+        self.outpaint.setWindowTitle('Outpaint')
 
         self.vpainter = {}
         self.w.preview.w.scene = QGraphicsScene()

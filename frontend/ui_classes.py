@@ -16,6 +16,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
                            QPalette, QPixmap, QRadialGradient, QTransform)
 
 from frontend.ui_timeline import *
+
+
+
+
 class AnimKeyEditor(QObject):
 
     def __init__(self, *args, **kwargs):

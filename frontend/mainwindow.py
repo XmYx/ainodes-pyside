@@ -33,6 +33,7 @@ from backend.worker import Worker
 
 from frontend.ui_classes import *
 from frontend.nodeeditor import *
+from frontend.ui_camera_controller import Window
 from ldm.generate import Generate
 
 from PySide6.QtCore import *
@@ -150,6 +151,7 @@ class GenerateWindow(QObject):
         self.nodeWindow = NodeWindow()
         self.prompt_fetcher = FetchPrompts()
         self.dynaimage = Dynaimage()
+        self.camera = Window()
 
 
 
@@ -225,7 +227,7 @@ class GenerateWindow(QObject):
         self.w.tabifyDockWidget(self.timeline, self.w.prompt.w.dockWidget)
 
 
-
+        self.camera.show()
 
 
         self.path_setup.w.dockWidget.setWindowTitle('Path Setup')

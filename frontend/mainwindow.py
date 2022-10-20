@@ -165,8 +165,6 @@ class GenerateWindow(QObject):
         self.nodeWindow = NodeWindow()
         self.prompt_fetcher = FetchPrompts()
         self.dynaimage = Dynaimage()
-        self.compass = Compass()
-
         self.camera = Window()
         self.outpaint = paintwindow_func.PaintDock()
         #self.pw = paintwindow_func.MainWindow()
@@ -179,17 +177,6 @@ class GenerateWindow(QObject):
         #self.nodeWindow.addDockWidget(Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
         #self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.outpaint)
 
-        widget = QWidget.createWindowContainer(self.camera)
-        widget.setMaximumSize( 200 ,  200 )
-        widget.setMinimumSize( 100 ,  100 )
-
-        widget.mouseMoveEvent
-
-        self.compass.w.camlayout.addWidget(widget)
-
-
-        self.w.setCentralWidget(self.nodeWindow)
-        self.nodeWindow.addDockWidget(Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
 
         self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
         self.timeline.timeline.selectedValueType = self.animKeyEditor.w.comboBox.currentText()        # self.nodes = NodeEditorWindow()
@@ -214,6 +201,7 @@ class GenerateWindow(QObject):
         self.w.sampler.w.stepsNumber.display(str(self.w.sampler.w.steps.value()))
         self.w.sampler.w.scaleNumber.display(str(self.w.sampler.w.scale.value()/100))
 
+
         self.animSliders.w.framesNumber.display(str(self.animSliders.w.frames.value()))
         self.animSliders.w.ddim_etaNumber.display(str(self.animSliders.w.ddim_eta.value()))
         self.animSliders.w.strengthNumber.display(str(self.animSliders.w.strength.value()))
@@ -225,29 +213,26 @@ class GenerateWindow(QObject):
         self.animSliders.w.near_planeNumber.display(str(self.animSliders.w.near_plane.value()))
         self.animSliders.w.far_planeNumber.display(str(self.animSliders.w.far_plane.value()))
 
+
+
+
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(512, 256))
 
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animKeys.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sampler.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sizer_count.w.dockWidget)
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.compass.w.dockWidget)
-        #self.compass.w.show()
-
-
-        self.w.tabifyDockWidget(self.w.sampler.w.dockWidget, self.w.sizer_count.w.dockWidget)
-        self.w.tabifyDockWidget(self.w.sizer_count.w.dockWidget, self.compass.w.dockWidget)
 
         self.w.tabifyDockWidget(self.animKeys.w.dockWidget, self.w.sampler.w.dockWidget)
         self.w.tabifyDockWidget(self.w.sampler.w.dockWidget, self.w.sizer_count.w.dockWidget)
 
         #self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.camera)
 
+
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.prompt_fetcher.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.timeline)
 
 
-        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animKeys.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.thumbnails)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
@@ -266,6 +251,7 @@ class GenerateWindow(QObject):
 
 
 
+
         self.path_setup.w.dockWidget.setWindowTitle('Path Setup')
         self.animKeys.w.dockWidget.setWindowTitle('Anim Keys')
         self.w.thumbnails.setWindowTitle('Thumbnails')
@@ -278,10 +264,7 @@ class GenerateWindow(QObject):
         self.dynaimage.w.dockWidget.setWindowTitle('Image Preview')
         self.w.preview.w.setWindowTitle('Canvas')
         self.prompt_fetcher.w.setWindowTitle('Prompt Fetcher')
-
         self.outpaint.setWindowTitle('Outpaint')
-
-        self.compass.w.dockWidget.setWindowTitle('Compass')
 
         self.vpainter = {}
         self.w.preview.w.scene = QGraphicsScene()

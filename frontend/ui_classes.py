@@ -18,14 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 
 
 
-class Compass(QObject):
 
-    def __init__(self, *args, **kwargs):
-        loader = QtUiTools.QUiLoader()
-        file = QFile("frontend/ui_widgets/compass.ui")
-        file.open(QFile.ReadOnly)
-        self.w = loader.load(file)
-        file.close()
 
 
 class AnimKeyEditor(QObject):

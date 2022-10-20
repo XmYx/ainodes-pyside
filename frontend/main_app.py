@@ -3,6 +3,8 @@ import subprocess
 from concurrent.futures import thread
 from itertools import chain
 
+
+from PySide6.QtGui import QIcon, QAction, QPixmap
 from PySide6.QtWidgets import *
 import sys, os
 
@@ -23,8 +25,8 @@ QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 app = QApplication(sys.argv)
 
 
-from frontend.mainwindow import *
-
+from frontend import mainwindow
+from frontend.mainwindow import gs
 #from ui_classes import *
 
 
@@ -146,7 +148,7 @@ def main():
 
     #with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
 
-    mainWindow = GenerateWindow()
+    mainWindow = mainwindow.GenerateWindow()
     if "macOS" in platform.platform():
         gs.platform = "macOS"
         mainWindow.prepare_loading()

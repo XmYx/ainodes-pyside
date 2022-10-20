@@ -1,10 +1,10 @@
 import sys
 
 from PySide6.Qt3DRender import Qt3DRender
-from PySide6.QtCore import (Property, QObject, QPropertyAnimation, Signal, QUrl, QDir)
-from PySide6.QtGui import (QGuiApplication, QMatrix4x4, QQuaternion, QVector3D)
-from PySide6.Qt3DCore import (Qt3DCore)
-from PySide6.Qt3DExtras import (Qt3DExtras)
+from PySide6.QtCore import Property, QObject, QPropertyAnimation, Signal, QUrl, QDir
+from PySide6.QtGui import QGuiApplication, QMatrix4x4, QQuaternion, QVector3D
+from PySide6.Qt3DCore import Qt3DCore
+from PySide6.Qt3DExtras import Qt3DExtras
 
 
 
@@ -87,7 +87,7 @@ class Window(Qt3DExtras.Qt3DWindow):
         # Chest Entity
         self.camEntity = Qt3DCore.QEntity(self.rootEntity)
         self.mesh = Qt3DRender.QSceneLoader(self.rootEntity)
-        file = QUrl.fromLocalFile("G:/sd/ainodes-pyside/camera_model/cam.obj")
+        file = QUrl.fromLocalFile("camera_model/cam.obj")
         #file = QUrl("qrc:G:\\sd\\ainodes-pyside\\camera_model\\camera_model\\test.obj")
         self.mesh.setSource(file)
 

@@ -164,12 +164,8 @@ class GenerateWindow(QObject):
         self.dynaimage = Dynaimage()
         self.camera = Window()
 
-
-
         self.w.setCentralWidget(self.nodeWindow)
         self.nodeWindow.addDockWidget(Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
-
-
 
         self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
         self.timeline.timeline.selectedValueType = self.animKeyEditor.w.comboBox.currentText()        # self.nodes = NodeEditorWindow()
@@ -194,7 +190,6 @@ class GenerateWindow(QObject):
         self.w.sampler.w.stepsNumber.display(str(self.w.sampler.w.steps.value()))
         self.w.sampler.w.scaleNumber.display(str(self.w.sampler.w.scale.value()/100))
 
-
         self.animSliders.w.framesNumber.display(str(self.animSliders.w.frames.value()))
         self.animSliders.w.ddim_etaNumber.display(str(self.animSliders.w.ddim_eta.value()))
         self.animSliders.w.strengthNumber.display(str(self.animSliders.w.strength.value()))
@@ -205,9 +200,6 @@ class GenerateWindow(QObject):
         self.animSliders.w.midas_weightNumber.display(str(self.animSliders.w.midas_weight.value()))
         self.animSliders.w.near_planeNumber.display(str(self.animSliders.w.near_plane.value()))
         self.animSliders.w.far_planeNumber.display(str(self.animSliders.w.far_plane.value()))
-
-
-
 
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(512, 256))
 
@@ -221,7 +213,6 @@ class GenerateWindow(QObject):
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.prompt_fetcher.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.timeline)
-
 
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.thumbnails)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)

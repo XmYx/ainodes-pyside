@@ -167,6 +167,8 @@ class GenerateWindow(QObject):
         self.dynaimage = Dynaimage()
         self.camera = Window()
         self.outpaint = paintwindow_func.PaintDock()
+        self.compass = Compass()
+
         #self.pw = paintwindow_func.MainWindow()
         #self.outpaint.show()
         #self.camera.show()
@@ -176,6 +178,18 @@ class GenerateWindow(QObject):
         #self.outpaint.update()
         #self.nodeWindow.addDockWidget(Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
         #self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.outpaint)
+
+        widget = QWidget.createWindowContainer(self.camera)
+        widget.setMaximumSize( 200 ,  200 )
+        widget.setMinimumSize( 100 ,  100 )
+
+        widget.mouseMoveEvent
+
+        self.compass.w.camlayout.addWidget(widget)
+
+
+        #self.w.setCentralWidget(self.nodeWindow)
+        self.nodeWindow.addDockWidget(Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
 
 
         self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
@@ -217,6 +231,8 @@ class GenerateWindow(QObject):
 
 
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(512, 256))
+
+        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.compass.w.dockWidget)
 
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animKeys.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sampler.w.dockWidget)
@@ -265,6 +281,7 @@ class GenerateWindow(QObject):
         self.w.preview.w.setWindowTitle('Canvas')
         self.prompt_fetcher.w.setWindowTitle('Prompt Fetcher')
         self.outpaint.setWindowTitle('Outpaint')
+        self.compass.w.dockWidget.setWindowTitle('Compass')
 
         self.vpainter = {}
         self.w.preview.w.scene = QGraphicsScene()

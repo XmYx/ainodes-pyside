@@ -1,6 +1,6 @@
 import sys
 
-from PySide6.Qt3DRender import Qt3DRender,
+from PySide6.Qt3DRender import Qt3DRender
 from PySide6.QtCore import (Property, QObject, QPropertyAnimation, Signal, QUrl, QDir)
 from PySide6.QtGui import (QGuiApplication, QMatrix4x4, QQuaternion, QVector3D)
 from PySide6.Qt3DCore import (Qt3DCore)

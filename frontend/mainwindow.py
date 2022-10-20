@@ -785,7 +785,6 @@ class GenerateWindow(QObject):
         self.signals.reenable_runbutton.emit()
         # self.stop_painters()
     def txt2img_thread(self):
-        self.w.thumbnails.setUpdatesEnabled(False)
         # self.run_txt2img()
         # Pass the function to execute
         #self.livePainter.eraseRect(QRect(0, 0, 512, 512))

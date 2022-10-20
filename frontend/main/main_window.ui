@@ -63,6 +63,7 @@
     <addaction name="actionTxt2img"/>
     <addaction name="separator"/>
     <addaction name="actionNodes"/>
+    <addaction name="actionOutpaint"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -164,6 +165,11 @@
   <action name="actionSoft_Restart">
    <property name="text">
     <string>Soft Restart</string>
+   </property>
+  </action>
+  <action name="actionOutpaint">
+   <property name="text">
+    <string>Outpaint</string>
    </property>
   </action>
  </widget>

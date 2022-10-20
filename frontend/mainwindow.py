@@ -69,7 +69,7 @@ class GenerateWindow(QObject):
 
 
     def init_steps(self):
-
+        self.previewpos = "outerdock"
         self.path_setup = None
         self.ipixmap = None
         self.painter = None
@@ -140,6 +140,7 @@ class GenerateWindow(QObject):
         self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings())
         self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings())
         self.w.actionRestart.triggered.connect(self.restart)
+        self.w.actionOutpaint.triggered.connect(self.show_paint)
 
         self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
     def restart(self):
@@ -253,6 +254,7 @@ class GenerateWindow(QObject):
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.path_setup.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
 
         self.dynaimage.w.setMinimumSize(QtCore.QSize(400, 256))
 
@@ -260,6 +262,7 @@ class GenerateWindow(QObject):
         self.w.tabifyDockWidget(self.path_setup.w.dockWidget, self.w.thumbnails)
         self.w.tabifyDockWidget(self.w.thumbnails, self.w.dynaview.w.dockWidget)
         self.w.tabifyDockWidget(self.w.dynaview.w.dockWidget, self.animSliders.w.dockWidget)
+        self.w.tabifyDockWidget(self.animSliders.w.dockWidget, self.dynaimage.w.dockWidget)
 
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animKeyEditor.w.dockWidget)
 
@@ -301,6 +304,8 @@ class GenerateWindow(QObject):
         self.prompt_fetcher.w.getPrompts.clicked.connect(self.get_prompts)
         self.prompt_fetcher.w.usePrompt.clicked.connect(self.use_prompt)
         self.load_settings()
+
+        #self.w.resizeDocks(self.prompt_fetcher.w.dockWidget, self.timeline, 20, 80)
 
     def use_prompt(self):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
@@ -420,7 +425,15 @@ class GenerateWindow(QObject):
         self.w.anim.w.show()
 
     def show_preview(self):
-        self.w.preview.w.show()
+        if self.previewpos == "outerdock":
+            self.preview_as_central()
+            self.previewpos = "center"
+        else:
+            self.show_paint()
+            self.dynaimage = Dynaimage()
+
+            self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
+            self.previewpos = "outerdock"
 
     def show_prompt(self):
         self.w.prompt.w.show()
@@ -437,6 +450,28 @@ class GenerateWindow(QObject):
     def show_path_settings(self):
         self.w.path_setup.show()
 
+    def show_nodes(self):
+        try:
+            self.outpaint.destroy()
+            del self.outpaint
+        except:
+            pass
+        self.nodeWindow = NodeWindow()
+        self.w.setCentralWidget(self.nodeWindow)
+
+    def preview_as_central(self):
+        self.dynaimage.w.destroy()
+        self.w.setCentralWidget(self.dynaimage.w.dockWidget)
+
+
+    def show_paint(self):
+        try:
+            self.nodeWindow.destroy()
+            del self.nodeWindow
+        except:
+            pass
+        self.outpaint = paintwindow_func.PaintDock()
+        self.w.setCentralWidget(self.outpaint)
 
     def torch_gc(self):
         gc.collect()

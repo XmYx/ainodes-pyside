@@ -1,3 +1,6 @@
+from datetime import datetime
+from uuid import uuid4
+
 from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect
 from PySide6.QtGui import Qt, QColor, QFont, QPalette, QPainter, QPen, QPolygon, QBrush, QPainterPath, QAction, QCursor
 from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockWidget, QMenu
@@ -218,8 +221,7 @@ class OurTimeline(QWidget):
 
         self.pos = e.pos().x()
         self.posy = e.pos().y()
-
-        # if mouse is being pressed, update pointer
+        self.pointerValue = self.posy        # if mouse is being pressed, update pointer
 
         self.checkKeyframeHover(self.pos)
 
@@ -230,7 +232,7 @@ class OurTimeline(QWidget):
             x = self.pos
             y = self.posy
             self.pointerPos = x
-            self.pointerValue = y
+
             self.pointerTimePos = self.pointerPos*self.getScale()
 
 
@@ -270,12 +272,14 @@ class OurTimeline(QWidget):
                 self.keyHover = True
                 #print(item.uid)
                 self.hoverKey = item.uid
-
+        self.update()
     def checkKeyClicked(self):
         for item in self.keyFrameList:
             if self.hoverKey is item.uid:
                 self.selectedKey = self.hoverKey
                 self.keyHover = True
+            else:
+                self.selectedKey = None
         self.update()
 
     def mousePressEvent(self, e):
@@ -300,24 +304,58 @@ class OurTimeline(QWidget):
         elif e.button() == Qt.RightButton:
             self.popMenu = QMenu(self)
             menuPosition = QCursor.pos()
+            x = self.pos
+            self.checkKeyframeHover(x)
             self.checkKeyClicked()
+            print(self.hoverKey)
+            print(self.keyHover)
+            print(self.selectedKey)
             self.popMenu.clear()
             #populate
             self.populateBtnContext()
+
+            if self.selectedKey is None:
+                self.popMenu.delete_action.setEnabled(False)
+
             #show
             self.popMenu.move(menuPosition)
             self.popMenu.show()
+            self.pointerPos = e.pos().x()
             self.popMenu.delete_action.triggered.connect(self.delete_action)
+            self.popMenu.add_action.triggered.connect(self.add_action)
         self.update()
 
     def populateBtnContext(self):
 
         # Do some if here :
+        self.popMenu.add_action = QAction('add keyframe', self)
         self.popMenu.delete_action = QAction('delete keyframe', self)
         self.popMenu.addAction(self.popMenu.delete_action)
+        self.popMenu.addAction(self.popMenu.add_action)
 
     # Mouse release
+    def add_action(self):
+        #print(self.keyClicked)
+        self.pointerPos
+        self.pointerTimePos = self.pointerPos * self.getScale()
 
+        matchFound = False
+        value = (self.pointerValue - self.yMiddlePoint) / self.verticalScale
+        value = -value
+        valueType = self.selectedValueType
+        position = int(self.pointerTimePos)
+        keyframe = {}
+        uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
+        keyframe[position] = KeyFrame(uid, valueType, position, value)
+        for items in self.keyFrameList:
+            if items.valueType == valueType:
+                if items.position == position:
+                    items.value = value
+                    matchFound = True
+        if matchFound == False:
+            self.keyFrameList.append(keyframe[position])
+        self.update()
+        #self.updateAnimKeys()
 
     def delete_action(self):
         for idx, item in enumerate(self.keyFrameList):
@@ -325,7 +363,7 @@ class OurTimeline(QWidget):
             print(item)
             if self.hoverKey is item.uid:
                 self.keyFrameList.pop(idx)
-
+        self.update()
                 #item.remove()
                 #return
     def mouseReleaseEvent(self, e):
@@ -361,7 +399,7 @@ class OurTimeline(QWidget):
             else:
                 sample.color = sample.defColor
                 self.middleHover = False
-
+        self.update()
 
     def checkEdges(self, x, y=50):
 
@@ -380,7 +418,7 @@ class OurTimeline(QWidget):
             else:
                 sample.color = sample.defColor
                 self.edgeGrab = False
-
+        self.update()
 
     # Get time string from seconds
     def get_time_string(self, seconds):
@@ -452,9 +490,10 @@ class Timeline(QDockWidget):
         self.tZoom.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.tZoom.setMinimumSize(QSize(100, 15))
         self.tZoom.setMaximumSize(QSize(1000, 15))
-        self.tZoom.setMinimum(0.0)
-        self.tZoom.setMaximum(10.0)
-        self.tZoom.setValue(1.0)
+        self.tZoom.setMinimum(0.1)
+        self.tZoom.setMaximum(100.0)
+        self.tZoom.setValue(10.0)
+        self.tZoom.setPageStep(0.1)
         self.tZoom.setOrientation(Qt.Horizontal)
         self.dockWidgetContents.setFocusPolicy(Qt.NoFocus)
         self.verticalLayout_2.addWidget(self.timeline)
@@ -466,4 +505,5 @@ class Timeline(QDockWidget):
 
         #self.timeline.timeline.start()
     def update_timelineZoom(self):
-        self.timeline.scale = self.tZoom.value()
+        self.timeline.verticalScale = self.tZoom.value()
+        self.timeline.update()

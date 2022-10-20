@@ -1,9 +1,15 @@
+import importlib
 import platform
+
+from PySide6.QtGui import QIcon, QAction, QPixmap
 from PySide6.QtWidgets import *
 import sys, os
 
 
+
 import concurrent.futures
+
+
 
 if (os.name == 'nt'):
     #This is needed to display the app icon on the taskbar on Windows 7
@@ -16,9 +22,12 @@ QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 app = QApplication(sys.argv)
 
 
-from frontend.mainwindow import *
-
+from frontend import mainwindow
+from frontend.mainwindow import gs
 #from ui_classes import *
+
+def soft_restart():
+    importlib.reload(mainwindow)
 
 
 if __name__ == "__main__":
@@ -56,7 +65,7 @@ if __name__ == "__main__":
 
     #with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
 
-    mainWindow = GenerateWindow()
+    mainWindow = mainwindow.GenerateWindow()
     if "macOS" in platform.platform():
         gs.platform = "macOS"
         mainWindow.prepare_loading()
@@ -80,9 +89,12 @@ if __name__ == "__main__":
 
     #mainWindow.runner.runButton.clicked.connect(mainWindow.progress_thread)
 
-    mainWindow.w.actionNodes.triggered.connect(mainWindow.nodeWindow.show)
+    #mainWindow.w.actionNodes.triggered.connect(mainWindow.nodeWindow.show)
     mainWindow.w.sampler.w.scale.valueChanged.connect(mainWindow.update_scaleNumber)
     mainWindow.w.sizer_count.w.gfpganSlider.valueChanged.connect(mainWindow.update_gfpganNumber)
+
+    mainWindow.w.actionSoft_Restart.triggered.connect(soft_restart)
+
 
     mainWindow.w.preview.w.zoomInButton.clicked.connect(mainWindow.zoom_IN)
     mainWindow.w.preview.w.zoomOutButton.clicked.connect(mainWindow.zoom_OUT)

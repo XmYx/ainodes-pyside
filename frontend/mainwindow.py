@@ -3,6 +3,8 @@ import pandas as pd
 import backend.settings as settings
 from backend.singleton import singleton
 
+import importlib
+
 settings.load_settings_json()
 
 gs = singleton
@@ -60,6 +62,10 @@ class GenerateWindow(QObject):
 
     def __init__(self, *args, **kwargs):
         super(GenerateWindow, self).__init__(*args, **kwargs)
+        self.init_steps()
+
+
+    def init_steps(self):
 
         self.path_setup = None
         self.ipixmap = None
@@ -101,6 +107,7 @@ class GenerateWindow(QObject):
         gs.result = ""
         gs.album = getLatestGeneratedImagesFromPath()
         self.now = 0
+
         self.home()
 
         self.signals.reenable_runbutton.connect(self.reenableRunButton)
@@ -129,9 +136,14 @@ class GenerateWindow(QObject):
         self.w.actionThumbnails.triggered.connect(self.show_thumbnails)
         self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings())
         self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings())
+        self.w.actionRestart.triggered.connect(self.restart)
 
         self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
+    def restart(self):
+        os.execl(sys.executable, sys.executable, *sys.argv)
 
+    def del_widgets(self):
+        self.w.thumbnails.destroy()
 
     def home(self):
         self.w.thumbnails = Thumbnails()
@@ -142,7 +154,6 @@ class GenerateWindow(QObject):
         self.w.anim = Anim()
         self.w.prompt = Prompt()
         self.w.dynaview = Dynaview()
-
         self.timeline = Timeline()
         self.animSliders = AnimSliders()
         self.animKeys = AnimKeys()
@@ -198,11 +209,13 @@ class GenerateWindow(QObject):
 
 
 
-        self.w.dynaview.w.setMinimumSize(QtCore.QSize(256, 256))
+        self.w.dynaview.w.setMinimumSize(QtCore.QSize(512, 256))
 
 
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sampler.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sizer_count.w.dockWidget)
+
+        #self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.camera)
 
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.animKeys.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.prompt_fetcher.w.dockWidget)

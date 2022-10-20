@@ -32,13 +32,15 @@
      <x>0</x>
      <y>0</y>
      <width>695</width>
-     <height>22</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionRestart"/>
+    <addaction name="actionSoft_Restart"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -152,6 +154,16 @@
   <action name="actionSave_Diffusion_Settings">
    <property name="text">
     <string>Save Diffusion Settings</string>
+   </property>
+  </action>
+  <action name="actionRestart">
+   <property name="text">
+    <string>Restart</string>
+   </property>
+  </action>
+  <action name="actionSoft_Restart">
+   <property name="text">
+    <string>Soft Restart</string>
    </property>
   </action>
  </widget>

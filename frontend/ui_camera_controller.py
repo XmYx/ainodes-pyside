@@ -58,6 +58,10 @@ class OrbitTransformController(QObject):
 class Window(Qt3DExtras.Qt3DWindow):
     def __init__(self):
         super().__init__()
+        self.x_dist = 0
+        self.y_dist = 0
+        self.last_x = -1
+        self.last_y = -1
 
         # Camera
         self.camera().lens().setPerspectiveProjection(10, 16 / 9, 0.1, 100)
@@ -66,16 +70,39 @@ class Window(Qt3DExtras.Qt3DWindow):
 
         # For camera controls
         self.createScene()
-        self.camController = Qt3DExtras.QOrbitCameraController(self.rootEntity)
+        #self.camController = Qt3DExtras.QOrbitCameraController(self.rootEntity)
         #self.camController.setLinearSpeed(50)
         #self.camController.setLookSpeed(180)
-        self.camController.setCamera(self.camera())
+        #self.camController.setCamera(self.camera())
 
         self.setRootEntity(self.rootEntity)
         print('mesh status: ')
         print(self.mesh.status())
         print(self.mesh.source())
         print(QDir.currentPath())
+
+
+    def mouseMoveEvent(self, arg__1):
+        if  arg__1.buttons():
+            if self.last_x == -1:
+                self.last_x = arg__1.x()
+            else:
+                self.x_dist = self.last_x - arg__1.x()
+                self.last_x = arg__1.x()
+
+            if self.last_y == -1:
+                self.last_y = arg__1.y()
+            else:
+                self.y_dist = self.last_y - arg__1.y()
+                self.last_y = arg__1.y()
+
+            print(self.cameraTransform.rotationX())
+            self.cameraTransform.setRotationX(self.cameraTransform.rotationX()-(self.y_dist*3))
+            self.cameraTransform.setRotationY(self.cameraTransform.rotationY()-(self.x_dist*3))
+
+            #self.cameraTransform.setRotation(QQuaternion.fromAxisAndAngle(QVector3D(0, 0, 0), 0))
+
+            print(arg__1.x(), ' ',arg__1.y(), ' ', self.last_x, ' ',self.last_y, ' ', self.x_dist, ' ',self.y_dist, ' ', arg__1.buttons())
 
     def createScene(self):
         # Root entity
@@ -88,14 +115,15 @@ class Window(Qt3DExtras.Qt3DWindow):
         self.camEntity = Qt3DCore.QEntity(self.rootEntity)
         self.mesh = Qt3DRender.QSceneLoader(self.rootEntity)
         file = QUrl.fromLocalFile("camera_model/cam.obj")
-        #file = QUrl("qrc:G:\\sd\\ainodes-pyside\\camera_model\\camera_model\\test.obj")
         self.mesh.setSource(file)
 
-
-
+        self.cameraTransform = Qt3DCore.QTransform()
+        self.cameraTransform.setScale3D(QVector3D(1, 1, 1))
+        self.cameraTransform.setRotation(QQuaternion.fromAxisAndAngle(QVector3D(0, 0, 0), 0))
 
         self.camEntity.addComponent(self.mesh)
         self.camEntity.addComponent(self.material)
+        self.camEntity.addComponent(self.cameraTransform)
 
 
         """

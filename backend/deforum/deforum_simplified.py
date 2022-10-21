@@ -412,7 +412,7 @@ class DeforumGenerator():
                          # prev_sample=None,
                          clear_latent=False,
                          clear_sample=True,
-                         shouldStop=False,
+                         shouldStop=False
                          # keys={}
                          ):
 
@@ -427,11 +427,6 @@ class DeforumGenerator():
         padding_mode = padding_mode
         self.creation_timestamp = strftime("%d_%b_%Y_%H_%M_%S", gmtime())
         outdir = os.path.join(self.outdir, self.creation_timestamp)
-        sampler_name = sampler_name
-
-        print(sampler_name)
-
-
 
         # create output folder for the batch
         os.makedirs(outdir, exist_ok=True)
@@ -726,17 +721,12 @@ class DeforumGenerator():
                 image_path = os.path.join(outdir, f"{batch_name}_{timestring}_%05d.png")
                 mp4_path = os.path.join(gs.system.txt2vidOut, f"{batch_name}_{self.creation_timestamp}.mp4")
                 #self.signals.deforum_image_cb.emit()
-
             else:
                 mp4_path = os.path.join(gs.system.txt2vidOut, f"{batch_name}_{self.creation_timestamp}.mp4")
                 image_path = os.path.join(outdir, f"{batch_name}_{timestring}_%05d.png")
                 max_frames = frame_idx
-                self.produce_video(image_path, mp4_path, max_frames)
-
-    # max_frames = frame_idx
-
-        if self.shouldStop == False:
-            self.produce_video(image_path, mp4_path, max_frames)
+        # max_frames = frame_idx
+        self.produce_video(image_path, mp4_path, max_frames)
         try:
             del depth_model
         except:

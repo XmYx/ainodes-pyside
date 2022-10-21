@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
     #mainWindow.runner.runButton.clicked.connect(mainWindow.progress_thread)
     mainWindow.w.actionSoft_Restart.triggered.connect(restart_with_reloader)
-    mainWindow.w.actionNodes.triggered.connect(mainWindow.show_nodes)
+    mainWindow.w.actionNodes.triggered.connect(mainWindow.nodeWindow.show)
     mainWindow.w.sampler.w.scale.valueChanged.connect(mainWindow.update_scaleNumber)
     mainWindow.w.sizer_count.w.gfpganSlider.valueChanged.connect(mainWindow.update_gfpganNumber)
 

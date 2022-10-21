@@ -306,6 +306,7 @@ class GenerateWindow(QObject):
         self.tpixmap = QPixmap(512, 512)
         self.prompt_fetcher.w.getPrompts.clicked.connect(self.get_prompts)
         self.prompt_fetcher.w.usePrompt.clicked.connect(self.use_prompt)
+        self.prompt_fetcher.w.dreamPrompt.clicked.connect(self.dream_prompt)
         self.load_settings()
 
     def load_upscalers(self):
@@ -399,6 +400,10 @@ class GenerateWindow(QObject):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
         self.w.prompt.w.textEdit.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
 
+    def dream_prompt(self):
+        prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
+        self.w.prompt.w.textEdit.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
+        self.taskSwitcher()
 
     def get_prompts(self):
         out_text = ''
@@ -635,6 +640,7 @@ class GenerateWindow(QObject):
         self.w.prompt.w.stopButton.clicked.connect(self.deforum.setStop)
 
         self.w.prompt.w.runButton.setEnabled(False)
+        self.prompt_fetcher.w.dreamPrompt.setEnabled(False)
         QTimer.singleShot(100, lambda: self.pass_object()) # todo why we need that timer here doing nothing?
 
         worker = Worker(self.run_deforum)
@@ -685,6 +691,7 @@ class GenerateWindow(QObject):
     def reenableRunButton(self):
         try:
             self.w.prompt.w.runButton.setEnabled(True)
+            self.prompt_fetcher.w.dreamPrompt.setEnabled(True)
         except:
             pass
         try:
@@ -713,6 +720,10 @@ class GenerateWindow(QObject):
 
     #text2img
     def run_txt2img(self, progress_callback=None):
+
+        self.w.prompt.w.runButton.setEnabled(False)
+        self.prompt_fetcher.w.dreamPrompt.setEnabled(False)
+
         self.currentFrames = []
         self.renderedFrames = 0
 

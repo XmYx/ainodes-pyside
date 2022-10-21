@@ -29,24 +29,31 @@
    <item>
     <widget class="QDockWidget" name="dockWidget">
      <widget class="QWidget" name="dockWidgetContents">
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QTextEdit" name="input"/>
-       </item>
-       <item>
-        <widget class="QPushButton" name="getPrompts">
-         <property name="text">
-          <string>Get Prompts</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QTextEdit" name="output"/>
-       </item>
-       <item>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="3" column="0">
         <widget class="QPushButton" name="usePrompt">
          <property name="text">
           <string>Use selected Prompt</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="dreamPrompt">
+         <property name="text">
+          <string>Dream Prompt</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QTextEdit" name="output"/>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QTextEdit" name="input"/>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QPushButton" name="getPrompts">
+         <property name="text">
+          <string>Get Prompts</string>
          </property>
         </widget>
        </item>

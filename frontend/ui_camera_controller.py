@@ -96,13 +96,20 @@ class Window(Qt3DExtras.Qt3DWindow):
                 self.y_dist = self.last_y - arg__1.y()
                 self.last_y = arg__1.y()
 
-            #print(self.cameraTransform.rotationX())
+            if self.x_dist > 1:
+                self.x_dist = 1
+
+            if self.x_dist < -1:
+                self.x_dist = -1
+            if self.y_dist > 1:
+                self.y_dist = 1
+
+            if self.y_dist < -1:
+                self.y_dist = -1
+
             self.cameraTransform.setRotationX(self.cameraTransform.rotationX()-(self.y_dist*3))
             self.cameraTransform.setRotationY(self.cameraTransform.rotationY()-(self.x_dist*3))
 
-            #self.cameraTransform.setRotation(QQuaternion.fromAxisAndAngle(QVector3D(0, 0, 0), 0))
-
-            #print(arg__1.x(), ' ',arg__1.y(), ' ', self.last_x, ' ',self.last_y, ' ', self.x_dist, ' ',self.y_dist, ' ', arg__1.buttons())
 
     def createScene(self):
         # Root entity

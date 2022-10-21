@@ -17,6 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 
 
 
+
+
 class Compass(QObject):
 
     def __init__(self, *args, **kwargs):

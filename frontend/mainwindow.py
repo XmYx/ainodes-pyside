@@ -35,7 +35,7 @@ from backend.worker import Worker
 
 from frontend.ui_classes import *
 from frontend.nodeeditor import *
-from frontend.ui_image_lab import ImageLab
+#from frontend.ui_image_lab import ImageLab
 from frontend.ui_outpaint import OutpaintUI
 from frontend.ui_timeline import Timeline, KeyFrame
 from frontend import paintwindow_func
@@ -98,7 +98,7 @@ class GenerateWindow(QObject):
         self.progress = None
         self.ftimer = QTimer(self)
         self.signals = Callbacks()
-        self.image_lab = ImageLab()
+        #self.image_lab = ImageLab()
         #self.kf = Keyframes()
 
         settings.load_settings_json()
@@ -142,7 +142,7 @@ class GenerateWindow(QObject):
         self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings)
         self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings)
         self.w.actionRestart.triggered.connect(self.restart)
-        self.w.actionImageLab.triggered.connect(self.show_image_lab)
+        #self.w.actionImageLab.triggered.connect(self.show_image_lab)
 
 
         self.w.actionOutpaint.triggered.connect(self.show_paint)

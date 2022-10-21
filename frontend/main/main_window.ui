@@ -64,6 +64,7 @@
     <addaction name="separator"/>
     <addaction name="actionNodes"/>
     <addaction name="actionImageLab"/>
+    <addaction name="actionOutpaint"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -170,6 +171,11 @@
   <action name="actionImageLab">
    <property name="text">
     <string>Image Lab</string>
+   </property>
+  </action>
+  <action name="actionOutpaint">
+   <property name="text">
+    <string>Outpaint</string>
    </property>
   </action>
  </widget>

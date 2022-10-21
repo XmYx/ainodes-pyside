@@ -775,6 +775,7 @@ class GenerateWindow(QObject):
         self.update = 0
         for i in range(batchsize):
             for prompt in prompt_list:
+                print(prompt)
                 self.torch_gc()
                 results = self.gr.prompt2image(prompt=prompt,
                                                outdir=outdir,
@@ -796,8 +797,8 @@ class GenerateWindow(QObject):
                                                step_callback=self.deforumstepCallback_signal,
                                                image_callback=self.imageCallback_signal)
                 for row in results:
-                    # print(f'filename={row[0]}')
-                    # print(f'seed    ={row[1]}')
+                    print(f'filename={row[0]}')
+                    print(f'seed    ={row[1]}')
                     filename = random.randint(10000, 99999)
                     output = f'outputs/{filename}.png'
                     row[0].save(output)

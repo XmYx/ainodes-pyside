@@ -35,6 +35,7 @@ from backend.worker import Worker
 
 from frontend.ui_classes import *
 from frontend.nodeeditor import *
+from frontend.ui_image_lab import ImageLab
 from frontend.ui_outpaint import OutpaintUI
 from frontend.ui_timeline import Timeline, KeyFrame
 from frontend import paintwindow_func
@@ -69,7 +70,7 @@ class GenerateWindow(QObject):
 
 
     def init_steps(self):
-
+        self.previewpos = "outerdock"
         self.path_setup = None
         self.ipixmap = None
         self.painter = None
@@ -97,6 +98,7 @@ class GenerateWindow(QObject):
         self.progress = None
         self.ftimer = QTimer(self)
         self.signals = Callbacks()
+        self.image_lab = ImageLab()
         #self.kf = Keyframes()
 
         settings.load_settings_json()
@@ -137,9 +139,13 @@ class GenerateWindow(QObject):
         self.w.actionSampler.triggered.connect(self.show_sampler)
         self.w.actionSliders.triggered.connect(self.show_sizer_count)
         self.w.actionThumbnails.triggered.connect(self.show_thumbnails)
-        self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings())
-        self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings())
+        self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings)
+        self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings)
         self.w.actionRestart.triggered.connect(self.restart)
+        self.w.actionImageLab.triggered.connect(self.show_image_lab)
+
+
+        self.w.actionOutpaint.triggered.connect(self.show_paint)
 
         self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
     def restart(self):
@@ -253,6 +259,7 @@ class GenerateWindow(QObject):
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.path_setup.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
 
         self.dynaimage.w.setMinimumSize(QtCore.QSize(400, 256))
 
@@ -260,6 +267,7 @@ class GenerateWindow(QObject):
         self.w.tabifyDockWidget(self.path_setup.w.dockWidget, self.w.thumbnails)
         self.w.tabifyDockWidget(self.w.thumbnails, self.w.dynaview.w.dockWidget)
         self.w.tabifyDockWidget(self.w.dynaview.w.dockWidget, self.animSliders.w.dockWidget)
+        self.w.tabifyDockWidget(self.animSliders.w.dockWidget, self.dynaimage.w.dockWidget)
 
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animKeyEditor.w.dockWidget)
 
@@ -301,6 +309,11 @@ class GenerateWindow(QObject):
         self.prompt_fetcher.w.getPrompts.clicked.connect(self.get_prompts)
         self.prompt_fetcher.w.usePrompt.clicked.connect(self.use_prompt)
         self.load_settings()
+
+
+    def show_image_lab(self):
+        self.image_lab.show()
+
 
     def use_prompt(self):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
@@ -420,7 +433,15 @@ class GenerateWindow(QObject):
         self.w.anim.w.show()
 
     def show_preview(self):
-        self.w.preview.w.show()
+        if self.previewpos == "outerdock":
+            self.preview_as_central()
+            self.previewpos = "center"
+        else:
+            self.show_paint()
+            self.dynaimage = Dynaimage()
+
+            self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
+            self.previewpos = "outerdock"
 
     def show_prompt(self):
         self.w.prompt.w.show()
@@ -437,6 +458,28 @@ class GenerateWindow(QObject):
     def show_path_settings(self):
         self.w.path_setup.show()
 
+    def show_nodes(self):
+        try:
+            self.outpaint.destroy()
+            del self.outpaint
+        except:
+            pass
+        self.nodeWindow = NodeWindow()
+        self.w.setCentralWidget(self.nodeWindow)
+
+    def preview_as_central(self):
+        self.dynaimage.w.destroy()
+        self.w.setCentralWidget(self.dynaimage.w.dockWidget)
+
+
+    def show_paint(self):
+        try:
+            self.nodeWindow.destroy()
+            del self.nodeWindow
+        except:
+            pass
+        self.outpaint = paintwindow_func.PaintDock()
+        self.w.setCentralWidget(self.outpaint)
 
     def torch_gc(self):
         gc.collect()
@@ -510,7 +553,29 @@ class GenerateWindow(QObject):
         self.onePercent = 100 / (1 * self.steps * max_frames * max_frames)
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
         self.torch_gc()
-        self.deforum.render_animation(animation_prompts=prompt_series,
+        sampler = self.w.sampler.w.sampler.currentText()
+        if sampler == "k_lms":
+            sampler = "klms"
+        elif sampler == "k_dpm_2":
+            sampler = "dpm2"
+        elif sampler == "k_dpm_2_a":
+            sampler = "dpm2_ancestral"
+        elif sampler == "k_heun":
+            sampler = "heun"
+        elif sampler == "k_euler":
+            sampler = "euler"
+        elif sampler == "k_euler_a":
+            sampler = "euler_ancestral"
+        else:
+            sampler = sampler
+        W=self.w.sizer_count.w.widthSlider.value()
+        H=self.w.sizer_count.w.heightSlider.value()
+
+
+
+        self.deforum.render_animation(H = H,
+                                      W = W,
+                                      animation_prompts=prompt_series,
                                       steps=self.steps,
                                       adabins = adabins,
                                       scale=scale,
@@ -519,6 +584,7 @@ class GenerateWindow(QObject):
                                       mask_contrast_adjust = mask_contrast_adjust,
                                       mask_brightness_adjust = mask_brightness_adjust,
                                       #mask_blur = mask_blur,
+                                      sampler_name = sampler,
                                       fov=fov,
                                       max_frames=max_frames,
                                       midas_weight=midas_weight,
@@ -750,7 +816,6 @@ class GenerateWindow(QObject):
         self.signals.reenable_runbutton.emit()
         # self.stop_painters()
     def txt2img_thread(self):
-        self.w.thumbnails.setUpdatesEnabled(False)
         # self.run_txt2img()
         # Pass the function to execute
         #self.livePainter.eraseRect(QRect(0, 0, 512, 512))

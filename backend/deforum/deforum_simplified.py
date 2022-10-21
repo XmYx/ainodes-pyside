@@ -299,6 +299,7 @@ class DeforumGenerator():
     def render_animation(self,
                          image_callback=None,
                          step_callback=None,
+                         compviscallback=None,
 
                          # prompts="a beautiful forest by Asher Brown Durand, trending on Artstation",
                          animation_prompts='test',
@@ -432,7 +433,8 @@ class DeforumGenerator():
         print(sampler_name)
 
 
-
+        scale = scale
+        ddim_eta = ddim_eta
         # create output folder for the batch
         os.makedirs(outdir, exist_ok=True)
         print(f"Saving animation frames to {outdir}")
@@ -700,7 +702,8 @@ class DeforumGenerator():
                                               C=C,
                                               f=f,
                                               mask_overlay_blur=mask_overlay_blur,
-                                              step_callback=step_callback)
+                                              step_callback=step_callback,
+                                              compviscallback=compviscallback)
 
                 if image_callback is not None and diffusion_cadence == 0:
                     image_callback(image, seed, upscaled=False)
@@ -782,6 +785,7 @@ class DeforumGenerator():
                  f,
                  mask_overlay_blur,
                  step_callback,
+                 compviscallback,
                  frame=0,
                  return_latent=False,
                  return_sample=False,
@@ -800,7 +804,6 @@ class DeforumGenerator():
         init_latent = None
         mask_image = None
         init_image = None
-
 
         if init_latent is not None:
             print('init_latent is not None')
@@ -856,7 +859,7 @@ class DeforumGenerator():
         k_sigmas = k_sigmas[len(k_sigmas) - t_enc - 1:]
 
         if sampler_name in ['plms', 'ddim']:
-            sampler.make_schedule(ddim_num_steps=steps, ddim_eta=ddim_eta, ddim_discretize='fill',
+            sampler.make_schedule(ddim_num_steps=steps, ddim_eta=ddim_eta, ddim_discretize='quad',
                                   verbose=False)
 
         """callback = SamplerCallback(n_samples=n_samples,
@@ -929,7 +932,7 @@ class DeforumGenerator():
                                                          t_enc,
                                                          unconditional_guidance_scale=scale,
                                                          unconditional_conditioning=uc,
-                                                         img_callback=callback)
+                                                         img_callback=compviscallback)
                             elif sampler_name == 'plms':  # no "decode" function in plms, so use "sample"
                                 shape = [C, H // f, W // f]
                                 samples, _ = sampler.sample(S=steps,
@@ -941,7 +944,7 @@ class DeforumGenerator():
                                                             unconditional_conditioning=uc,
                                                             eta=ddim_eta,
                                                             x_T=z_enc,
-                                                            img_callback=callback)
+                                                            img_callback=compviscallback)
                             else:
                                 raise Exception(f"Sampler {sampler} not recognised.")
 

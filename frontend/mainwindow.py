@@ -55,6 +55,7 @@ class Callbacks(QObject):
     txt2img_image_cb = Signal()
     deforum_step = Signal()
     deforum_image_cb = Signal()
+    compviscallback = Signal()
 
 
 class GenerateWindow(QObject):
@@ -119,6 +120,7 @@ class GenerateWindow(QObject):
         self.signals.txt2img_image_cb.connect(self.imageCallback_func)
         self.signals.deforum_step.connect(self.deforumstepCallback_func)
         self.signals.deforum_image_cb.connect(self.add_image_to_thumbnail)
+        self.signals.compviscallback.connect(self.deforumTest)
 
         # self.w.thumbnails.thumbs.installEventFilter(self)
         self.w.statusBar().showMessage('Ready')
@@ -148,12 +150,8 @@ class GenerateWindow(QObject):
         self.w.actionOutpaint.triggered.connect(self.show_paint)
 
         self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
-    def restart(self):
-        os.execl(sys.executable, sys.executable, *sys.argv)
 
-    def del_widgets(self):
-        self.w.thumbnails.destroy()
-
+    # INIT UI, AND PRELOAD FUNCTIONS
     def home(self):
         self.w.thumbnails = Thumbnails()
         self.threadpool = QThreadPool()
@@ -310,6 +308,88 @@ class GenerateWindow(QObject):
         self.prompt_fetcher.w.usePrompt.clicked.connect(self.use_prompt)
         self.load_settings()
 
+    def load_upscalers(self):
+        gfpgan = False
+        try:
+            from realesrgan import RealESRGANer
+
+            gfpgan = True
+        except ModuleNotFoundError:
+            pass
+
+        if gfpgan:
+            print('Loading models from RealESRGAN and facexlib')
+            try:
+                from basicsr.archs.rrdbnet_arch import RRDBNet
+                from facexlib.utils.face_restoration_helper import FaceRestoreHelper
+
+                RealESRGANer(
+                    scale=2,
+                    model_path='https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth',
+                    model=RRDBNet(
+                        num_in_ch=3,
+                        num_out_ch=3,
+                        num_feat=64,
+                        num_block=23,
+                        num_grow_ch=32,
+                        scale=2,
+                    ),
+                )
+
+                RealESRGANer(
+                    scale=4,
+                    model_path='https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth',
+                    model=RRDBNet(
+                        num_in_ch=3,
+                        num_out_ch=3,
+                        num_feat=64,
+                        num_block=23,
+                        num_grow_ch=32,
+                        scale=4,
+                    ),
+                )
+
+                FaceRestoreHelper(1, det_model='retinaface_resnet50')
+                print('...success')
+            except Exception:
+                import traceback
+
+                print('Error loading GFPGAN:')
+                print(traceback.format_exc())
+
+    def prepare_loading(self):
+        transformers.logging.set_verbosity_error()
+
+        # this will preload the Bert tokenizer fles
+        print('preloading bert tokenizer...')
+
+        tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
+        print('...success')
+
+        # this will download requirements for Kornia
+        print('preloading Kornia requirements (ignore the deprecation warnings)...')
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
+        print('...success')
+
+        version = 'openai/clip-vit-large-patch14'
+
+        print('preloading CLIP model (Ignore the deprecation warnings)...')
+        sys.stdout.flush()
+        #self.load_upscalers()
+        tokenizer = CLIPTokenizer.from_pretrained(version)
+        transformer = CLIPTextModel.from_pretrained(version)
+        print('\n\n...success')
+
+        # In the event that the user has installed GFPGAN and also elected to use
+        # RealESRGAN, this will attempt to download the model needed by RealESRGANer
+
+
+    def restart(self):
+        os.execl(sys.executable, sys.executable, *sys.argv)
+
+    def del_widgets(self):
+        self.w.thumbnails.destroy()
 
     def show_image_lab(self):
         self.image_lab.show()
@@ -334,99 +414,6 @@ class GenerateWindow(QObject):
                     out_text = out_text + str(image['prompt'])+'\n\n'
         self.prompt_fetcher.w.output.setPlainText(out_text)
 
-
-    def showTypeKeyframes(self):
-        valueType = self.animKeyEditor.w.comboBox.currentText()
-        print(valueType)
-        self.timeline.timeline.selectedValueType = valueType
-        self.updateAnimKeys()
-    def sort_keys(self, e):
-        return e.position
-
-    def updateAnimKeys(self):
-        tempString = ""
-        valueType = self.animKeyEditor.w.comboBox.currentText()
-        self.timeline.timeline.keyFrameList.sort(key=self.sort_keys)
-        for item in self.timeline.timeline.keyFrameList:
-            if item.valueType == valueType:
-                if tempString == "":
-                    tempString = f'{item.position}:({item.value})'
-                else:
-                    tempString = f'{tempString}, {item.position}:({item.value})'
-        selection = self.animKeyEditor.w.comboBox.currentText()
-        if tempString != "":
-            if "Contrast" in selection:
-                self.animKeys.w.contrast_sched.setText(tempString)
-            if "Noise" in selection:
-                self.animKeys.w.noise_sched.setText(tempString)
-            if "Strength" in selection:
-                self.animKeys.w.strength_sched.setText(tempString)
-            if "Rotation X" in selection:
-                self.animKeys.w.rot_x.setText(tempString)
-            if "Rotation Y" in selection:
-                self.animKeys.w.rot_y.setText(tempString)
-            if "Rotation Z" in selection:
-                self.animKeys.w.rot_z.setText(tempString)
-            if "Translation X" in selection:
-                self.animKeys.w.trans_x.setText(tempString)
-            if "Translation Y" in selection:
-                self.animKeys.w.trans_y.setText(tempString)
-            if "Translation Z" in selection:
-                self.animKeys.w.trans_z.setText(tempString)
-            if "Angle" in selection:
-                self.animKeys.w.angle.setText(tempString)
-            if "Zoom" in selection:
-                self.animKeys.w.zoom.setText(tempString)
-        #perspective_flip_theta = self.animKeys.w.persp_theta.toPlainText()
-        #perspective_flip_phi = self.animKeys.w.persp_phi.toPlainText()
-        #perspective_flip_gamma = self.animKeys.w.persp_gamma.toPlainText()
-        #perspective_flip_fv = self.animKeys.w.persp_fv.toPlainText()
-    @Slot()
-    def updateKeyFramesFromTemp(self):
-        self.updateAnimKeys()
-
-    def addCurrentFrame(self):
-        matchFound = False
-        value = self.animKeyEditor.w.valueText.value()
-        valueType = self.animKeyEditor.w.comboBox.currentText()
-        position = int(self.timeline.timeline.pointerTimePos)
-        keyframe = {}
-        uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
-        keyframe[position] = KeyFrame(uid, valueType, position, value)
-        for items in self.timeline.timeline.keyFrameList:
-            if items.valueType == valueType:
-                if items.position == position:
-                    items.value = value
-                    matchFound = True
-        if matchFound == False:
-            self.timeline.timeline.keyFrameList.append(keyframe[position])
-        self.timeline.timeline.update()
-        self.updateAnimKeys()
-
-    #updates
-    def update_timeline(self):
-        self.timeline.timeline.duration = self.animSliders.w.frames.value()
-        self.timeline.timeline.update()
-
-    def updateThumbsZoom(self):
-        while gs.callbackBusy == True:
-            time.sleep(0.1)
-        try:
-            if gs.callbackBusy == False:
-                size = self.w.thumbnails.thumbsZoom.value()
-                self.w.thumbnails.thumbs.setGridSize(QSize(size, size))
-                self.w.thumbnails.thumbs.setIconSize(QSize(size, size))
-        except Exception as e:
-            print(f"Exception: {e}")
-            pass
-
-    def update_scaleNumber(self):
-        float = self.w.sampler.w.scale.value() / 100
-        self.w.sampler.w.scaleNumber.display(str(float))
-
-    def update_gfpganNumber(self):
-        float = self.w.sizer_count.w.gfpganSlider.value() / 10
-        self.w.sizer_count.w.gfpganNumber.display(str(float))
 
     #show
     def show_anim(self):
@@ -614,6 +601,7 @@ class GenerateWindow(QObject):
                                       contrast_schedule=contrast_schedule,
                                       diffusion_cadence=cadence,
                                       shouldStop=False,
+                                      compviscallback=self.compviscallbackSignal,
 
                                       )
         self.torch_gc()
@@ -622,10 +610,16 @@ class GenerateWindow(QObject):
         self.signals.reenable_runbutton.emit()
 
     def deforumTest(self, *args, **kwargs):
-        saved_args = locals()
-        # print(callback.x)
-        print("saved_args is", saved_args)
 
+
+        print(type(self.data1))
+        print(self.data1)
+        #saved_args = locals()
+        # print(callback.x)
+        #print("saved_args is", saved_args)
+    def compviscallbackSignal(self, data, *args, **kwargs):
+        self.data1 = data
+        self.signals.compviscallback.emit()
     def deforumstepCallback_signal(self, data, data2=None):
         self.data = data
         if data2 is not None:
@@ -1128,81 +1122,7 @@ class GenerateWindow(QObject):
             self.videoPreview = True
             self.imageCallback_func(advance)
 
-    def load_upscalers(self):
-        gfpgan = False
-        try:
-            from realesrgan import RealESRGANer
 
-            gfpgan = True
-        except ModuleNotFoundError:
-            pass
-
-        if gfpgan:
-            print('Loading models from RealESRGAN and facexlib')
-            try:
-                from basicsr.archs.rrdbnet_arch import RRDBNet
-                from facexlib.utils.face_restoration_helper import FaceRestoreHelper
-
-                RealESRGANer(
-                    scale=2,
-                    model_path='https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth',
-                    model=RRDBNet(
-                        num_in_ch=3,
-                        num_out_ch=3,
-                        num_feat=64,
-                        num_block=23,
-                        num_grow_ch=32,
-                        scale=2,
-                    ),
-                )
-
-                RealESRGANer(
-                    scale=4,
-                    model_path='https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth',
-                    model=RRDBNet(
-                        num_in_ch=3,
-                        num_out_ch=3,
-                        num_feat=64,
-                        num_block=23,
-                        num_grow_ch=32,
-                        scale=4,
-                    ),
-                )
-
-                FaceRestoreHelper(1, det_model='retinaface_resnet50')
-                print('...success')
-            except Exception:
-                import traceback
-
-                print('Error loading GFPGAN:')
-                print(traceback.format_exc())
-
-    def prepare_loading(self):
-        transformers.logging.set_verbosity_error()
-
-        # this will preload the Bert tokenizer fles
-        print('preloading bert tokenizer...')
-
-        tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
-        print('...success')
-
-        # this will download requirements for Kornia
-        print('preloading Kornia requirements (ignore the deprecation warnings)...')
-        with warnings.catch_warnings():
-            warnings.filterwarnings('ignore', category=DeprecationWarning)
-        print('...success')
-
-        version = 'openai/clip-vit-large-patch14'
-
-        print('preloading CLIP model (Ignore the deprecation warnings)...')
-        sys.stdout.flush()
-        #self.load_upscalers()
-        tokenizer = CLIPTokenizer.from_pretrained(version)
-        transformer = CLIPTextModel.from_pretrained(version)
-        print('\n\n...success')
-
-        # In the event that the user has installed GFPGAN and also elected to use
-        # RealESRGAN, this will attempt to download the model needed by RealESRGANer
 
     def stop_painters(self):
         try:
@@ -1278,6 +1198,106 @@ class GenerateWindow(QObject):
         self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         # gs.obj_to_delete = self.w.preview.pic
 
+
+        #KEYFRAME FUNCTIONS
+
+    def showTypeKeyframes(self):
+        valueType = self.animKeyEditor.w.comboBox.currentText()
+        print(valueType)
+        self.timeline.timeline.selectedValueType = valueType
+        self.updateAnimKeys()
+    def sort_keys(self, e):
+        return e.position
+
+    def updateAnimKeys(self):
+        tempString = ""
+        valueType = self.animKeyEditor.w.comboBox.currentText()
+        self.timeline.timeline.keyFrameList.sort(key=self.sort_keys)
+        for item in self.timeline.timeline.keyFrameList:
+            if item.valueType == valueType:
+                if tempString == "":
+                    tempString = f'{item.position}:({item.value})'
+                else:
+                    tempString = f'{tempString}, {item.position}:({item.value})'
+        selection = self.animKeyEditor.w.comboBox.currentText()
+        if tempString != "":
+            if "Contrast" in selection:
+                self.animKeys.w.contrast_sched.setText(tempString)
+            if "Noise" in selection:
+                self.animKeys.w.noise_sched.setText(tempString)
+            if "Strength" in selection:
+                self.animKeys.w.strength_sched.setText(tempString)
+            if "Rotation X" in selection:
+                self.animKeys.w.rot_x.setText(tempString)
+            if "Rotation Y" in selection:
+                self.animKeys.w.rot_y.setText(tempString)
+            if "Rotation Z" in selection:
+                self.animKeys.w.rot_z.setText(tempString)
+            if "Translation X" in selection:
+                self.animKeys.w.trans_x.setText(tempString)
+            if "Translation Y" in selection:
+                self.animKeys.w.trans_y.setText(tempString)
+            if "Translation Z" in selection:
+                self.animKeys.w.trans_z.setText(tempString)
+            if "Angle" in selection:
+                self.animKeys.w.angle.setText(tempString)
+            if "Zoom" in selection:
+                self.animKeys.w.zoom.setText(tempString)
+        #perspective_flip_theta = self.animKeys.w.persp_theta.toPlainText()
+        #perspective_flip_phi = self.animKeys.w.persp_phi.toPlainText()
+        #perspective_flip_gamma = self.animKeys.w.persp_gamma.toPlainText()
+        #perspective_flip_fv = self.animKeys.w.persp_fv.toPlainText()
+    @Slot()
+    def updateKeyFramesFromTemp(self):
+        self.updateAnimKeys()
+
+    def addCurrentFrame(self):
+        matchFound = False
+        value = self.animKeyEditor.w.valueText.value()
+        valueType = self.animKeyEditor.w.comboBox.currentText()
+        position = int(self.timeline.timeline.pointerTimePos)
+        keyframe = {}
+        uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
+        keyframe[position] = KeyFrame(uid, valueType, position, value)
+        for items in self.timeline.timeline.keyFrameList:
+            if items.valueType == valueType:
+                if items.position == position:
+                    items.value = value
+                    matchFound = True
+        if matchFound == False:
+            self.timeline.timeline.keyFrameList.append(keyframe[position])
+        self.timeline.timeline.update()
+        self.updateAnimKeys()
+
+    #updates
+    def update_timeline(self):
+        self.timeline.timeline.duration = self.animSliders.w.frames.value()
+        self.timeline.timeline.update()
+
+    def updateThumbsZoom(self):
+        while gs.callbackBusy == True:
+            time.sleep(0.1)
+        try:
+            if gs.callbackBusy == False:
+                size = self.w.thumbnails.thumbsZoom.value()
+                self.w.thumbnails.thumbs.setGridSize(QSize(size, size))
+                self.w.thumbnails.thumbs.setIconSize(QSize(size, size))
+        except Exception as e:
+            print(f"Exception: {e}")
+            pass
+
+    def update_scaleNumber(self):
+        float = self.w.sampler.w.scale.value() / 100
+        self.w.sampler.w.scaleNumber.display(str(float))
+
+    def update_gfpganNumber(self):
+        float = self.w.sizer_count.w.gfpganSlider.value() / 10
+        self.w.sizer_count.w.gfpganNumber.display(str(float))
+
+
+
+        #EVENT FILTERS
+
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.w.thumbnails.thumbs:
             menu = QMenu()
@@ -1300,3 +1320,34 @@ class GenerateWindow(QObject):
         except:
             pass
         sys.exit(0)
+
+
+
+def get_inbetweens(key_frames, max_frames, integer=False, interp_method='Linear'):
+    import numexpr
+    key_frame_series = pd.Series([np.nan for a in range(max_frames)])
+
+    for i in range(0, max_frames):
+        if i in key_frames:
+            value = key_frames[i]
+            value_is_number = check_is_number(value)
+            # if it's only a number, leave the rest for the default interpolation
+            if value_is_number:
+                t = i
+                key_frame_series[i] = value
+        if not value_is_number:
+            t = i
+            key_frame_series[i] = numexpr.evaluate(value)
+    key_frame_series = key_frame_series.astype(float)
+
+    if interp_method == 'Cubic' and len(key_frames.items()) <= 3:
+        interp_method = 'Quadratic'
+    if interp_method == 'Quadratic' and len(key_frames.items()) <= 2:
+        interp_method = 'Linear'
+
+    key_frame_series[0] = key_frame_series[key_frame_series.first_valid_index()]
+    key_frame_series[max_frames-1] = key_frame_series[key_frame_series.last_valid_index()]
+    key_frame_series = key_frame_series.interpolate(method=interp_method.lower(), limit_direction='both')
+    if integer:
+        return key_frame_series.astype(int)
+    return key_frame_series

@@ -411,7 +411,7 @@ class GenerateWindow(QObject):
             res = json.loads(res)
             if 'images' in res:
                 for image in res['images']:
-                    out_text = out_text + str(image['prompt'])+'\n\n'
+                    out_text = out_text + str(image['prompt'])+'\n\n' # this is here for it to be better to read
         self.prompt_fetcher.w.output.setPlainText(out_text)
 
 

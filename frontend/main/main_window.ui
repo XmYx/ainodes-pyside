@@ -32,7 +32,7 @@
      <x>0</x>
      <y>0</y>
      <width>695</width>
-     <height>18</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -63,6 +63,7 @@
     <addaction name="actionTxt2img"/>
     <addaction name="separator"/>
     <addaction name="actionNodes"/>
+    <addaction name="actionImageLab"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -128,7 +129,7 @@
   </action>
   <action name="actionSliders">
    <property name="text">
-    <string>Sliders</string>
+    <string>Image Setup</string>
    </property>
   </action>
   <action name="actionThumbnails">
@@ -164,6 +165,11 @@
   <action name="actionSoft_Restart">
    <property name="text">
     <string>Soft Restart</string>
+   </property>
+  </action>
+  <action name="actionImageLab">
+   <property name="text">
+    <string>Image Lab</string>
    </property>
   </action>
  </widget>

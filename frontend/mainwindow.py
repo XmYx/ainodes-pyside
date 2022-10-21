@@ -35,6 +35,7 @@ from backend.worker import Worker
 
 from frontend.ui_classes import *
 from frontend.nodeeditor import *
+from frontend.ui_image_lab import ImageLab
 from frontend.ui_outpaint import OutpaintUI
 from frontend.ui_timeline import Timeline, KeyFrame
 from frontend import paintwindow_func
@@ -97,6 +98,7 @@ class GenerateWindow(QObject):
         self.progress = None
         self.ftimer = QTimer(self)
         self.signals = Callbacks()
+        self.image_lab = ImageLab()
         #self.kf = Keyframes()
 
         settings.load_settings_json()
@@ -137,9 +139,12 @@ class GenerateWindow(QObject):
         self.w.actionSampler.triggered.connect(self.show_sampler)
         self.w.actionSliders.triggered.connect(self.show_sizer_count)
         self.w.actionThumbnails.triggered.connect(self.show_thumbnails)
-        self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings())
-        self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings())
+        self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings)
+        self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings)
         self.w.actionRestart.triggered.connect(self.restart)
+        self.w.actionImageLab.triggered.connect(self.show_image_lab)
+
+
 
         self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
     def restart(self):
@@ -168,6 +173,7 @@ class GenerateWindow(QObject):
         self.camera = Window()
         self.outpaint = paintwindow_func.PaintDock()
         self.compass = Compass()
+
 
         #self.pw = paintwindow_func.MainWindow()
         #self.outpaint.show()
@@ -301,6 +307,11 @@ class GenerateWindow(QObject):
         self.prompt_fetcher.w.getPrompts.clicked.connect(self.get_prompts)
         self.prompt_fetcher.w.usePrompt.clicked.connect(self.use_prompt)
         self.load_settings()
+
+
+    def show_image_lab(self):
+        self.image_lab.show()
+
 
     def use_prompt(self):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()

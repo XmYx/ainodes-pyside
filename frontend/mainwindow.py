@@ -697,7 +697,7 @@ class GenerateWindow(QObject):
     @Slot()
     def imageCallback_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
         self.painter = QPainter()
-        self.ipixmap = QPixmap(512, 512)
+        self.ipixmap = QPixmap(self.image.im.size[0], self.image.im.size[1])
         self.painter.begin(self.ipixmap)
         if self.videoPreview == True and self.renderedFrames > 0:
             qimage = ImageQt(self.currentFrames[self.now])
@@ -708,12 +708,11 @@ class GenerateWindow(QObject):
                 self.now = 0
             self.timeline.timeline.pointerTimePos = self.now
 
-
         elif self.renderedFrames > 0 and self.videoPreview == False:
             qimage = ImageQt(self.image)
-            self.painter.drawImage(QRect(0, 0, 512, 512), qimage)
+            self.painter.drawImage(QRect(0, 0, self.image.im.size[0], self.image.im.size[1]), qimage)
 
-        self.dynaimage.w.label.setPixmap(self.ipixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
+        self.dynaimage.w.label.setPixmap(self.ipixmap.scaled(self.image.im.size[0], self.image.im.size[1], Qt.AspectRatioMode.KeepAspectRatio))
         self.painter.end()
 
     @Slot()
@@ -1201,8 +1200,8 @@ class GenerateWindow(QObject):
 
 
     def test_output(self, data1, data2):
-
-        self.livePainter.begin(self.tpixmap)
+        tpixmap = QPixmap(self.w.sizer_count.w.widthSlider.value(), self.w.sizer_count.w.heightSlider.value())
+        self.livePainter.begin(tpixmap)
         x_samples = torch.clamp((data1 + 1.0) / 2.0, min=0.0, max=1.0)
         if len(x_samples) != 1:
             raise Exception(
@@ -1214,8 +1213,8 @@ class GenerateWindow(QObject):
         x_sample = x_sample.astype(np.uint8)
         dPILimg = Image.fromarray(x_sample)
         dqimg = ImageQt(dPILimg)
-        self.livePainter.drawImage(QRect(0, 0, 512, 512), dqimg)
-        self.w.dynaview.w.label.setPixmap(self.tpixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
+        self.livePainter.drawImage(QRect(0, 0, self.w.sizer_count.w.widthSlider.value(), self.w.sizer_count.w.heightSlider.value()), dqimg)
+        self.w.dynaview.w.label.setPixmap(tpixmap.scaled(self.w.sizer_count.w.widthSlider.value(), self.w.sizer_count.w.heightSlider.value(), Qt.AspectRatioMode.KeepAspectRatio))
         self.livePainter.end()
 
     def pass_object(self, progress_callback=None):

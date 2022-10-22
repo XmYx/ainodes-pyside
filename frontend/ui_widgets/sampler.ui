@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>189</width>
+    <width>211</width>
     <height>520</height>
    </rect>
   </property>
@@ -52,8 +52,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>189</width>
-            <height>477</height>
+            <width>209</width>
+            <height>494</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -79,6 +79,11 @@
              </property>
              <item row="0" column="0">
               <widget class="QComboBox" name="processType">
+               <item>
+                <property name="text">
+                 <string>Text to Image LM</string>
+                </property>
+               </item>
                <item>
                 <property name="text">
                  <string>Text to Image</string>

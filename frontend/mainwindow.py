@@ -847,7 +847,7 @@ class GenerateWindow(QObject):
             self.torch_gc()
         self.signals.reenable_runbutton.emit()
         # self.stop_painters()
-    def txt2img_thread(self):
+    def txt2img_lm_thread(self):
         # Pass the function to execute
         worker = Worker(self.run_txt2img)
         # Execute
@@ -1127,6 +1127,18 @@ class GenerateWindow(QObject):
         settings.save_settings_json()
 
 
+    #threading
+
+    # gets called by the dream button(s)
+    def taskSwitcher(self):
+        self.save_last_prompt()
+        self.choice = self.w.sampler.w.processType.currentText()
+        if self.choice == "Text to Video":
+            self.deforum_thread()
+        elif self.choice == "Text to Image LM":
+            self.txt2img_lm_thread()
+
+
     #dont know yet
     def load_history(self):
         self.w.thumbnails.thumbs.clear()
@@ -1138,13 +1150,9 @@ class GenerateWindow(QObject):
 
 
 
-    def taskSwitcher(self):
-        self.save_last_prompt()
-        self.choice = self.w.sampler.w.processType.currentText()
-        if self.choice == "Text to Video":
-            self.deforum_thread()
-        elif self.choice == "Text to Image":
-            self.txt2img_thread()
+
+
+
     def prevFrame(self):
         if self.now > 0:
             self.now -= 2

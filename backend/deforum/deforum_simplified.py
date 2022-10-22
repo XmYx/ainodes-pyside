@@ -8,7 +8,8 @@ import time
 from time import gmtime, strftime
 import traceback
 from types import SimpleNamespace
-
+import torchvision.transforms.functional as TF
+from torchvision.utils import make_grid
 import cv2
 import numpy as np
 import pandas as pd
@@ -794,7 +795,7 @@ class DeforumGenerator():
                  frame=0,
                  return_latent=False,
                  return_sample=False,
-                 return_c=False,):
+                 return_c=False):
         seed_everything(seed)
         os.makedirs(outdir, exist_ok=True)
 
@@ -1115,6 +1116,241 @@ class DeforumGenerator():
                     '%4.2fG' % (torch.cuda.memory_allocated() / 1e9),
                 )
             #return model
+
+    def run_txt2img(self,
+                    strength,
+                    seed,
+                    use_init,
+                    init_image,
+                    sampler_name,
+                    ddim_eta,
+                    animation_mode,
+                    prompts,
+                    max_frames,
+                    outdir,
+                    save_settings,
+                    save_samples,
+                    n_batch,
+                    make_grid,
+                    grid_rows,
+                    filename_format,
+                    seed_behavior,
+                    steps,
+                    H,
+                    W,
+                    n_samples, #batchsize
+                    scale,
+                    step_callback,
+                    compviscallback):
+
+        if "sd" not in gs.models:
+            self.load_model()
+
+        timestring = time.strftime('%Y%m%d%H%M%S')
+        strength = max(0.0, min(1.0, strength))
+
+        if seed == -1:
+            seed = random.randint(0, 2 ** 32 - 1)
+        if not use_init:
+            init_image = None
+        if sampler_name == 'plms' and (use_init or animation_mode != 'None'):
+            print(f"Init images aren't supported with PLMS yet, switching to KLMS")
+            sampler_name = 'klms'
+        if sampler_name != 'ddim':
+            ddim_eta = 0
+
+        if animation_mode == 'None':
+            max_frames = 1
+        elif animation_mode == 'Video Input':
+            use_init = True
+
+        # clean up unused memory
+        gc.collect()
+        torch.cuda.empty_cache()
+
+        self.render_image_batch(strength=strength,
+                                seed=seed,
+                                use_init=use_init,
+                                init_image=None,
+                                sampler_name=sampler_name,
+                                ddim_eta=ddim_eta,
+                                animation_mode=animation_mode,
+                                prompts=prompts,
+                                timestring=timestring,
+                                max_frames=max_frames,
+                                outdir=outdir,
+                                save_settings=save_settings,
+                                save_samples=save_samples,
+                                n_batch=n_batch,
+                                make_grid=make_grid,
+                                grid_rows=grid_rows,
+                                filename_format=filename_format,
+                                seed_behavior=seed_behavior,
+                                steps=steps,
+                                H=H,
+                                W=W,
+                                n_samples=n_samples, #batchsize
+                                scale=scale,
+                                step_callback=step_callback,
+                                compviscallback=compviscallback)
+
+    def sanitize(self, prompt):
+        whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+        tmp = ''.join(filter(whitelist.__contains__, prompt))
+        return tmp.replace(' ', '_')
+
+    def render_image_batch(self,
+                           strength,
+                           seed,
+                           use_init,
+                           init_image,
+                           sampler_name,
+                           ddim_eta,
+                           animation_mode,
+                           prompts,
+                           timestring,
+                           max_frames,
+                           outdir,
+                           save_settings,
+                           save_samples,
+                           n_batch,
+                           make_grid,
+                           grid_rows,
+                           filename_format,
+                           seed_behavior,
+                           steps,
+                           H,
+                           W,
+                           n_samples, #batchsize
+                           scale,
+                           step_callback,
+                           compviscallback):
+
+
+        outdir = f'{outdir}/_batch_images'
+
+
+        prompts = list(prompts.split("\n"))
+
+        prompts = {k: f"{v:05d}" for v, k in enumerate(prompts)}
+        # create output folder for the batch
+        os.makedirs(outdir, exist_ok=True)
+        if save_settings or save_samples:
+            print(f"Saving to {os.path.join(outdir, timestring)}_*")
+
+        #image_pipe = st.session_state[st.session_state["generation_mode"]]["preview_image"]
+        #video_pipe = st.session_state[st.session_state["generation_mode"]]["preview_video"]
+
+        # save settings for the batch
+        if save_settings:
+            settings_filename = os.path.join(outdir, f"{timestring}_settings.txt")
+            #with open(settings_filename, "w+", encoding="utf-8") as f:
+            #    s = {**dict(args.__dict__)}
+            #    json.dump(s, f, ensure_ascii=False, indent=4)
+
+        index = 0
+
+        # function for init image batching
+        init_array = []
+        if use_init:
+            if init_image == "":
+                raise FileNotFoundError("No path was given for init_image")
+            if init_image.startswith('http://') or init_image.startswith('https://'):
+                init_array.append(init_image)
+            elif not os.path.isfile(init_image):
+                if init_image[-1] != "/":  # avoids path error by adding / to end if not there
+                    init_image += "/"
+                for image in sorted(os.listdir(init_image)):  # iterates dir and appends images to init_array
+                    if image.split(".")[-1] in ("png", "jpg", "jpeg"):
+                        init_array.append(init_image + image)
+            else:
+                init_array.append(init_image)
+        else:
+            init_array = [""]
+
+        # when doing large batches don't flood browser with images
+        clear_between_batches = n_batch >= 32
+
+        for iprompt, prompt in enumerate(prompts):
+            print(f"Prompt {iprompt + 1} of {len(prompts)}")
+            print(f"{prompt}")
+
+            all_images = []
+
+            for batch_index in range(n_batch):
+                # if clear_between_batches and batch_index % 32 == 0:
+                # display.clear_output(wait=True)
+                print(f"Batch {batch_index + 1} of {n_batch}")
+                print(init_array)
+
+                for image in init_array:  # iterates the init images
+                    init_image = image
+                    results = self.generate(
+                        seed = seed,
+                        outdir = outdir,
+                        sampler_name = sampler_name,
+                        n_samples = n_samples,
+                        prompt = prompt,
+                        precision = None,
+                        init_latent = None,
+                        init_sample = None,
+                        use_init = False,
+                        W = W,
+                        H = H,
+                        use_alpha_as_mask = False,
+                        strength = strength,
+                        strength_0_no_init = 0,
+                        use_mask = None,
+                        mask_file = None,
+                        mask_contrast_adjust = None,
+                        mask_brightness_adjust = None,
+                        overlay_mask= None,
+                        steps=steps,
+                        ddim_eta=ddim_eta,
+                        save_sample_per_step = False,
+                        show_sample_per_step = False,
+                        timestring = timestring,
+                        prompt_weighting = None,
+                        log_weighted_subprompts = False,
+                        scale = scale,
+                        init_c = False,
+                        C = 4,
+                        f = 8,
+                        mask_overlay_blur = 0,
+                        step_callback = step_callback,
+                        compviscallback = compviscallback,
+                        frame=0,
+                        return_latent=False,
+                        return_sample=False,
+                        return_c=False )
+                    print(results)
+                    if len(results>0):
+                        for image in results:
+                            print(image)
+                            if make_grid:
+                                all_images.append(T.functional.pil_to_tensor(image))
+                            if save_samples:
+                                if filename_format == "{timestring}_{index}_{prompt}.png":
+                                    filename = f"{timestring}_{index:05}_{self.sanitize(prompt)[:160]}.png"
+                                else:
+                                    filename = f"{timestring}_{index:05}_{seed}.png"
+                                fpath = os.path.join(outdir, filename)
+                                image.save(fpath)
+                            #st.session_state['node_pipe'] = image
+                            #image_pipe.image(image)
+                            #st.session_state['currentImages'].append(fpath)
+                            index += 1
+                    seed = self.next_seed(seed_behavior, seed)
+
+            # print(len(all_images))
+            if make_grid:
+                grid = make_grid(all_images, nrow=int(len(all_images) / grid_rows))
+                grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
+                filename = f"{timestring}_{iprompt:05d}_grid_{seed}.png"
+                grid_image = Image.fromarray(grid.astype(np.uint8))
+                grid_image.save(os.path.join(outdir, filename))
+
+
 
 
 class CFGDenoiser(nn.Module):

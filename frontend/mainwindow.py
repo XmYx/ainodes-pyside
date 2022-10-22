@@ -5,7 +5,8 @@ import backend.settings as settings
 from backend.singleton import singleton
 
 import importlib
-#from memory_profiler import profile
+
+# from memory_profiler import profile
 
 settings.load_settings_json()
 
@@ -50,7 +51,6 @@ from datetime import datetime
 from uuid import uuid4
 
 
-
 class Callbacks(QObject):
     txt2img_step = Signal()
     reenable_runbutton = Signal()
@@ -69,8 +69,8 @@ class GenerateWindow(QObject):
 
     def __init__(self, *args, **kwargs):
         super(GenerateWindow, self).__init__(*args, **kwargs)
+        self.deforum = None
         self.init_steps()
-
 
     def init_steps(self):
         self.previewpos = "outerdock"
@@ -102,7 +102,7 @@ class GenerateWindow(QObject):
         self.ftimer = QTimer(self)
         self.signals = Callbacks()
         self.image_lab = ImageLab()
-        #self.kf = Keyframes()
+        # self.kf = Keyframes()
 
         settings.load_settings_json()
         self.videoPreview = False
@@ -148,7 +148,6 @@ class GenerateWindow(QObject):
         self.w.actionRestart.triggered.connect(self.restart)
         self.w.actionImageLab.triggered.connect(self.show_image_lab)
 
-
         self.w.actionOutpaint.triggered.connect(self.show_paint)
 
         self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
@@ -175,31 +174,29 @@ class GenerateWindow(QObject):
         self.outpaint = OutpaintUI()
         self.compass = Compass()
 
-        #self.pw = paintwindow_func.MainWindow()
-        #self.outpaint.show()
-        #self.camera.show()
-        #self.w.setCentralWidget(self.nodeWindow)
+        # self.pw = paintwindow_func.MainWindow()
+        # self.outpaint.show()
+        # self.camera.show()
+        # self.w.setCentralWidget(self.nodeWindow)
         self.w.setCentralWidget(self.outpaint)
-        #self.pw.show()
-        #self.outpaint.update()
-        #self.nodeWindow.addDockWidget(Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
-        #self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.outpaint)
+        # self.pw.show()
+        # self.outpaint.update()
+        # self.nodeWindow.addDockWidget(Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
+        # self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.outpaint)
 
         widget = QWidget.createWindowContainer(self.camera)
-        widget.setMaximumSize( 200 ,  200 )
-        widget.setMinimumSize( 100 ,  100 )
+        widget.setMaximumSize(200, 200)
+        widget.setMinimumSize(100, 100)
 
         widget.mouseMoveEvent
 
         self.compass.w.camlayout.addWidget(widget)
 
-
-        #self.w.setCentralWidget(self.nodeWindow)
+        # self.w.setCentralWidget(self.nodeWindow)
         self.nodeWindow.addDockWidget(Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
 
-
         self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
-        self.timeline.timeline.selectedValueType = self.animKeyEditor.w.comboBox.currentText()        # self.nodes = NodeEditorWindow()
+        self.timeline.timeline.selectedValueType = self.animKeyEditor.w.comboBox.currentText()  # self.nodes = NodeEditorWindow()
         # self.nodes.nodeeditor.addNodes()
         self.timeline.timeline.update()
 
@@ -219,8 +216,7 @@ class GenerateWindow(QObject):
         self.w.sizer_count.w.samplesNumber.display(str(self.w.sizer_count.w.samplesSlider.value()))
         self.w.sizer_count.w.batchSizeNumber.display(str(self.w.sizer_count.w.batchSizeSlider.value()))
         self.w.sampler.w.stepsNumber.display(str(self.w.sampler.w.steps.value()))
-        self.w.sampler.w.scaleNumber.display(str(self.w.sampler.w.scale.value()/100))
-
+        self.w.sampler.w.scaleNumber.display(str(self.w.sampler.w.scale.value() / 100))
 
         self.animSliders.w.framesNumber.display(str(self.animSliders.w.frames.value()))
         self.animSliders.w.ddim_etaNumber.display(str(self.animSliders.w.ddim_eta.value()))
@@ -233,9 +229,6 @@ class GenerateWindow(QObject):
         self.animSliders.w.near_planeNumber.display(str(self.animSliders.w.near_plane.value()))
         self.animSliders.w.far_planeNumber.display(str(self.animSliders.w.far_plane.value()))
 
-
-
-
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(512, 256))
 
         self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.compass.w.dockWidget)
@@ -247,13 +240,11 @@ class GenerateWindow(QObject):
         self.w.tabifyDockWidget(self.animKeys.w.dockWidget, self.w.sampler.w.dockWidget)
         self.w.tabifyDockWidget(self.w.sampler.w.dockWidget, self.w.sizer_count.w.dockWidget)
 
-        #self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.camera)
-
+        # self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.camera)
 
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.prompt_fetcher.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.timeline)
-
 
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.thumbnails)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)
@@ -263,7 +254,6 @@ class GenerateWindow(QObject):
 
         self.dynaimage.w.setMinimumSize(QtCore.QSize(400, 256))
 
-
         self.w.tabifyDockWidget(self.path_setup.w.dockWidget, self.w.thumbnails)
         self.w.tabifyDockWidget(self.w.thumbnails, self.w.dynaview.w.dockWidget)
         self.w.tabifyDockWidget(self.w.dynaview.w.dockWidget, self.animSliders.w.dockWidget)
@@ -272,9 +262,6 @@ class GenerateWindow(QObject):
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animKeyEditor.w.dockWidget)
 
         self.w.tabifyDockWidget(self.timeline, self.w.prompt.w.dockWidget)
-
-
-
 
         self.path_setup.w.dockWidget.setWindowTitle('Path Setup')
         self.animKeys.w.dockWidget.setWindowTitle('Anim Keys')
@@ -302,7 +289,7 @@ class GenerateWindow(QObject):
         self.w.imageItem = QGraphicsPixmapItem()
         self.newPixmap = {}
         self.tpixmap = {}
-        self.updateRate = self.w.sampler.w.steps.value() # todo whats that? todo is plans we might share there for us and contributors to see what to implement next
+        self.updateRate = self.w.sampler.w.steps.value()  # todo whats that? todo is plans we might share there for us and contributors to see what to implement next
         self.livePainter = QPainter()
         self.vpainter["iins"] = QPainter()
         self.tpixmap = QPixmap(512, 512)
@@ -314,7 +301,6 @@ class GenerateWindow(QObject):
 
         self.w.sizer_count.w.widthSlider.valueChanged.connect(self.update_outpaint_parameters)
         self.w.sizer_count.w.heightSlider.valueChanged.connect(self.update_outpaint_parameters)
-
 
     def load_upscalers(self):
         gfpgan = False
@@ -384,14 +370,13 @@ class GenerateWindow(QObject):
 
         print('preloading CLIP model (Ignore the deprecation warnings)...')
         sys.stdout.flush()
-        #self.load_upscalers()
+        # self.load_upscalers()
         tokenizer = CLIPTokenizer.from_pretrained(version)
         transformer = CLIPTextModel.from_pretrained(version)
         print('\n\n...success')
 
         # In the event that the user has installed GFPGAN and also elected to use
         # RealESRGAN, this will attempt to download the model needed by RealESRGANer
-
 
     def restart(self):
         os.execl(sys.executable, sys.executable, *sys.argv)
@@ -401,7 +386,6 @@ class GenerateWindow(QObject):
 
     def show_image_lab(self):
         self.image_lab.show()
-
 
     def use_prompt(self):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
@@ -423,11 +407,10 @@ class GenerateWindow(QObject):
             res = json.loads(res)
             if 'images' in res:
                 for image in res['images']:
-                    out_text = out_text + str(image['prompt'])+'\n\n' # this is here for it to be better to read
+                    out_text = out_text + str(image['prompt']) + '\n\n'  # this is here for it to be better to read
         self.prompt_fetcher.w.output.setPlainText(out_text)
 
-
-    #show
+    # show
     def show_anim(self):
         self.w.anim.w.show()
 
@@ -470,7 +453,6 @@ class GenerateWindow(QObject):
         self.dynaimage.w.destroy()
         self.w.setCentralWidget(self.dynaimage.w.dockWidget)
 
-
     def show_paint(self):
         try:
             self.nodeWindow.destroy()
@@ -479,6 +461,7 @@ class GenerateWindow(QObject):
             pass
         self.outpaint = paintwindow_func.PaintDock()
         self.w.setCentralWidget(self.outpaint)
+
     def update_outpaint_parameters(self):
         W = self.w.sizer_count.w.widthSlider.value()
         H = self.w.sizer_count.w.heightSlider.value()
@@ -490,6 +473,7 @@ class GenerateWindow(QObject):
         gc.collect()
         torch.cuda.empty_cache()
         torch.cuda.ipc_collect()
+
     def test_save_outpaint(self):
         """painter = QPainter()
         bitmap = QBitmap(512, 512)
@@ -511,10 +495,11 @@ class GenerateWindow(QObject):
         # Set our created mask on the image.
 
         # Calculate the bounding rect and return a copy of that region.
-        #self.outpaint.canvas.pixmap = pixmap.copy(rect.boundingRect())
+        # self.outpaint.canvas.pixmap = pixmap.copy(rect.boundingRect())
         self.outpaint.canvas.setPixmap(self.outpaint.canvas.pixmap)
         self.outpaint.canvas.update()
-    #deforum
+
+    # deforum
     def run_deforum(self, progress_callback=None):
 
         self.currentFrames = []
@@ -523,7 +508,7 @@ class GenerateWindow(QObject):
 
         use_init = self.animSliders.w.useInit.isChecked()
         adabins = self.animSliders.w.adabins.isChecked()
-        scale = self.w.sampler.w.scale.value()/100
+        scale = self.w.sampler.w.scale.value() / 100
         ddim_eta = self.animSliders.w.ddim_eta.value() / 1000
         strength = self.animSliders.w.strength.value() / 1000
         mask_contrast_adjust = self.animSliders.w.mask_contrast.value() / 1000
@@ -596,24 +581,24 @@ class GenerateWindow(QObject):
             sampler = "euler_ancestral"
         else:
             sampler = sampler
-        W=self.w.sizer_count.w.widthSlider.value()
-        H=self.w.sizer_count.w.heightSlider.value()
+        W = self.w.sizer_count.w.widthSlider.value()
+        H = self.w.sizer_count.w.heightSlider.value()
         W, H = map(lambda x: x - x % 64, (W, H))
         self.w.sizer_count.w.widthSlider.setValue(W)
         self.w.sizer_count.w.heightSlider.setValue(H)
 
-        self.deforum.render_animation(H = H,
-                                      W = W,
+        self.deforum.render_animation(H=H,
+                                      W=W,
                                       animation_prompts=prompt_series,
                                       steps=self.steps,
-                                      adabins = adabins,
+                                      adabins=adabins,
                                       scale=scale,
                                       ddim_eta=ddim_eta,
-                                      strength = strength,
-                                      mask_contrast_adjust = mask_contrast_adjust,
-                                      mask_brightness_adjust = mask_brightness_adjust,
-                                      #mask_blur = mask_blur,
-                                      sampler_name = sampler,
+                                      strength=strength,
+                                      mask_contrast_adjust=mask_contrast_adjust,
+                                      mask_brightness_adjust=mask_brightness_adjust,
+                                      # mask_blur = mask_blur,
+                                      sampler_name=sampler,
                                       fov=fov,
                                       max_frames=max_frames,
                                       midas_weight=midas_weight,
@@ -654,15 +639,16 @@ class GenerateWindow(QObject):
 
     def deforumTest(self, *args, **kwargs):
 
-
         print(type(self.data1))
         print(self.data1)
-        #saved_args = locals()
+        # saved_args = locals()
         # print(callback.x)
-        #print("saved_args is", saved_args)
+        # print("saved_args is", saved_args)
+
     def compviscallbackSignal(self, data, *args, **kwargs):
         self.data1 = data
         self.signals.compviscallback.emit()
+
     def deforumstepCallback_signal(self, data, data2=None):
         self.data = data
         if data2 is not None:
@@ -679,14 +665,50 @@ class GenerateWindow(QObject):
 
         self.w.prompt.w.runButton.setEnabled(False)
         self.prompt_fetcher.w.dreamPrompt.setEnabled(False)
-        QTimer.singleShot(100, lambda: self.pass_object()) # todo why we need that timer here doing nothing?
+        QTimer.singleShot(100, lambda: self.pass_object())  # todo why we need that timer here doing nothing?
 
         worker = Worker(self.run_deforum)
         # Execute
         self.threadpool.start(worker)
 
+    def run_deforum_txt2img(self, progress_callback=None):
+        self.deforum = DeforumGenerator()
+        self.deforum.signals = Callbacks()
+        self.w.prompt.w.runButton.setEnabled(False)
+        self.prompt_fetcher.w.dreamPrompt.setEnabled(False)
 
-    #slots
+        self.deforum.run_txt2img(strength=self.animSliders.w.strength.value() / 1000,
+                                 seed=self.w.sampler.w.seed.text(),
+                                 use_init=self.animSliders.w.useInit.isChecked(),
+                                 init_image=None,
+                                 sampler_name=self.w.sampler.w.sampler.currentText(),
+                                 ddim_eta=self.animSliders.w.ddim_eta.value() / 1000,
+                                 animation_mode='None',
+                                 prompts=self.w.prompt.w.textEdit.toPlainText(),
+                                 max_frames=1,
+                                 outdir=self.path_setup.w.txt2imgOut.text(),
+                                 save_settings=False,
+                                 save_samples=True,
+                                 n_batch=self.w.sizer_count.w.batchSizeSlider.value(),
+                                 make_grid=False,
+                                 grid_rows=0,
+                                 filename_format="{timestring}_{index}_{prompt}.png",
+                                 seed_behavior=self.w.sampler.w.seedBehavior.currentText(),
+                                 steps=self.w.sampler.w.steps.value(),
+                                 H=self.w.sizer_count.w.heightSlider.value(),
+                                 W=self.w.sizer_count.w.widthSlider.value(),
+                                 n_samples=self.w.sizer_count.w.batchSizeSlider.value(),  # batchsize
+                                 scale=self.w.sampler.w.scale.value() / 100,
+                                 step_callback=self.deforumstepCallback_signal if self.w.sampler.w.tensorPreview.isChecked() else None,
+                                 compviscallback=self.deforumstepCallback_signal)
+
+    def deforum_txt2img_thread(self):
+        # Pass the function to execute
+        worker = Worker(self.run_deforum_txt2img)
+        # Execute
+        self.threadpool.start(worker)
+
+    # slots
     @Slot()
     def deforumstepCallback_func(self):
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
@@ -724,7 +746,8 @@ class GenerateWindow(QObject):
             qimage = ImageQt(self.image)
             self.painter.drawImage(QRect(0, 0, self.image.im.size[0], self.image.im.size[1]), qimage)
 
-        self.dynaimage.w.label.setPixmap(self.ipixmap.scaled(self.image.im.size[0], self.image.im.size[1], Qt.AspectRatioMode.KeepAspectRatio))
+        self.dynaimage.w.label.setPixmap(
+            self.ipixmap.scaled(self.image.im.size[0], self.image.im.size[1], Qt.AspectRatioMode.KeepAspectRatio))
         self.painter.end()
 
     @Slot()
@@ -739,7 +762,7 @@ class GenerateWindow(QObject):
         except:
             pass
 
-    #timer
+    # timer
     def start_timer(self, *args, **kwargs):
         self.ftimer.timeout.connect(self.imageCallback_func)
 
@@ -750,7 +773,7 @@ class GenerateWindow(QObject):
         self.ftimer.stop()
         self.videoPreview = False
 
-    #callback
+    # callback
     def imageCallback_signal(self, image, *args, **kwargs):
         self.currentFrames.append(image)
         self.renderedFrames += 1
@@ -758,8 +781,8 @@ class GenerateWindow(QObject):
 
         self.signals.txt2img_image_cb.emit()
 
-    #text2img
-    def run_txt2img(self, progress_callback=None):
+    # text2img
+    def run_txt2img_lm(self, progress_callback=None):
 
         self.w.prompt.w.runButton.setEnabled(False)
         self.prompt_fetcher.w.dreamPrompt.setEnabled(False)
@@ -768,8 +791,7 @@ class GenerateWindow(QObject):
         self.renderedFrames = 0
 
         self.w.statusBar().showMessage("Loading model...")
-        #self.load_upscalers()
-
+        # self.load_upscalers()
 
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
 
@@ -778,7 +800,7 @@ class GenerateWindow(QObject):
         # self.w.setCentralWidget(self.dynaimage.w)
         width = self.w.sizer_count.w.widthSlider.value()
         height = self.w.sizer_count.w.heightSlider.value()
-        scale = self.w.sampler.w.scale.value()/100
+        scale = self.w.sampler.w.scale.value() / 100
         self.steps = self.w.sampler.w.steps.value()
         samples = self.w.sizer_count.w.samplesSlider.value()
         batchsize = self.w.sizer_count.w.batchSizeSlider.value()
@@ -786,8 +808,8 @@ class GenerateWindow(QObject):
         full_precision = self.w.sampler.w.fullPrecision.isChecked()
         sampler = self.w.sampler.w.sampler.currentText()
         upscale = self.w.sizer_count.w.upScale.isChecked()
-        upscale_scale =  self.w.sizer_count.w.upscaleScale.value()
-        upscale_strength =  self.w.sizer_count.w.upscaleStrength.value()
+        upscale_scale = self.w.sizer_count.w.upscaleScale.value()
+        upscale_strength = self.w.sizer_count.w.upscaleStrength.value()
         use_gfpgan = self.w.sizer_count.w.useGfpgan.isChecked()
         gfpgan_strength = self.w.sizer_count.w.gfpganSlider.value() / 100
 
@@ -859,14 +881,14 @@ class GenerateWindow(QObject):
             self.torch_gc()
         self.signals.reenable_runbutton.emit()
         # self.stop_painters()
+
     def txt2img_lm_thread(self):
         # Pass the function to execute
-        worker = Worker(self.run_txt2img)
+        worker = Worker(self.run_txt2img_lm)
         # Execute
         self.threadpool.start(worker)
 
-
-    #gallery ??
+    # gallery ??
     def tileImageClicked(self, item):
 
         vins = random.randint(10000, 99999)
@@ -896,33 +918,29 @@ class GenerateWindow(QObject):
 
     def viewImageClicked(self, item):
 
-        #vins = random.randint(10000, 99999)
+        # vins = random.randint(10000, 99999)
         imageSize = item.icon().actualSize(QSize(10000, 10000))
         qimage = QImage(item.icon().pixmap(imageSize).toImage())
-        #self.outpaint.canvas.pixmap = QPixmap(qimage.size())
-
+        # self.outpaint.canvas.pixmap = QPixmap(qimage.size())
 
         for items in self.outpaint.canvas.rectlist:
             print(f"adding image{qimage}")
             items.image = qimage
 
+        # self.vpainter[vins] = QPainter()
+        # newItem = QGraphicsPixmapItem()
+        # self.vpainter[vins].begin(self.outpaint.canvas.pixmap)
+        # self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
+        # newItem.setPixmap(self.newPixmap[vins])
 
-
-
-        #self.vpainter[vins] = QPainter()
-        #newItem = QGraphicsPixmapItem()
-        #self.vpainter[vins].begin(self.outpaint.canvas.pixmap)
-        #self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
-        #newItem.setPixmap(self.newPixmap[vins])
-
-        #for items in self.w.preview.w.scene.items():
+        # for items in self.w.preview.w.scene.items():
         #    self.w.preview.w.scene.removeItem(items)
 
-        #self.outpaint.canvas.setPixmap(self.outpaint.canvas.pixmap)
-        #self.w.preview.w.scene.addItem(newItem)
-        #self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
-        #self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
-        #self.vpainter[vins].end()
+        # self.outpaint.canvas.setPixmap(self.outpaint.canvas.pixmap)
+        # self.w.preview.w.scene.addItem(newItem)
+        # self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
+        # self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+        # self.vpainter[vins].end()
 
     def zoom_IN(self):
         self.w.preview.w.graphicsView.scale(1.25, 1.25)
@@ -930,7 +948,7 @@ class GenerateWindow(QObject):
     def zoom_OUT(self):
         self.w.preview.w.graphicsView.scale(0.75, 0.75)
 
-    #settings
+    # settings
 
     def create_out_folders(self):
         os.makedirs(gs.system.galleryMainPath, exist_ok=True)
@@ -942,7 +960,6 @@ class GenerateWindow(QObject):
         os.makedirs(gs.system.vid2vidTmp, exist_ok=True)
         os.makedirs(gs.system.vid2vidSingleFrame, exist_ok=True)
         os.makedirs(gs.system.vid2vidOut, exist_ok=True)
-
 
     def load_settings(self):
         settings.load_settings_json()
@@ -969,7 +986,7 @@ class GenerateWindow(QObject):
         self.w.sizer_count.w.widthSlider.setValue(gs.diffusion.W)
         self.w.sizer_count.w.samplesSlider.setValue(gs.diffusion.n_samples)
         self.w.sizer_count.w.batchSizeSlider.setValue(gs.diffusion.batch_size)
-        self.w.sampler.w.scale.setValue(gs.diffusion.scale*100)
+        self.w.sampler.w.scale.setValue(gs.diffusion.scale * 100)
         self.w.sampler.w.steps.setValue(gs.diffusion.steps)
         self.w.sizer_count.w.upScale.setChecked(gs.diffusion.upScale)
         self.w.sizer_count.w.upscaleScale.setValue(gs.diffusion.upscale_scale)
@@ -1031,8 +1048,6 @@ class GenerateWindow(QObject):
         self.path_setup.w.gpu.setText(str(gs.system.gpu))
         self.create_out_folders()
 
-
-
     def load_last_prompt(self):
         data = ''
         try:
@@ -1078,7 +1093,6 @@ class GenerateWindow(QObject):
         gs.diffusion.use_gfpgan = self.w.sizer_count.w.useGfpgan.isChecked()
         gs.diffusion.gfpgan_strength = self.w.sizer_count.w.gfpganSlider.value()
 
-
         gs.diffusion.scale = self.w.sampler.w.scale.value() / 100
         gs.diffusion.steps = self.w.sampler.w.steps.value()
         gs.diffusion.fullPrecision = self.w.sampler.w.fullPrecision.isChecked()
@@ -1106,7 +1120,6 @@ class GenerateWindow(QObject):
         gs.diffusion.clearSample = self.animSliders.w.clearSample.isChecked()
 
         settings.save_settings_json()
-
 
     def save_system_settings(self):
         gs.system.galleryMainPath = self.path_setup.w.galleryMainPath.text()
@@ -1138,8 +1151,7 @@ class GenerateWindow(QObject):
         gs.system.gpu = int(self.path_setup.w.gpu.text())
         settings.save_settings_json()
 
-
-    #threading
+    # threading
 
     # gets called by the dream button(s)
     def taskSwitcher(self):
@@ -1149,9 +1161,10 @@ class GenerateWindow(QObject):
             self.deforum_thread()
         elif self.choice == "Text to Image LM":
             self.txt2img_lm_thread()
+        elif self.choice == 'Text to Image':
+            self.deforum_txt2img_thread()
 
-
-    #dont know yet
+    # dont know yet
     def load_history(self):
         self.w.thumbnails.thumbs.clear()
         for image in gs.album:
@@ -1159,11 +1172,6 @@ class GenerateWindow(QObject):
 
     def viewThread(self, item):
         self.viewImageClicked(item)
-
-
-
-
-
 
     def prevFrame(self):
         if self.now > 0:
@@ -1179,8 +1187,6 @@ class GenerateWindow(QObject):
             advance = False
             self.videoPreview = True
             self.imageCallback_func(advance)
-
-
 
     def stop_painters(self):
         try:
@@ -1218,7 +1224,6 @@ class GenerateWindow(QObject):
             finally:
                 return
 
-
     def test_output(self, data1, data2):
         tpixmap = QPixmap(self.w.sizer_count.w.widthSlider.value(), self.w.sizer_count.w.heightSlider.value())
         self.livePainter.begin(tpixmap)
@@ -1233,8 +1238,11 @@ class GenerateWindow(QObject):
         x_sample = x_sample.astype(np.uint8)
         dPILimg = Image.fromarray(x_sample)
         dqimg = ImageQt(dPILimg)
-        self.livePainter.drawImage(QRect(0, 0, self.w.sizer_count.w.widthSlider.value(), self.w.sizer_count.w.heightSlider.value()), dqimg)
-        self.w.dynaview.w.label.setPixmap(tpixmap.scaled(self.w.sizer_count.w.widthSlider.value(), self.w.sizer_count.w.heightSlider.value(), Qt.AspectRatioMode.KeepAspectRatio))
+        self.livePainter.drawImage(
+            QRect(0, 0, self.w.sizer_count.w.widthSlider.value(), self.w.sizer_count.w.heightSlider.value()), dqimg)
+        self.w.dynaview.w.label.setPixmap(
+            tpixmap.scaled(self.w.sizer_count.w.widthSlider.value(), self.w.sizer_count.w.heightSlider.value(),
+                           Qt.AspectRatioMode.KeepAspectRatio))
         self.livePainter.end()
 
     def pass_object(self, progress_callback=None):
@@ -1256,14 +1264,14 @@ class GenerateWindow(QObject):
         self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         # gs.obj_to_delete = self.w.preview.pic
 
-
-        #KEYFRAME FUNCTIONS
+        # KEYFRAME FUNCTIONS
 
     def showTypeKeyframes(self):
         valueType = self.animKeyEditor.w.comboBox.currentText()
         print(valueType)
         self.timeline.timeline.selectedValueType = valueType
         self.updateAnimKeys()
+
     def sort_keys(self, e):
         return e.position
 
@@ -1301,10 +1309,11 @@ class GenerateWindow(QObject):
                 self.animKeys.w.angle.setText(tempString)
             if "Zoom" in selection:
                 self.animKeys.w.zoom.setText(tempString)
-        #perspective_flip_theta = self.animKeys.w.persp_theta.toPlainText()
-        #perspective_flip_phi = self.animKeys.w.persp_phi.toPlainText()
-        #perspective_flip_gamma = self.animKeys.w.persp_gamma.toPlainText()
-        #perspective_flip_fv = self.animKeys.w.persp_fv.toPlainText()
+        # perspective_flip_theta = self.animKeys.w.persp_theta.toPlainText()
+        # perspective_flip_phi = self.animKeys.w.persp_phi.toPlainText()
+        # perspective_flip_gamma = self.animKeys.w.persp_gamma.toPlainText()
+        # perspective_flip_fv = self.animKeys.w.persp_fv.toPlainText()
+
     @Slot()
     def updateKeyFramesFromTemp(self):
         self.updateAnimKeys()
@@ -1327,7 +1336,7 @@ class GenerateWindow(QObject):
         self.timeline.timeline.update()
         self.updateAnimKeys()
 
-    #updates
+    # updates
     def update_timeline(self):
         self.timeline.timeline.duration = self.animSliders.w.frames.value()
         self.timeline.timeline.update()
@@ -1352,9 +1361,7 @@ class GenerateWindow(QObject):
         float = self.w.sizer_count.w.gfpganSlider.value() / 10
         self.w.sizer_count.w.gfpganNumber.display(str(float))
 
-
-
-        #EVENT FILTERS
+        # EVENT FILTERS
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.w.thumbnails.thumbs:
@@ -1380,7 +1387,6 @@ class GenerateWindow(QObject):
         sys.exit(0)
 
 
-
 def get_inbetweens(key_frames, max_frames, integer=False, interp_method='Linear'):
     import numexpr
     key_frame_series = pd.Series([np.nan for a in range(max_frames)])
@@ -1404,7 +1410,7 @@ def get_inbetweens(key_frames, max_frames, integer=False, interp_method='Linear'
         interp_method = 'Linear'
 
     key_frame_series[0] = key_frame_series[key_frame_series.first_valid_index()]
-    key_frame_series[max_frames-1] = key_frame_series[key_frame_series.last_valid_index()]
+    key_frame_series[max_frames - 1] = key_frame_series[key_frame_series.last_valid_index()]
     key_frame_series = key_frame_series.interpolate(method=interp_method.lower(), limit_direction='both')
     if integer:
         return key_frame_series.astype(int)

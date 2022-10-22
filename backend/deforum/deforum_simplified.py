@@ -43,9 +43,15 @@ import gc
 from k_diffusion.external import CompVisDenoiser
 from k_diffusion import sampling
 from torch import nn
-from backend.singleton import singleton
 
+
+
+from backend.singleton import singleton
 gs = singleton
+
+#from frontend.mainwindow import gs
+
+
 from ldm.util import instantiate_from_config
 
 
@@ -200,14 +206,14 @@ class DeforumGenerator():
         seed_everything(random.randrange(0, np.iinfo(np.uint32).max))
         try:
             config = OmegaConf.load(config)
-            model = self._load_model_from_config(config, weights)
+            self._load_model_from_config(config, weights)
             if embedding_path is not None:
                 gs.models["sd"].embedding_manager.load(
                     embedding_path, self.full_precision
                 )
             # model = model.half().to(self.device)
             # model.to doesn't change the cond_stage_model.device used to move the tokenizer output, so set it here
-            model.cond_stage_model.device = self.device
+            gs.models["sd"].cond_stage_model.device = self.device
         except AttributeError as e:
             print(f'>> Error loading model. {str(e)}', file=sys.stderr)
             print(traceback.format_exc(), file=sys.stderr)
@@ -215,11 +221,11 @@ class DeforumGenerator():
 
         # self._set_sampler()
 
-        for m in model.modules():
+        for m in gs.models["sd"].modules():
             if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
                 m._orig_padding_mode = m.padding_mode
 
-        return model
+        #return model
 
     def animkeys(self):
         self.angle_series = get_inbetweens(parse_key_frames(self.angle), self.max_frames)
@@ -450,7 +456,8 @@ class DeforumGenerator():
         # if not use_init:
 
         if "sd" not in gs.models:
-            gs.models["sd"] = self.load_model()
+            #gs.models["sd"] = self.load_model()
+            self.load_model()
 
         # animations use key framed prompts
         # prompts = animation_prompts
@@ -703,31 +710,34 @@ class DeforumGenerator():
                                               mask_overlay_blur=mask_overlay_blur,
                                               step_callback=step_callback,
                                               compviscallback=compviscallback)
+                if sample is not None:
+                    if image_callback is not None and diffusion_cadence == 0:
+                        image_callback(image, seed, upscaled=False)
 
-                if image_callback is not None and diffusion_cadence == 0:
-                    image_callback(image, seed, upscaled=False)
+                    if not using_vid_init:
+                        prev_sample = sample
 
-                if not using_vid_init:
-                    prev_sample = sample
+                    if turbo_steps > 1:
+                        turbo_prev_image, turbo_prev_frame_idx = turbo_next_image, turbo_next_frame_idx
+                        turbo_next_image, turbo_next_frame_idx = sample_to_cv2(sample, type=np.float32), frame_idx
+                        frame_idx += turbo_steps
+                    else:
+                        filename = f"{batch_name}_{timestring}_{frame_idx:05}.png"
+                        image.save(os.path.join(outdir, filename))
+                        if save_depth_maps:
+                            if depth is None:
+                                depth = depth_model.predict(sample_to_cv2(sample), self)
+                            depth_model.save(
+                                os.path.join(outdir, f"{batch_name}_{timestring}_depth_{frame_idx:05}.png"), depth)
+                        frame_idx += 1
 
-                if turbo_steps > 1:
-                    turbo_prev_image, turbo_prev_frame_idx = turbo_next_image, turbo_next_frame_idx
-                    turbo_next_image, turbo_next_frame_idx = sample_to_cv2(sample, type=np.float32), frame_idx
-                    frame_idx += turbo_steps
+                    seed = self.next_seed(seed_behavior, seed)
+                    image_path = os.path.join(outdir, f"{batch_name}_{timestring}_%05d.png")
+                    mp4_path = os.path.join(gs.system.txt2vidOut, f"{batch_name}_{self.creation_timestamp}.mp4")
+                    #self.signals.deforum_image_cb.emit()
                 else:
-                    filename = f"{batch_name}_{timestring}_{frame_idx:05}.png"
-                    image.save(os.path.join(outdir, filename))
-                    if save_depth_maps:
-                        if depth is None:
-                            depth = depth_model.predict(sample_to_cv2(sample), self)
-                        depth_model.save(
-                            os.path.join(outdir, f"{batch_name}_{timestring}_depth_{frame_idx:05}.png"), depth)
-                    frame_idx += 1
-
-                seed = self.next_seed(seed_behavior, seed)
-                image_path = os.path.join(outdir, f"{batch_name}_{timestring}_%05d.png")
-                mp4_path = os.path.join(gs.system.txt2vidOut, f"{batch_name}_{self.creation_timestamp}.mp4")
-                #self.signals.deforum_image_cb.emit()
+                    self.torch_gc()
+                    return
 
             else:
                 mp4_path = os.path.join(gs.system.txt2vidOut, f"{batch_name}_{self.creation_timestamp}.mp4")
@@ -740,13 +750,9 @@ class DeforumGenerator():
         if self.shouldStop == False:
             self.produce_video(image_path, mp4_path, max_frames)
         try:
-            del depth_model
-        except:
-            pass
-        try:
 
-            del gs.models["midas_model"]
-            del gs.models["adabins"]
+            gs.models["midas_model"].to("cpu")
+            gs.models["adabins"].to("cpu")
         except:
             pass
         self.torch_gc()
@@ -883,122 +889,128 @@ class DeforumGenerator():
 
 
         results = []
-        with torch.no_grad():
-            with precision_scope("cuda"):
-                with gs.models["sd"].ema_scope():
-                    for prompts in data:
-                        if isinstance(prompts, tuple):
-                            prompts = list(prompts)
-                        if prompt_weighting:
-                            uc, c = get_uc_and_c(prompts, gs.models["sd"], n_samples,
-                                                           log_weighted_subprompts, normalize_prompt_weights,
-                                                           frame)
+        try:
+            with torch.no_grad():
+                with precision_scope("cuda"):
+                    with gs.models["sd"].ema_scope():
+                        for prompts in data:
+                            if isinstance(prompts, tuple):
+                                prompts = list(prompts)
+                            if prompt_weighting:
+                                uc, c = get_uc_and_c(prompts, gs.models["sd"], n_samples,
+                                                               log_weighted_subprompts, normalize_prompt_weights,
+                                                               frame)
 
 
-                        else:
-                            uc = gs.models["sd"].get_learned_conditioning(batch_size * [""])
-                            c = gs.models["sd"].get_learned_conditioning(prompts)
+                            else:
+                                uc = gs.models["sd"].get_learned_conditioning(batch_size * [""])
+                                c = gs.models["sd"].get_learned_conditioning(prompts)
 
-                        if scale == 1.0:
-                            uc = None
-                        if init_c is not None:
-                            print('init_c not none')
-                            c = init_c
+                            if scale == 1.0:
+                                uc = None
+                            if init_c is not None:
+                                print('init_c not none')
+                                c = init_c
 
-                        if sampler_name in ["klms", "dpm2", "dpm2_ancestral", "heun", "euler", "euler_ancestral"]:
-                            samples = self.sampler_fn(init_latent,
-                                                      C,
-                                                      H,
-                                                      W,
-                                                      f,
-                                                      t_enc,
-                                                      model_wrap,
-                                                      steps,
-                                                      use_init,
-                                                      n_samples,
-                                                      self.device,
-                                                      c,
-                                                      uc,
-                                                      scale,
-                                                      step_callback,
-                                                      sampler_name)
-                        else:
-                            # self.sampler == 'plms' or self.sampler == 'ddim':
-                            if init_latent is not None and strength > 0:
-                                if sampler_name == 'plms':
-                                    z_enc = ddim_sampler.stochastic_encode(init_latent,
-                                                                           torch.tensor([t_enc] * batch_size).to(
-                                                                               self.device))
+                            if sampler_name in ["klms", "dpm2", "dpm2_ancestral", "heun", "euler", "euler_ancestral"]:
+                                samples = self.sampler_fn(init_latent,
+                                                          C,
+                                                          H,
+                                                          W,
+                                                          f,
+                                                          t_enc,
+                                                          model_wrap,
+                                                          steps,
+                                                          use_init,
+                                                          n_samples,
+                                                          self.device,
+                                                          c,
+                                                          uc,
+                                                          scale,
+                                                          step_callback,
+                                                          sampler_name)
+                            else:
+                                # self.sampler == 'plms' or self.sampler == 'ddim':
+                                if init_latent is not None and strength > 0:
+                                    if sampler_name == 'plms':
+                                        z_enc = ddim_sampler.stochastic_encode(init_latent,
+                                                                               torch.tensor([t_enc] * batch_size).to(
+                                                                                   self.device))
+                                    else:
+                                        z_enc = sampler.stochastic_encode(init_latent,
+                                                                               torch.tensor([t_enc] * batch_size).to(
+                                                                                   self.device))
                                 else:
-                                    z_enc = sampler.stochastic_encode(init_latent,
-                                                                           torch.tensor([t_enc] * batch_size).to(
-                                                                               self.device))
-                            else:
 
-                                z_enc = torch.randn([n_samples, C, H // f, W // f],
-                                                         device=self.device)
-                            if sampler_name == 'ddim':
-                                samples = sampler.decode(z_enc,
-                                                         c,
-                                                         t_enc,
-                                                         unconditional_guidance_scale=scale,
-                                                         unconditional_conditioning=uc,
-                                                         img_callback=step_callback)
-                            elif sampler_name == 'plms':  # no "decode" function in plms, so use "sample"
-                                shape = [C, H // f, W // f]
-                                samples, _ = sampler.sample(S=steps,
-                                                            conditioning=c,
-                                                            batch_size=n_samples,
-                                                            shape=shape,
-                                                            verbose=False,
-                                                            unconditional_guidance_scale=scale,
-                                                            unconditional_conditioning=uc,
-                                                            eta=ddim_eta,
-                                                            x_T=z_enc,
-                                                            img_callback=step_callback)
-                            else:
-                                raise Exception(f"Sampler {sampler} not recognised.")
+                                    z_enc = torch.randn([n_samples, C, H // f, W // f],
+                                                             device=self.device)
+                                if sampler_name == 'ddim':
+                                    samples = sampler.decode(z_enc,
+                                                             c,
+                                                             t_enc,
+                                                             unconditional_guidance_scale=scale,
+                                                             unconditional_conditioning=uc,
+                                                             img_callback=step_callback)
+                                elif sampler_name == 'plms':  # no "decode" function in plms, so use "sample"
+                                    shape = [C, H // f, W // f]
+                                    samples, _ = sampler.sample(S=steps,
+                                                                conditioning=c,
+                                                                batch_size=n_samples,
+                                                                shape=shape,
+                                                                verbose=False,
+                                                                unconditional_guidance_scale=scale,
+                                                                unconditional_conditioning=uc,
+                                                                eta=ddim_eta,
+                                                                x_T=z_enc,
+                                                                img_callback=step_callback)
+                                else:
+                                    raise Exception(f"Sampler {sampler} not recognised.")
 
-                        if return_latent:
-                            results.append(samples.clone())
+                            if return_latent:
+                                results.append(samples.clone())
 
-                        x_samples = gs.models["sd"].decode_first_stage(samples)
+                            x_samples = gs.models["sd"].decode_first_stage(samples)
 
-                        if use_mask and overlay_mask:
-                            # Overlay the masked image after the image is generated
-                            if init_sample is not None:
-                                img_original = init_sample
-                            elif init_image is not None:
-                                img_original = init_image
-                            else:
-                                raise Exception("Cannot overlay the masked image without an init image to overlay")
+                            if use_mask and overlay_mask:
+                                # Overlay the masked image after the image is generated
+                                if init_sample is not None:
+                                    img_original = init_sample
+                                elif init_image is not None:
+                                    img_original = init_image
+                                else:
+                                    raise Exception("Cannot overlay the masked image without an init image to overlay")
 
-                            mask_fullres = prepare_mask(mask_file if mask_image is None else mask_image,
-                                                        img_original.shape,
-                                                        mask_contrast_adjust,
-                                                        mask_brightness_adjust)
-                            mask_fullres = mask_fullres[:, :3, :, :]
-                            mask_fullres = repeat(mask_fullres, '1 ... -> b ...', b=batch_size)
+                                mask_fullres = prepare_mask(mask_file if mask_image is None else mask_image,
+                                                            img_original.shape,
+                                                            mask_contrast_adjust,
+                                                            mask_brightness_adjust)
+                                mask_fullres = mask_fullres[:, :3, :, :]
+                                mask_fullres = repeat(mask_fullres, '1 ... -> b ...', b=batch_size)
 
-                            mask_fullres[mask_fullres < mask_fullres.max()] = 0
-                            mask_fullres = gaussian_filter(mask_fullres, mask_overlay_blur)
-                            mask_fullres = torch.Tensor(mask_fullres).to(self.device)
+                                mask_fullres[mask_fullres < mask_fullres.max()] = 0
+                                mask_fullres = gaussian_filter(mask_fullres, mask_overlay_blur)
+                                mask_fullres = torch.Tensor(mask_fullres).to(self.device)
 
-                            x_samples = img_original * mask_fullres + x_samples * ((mask_fullres * -1.0) + 1)
+                                x_samples = img_original * mask_fullres + x_samples * ((mask_fullres * -1.0) + 1)
 
-                        if return_sample:
-                            results.append(x_samples.clone())
+                            if return_sample:
+                                results.append(x_samples.clone())
 
-                        x_samples = torch.clamp((x_samples + 1.0) / 2.0, min=0.0, max=1.0)
+                            x_samples = torch.clamp((x_samples + 1.0) / 2.0, min=0.0, max=1.0)
 
-                        if return_c:
-                            results.append(c.clone())
+                            if return_c:
+                                results.append(c.clone())
 
-                        for x_sample in x_samples:
-                            x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
-                            image = Image.fromarray(x_sample.astype(np.uint8))
-                            results.append(image)
-                    self.torch_gc()
+                            for x_sample in x_samples:
+                                x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
+                                image = Image.fromarray(x_sample.astype(np.uint8))
+                                results.append(image)
+
+        except Exception as e:
+            print(e)
+            self.torch_gc()
+            return None, None
+        self.torch_gc()
         return results
 
     def sampler_fn(self,
@@ -1069,36 +1081,39 @@ class DeforumGenerator():
         tic = time.time()
 
         # this does the work
-        pl_sd = torch.load(ckpt, map_location='cpu')
-        sd = pl_sd['state_dict']
-        model = instantiate_from_config(config.model)
-        m, u = model.load_state_dict(sd, strict=False)
 
-        # if self.full_precision:
-        #    print(
-        #        '>> Using slower but more accurate full-precision math (--full_precision)'
-        #    )
-        # else:
-        #    print(
-        #        '>> Using half precision math. Call with --full_precision to use more accurate but VRAM-intensive full precision.'
-        #    )
-        model.half()
-        model.to(self.device)
-        model.eval()
+        if "sd" not in gs.models:
 
-        # usage statistics
-        toc = time.time()
-        print(
-            f'>> Model loaded in', '%4.2fs' % (toc - tic)
-        )
-        if device_type == 'cuda':
+            pl_sd = torch.load(ckpt, map_location='cpu')
+            sd = pl_sd['state_dict']
+            gs.models["sd"] = instantiate_from_config(config.model)
+            m, u = gs.models["sd"].load_state_dict(sd, strict=False)
+
+            # if self.full_precision:
+            #    print(
+            #        '>> Using slower but more accurate full-precision math (--full_precision)'
+            #    )
+            # else:
+            #    print(
+            #        '>> Using half precision math. Call with --full_precision to use more accurate but VRAM-intensive full precision.'
+            #    )
+            gs.models["sd"].half()
+            gs.models["sd"].to(self.device)
+            #model.eval()
+
+            # usage statistics
+            toc = time.time()
             print(
-                '>> Max VRAM used to load the model:',
-                '%4.2fG' % (torch.cuda.max_memory_allocated() / 1e9),
-                '\n>> Current VRAM usage:'
-                '%4.2fG' % (torch.cuda.memory_allocated() / 1e9),
+                f'>> Model loaded in', '%4.2fs' % (toc - tic)
             )
-        return model
+            if device_type == 'cuda':
+                print(
+                    '>> Max VRAM used to load the model:',
+                    '%4.2fG' % (torch.cuda.max_memory_allocated() / 1e9),
+                    '\n>> Current VRAM usage:'
+                    '%4.2fG' % (torch.cuda.memory_allocated() / 1e9),
+                )
+            #return model
 
 
 class CFGDenoiser(nn.Module):

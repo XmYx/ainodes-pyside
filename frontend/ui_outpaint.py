@@ -101,7 +101,7 @@ class Canvas(QGraphicsView):
 
     def drawRect(self, x, y, width=256, height=256):
 
-        print(f"we are putting that thing to:{x}, {y}, and our width is {self.width()}")
+        #print(f"we are putting that thing to:{x}, {y}, and our width is {self.width()}")
         Xscale = self.getXScale()
         Yscale = self.getYScale()
         self.rectItem.setRect(x*Xscale, y*Yscale, width, height)
@@ -192,7 +192,7 @@ class Canvas(QGraphicsView):
         self.debugtext.setPlainText(f"{self.scene.pos}, {self.scene.scenePos}")
 
 
-        print(f"lets: zoom:{self.zoom}, event pos: {e.pos()}, {e.scenePosition()}")
+        #print(f"lets: zoom:{self.zoom}, event pos: {e.pos()}, {e.scenePosition()}")
 
         self.update()
         #return

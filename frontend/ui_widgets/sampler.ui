@@ -53,7 +53,7 @@
             <x>0</x>
             <y>0</y>
             <width>209</width>
-            <height>494</height>
+            <height>502</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -294,6 +294,16 @@
                 </size>
                </property>
               </spacer>
+             </item>
+             <item row="1" column="1">
+              <widget class="QCheckBox" name="tensorPreview">
+               <property name="text">
+                <string>Tensor Preview</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>

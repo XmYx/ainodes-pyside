@@ -622,7 +622,7 @@ class GenerateWindow(QObject):
                                       use_init=use_init,
                                       clear_latent=clearLatent,
                                       clear_sample=clearSample,
-                                      step_callback=self.deforumstepCallback_signal,
+                                      step_callback=self.deforumstepCallback_signal if self.w.sampler.w.tensorPreview.isChecked() else None,
                                       show_sample_per_step=show_sample_per_step,
                                       angle=angle,
                                       zoom=zoom,

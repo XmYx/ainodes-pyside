@@ -14,17 +14,19 @@ from midas.transforms import Resize, NormalizeImage, PrepareForNet
 from backend.singleton import singleton
 gs = singleton
 
+#from frontend.main_app import gs
+
 def wget(url, outputdir):
     print(subprocess.run(['wget', url, '-P', outputdir], stdout=subprocess.PIPE).stdout.decode('utf-8'))
 
 
 class DepthModel():
     def __init__(self, device):
-        self.adabins_helper = None
+        #gs.models["adabins"] = None
         self.depth_min = 1000
         self.depth_max = -1000
         self.device = device
-        self.midas_model = None
+        #gs.models["midas_model"] = None
         self.midas_transform = None
 
     def torch_gc(self):
@@ -39,6 +41,8 @@ class DepthModel():
             wget("https://cloudflare-ipfs.com/ipfs/Qmd2mMnDLWePKmgfS8m6ntAg4nhV5VkUyAydYBp8cWWeB7/AdaBins_nyu.pt", 'models')
         if "adabins" not in gs.models:
             gs.models["adabins"] = InferenceHelper(dataset='nyu', device=self.device)
+        else:
+            gs.models["adabins"].to(self.device)
 
     def load_midas(self, models_path, half_precision=True):
         if not os.path.exists(os.path.join(models_path, 'dpt_large-midas-2f21e586.pt')):
@@ -50,27 +54,30 @@ class DepthModel():
                 backbone="vitl16_384",
                 non_negative=True,
             )
-            normalization = NormalizeImage(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
 
-            self.midas_transform = T.Compose([
-                Resize(
-                    384, 384,
-                    resize_target=None,
-                    keep_aspect_ratio=True,
-                    ensure_multiple_of=32,
-                    resize_method="minimal",
-                    image_interpolation_method=cv2.INTER_CUBIC,
-                ),
-                normalization,
-                PrepareForNet()
-            ])
 
-            gs.models["midas_model"].eval()
+            #gs.models["midas_model"].eval()
             if half_precision and self.device == torch.device("cuda"):
-                gs.models["midas_model"] = gs.models["midas_model"].to(memory_format=torch.channels_last)
-                gs.models["midas_model"] = gs.models["midas_model"].half()
+                gs.models["midas_model"].to(memory_format=torch.channels_last)
+                gs.models["midas_model"].half()
+            gs.models["midas_model"].to(self.device)
+        else:
             gs.models["midas_model"].to(self.device)
 
+        normalization = NormalizeImage(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+
+        self.midas_transform = T.Compose([
+            Resize(
+                384, 384,
+                resize_target=None,
+                keep_aspect_ratio=True,
+                ensure_multiple_of=32,
+                resize_method="minimal",
+                image_interpolation_method=cv2.INTER_CUBIC,
+            ),
+            normalization,
+            PrepareForNet()
+        ])
     def predict(self, prev_img_cv2, midas_weight) -> torch.Tensor:
         w, h = prev_img_cv2.shape[1], prev_img_cv2.shape[0]
 

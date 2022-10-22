@@ -311,6 +311,9 @@ class GenerateWindow(QObject):
         self.load_settings()
         self.w.actiontest_save_output.triggered.connect(self.test_save_outpaint)
 
+        self.w.sizer_count.w.widthSlider.valueChanged.connect(self.update_outpaint_parameters)
+        self.w.sizer_count.w.heightSlider.valueChanged.connect(self.update_outpaint_parameters)
+
 
     def load_upscalers(self):
         gfpgan = False
@@ -475,6 +478,12 @@ class GenerateWindow(QObject):
             pass
         self.outpaint = paintwindow_func.PaintDock()
         self.w.setCentralWidget(self.outpaint)
+    def update_outpaint_parameters(self):
+        W = self.w.sizer_count.w.widthSlider.value()
+        H = self.w.sizer_count.w.heightSlider.value()
+        W, H = map(lambda x: x - x % 64, (W, H))
+        self.outpaint.width = W
+        self.outpaint.height = W
 
     def torch_gc(self):
         gc.collect()
@@ -588,7 +597,9 @@ class GenerateWindow(QObject):
             sampler = sampler
         W=self.w.sizer_count.w.widthSlider.value()
         H=self.w.sizer_count.w.heightSlider.value()
-
+        W, H = map(lambda x: x - x % 64, (W, H))
+        self.w.sizer_count.w.widthSlider.setValue(W)
+        self.w.sizer_count.w.heightSlider.setValue(H)
 
         self.deforum.render_animation(H = H,
                                       W = W,

@@ -3,17 +3,19 @@ import k_diffusion as K
 import torch
 import torch.nn as nn
 from ldm.dream.devices import choose_torch_device
+from backend.singleton import singleton
+gs = singleton
 
 class CFGDenoiser(nn.Module):
     def __init__(self, model):
         super().__init__()
-        self.inner_model = model
+        #gs.models["sd"] = model
 
     def forward(self, x, sigma, uncond, cond, cond_scale):
         x_in = torch.cat([x] * 2)
         sigma_in = torch.cat([sigma] * 2)
         cond_in = torch.cat([uncond, cond])
-        uncond, cond = self.inner_model(x_in, sigma_in, cond=cond_in).chunk(2)
+        uncond, cond = gs.models["sd"](x_in, sigma_in, cond=cond_in).chunk(2)
         return uncond + (cond - uncond) * cond_scale
 
 
@@ -28,7 +30,7 @@ class KSampler(object):
             x_in = torch.cat([x] * 2)
             sigma_in = torch.cat([sigma] * 2)
             cond_in = torch.cat([uncond, cond])
-            uncond, cond = self.inner_model(
+            uncond, cond = gs.models["sd"](
                 x_in, sigma_in, cond=cond_in
             ).chunk(2)
             return uncond + (cond - uncond) * cond_scale

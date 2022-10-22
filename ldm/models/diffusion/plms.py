@@ -8,11 +8,14 @@ from functools import partial
 
 from ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, make_ddim_timesteps, noise_like
 
+from backend.singleton import singleton
+gs = singleton
+
 
 class PLMSSampler(object):
-    def __init__(self, model, schedule="linear", **kwargs):
+    def __init__(self, schedule="linear", **kwargs):
         super().__init__()
-        self.model = model
+        #gs.models["sd"] = model
         self.ddpm_num_timesteps = model.num_timesteps
         self.schedule = schedule
 
@@ -27,13 +30,13 @@ class PLMSSampler(object):
             raise ValueError('ddim_eta must be 0 for PLMS')
         self.ddim_timesteps = make_ddim_timesteps(ddim_discr_method=ddim_discretize, num_ddim_timesteps=ddim_num_steps,
                                                   num_ddpm_timesteps=self.ddpm_num_timesteps,verbose=verbose)
-        alphas_cumprod = self.model.alphas_cumprod
+        alphas_cumprod = gs.models["sd"].alphas_cumprod
         assert alphas_cumprod.shape[0] == self.ddpm_num_timesteps, 'alphas have to be defined for each timestep'
-        to_torch = lambda x: x.clone().detach().to(torch.float32).to(self.model.device)
+        to_torch = lambda x: x.clone().detach().to(torch.float32).to(gs.models["sd"].device)
 
-        self.register_buffer('betas', to_torch(self.model.betas))
+        self.register_buffer('betas', to_torch(gs.models["sd"].betas))
         self.register_buffer('alphas_cumprod', to_torch(alphas_cumprod))
-        self.register_buffer('alphas_cumprod_prev', to_torch(self.model.alphas_cumprod_prev))
+        self.register_buffer('alphas_cumprod_prev', to_torch(gs.models["sd"].alphas_cumprod_prev))
 
         # calculations for diffusion q(x_t | x_{t-1}) and others
         self.register_buffer('sqrt_alphas_cumprod', to_torch(np.sqrt(alphas_cumprod.cpu())))
@@ -119,7 +122,7 @@ class PLMSSampler(object):
                       mask=None, x0=None, img_callback=None, log_every_t=100,
                       temperature=1., noise_dropout=0., score_corrector=None, corrector_kwargs=None,
                       unconditional_guidance_scale=1., unconditional_conditioning=None,):
-        device = self.model.betas.device
+        device = gs.models["sd"].betas.device
         b = shape[0]
         if x_T is None:
             img = torch.randn(shape, device=device)
@@ -147,7 +150,7 @@ class PLMSSampler(object):
 
             if mask is not None:
                 assert x0 is not None
-                img_orig = self.model.q_sample(x0, ts)  # TODO: deterministic forward pass?
+                img_orig = gs.models["sd"].q_sample(x0, ts)  # TODO: deterministic forward pass?
                 img = img_orig * mask + (1. - mask) * img
 
             outs = self.p_sample_plms(img, cond, ts, index=index, use_original_steps=ddim_use_original_steps,
@@ -178,24 +181,24 @@ class PLMSSampler(object):
 
         def get_model_output(x, t):
             if unconditional_conditioning is None or unconditional_guidance_scale == 1.:
-                e_t = self.model.apply_model(x, t, c)
+                e_t = gs.models["sd"].apply_model(x, t, c)
             else:
                 x_in = torch.cat([x] * 2)
                 t_in = torch.cat([t] * 2)
                 c_in = torch.cat([unconditional_conditioning, c])
-                e_t_uncond, e_t = self.model.apply_model(x_in, t_in, c_in).chunk(2)
+                e_t_uncond, e_t = gs.models["sd"].apply_model(x_in, t_in, c_in).chunk(2)
                 e_t = e_t_uncond + unconditional_guidance_scale * (e_t - e_t_uncond)
 
             if score_corrector is not None:
-                assert self.model.parameterization == "eps"
-                e_t = score_corrector.modify_score(self.model, e_t, x, t, c, **corrector_kwargs)
+                assert gs.models["sd"].parameterization == "eps"
+                e_t = score_corrector.modify_score(gs.models["sd"], e_t, x, t, c, **corrector_kwargs)
 
             return e_t
 
-        alphas = self.model.alphas_cumprod if use_original_steps else self.ddim_alphas
-        alphas_prev = self.model.alphas_cumprod_prev if use_original_steps else self.ddim_alphas_prev
-        sqrt_one_minus_alphas = self.model.sqrt_one_minus_alphas_cumprod if use_original_steps else self.ddim_sqrt_one_minus_alphas
-        sigmas = self.model.ddim_sigmas_for_original_num_steps if use_original_steps else self.ddim_sigmas
+        alphas = gs.models["sd"].alphas_cumprod if use_original_steps else self.ddim_alphas
+        alphas_prev = gs.models["sd"].alphas_cumprod_prev if use_original_steps else self.ddim_alphas_prev
+        sqrt_one_minus_alphas = gs.models["sd"].sqrt_one_minus_alphas_cumprod if use_original_steps else self.ddim_sqrt_one_minus_alphas
+        sigmas = gs.models["sd"].ddim_sigmas_for_original_num_steps if use_original_steps else self.ddim_sigmas
 
         def get_x_prev_and_pred_x0(e_t, index):
             # select parameters corresponding to the currently considered timestep
@@ -207,7 +210,7 @@ class PLMSSampler(object):
             # current prediction for x_0
             pred_x0 = (x - sqrt_one_minus_at * e_t) / a_t.sqrt()
             if quantize_denoised:
-                pred_x0, _, *_ = self.model.first_stage_model.quantize(pred_x0)
+                pred_x0, _, *_ = gs.models["sd"].first_stage_model.quantize(pred_x0)
             # direction pointing to x_t
             dir_xt = (1. - a_prev - sigma_t**2).sqrt() * e_t
             noise = sigma_t * noise_like(x.shape, device, repeat_noise) * temperature

@@ -23,7 +23,7 @@ from torch import autocast
 
 from backend.deforum import DepthModel, sampler_fn
 
-from backend.deforum.deforum_generator import prepare_mask, get_uc_and_c, DeformAnimKeys, sample_from_cv2, \
+from backend.deforum.deforum_generator import prepare_mask, DeformAnimKeys, sample_from_cv2, \
     sample_to_cv2, anim_frame_warp_2d, anim_frame_warp_3d, maintain_colors, add_noise, next_seed, \
     load_img, get_inbetweens, parse_key_frames, check_is_number
 from ldm.dream.devices import choose_torch_device
@@ -45,7 +45,7 @@ from k_diffusion import sampling
 from torch import nn
 
 
-
+#from memory_profiler import profile
 from backend.singleton import singleton
 gs = singleton
 
@@ -55,7 +55,7 @@ gs = singleton
 from ldm.util import instantiate_from_config
 
 
-def get_uc_and_c(prompts, model, n_samples, log_weighted_subprompts, normalize_prompt_weights, frame=0):
+def get_uc_and_c(prompts, n_samples, log_weighted_subprompts, normalize_prompt_weights, frame=0):
     prompt = prompts[0]  # they are the same in a batch anyway
 
     # get weighted sub-prompts
@@ -63,25 +63,25 @@ def get_uc_and_c(prompts, model, n_samples, log_weighted_subprompts, normalize_p
         prompt, frame, not normalize_prompt_weights
     )
 
-    uc = get_learned_conditioning(model, negative_subprompts, "", n_samples, log_weighted_subprompts, -1)
-    c = get_learned_conditioning(model, positive_subprompts, prompt, n_samples, log_weighted_subprompts, 1)
+    uc = get_learned_conditioning( negative_subprompts, "", n_samples, log_weighted_subprompts, -1)
+    c = get_learned_conditioning( positive_subprompts, prompt, n_samples, log_weighted_subprompts, 1)
 
     return (uc, c)
 
 
-def get_learned_conditioning(model, weighted_subprompts, text, n_samples, log_weighted_subprompts, sign=1):
+def get_learned_conditioning(weighted_subprompts, text, n_samples, log_weighted_subprompts, sign=1):
     if len(weighted_subprompts) < 1:
-        log_tokenization(text, model, log_weighted_subprompts, sign)
-        c = model.get_learned_conditioning(n_samples * [text])
+        log_tokenization(text, gs.models["sd"], log_weighted_subprompts, sign)
+        c = gs.models["sd"].get_learned_conditioning(n_samples * [text])
     else:
         c = None
         for subtext, subweight in weighted_subprompts:
-            log_tokenization(subtext, model, log_weighted_subprompts, sign * subweight)
+            log_tokenization(subtext, gs.models["sd"], log_weighted_subprompts, sign * subweight)
             if c is None:
-                c = model.get_learned_conditioning(n_samples * [subtext])
+                c = gs.models["sd"].get_learned_conditioning(n_samples * [subtext])
                 c *= subweight
             else:
-                c.add_(model.get_learned_conditioning(n_samples * [subtext]), alpha=subweight)
+                c.add_(gs.models["sd"].get_learned_conditioning(n_samples * [subtext]), alpha=subweight)
 
     return c
 
@@ -267,7 +267,7 @@ class DeforumGenerator():
         gs.contrast_schedule_series = get_inbetweens(parse_key_frames(keyframes.contrast_schedule), keyframes.max_frames)
 
         # print(f"We should have a translation series of 10: {gs.translation_z_series}")
-
+    #@profile
     def produce_video(self, image_path, mp4_path, max_frames, fps=12):
         print(f"{image_path} -> {mp4_path}")
 
@@ -301,7 +301,7 @@ class DeforumGenerator():
         else:
             seed = random.randint(0, 2**32 - 1)
         return seed
-
+    #@profile
     def render_animation(self,
                          image_callback=None,
                          step_callback=None,
@@ -756,7 +756,7 @@ class DeforumGenerator():
         except:
             pass
         self.torch_gc()
-
+    #@profile
     def generate(self,
                  seed,
                  outdir,
@@ -798,9 +798,9 @@ class DeforumGenerator():
         seed_everything(seed)
         os.makedirs(outdir, exist_ok=True)
 
-        sampler = PLMSSampler(gs.models["sd"]) if sampler_name == 'plms' else DDIMSampler(gs.models["sd"])
+        sampler = PLMSSampler() if sampler_name == 'plms' else DDIMSampler()
 
-        ddim_sampler = DDIMSampler(gs.models["sd"])
+        ddim_sampler = DDIMSampler()
 
         model_wrap = CompVisDenoiser(gs.models["sd"])
         batch_size = n_samples
@@ -897,7 +897,7 @@ class DeforumGenerator():
                             if isinstance(prompts, tuple):
                                 prompts = list(prompts)
                             if prompt_weighting:
-                                uc, c = get_uc_and_c(prompts, gs.models["sd"], n_samples,
+                                uc, c = get_uc_and_c(prompts, n_samples,
                                                                log_weighted_subprompts, normalize_prompt_weights,
                                                                frame)
 
@@ -1012,7 +1012,7 @@ class DeforumGenerator():
             return None, None
         self.torch_gc()
         return results
-
+    #@profile
     def sampler_fn(self,
                    init_latent,
                    C,
@@ -1070,7 +1070,7 @@ class DeforumGenerator():
 
         samples = sampler_map[sampler](**sampler_args)
         return samples
-
+    #@profile
     def _load_model_from_config(self, config, ckpt):
         print(f'>> Loading model from {ckpt}')
 
@@ -1100,7 +1100,8 @@ class DeforumGenerator():
             gs.models["sd"].half()
             gs.models["sd"].to(self.device)
             #model.eval()
-
+            del m, u
+            del pl_sd
             # usage statistics
             toc = time.time()
             print(

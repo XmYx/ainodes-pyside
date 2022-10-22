@@ -5,6 +5,7 @@ import backend.settings as settings
 from backend.singleton import singleton
 
 import importlib
+#from memory_profiler import profile
 
 settings.load_settings_json()
 

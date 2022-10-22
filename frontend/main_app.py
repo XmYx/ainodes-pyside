@@ -8,8 +8,7 @@ from PySide6.QtGui import QIcon, QAction, QPixmap
 from PySide6.QtWidgets import *
 import sys, os, time
 
-
-import concurrent.futures
+#import concurrent.futures
 
 from pyparsing import unicode
 from werkzeug._internal import _log
@@ -122,6 +121,7 @@ def newdef():
 
 
 #def main():
+
 if __name__ == "__main__":
 
     # Create the tray

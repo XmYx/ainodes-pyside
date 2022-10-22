@@ -701,7 +701,7 @@ class GenerateWindow(QObject):
         self.painter.begin(self.ipixmap)
         if self.videoPreview == True and self.renderedFrames > 0:
             qimage = ImageQt(self.currentFrames[self.now])
-            self.painter.drawImage(QRect(0, 0, 512, 512), qimage)
+            self.painter.drawImage(QRect(0, 0, self.image.im.size[0], self.image.im.size[1]), qimage)
             if advance == True:
                 self.now += 1
             if self.now > (self.renderedFrames - 1):

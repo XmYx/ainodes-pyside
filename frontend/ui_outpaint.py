@@ -85,7 +85,7 @@ class Canvas(QGraphicsView):
 
         self.last_x, self.last_y = None, None
         self.pen_color = QColor('#000000')
-        self.mode = 'generic'
+        self.mode = 'drag'
         self.setMouseTracking(True)
         self.update()
         self.setScene(self.scene)
@@ -154,7 +154,7 @@ class Canvas(QGraphicsView):
                 painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, 512, 512)
                 #painter.drawPixmap()
             else:
-                if self.mode == "generic"
+                if self.mode == "generic":
                     painter.drawRect(rect)
         painter.end()
 

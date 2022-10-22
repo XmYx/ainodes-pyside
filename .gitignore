@@ -171,3 +171,4 @@ models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786
 models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/special_tokens_map.json
 models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/tokenizer_config.json
 models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/vocab.json
+configs/ainodes/settings.json

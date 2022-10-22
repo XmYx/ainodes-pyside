@@ -20,8 +20,8 @@ from torch import nn
 from pytorch_lightning import seed_everything
 
 from ldm.util                      import instantiate_from_config
-from ldm.models.diffusion.ddim     import DDIMSampler
-from ldm.models.diffusion.plms     import PLMSSampler
+from ldm.models.diffusion.ddim_invoke     import DDIMSampler
+from ldm.models.diffusion.plms_invoke     import PLMSSampler
 from ldm.models.diffusion.ksampler import KSampler
 from ldm.dream.pngwriter           import PngWriter
 from ldm.dream.image_util          import InitImageResizer

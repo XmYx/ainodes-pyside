@@ -793,6 +793,9 @@ class DeforumGenerator():
         os.makedirs(outdir, exist_ok=True)
 
         sampler = PLMSSampler(gs.models["sd"]) if sampler_name == 'plms' else DDIMSampler(gs.models["sd"])
+
+        ddim_sampler = DDIMSampler(gs.models["sd"])
+
         model_wrap = CompVisDenoiser(gs.models["sd"])
         batch_size = n_samples
         prompt = prompt
@@ -857,10 +860,14 @@ class DeforumGenerator():
         k_sigmas = model_wrap.get_sigmas(steps)
         k_sigmas = k_sigmas[len(k_sigmas) - t_enc - 1:]
 
-        if sampler_name in ['plms', 'ddim']:
-            sampler.make_schedule(ddim_num_steps=steps, ddim_eta=ddim_eta, ddim_discretize='quad',
+        if sampler_name in ['ddim']:
+            sampler.make_schedule(ddim_num_steps=steps, ddim_eta=ddim_eta, ddim_discretize='fill',
                                   verbose=False)
-
+        elif sampler_name == 'plms':
+            sampler.make_schedule(ddim_num_steps=steps, ddim_eta=ddim_eta, ddim_discretize='fill',
+                                  verbose=False)
+            ddim_sampler.make_schedule(ddim_num_steps=steps, ddim_eta=ddim_eta, ddim_discretize='fill',
+                                  verbose=False)
         """callback = SamplerCallback(n_samples=n_samples,
                                    save_sample_per_step=save_sample_per_step,
                                    show_sample_per_step=show_sample_per_step,
@@ -918,9 +925,14 @@ class DeforumGenerator():
                         else:
                             # self.sampler == 'plms' or self.sampler == 'ddim':
                             if init_latent is not None and strength > 0:
-                                z_enc = sampler.stochastic_encode(init_latent,
-                                                                       torch.tensor([t_enc] * batch_size).to(
-                                                                           self.device))
+                                if sampler_name == 'plms':
+                                    z_enc = ddim_sampler.stochastic_encode(init_latent,
+                                                                           torch.tensor([t_enc] * batch_size).to(
+                                                                               self.device))
+                                else:
+                                    z_enc = sampler.stochastic_encode(init_latent,
+                                                                           torch.tensor([t_enc] * batch_size).to(
+                                                                               self.device))
                             else:
 
                                 z_enc = torch.randn([n_samples, C, H // f, W // f],
@@ -931,7 +943,7 @@ class DeforumGenerator():
                                                          t_enc,
                                                          unconditional_guidance_scale=scale,
                                                          unconditional_conditioning=uc,
-                                                         img_callback=compviscallback)
+                                                         img_callback=step_callback)
                             elif sampler_name == 'plms':  # no "decode" function in plms, so use "sample"
                                 shape = [C, H // f, W // f]
                                 samples, _ = sampler.sample(S=steps,
@@ -943,7 +955,7 @@ class DeforumGenerator():
                                                             unconditional_conditioning=uc,
                                                             eta=ddim_eta,
                                                             x_T=z_enc,
-                                                            img_callback=compviscallback)
+                                                            img_callback=step_callback)
                             else:
                                 raise Exception(f"Sampler {sampler} not recognised.")
 

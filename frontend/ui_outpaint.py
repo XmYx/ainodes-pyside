@@ -154,7 +154,8 @@ class Canvas(QGraphicsView):
                 painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, 512, 512)
                 #painter.drawPixmap()
             else:
-                painter.drawRect(rect)
+                if self.mode == "generic"
+                    painter.drawRect(rect)
         painter.end()
 
         self.bgitem.setPixmap(self.pixmap)

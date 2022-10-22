@@ -135,3 +135,39 @@ ldm/modules/attention.py
 *.mp4
 *.png
 /configs/ainodes/last_prompt.txt
+configs/ainodes - Copy/last_prompt.txt
+configs/ainodes - Copy/settings.json
+models/AdaBins_nyu.pt
+models/dpt_large-midas-2f21e586.pt
+models/models--bert-base-uncased/.no_exist/5546055f03398095e385d7dc625e636cc8910bf2/added_tokens.json
+models/models--bert-base-uncased/.no_exist/5546055f03398095e385d7dc625e636cc8910bf2/special_tokens_map.json
+models/models--bert-base-uncased/refs/main
+models/models--bert-base-uncased/snapshots/5546055f03398095e385d7dc625e636cc8910bf2/tokenizer.json
+models/models--bert-base-uncased/snapshots/5546055f03398095e385d7dc625e636cc8910bf2/tokenizer_config.json
+models/models--bert-base-uncased/snapshots/5546055f03398095e385d7dc625e636cc8910bf2/vocab.txt
+models/models--openai--clip-vit-large-patch14/.no_exist/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/added_tokens.json
+models/models--openai--clip-vit-large-patch14/refs/main
+models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/config.json
+models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/merges.txt
+models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/pytorch_model.bin
+models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/special_tokens_map.json
+models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/tokenizer_config.json
+models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/vocab.json
+configs/ainodes - Copy/last_prompt.txt
+configs/ainodes - Copy/settings.json
+models/AdaBins_nyu.pt
+models/dpt_large-midas-2f21e586.pt
+models/models--bert-base-uncased/.no_exist/5546055f03398095e385d7dc625e636cc8910bf2/added_tokens.json
+models/models--bert-base-uncased/.no_exist/5546055f03398095e385d7dc625e636cc8910bf2/special_tokens_map.json
+models/models--bert-base-uncased/refs/main
+models/models--bert-base-uncased/snapshots/5546055f03398095e385d7dc625e636cc8910bf2/tokenizer.json
+models/models--bert-base-uncased/snapshots/5546055f03398095e385d7dc625e636cc8910bf2/tokenizer_config.json
+models/models--bert-base-uncased/snapshots/5546055f03398095e385d7dc625e636cc8910bf2/vocab.txt
+models/models--openai--clip-vit-large-patch14/.no_exist/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/added_tokens.json
+models/models--openai--clip-vit-large-patch14/refs/main
+models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/config.json
+models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/merges.txt
+models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/pytorch_model.bin
+models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/special_tokens_map.json
+models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/tokenizer_config.json
+models/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff/vocab.json

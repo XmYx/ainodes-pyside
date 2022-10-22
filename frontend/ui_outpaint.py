@@ -47,7 +47,8 @@ class Canvas(QGraphicsView):
         self.zoom = 1
         self.rotate = 0
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
-
+        self.w = 256
+        self.h = 256
         self.pixmap = QPixmap(1024, 1024)
         self.pixmap.fill(__backgroudColor__)
         self.bgitem = QGraphicsPixmapItem()
@@ -83,6 +84,11 @@ class Canvas(QGraphicsView):
         self.setScene(self.scene)
         self.fitInView(self.bgitem, Qt.AspectRatioMode.KeepAspectRatio)
         self.setSceneRect(QRectF(self.viewport().rect()))
+
+        self.hover_item = None
+        self.selected_item = None
+
+
     def getXScale(self):
         return float(1024)/float(self.width())
     def getYScale(self):
@@ -94,7 +100,7 @@ class Canvas(QGraphicsView):
     def addrect(self):
         rect = {}
         uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
-        rect[uid] = Rectangle(self.scene.scenePos.x(), self.scene.scenePos.y(), 100, 100, uid)
+        rect[uid] = Rectangle(self.scene.scenePos.x() - self.w / 2, self.scene.scenePos.y() - self.h / 2, self.w, self.h, uid)
 
 
         self.rectlist.append(rect[uid])
@@ -104,16 +110,20 @@ class Canvas(QGraphicsView):
         #print(f"we are putting that thing to:{x}, {y}, and our width is {self.width()}")
         Xscale = self.getXScale()
         Yscale = self.getYScale()
-        self.rectItem.setRect(x*Xscale, y*Yscale, width, height)
+        scaledWidth = (self.w / 2) / Xscale
+        scaledHeight = (self.h / 2) / Yscale
+        self.rectItem.setRect((x - scaledWidth) * Xscale, (y - scaledHeight) * Yscale, self.w, self.h)
         self.bgitem.setPixmap(self.pixmap)
         self.update()
 
     def hoverCheck(self):
         for i in self.rectlist:
-            if i.x < self.scene.scenePos.x() < i.x + i.w:
+            if i.x < self.scene.scenePos.x() < i.x + i.w and i.y < self.scene.scenePos.y() < i.y + i.h:
                 i.color = __selColor__
+                self.hover_item = i.id
             else:
                 i.color = __idleColor__
+                self.hover_item = None
 
 
 
@@ -164,39 +174,14 @@ class Canvas(QGraphicsView):
         self.bgitem.setPixmap(self.pixmap)
         self.setSceneRect(QRectF(self.viewport().rect()))
         self.update()
+        self.debugtext.setPlainText(f"{self.scene.pos}, {self.scene.scenePos}\nHover Item: {self.hover_item}\n{self.selected_item}")
         super(Canvas, self).paintEvent(e)
 
     def generic_mouseMoveEvent(self, e):
-        self.hoverCheck()
-        """if self.last_x is None: # First event.
-            self.last_x = e.x()
-            self.last_y = e.y()
-            return # Ignore the first time.
-        print("at least we are here..")
-        painter = QPainter()
-        painter.begin(self.canvas)
-
-        p.setColor(self.pen_color)
-        painter.setPen(p)
-        painter.drawLine(self.last_x, self.last_y, e.x(), e.y())
-        painter.end()
-        self.update()
-        self.setPixmap(self.canvas)
-        # Update the origin for next time.
-        self.last_x = e.x()
-        self.last_y = e.y()"""
-        #self.posx = e.pos().x()
-        #self.posy = e.pos().y()
         if self.scene.pos is not None:
-            self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), 100, 100)
-        self.debugtext.setPlainText(f"{self.scene.pos}, {self.scene.scenePos}")
-
-
-        #print(f"lets: zoom:{self.zoom}, event pos: {e.pos()}, {e.scenePosition()}")
+            self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), self.w, self.h)
 
         self.update()
-        #return
-        #self.setPixmap(self.canvas)
     def keyPressEvent(self, e):
         super(Canvas, self).keyPressEvent(e)
         print(f"key pressed: {e.key()}")
@@ -207,12 +192,24 @@ class Canvas(QGraphicsView):
             self.setDragMode(QGraphicsView.DragMode.NoDrag)
             self.mode = "generic"
         elif e.key() == 66:
-            pass
+            self.setDragMode(QGraphicsView.DragMode.NoDrag)
+            self.mode = "select"
 
     def keyReleaseEvent(self, e):
         super(Canvas, self).keyReleaseEvent(e)
 
+    def select_mousePressEvent(self, e):
+        if self.hover_item is not None:
+            self.selected_item = self.hover_item
+        else:
+            self.selected_item = None
 
+    def select_mouseMoveEvent(self, e):
+        self.hoverCheck()
+        self.update()
+        return
+    def select_mouseReleaseEvent(self, event):
+        return
     def generic_mousePressEvent(self, e):
 
         self._start = e.pos()

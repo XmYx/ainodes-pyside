@@ -191,6 +191,8 @@ if __name__ == "__main__":
     mainWindow.w.preview.w.zoomOutButton.clicked.connect(mainWindow.zoom_OUT)
     #mainWindow.timeline.timeline.start()
     #mainWindow.deforum_thread()
+    mainWindow.w.sizer_count.w.widthSlider.valueChanged.connect(mainWindow.update_outpaint_parameters)
+    mainWindow.w.sizer_count.w.heightSlider.valueChanged.connect(mainWindow.update_outpaint_parameters)
 
 
     sys.exit(app.exec())

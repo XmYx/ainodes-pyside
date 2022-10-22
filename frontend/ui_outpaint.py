@@ -160,10 +160,10 @@ class Canvas(QGraphicsView):
         for i in self.rectlist:
             rect = QRect(i.x, i.y, i.w, i.h)
             if i.image is not None:
-                pic = i.image.copy(0, 0, 512, 512)
+                pic = i.image.copy(0, 0, i.image.width(), i.image.height())
                 pixmap = QPixmap.fromImage(pic)
                 #painter.drawImage(QRect(QPoint(i.x, i.y), QSize(i.w, i.h)), pic)
-                painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, 512, 512)
+                painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
                 #painter.drawPixmap()
             else:
                 if self.mode == "generic":

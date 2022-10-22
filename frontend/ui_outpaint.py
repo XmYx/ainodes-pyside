@@ -1,12 +1,17 @@
-from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect
+from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect, QLineF, QPointF
 from PySide6.QtGui import Qt, QColor, QFont, QPalette, QPainter, QPen, QPolygon, QBrush, QPainterPath, QAction, QCursor, \
-    QPixmap
+    QPixmap, QTransform, QDragEnterEvent, QDragMoveEvent
 from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockWidget, QMenu, QGraphicsScene, \
-    QGraphicsView, QGraphicsItem, QGraphicsWidget, QLabel
+    QGraphicsView, QGraphicsItem, QGraphicsWidget, QLabel, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsRectItem, \
+    QGraphicsTextItem
+
+from datetime import datetime
+from uuid import uuid4
 
 __textColor__ = QColor(187, 187, 187)
 __backgroudColor__ = QColor(60, 63, 65)
 __font__ = QFont('Decorative', 10)
+
 
 
 class Rectangle(object):
@@ -16,44 +21,246 @@ class Rectangle(object):
         self.y = y
         self.w = w
         self.h = h
+        self.image = None
 
-class Canvas(QLabel):
 
-    def __init__(self):
-        super().__init__()
-        self.pixmap = QPixmap(600, 300)
-        self.setPixmap(self.pixmap)
+
+
+class Scene(QGraphicsScene):
+    def __init__ (self, parent=None):
+        QGraphicsScene.__init__ (self, parent)
+        self.pos = None
+        self.scenePos = None
+
+
+
+        #self.setMouseTracking(True)  # Mouse events
+
+    def mouseMoveEvent(self, event):
+        super(Scene, self).mouseMoveEvent(event)
+        self.pos = QPointF(event.screenPos())
+        self.scenePos = event.scenePos()
+
+
+
+
+        print(self.pos)
+
+
+
+class Canvas(QGraphicsView):
+
+    def __init__(self, parent):
+        QGraphicsView.__init__(self, parent)
+        self.zoom = 1
+        self.rotate = 0
+        self.setDragMode(QGraphicsView.DragMode.NoDrag)
+
+        self.pixmap = QPixmap(1024, 1024)
+        self.pixmap.fill(__backgroudColor__)
+        self.bgitem = QGraphicsPixmapItem()
+        self.rectItem = QGraphicsRectItem(256, 256, 512, 512)
+
+        self.rectlist = []
+        #rect = QRect(QPoint(256, 256), QSize(512, 512))
+        #ainter = QPainter()
+        #painter.begin(self.pixmap)
+        #painter.setPen(Qt.black)
+        #p = painter.pen()
+        #p.setWidth(4)
+        #painter.drawRect(rect)
+        #painter.end()
+
+        self.debugtext = QGraphicsTextItem("0, 0\n")
+
+        self.helpText = QGraphicsTextItem("C - Hand Drag\nV - Place Rectangles")
+        self.bgitem.setPixmap(self.pixmap)
+        #self.setPixmap(self.pixmap)
+        self.scene = Scene()
+
+        self.scene.addItem(self.bgitem)
+        self.scene.addItem(self.rectItem)
+        self.scene.addItem(self.debugtext)
+        #self.scene.addItem(self.helpText)
 
         self.last_x, self.last_y = None, None
         self.pen_color = QColor('#000000')
+        self.mode = 'generic'
+        self.setMouseTracking(True)
+        self.update()
+        self.setScene(self.scene)
+        self.fitInView(self.bgitem, Qt.AspectRatioMode.KeepAspectRatio)
+        self.setSceneRect(QRectF(self.viewport().rect()))
+    def getXScale(self):
+        return float(1024)/float(self.width())
+    def getYScale(self):
+        return float(1024)/float(self.height())
 
     def set_pen_color(self, c):
         self.pen_color = QColor(c)
 
+    def addrect(self):
+        rect = {}
+        uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
+        rect[uid] = Rectangle(self.scene.scenePos.x(), self.scene.scenePos.y(), 100, 100, uid)
+
+
+        self.rectlist.append(rect[uid])
+
+    def drawRect(self, x, y, width=256, height=256):
+
+        print(f"we are putting that thing to:{x}, {y}, and our width is {self.width()}")
+        Xscale = self.getXScale()
+        Yscale = self.getYScale()
+        self.rectItem.setRect(x*Xscale, y*Yscale, width, height)
+        self.bgitem.setPixmap(self.pixmap)
+        self.update()
+    def mousePressEvent(self, e):
+        fn = getattr(self, "%s_mousePressEvent" % self.mode, None)
+        if fn:
+            fn(e)
+            super(Canvas, self).mousePressEvent(e)
+
+
     def mouseMoveEvent(self, e):
-        if self.last_x is None: # First event.
+            fn = getattr(self, "%s_mouseMoveEvent" % self.mode, None)
+            if fn:
+                fn(e)
+                super(Canvas, self).mouseMoveEvent(e)
+
+    def mouseReleaseEvent(self, e):
+            fn = getattr(self, "%s_mouseReleaseEvent" % self.mode, None)
+            if fn:
+                fn(e)
+                super(Canvas, self).mouseReleaseEvent(e)
+
+    def mouseDoubleClickEvent(self, e):
+        fn = getattr(self, "%s_mouseDoubleClickEvent" % self.mode, None)
+        if fn:
+            return fn(e)
+    def paintEvent(self, e):
+
+        painter = QPainter()
+        painter.begin(self.pixmap)
+        for i in self.rectlist:
+            rect = QRect(i.x, i.y, i.w, i.h)
+            if i.image is not None:
+                pic = i.image.copy(0, 0, 512, 512)
+                painter.drawText(0, 50, 100, 100, Qt.AlignHCenter, "C - Hand Drag\nV - Place Rectangles")
+                pixmap = QPixmap.fromImage(pic)
+                #painter.drawImage(QRect(QPoint(i.x, i.y), QSize(i.w, i.h)), pic)
+                painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, 512, 512)
+                #painter.drawPixmap()
+            else:
+                painter.drawRect(rect)
+        painter.end()
+
+        self.bgitem.setPixmap(self.pixmap)
+        self.setSceneRect(QRectF(self.viewport().rect()))
+        self.update()
+        super(Canvas, self).paintEvent(e)
+
+    def generic_mouseMoveEvent(self, e):
+        """if self.last_x is None: # First event.
             self.last_x = e.x()
             self.last_y = e.y()
             return # Ignore the first time.
+        print("at least we are here..")
+        painter = QPainter()
+        painter.begin(self.canvas)
 
-        painter = QPainter(self.pixmap)
-        painter.begin(self.pixmap)
-        p = painter.pen()
-        p.setWidth(4)
         p.setColor(self.pen_color)
         painter.setPen(p)
         painter.drawLine(self.last_x, self.last_y, e.x(), e.y())
         painter.end()
-        #self.update()
-
+        self.update()
+        self.setPixmap(self.canvas)
         # Update the origin for next time.
         self.last_x = e.x()
-        self.last_y = e.y()
+        self.last_y = e.y()"""
+        #self.posx = e.pos().x()
+        #self.posy = e.pos().y()
+        if self.scene.pos is not None:
+            self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), 100, 100)
+        self.debugtext.setPlainText(f"{self.scene.pos}, {self.scene.scenePos}")
 
-    def mouseReleaseEvent(self, e):
-        self.last_x = None
-        self.last_y = None
 
+        print(f"lets: zoom:{self.zoom}, event pos: {e.pos()}, {e.scenePosition()}")
+
+        self.update()
+        #return
+        #self.setPixmap(self.canvas)
+    def keyPressEvent(self, e):
+        super(Canvas, self).keyPressEvent(e)
+        print(f"key pressed: {e.key()}")
+        if e.key() == 67:
+            self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+            self.mode = "drag"
+        elif e.key() == 86:
+            self.setDragMode(QGraphicsView.DragMode.NoDrag)
+            self.mode = "generic"
+        elif e.key() == 66:
+            pass
+
+    def keyReleaseEvent(self, e):
+        super(Canvas, self).keyReleaseEvent(e)
+
+
+    def generic_mousePressEvent(self, e):
+
+        self._start = e.pos()
+        self.posx = e.pos().x()
+        self.posy = e.pos().y()
+        self.addrect()
+
+        return
+
+    def generic_mouseReleaseEvent(self, event):
+        start = QPointF(self.mapToScene(self._start))
+        end = QPointF(self.mapToScene(event.pos()))
+        self.scene.addItem(
+            QGraphicsLineItem(QLineF(start, end)))
+        return
+
+    """def paintEvent(self, e):
+        painter = QPainter()
+        painter.begin(self.pixmap)
+
+        rect = QRect(QPoint(self.posx, self.posy), QSize(512, 512))
+        painter.setPen(Qt.black)
+        p = painter.pen()
+        p.setWidth(4)
+        painter.drawRect(rect)
+        painter.end()
+
+
+        #self.setPixmap(self.pixmap)
+        #self.update()"""
+
+    def generic_mouseReleaseEvent(self, e):
+            self.last_x = None
+            self.last_y = None
+    def drag_mouseMoveEvent(self, e):
+        return
+    def drag_mouseReleaseEvent(self, event):
+        return
+    def drag_mousePressEvent(self, event):
+        return
+    def wheelEvent(self, event):
+
+        x = event.angleDelta().y() / 120
+        if x > 0:
+            self.zoom *= 1.05
+            self.updateView()
+        elif x < 0:
+            self.zoom /= 1.05
+            self.updateView()
+
+
+
+    def updateView(self):
+
+        self.setTransform(QTransform().scale(self.zoom, self.zoom).rotate(self.rotate))
 
 """class Outpaint(QGraphicsWidget):
 
@@ -234,7 +441,7 @@ class OutpaintUI(QDockWidget):
         super().__init__(*args, **kwargs)
         if not self.objectName():
             self.setObjectName(u"thumbnails")
-        self.setWindowModality(Qt.WindowModal)
+        #self.setWindowModality(Qt.WindowModal)
         self.setMouseTracking(True)  # Mouse events
 
         #self.resize(759, 544)
@@ -258,7 +465,7 @@ class OutpaintUI(QDockWidget):
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(5, 0, 5, 0)
-        self.canvas = Canvas()
+        self.canvas = Canvas(self)
         #self.item = QGraphicsItem(self.outpaint.canvas)
 
         #self.graphicsView = QGraphicsView()

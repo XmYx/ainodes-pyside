@@ -428,7 +428,7 @@ class DeforumGenerator():
         padding_mode = padding_mode
         self.creation_timestamp = strftime("%d_%b_%Y_%H_%M_%S", gmtime())
         outdir = os.path.join(self.outdir, self.creation_timestamp)
-        sampler_name = sampler_name
+        self.sampler_name = sampler_name
 
         print(sampler_name)
 
@@ -510,7 +510,6 @@ class DeforumGenerator():
         # load depth model for 3D
         predict_depths = (animation_mode == '3D' and use_depth_warping) or save_depth_maps
         if predict_depths:
-            if "depth_model" not in gs.models:
                 depth_model = DepthModel('cuda')
                 depth_model.load_midas('models/')
                 if midas_weight < 1.0:

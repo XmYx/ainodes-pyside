@@ -1,4 +1,5 @@
 import pandas as pd
+from PySide6.QtGui import QBitmap
 
 import backend.settings as settings
 from backend.singleton import singleton
@@ -170,7 +171,7 @@ class GenerateWindow(QObject):
         self.prompt_fetcher = FetchPrompts()
         self.dynaimage = Dynaimage()
         self.camera = Window()
-        self.outpaint = paintwindow_func.PaintDock()
+        self.outpaint = OutpaintUI()
         self.compass = Compass()
 
         #self.pw = paintwindow_func.MainWindow()
@@ -308,6 +309,8 @@ class GenerateWindow(QObject):
         self.prompt_fetcher.w.usePrompt.clicked.connect(self.use_prompt)
         self.prompt_fetcher.w.dreamPrompt.clicked.connect(self.dream_prompt)
         self.load_settings()
+        self.w.actiontest_save_output.triggered.connect(self.test_save_outpaint)
+
 
     def load_upscalers(self):
         gfpgan = False
@@ -477,7 +480,30 @@ class GenerateWindow(QObject):
         gc.collect()
         torch.cuda.empty_cache()
         torch.cuda.ipc_collect()
+    def test_save_outpaint(self):
+        """painter = QPainter()
+        bitmap = QBitmap(512, 512)
+        bitmap.clear()  # Starts with random data visible.
 
+
+        pixmap = self.outpaint.canvas.pixmap.copy()
+        painter.begin(bitmap)
+        rect = QRect(256, 0, 256, 512)
+        painter.setPen(QPen(Qt.color1))
+        painter.setBrush(QBrush(Qt.color1))
+        painter.drawPolygon(rect)
+
+
+        pixmap.setMask(bitmap)
+
+        painter.end()"""
+        self.outpaint.canvas.pixmap = self.outpaint.canvas.pixmap.copy(QRect(64, 32, 512, 512))
+        # Set our created mask on the image.
+
+        # Calculate the bounding rect and return a copy of that region.
+        #self.outpaint.canvas.pixmap = pixmap.copy(rect.boundingRect())
+        self.outpaint.canvas.setPixmap(self.outpaint.canvas.pixmap)
+        self.outpaint.canvas.update()
     #deforum
     def run_deforum(self, progress_callback=None):
 
@@ -564,7 +590,6 @@ class GenerateWindow(QObject):
         H=self.w.sizer_count.w.heightSlider.value()
 
 
-
         self.deforum.render_animation(H = H,
                                       W = W,
                                       animation_prompts=prompt_series,
@@ -606,9 +631,10 @@ class GenerateWindow(QObject):
                                       contrast_schedule=contrast_schedule,
                                       diffusion_cadence=cadence,
                                       shouldStop=False,
-                                      compviscallback=self.compviscallbackSignal,
+                                      compviscallback=self.deforumstepCallback_signal,
 
                                       )
+
         self.torch_gc()
         self.stop_painters()
 
@@ -655,7 +681,10 @@ class GenerateWindow(QObject):
         self.progress = self.progress + self.onePercent
         self.w.progressBar.setValue(self.progress)
         if self.choice == "Text to Video":
-            self.liveUpdate(self.data['denoised'], self.data['i'])
+            if self.deforum.sampler_name == "ddim" or self.deforum.sampler_name == "plms":
+                self.liveUpdate(self.data)
+            else:
+                self.liveUpdate(self.data['denoised'], self.data['i'])
         elif self.choice == "Text to Image":
             self.liveUpdate(self.data)
 
@@ -856,22 +885,33 @@ class GenerateWindow(QObject):
 
     def viewImageClicked(self, item):
 
-        vins = random.randint(10000, 99999)
+        #vins = random.randint(10000, 99999)
         imageSize = item.icon().actualSize(QSize(10000, 10000))
         qimage = QImage(item.icon().pixmap(imageSize).toImage())
-        self.newPixmap[vins] = QPixmap(qimage.size())
-        self.vpainter[vins] = QPainter()
-        newItem = QGraphicsPixmapItem()
-        self.vpainter[vins].begin(self.newPixmap[vins])
-        self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
-        newItem.setPixmap(self.newPixmap[vins])
+        #self.outpaint.canvas.pixmap = QPixmap(qimage.size())
 
-        for items in self.w.preview.w.scene.items():
-            self.w.preview.w.scene.removeItem(items)
-        self.w.preview.w.scene.addItem(newItem)
-        self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
-        self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
-        self.vpainter[vins].end()
+
+        for items in self.outpaint.canvas.rectlist:
+            print(f"adding image{qimage}")
+            items.image = qimage
+
+
+
+
+        #self.vpainter[vins] = QPainter()
+        #newItem = QGraphicsPixmapItem()
+        #self.vpainter[vins].begin(self.outpaint.canvas.pixmap)
+        #self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
+        #newItem.setPixmap(self.newPixmap[vins])
+
+        #for items in self.w.preview.w.scene.items():
+        #    self.w.preview.w.scene.removeItem(items)
+
+        #self.outpaint.canvas.setPixmap(self.outpaint.canvas.pixmap)
+        #self.w.preview.w.scene.addItem(newItem)
+        #self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
+        #self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+        #self.vpainter[vins].end()
 
     def zoom_IN(self):
         self.w.preview.w.graphicsView.scale(1.25, 1.25)

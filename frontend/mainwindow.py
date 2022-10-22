@@ -278,7 +278,7 @@ class GenerateWindow(QObject):
         self.animKeys.w.dockWidget.setWindowTitle('Anim Keys')
         self.w.thumbnails.setWindowTitle('Thumbnails')
         self.w.sampler.w.dockWidget.setWindowTitle('Sampler')
-        self.w.sizer_count.w.dockWidget.setWindowTitle('Sliders')
+        self.w.sizer_count.w.dockWidget.setWindowTitle('Image Setup')
         self.animSliders.w.dockWidget.setWindowTitle('Anim Setup')
         self.timeline.setWindowTitle('Timeline')
         self.w.prompt.w.dockWidget.setWindowTitle('Prompt')
@@ -815,28 +815,16 @@ class GenerateWindow(QObject):
                     row[0].save(output)
                     self.image_path = output
                     self.signals.deforum_image_cb.emit()
-                    # print("We did set the image")
-                    #
-                    # self.get_pic(clear=False)
+
             self.torch_gc()
         self.signals.reenable_runbutton.emit()
         # self.stop_painters()
     def txt2img_thread(self):
-        # self.run_txt2img()
         # Pass the function to execute
-        #self.livePainter.eraseRect(QRect(0, 0, 512, 512))
-        #pixmap = QPixmap(512, 512)
-        #pixmap.fill(Qt.black)
-        #self.w.dynaview.w.label.setPixmap(pixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio))
         worker = Worker(self.run_txt2img)
-        # worker.signals.progress.connect(self.testThread)
-        # worker.signals.result.connect(self.stop_painters)
-
         # Execute
         self.threadpool.start(worker)
 
-        # progress bar test:
-        # self.progress_thread()
 
     #gallery ??
     def tileImageClicked(self, item):

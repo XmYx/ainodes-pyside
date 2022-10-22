@@ -677,8 +677,12 @@ class GenerateWindow(QObject):
         self.deforum.signals = Callbacks()
         self.w.prompt.w.runButton.setEnabled(False)
         self.prompt_fetcher.w.dreamPrompt.setEnabled(False)
+        self.progress = 0.0
+        self.update = 0
+        self.onePercent = 100 / (1 * self.w.sampler.w.steps.value())
+        self.updateRate = self.w.sizer_count.w.previewSlider.value()
 
-        self.deforum.run_txt2img(strength=self.animSliders.w.strength.value() / 1000,
+        self.deforum.run_txt2img(strength=0,#strength=self.animSliders.w.strength.value() / 1000,
                                  seed=self.w.sampler.w.seed.text(),
                                  use_init=self.animSliders.w.useInit.isChecked(),
                                  init_image=None,
@@ -704,6 +708,9 @@ class GenerateWindow(QObject):
                                  compviscallback=self.deforumstepCallback_signal)
 
     def deforum_txt2img_thread(self):
+        # for debug
+        #self.run_deforum_txt2img()
+
         # Pass the function to execute
         worker = Worker(self.run_deforum_txt2img)
         # Execute

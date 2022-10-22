@@ -199,7 +199,7 @@ class DeforumGenerator():
     def load_model(self):
         """Load and initialize the model from configuration variables passed at object creation time"""
 
-        weights = 'models/sd-v1-4.ckpt'
+        weights = gs.system.sdPath
         config = 'configs/stable-diffusion/v1-inference.yaml'
         embedding_path = None
 
@@ -1155,7 +1155,7 @@ class DeforumGenerator():
         timestring = time.strftime('%Y%m%d%H%M%S')
         strength = max(0.0, min(1.0, strength))
 
-        if seed == -1:
+        if seed == '':
             seed = random.randint(0, 2 ** 32 - 1)
         if not use_init:
             init_image = None
@@ -1297,7 +1297,7 @@ class DeforumGenerator():
                         sampler_name = sampler_name,
                         n_samples = n_samples,
                         prompt = prompt,
-                        precision = None,
+                        precision = 'autocast',
                         init_latent = None,
                         init_sample = None,
                         use_init = False,
@@ -1319,7 +1319,7 @@ class DeforumGenerator():
                         prompt_weighting = None,
                         log_weighted_subprompts = False,
                         scale = scale,
-                        init_c = False,
+                        init_c = None,
                         C = 4,
                         f = 8,
                         mask_overlay_blur = 0,
@@ -1330,23 +1330,22 @@ class DeforumGenerator():
                         return_sample=False,
                         return_c=False )
                     print(results)
-                    if len(results>0):
-                        for image in results:
-                            print(image)
-                            if make_grid:
-                                all_images.append(T.functional.pil_to_tensor(image))
-                            if save_samples:
-                                if filename_format == "{timestring}_{index}_{prompt}.png":
-                                    filename = f"{timestring}_{index:05}_{self.sanitize(prompt)[:160]}.png"
-                                else:
-                                    filename = f"{timestring}_{index:05}_{seed}.png"
-                                fpath = os.path.join(outdir, filename)
-                                image.save(fpath)
-                            #st.session_state['node_pipe'] = image
-                            #image_pipe.image(image)
-                            #st.session_state['currentImages'].append(fpath)
-                            index += 1
-                    seed = self.next_seed(seed_behavior, seed)
+                    for image in results:
+                        print(image)
+                        if make_grid:
+                            all_images.append(T.functional.pil_to_tensor(image))
+                        if save_samples:
+                            if filename_format == "{timestring}_{index}_{prompt}.png":
+                                filename = f"{timestring}_{index:05}_{self.sanitize(prompt)[:160]}.png"
+                            else:
+                                filename = f"{timestring}_{index:05}_{seed}.png"
+                            fpath = os.path.join(outdir, filename)
+                            image.save(fpath)
+                        #st.session_state['node_pipe'] = image
+                        #image_pipe.image(image)
+                        #st.session_state['currentImages'].append(fpath)
+                        index += 1
+                seed = self.next_seed(seed_behavior, seed)
 
             # print(len(all_images))
             if make_grid:

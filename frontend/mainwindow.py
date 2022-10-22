@@ -601,7 +601,7 @@ class GenerateWindow(QObject):
         W, H = map(lambda x: x - x % 64, (W, H))
         self.w.sizer_count.w.widthSlider.setValue(W)
         self.w.sizer_count.w.heightSlider.setValue(H)
-
+        cpudepth = self.animSliders.w.cpudepth_checkBox.isChecked()
         self.deforum.render_animation(H = H,
                                       W = W,
                                       animation_prompts=prompt_series,
@@ -644,6 +644,7 @@ class GenerateWindow(QObject):
                                       diffusion_cadence=cadence,
                                       shouldStop=False,
                                       compviscallback=self.deforumstepCallback_signal,
+                                      cpudepth=cpudepth,
 
                                       )
 

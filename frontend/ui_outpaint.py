@@ -13,6 +13,9 @@ __backgroudColor__ = QColor(60, 63, 65)
 __font__ = QFont('Decorative', 10)
 
 
+__idleColor__ = QColor(91, 48, 232)
+__selColor__ = QColor(255, 102, 102)
+
 
 class Rectangle(object):
     def __init__(self, x, y, w, h, id):
@@ -22,6 +25,7 @@ class Rectangle(object):
         self.w = w
         self.h = h
         self.image = None
+        self.color = __idleColor__
 
 
 
@@ -31,22 +35,10 @@ class Scene(QGraphicsScene):
         QGraphicsScene.__init__ (self, parent)
         self.pos = None
         self.scenePos = None
-
-
-
-        #self.setMouseTracking(True)  # Mouse events
-
     def mouseMoveEvent(self, event):
         super(Scene, self).mouseMoveEvent(event)
         self.pos = QPointF(event.screenPos())
         self.scenePos = event.scenePos()
-
-
-
-
-        print(self.pos)
-
-
 
 class Canvas(QGraphicsView):
 
@@ -115,6 +107,16 @@ class Canvas(QGraphicsView):
         self.rectItem.setRect(x*Xscale, y*Yscale, width, height)
         self.bgitem.setPixmap(self.pixmap)
         self.update()
+
+    def hoverCheck(self):
+        for i in self.rectlist:
+            if i.x < self.scene.scenePos.x() < i.x + i.w:
+                i.color = __selColor__
+            else:
+                i.color = __idleColor__
+
+
+
     def mousePressEvent(self, e):
         fn = getattr(self, "%s_mousePressEvent" % self.mode, None)
         if fn:
@@ -155,6 +157,7 @@ class Canvas(QGraphicsView):
                 #painter.drawPixmap()
             else:
                 if self.mode == "generic":
+                    painter.setPen(i.color)
                     painter.drawRect(rect)
         painter.end()
 
@@ -164,6 +167,7 @@ class Canvas(QGraphicsView):
         super(Canvas, self).paintEvent(e)
 
     def generic_mouseMoveEvent(self, e):
+        self.hoverCheck()
         """if self.last_x is None: # First event.
             self.last_x = e.x()
             self.last_y = e.y()

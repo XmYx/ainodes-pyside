@@ -9,15 +9,14 @@ gs = singleton
 class CFGDenoiser(nn.Module):
     def __init__(self, model):
         super().__init__()
-        #gs.models["sd"] = model
+        self.inner_model = model
 
     def forward(self, x, sigma, uncond, cond, cond_scale):
         x_in = torch.cat([x] * 2)
         sigma_in = torch.cat([sigma] * 2)
         cond_in = torch.cat([uncond, cond])
-        uncond, cond = gs.models["sd"](x_in, sigma_in, cond=cond_in).chunk(2)
+        uncond, cond = self.inner_model(x_in, sigma_in, cond=cond_in).chunk(2)
         return uncond + (cond - uncond) * cond_scale
-
 
 class KSampler(object):
     def __init__(self, model, schedule='lms', device=None, **kwargs):
@@ -26,14 +25,14 @@ class KSampler(object):
         self.schedule = schedule
         self.device   = device or choose_torch_device()
 
-        def forward(self, x, sigma, uncond, cond, cond_scale):
-            x_in = torch.cat([x] * 2)
-            sigma_in = torch.cat([sigma] * 2)
-            cond_in = torch.cat([uncond, cond])
-            uncond, cond = gs.models["sd"](
-                x_in, sigma_in, cond=cond_in
-            ).chunk(2)
-            return uncond + (cond - uncond) * cond_scale
+    def forward(self, x, sigma, uncond, cond, cond_scale):
+        x_in = torch.cat([x] * 2)
+        sigma_in = torch.cat([sigma] * 2)
+        cond_in = torch.cat([uncond, cond])
+        uncond, cond = gs.models["sd"](
+            x_in, sigma_in, cond=cond_in
+        ).chunk(2)
+        return uncond + (cond - uncond) * cond_scale
 
     # most of these arguments are ignored and are only present for compatibility with
     # other samples

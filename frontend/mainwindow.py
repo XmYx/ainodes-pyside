@@ -5,7 +5,6 @@ import backend.settings as settings
 from backend.singleton import singleton
 
 import importlib
-
 # from memory_profiler import profile
 
 settings.load_settings_json()
@@ -299,8 +298,6 @@ class GenerateWindow(QObject):
         self.load_settings()
         self.w.actiontest_save_output.triggered.connect(self.test_save_outpaint)
 
-        self.w.sizer_count.w.widthSlider.valueChanged.connect(self.update_outpaint_parameters)
-        self.w.sizer_count.w.heightSlider.valueChanged.connect(self.update_outpaint_parameters)
 
     def load_upscalers(self):
         gfpgan = False
@@ -466,8 +463,11 @@ class GenerateWindow(QObject):
         W = self.w.sizer_count.w.widthSlider.value()
         H = self.w.sizer_count.w.heightSlider.value()
         W, H = map(lambda x: x - x % 64, (W, H))
-        self.outpaint.width = W
-        self.outpaint.height = W
+
+
+
+        self.outpaint.canvas.w = W
+        self.outpaint.canvas.h = H
 
     def torch_gc(self):
         gc.collect()
@@ -586,9 +586,9 @@ class GenerateWindow(QObject):
         W, H = map(lambda x: x - x % 64, (W, H))
         self.w.sizer_count.w.widthSlider.setValue(W)
         self.w.sizer_count.w.heightSlider.setValue(H)
-
-        self.deforum.render_animation(H=H,
-                                      W=W,
+        cpudepth = self.animSliders.w.cpudepth_checkBox.isChecked()
+        self.deforum.render_animation(H = H,
+                                      W = W,
                                       animation_prompts=prompt_series,
                                       steps=self.steps,
                                       adabins=adabins,
@@ -629,6 +629,7 @@ class GenerateWindow(QObject):
                                       diffusion_cadence=cadence,
                                       shouldStop=False,
                                       compviscallback=self.deforumstepCallback_signal,
+                                      cpudepth=cpudepth,
 
                                       )
 
@@ -744,6 +745,12 @@ class GenerateWindow(QObject):
 
         elif self.renderedFrames > 0 and self.videoPreview == False:
             qimage = ImageQt(self.image)
+            if self.outpaint.canvas.selected_item is not None:
+                for items in self.outpaint.canvas.rectlist:
+                    if items.id == self.outpaint.canvas.selected_item:
+                        items.image = qimage
+
+
             self.painter.drawImage(QRect(0, 0, self.image.im.size[0], self.image.im.size[1]), qimage)
 
         self.dynaimage.w.label.setPixmap(

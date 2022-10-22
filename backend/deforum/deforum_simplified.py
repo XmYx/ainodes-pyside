@@ -294,7 +294,7 @@ class DeforumGenerator():
         stdout, stderr = process.communicate()
         if process.returncode != 0:
             print(stderr)
-            raise RuntimeError(stderr)
+            pass
 
     def next_seed(self, seed_behavior, seed):
         if seed_behavior == 'iter':
@@ -422,6 +422,7 @@ class DeforumGenerator():
                          clear_sample=True,
                          shouldStop=False,
                          # keys={}
+                         cpudepth=False,
                          ):
 
 
@@ -518,11 +519,17 @@ class DeforumGenerator():
         # load depth model for 3D
         predict_depths = (animation_mode == '3D' and use_depth_warping) or save_depth_maps
         if predict_depths:
-                depth_model = DepthModel('cuda')
+                if cpudepth == True:
+                    print("Loading depth models to cpu")
+                    depth_model = DepthModel('cpu')
+                else:
+                    depth_model = DepthModel('cuda')
+
                 depth_model.load_midas('models/')
                 if midas_weight < 1.0:
                     if adabins:
-                        depth_model.load_adabins()
+                        if "adabins" not in gs.models:
+                            depth_model.load_adabins()
                     else:
                         gs.models["adabins"] = None
         else:
@@ -753,7 +760,6 @@ class DeforumGenerator():
         try:
 
             gs.models["midas_model"].to("cpu")
-            gs.models["adabins"].to("cpu")
         except:
             pass
         self.torch_gc()

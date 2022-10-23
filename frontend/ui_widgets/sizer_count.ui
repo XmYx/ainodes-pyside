@@ -168,6 +168,9 @@
              </item>
              <item row="5" column="0">
               <widget class="QSlider" name="samplesSlider">
+               <property name="minimum">
+                <number>1</number>
+               </property>
                <property name="maximum">
                 <number>1500</number>
                </property>
@@ -184,6 +187,9 @@
              </item>
              <item row="7" column="0">
               <widget class="QSlider" name="batchSizeSlider">
+               <property name="minimum">
+                <number>1</number>
+               </property>
                <property name="maximum">
                 <number>200</number>
                </property>

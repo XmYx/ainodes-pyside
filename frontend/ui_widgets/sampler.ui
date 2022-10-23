@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>211</width>
+    <width>238</width>
     <height>520</height>
    </rect>
   </property>
@@ -52,8 +52,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>209</width>
-            <height>502</height>
+            <width>236</width>
+            <height>494</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -77,6 +77,89 @@
              <property name="rightMargin">
               <number>5</number>
              </property>
+             <item row="5" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Steps</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QCheckBox" name="tensorPreview">
+               <property name="text">
+                <string>Tensor Preview</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="seamless">
+               <property name="text">
+                <string>Seamless</string>
+               </property>
+              </widget>
+             </item>
+             <item row="10" column="0">
+              <widget class="QComboBox" name="sampleMode">
+               <item>
+                <property name="text">
+                 <string>bicubic</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>bilinear</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>nearest</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Sampler</string>
+               </property>
+              </widget>
+             </item>
+             <item row="17" column="0">
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="15" column="0">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Seed Behavior</string>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="0">
+              <widget class="QSlider" name="scale">
+               <property name="maximum">
+                <number>3000</number>
+               </property>
+               <property name="value">
+                <number>750</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="0">
               <widget class="QComboBox" name="processType">
                <item>
@@ -106,24 +189,13 @@
                </item>
               </widget>
              </item>
+             <item row="8" column="1">
+              <widget class="QLCDNumber" name="scaleNumber"/>
+             </item>
              <item row="1" column="0">
               <widget class="QCheckBox" name="fullPrecision">
                <property name="text">
                 <string>Full Precision</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QCheckBox" name="seamless">
-               <property name="text">
-                <string>Seamless</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_3">
-               <property name="text">
-                <string>Sampler</string>
                </property>
               </widget>
              </item>
@@ -171,12 +243,32 @@
                </item>
               </widget>
              </item>
-             <item row="5" column="0">
-              <widget class="QLabel" name="label">
+             <item row="7" column="0">
+              <widget class="QLabel" name="label_2">
                <property name="text">
-                <string>Steps</string>
+                <string>Scale</string>
                </property>
               </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QLCDNumber" name="stepsNumber"/>
+             </item>
+             <item row="11" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Padding Mode</string>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Sample Mode</string>
+               </property>
+              </widget>
+             </item>
+             <item row="14" column="0" colspan="2">
+              <widget class="QLineEdit" name="seed"/>
              </item>
              <item row="6" column="0">
               <widget class="QSlider" name="steps">
@@ -194,76 +286,7 @@
                </property>
               </widget>
              </item>
-             <item row="6" column="1">
-              <widget class="QLCDNumber" name="stepsNumber"/>
-             </item>
-             <item row="7" column="0">
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>Scale</string>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="0">
-              <widget class="QSlider" name="scale">
-               <property name="maximum">
-                <number>3000</number>
-               </property>
-               <property name="value">
-                <number>750</number>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="1">
-              <widget class="QLCDNumber" name="scaleNumber"/>
-             </item>
-             <item row="9" column="0">
-              <widget class="QLabel" name="label_4">
-               <property name="text">
-                <string>Sample Mode</string>
-               </property>
-              </widget>
-             </item>
-             <item row="10" column="0">
-              <widget class="QComboBox" name="sampleMode">
-               <item>
-                <property name="text">
-                 <string>bicubic</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>bilinear</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>nearest</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="11" column="0">
-              <widget class="QLabel" name="label_5">
-               <property name="text">
-                <string>Seed</string>
-               </property>
-              </widget>
-             </item>
-             <item row="12" column="0" colspan="2">
-              <widget class="QLineEdit" name="seed"/>
-             </item>
-             <item row="13" column="0">
-              <widget class="QLabel" name="label_6">
-               <property name="text">
-                <string>Seed Behavior</string>
-               </property>
-              </widget>
-             </item>
-             <item row="14" column="0">
+             <item row="16" column="0">
               <widget class="QComboBox" name="seedBehavior">
                <item>
                 <property name="text">
@@ -282,27 +305,30 @@
                </item>
               </widget>
              </item>
-             <item row="15" column="0">
-              <spacer name="verticalSpacer">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="1" column="1">
-              <widget class="QCheckBox" name="tensorPreview">
+             <item row="13" column="0">
+              <widget class="QLabel" name="label_5">
                <property name="text">
-                <string>Tensor Preview</string>
+                <string>Seed</string>
                </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
+              </widget>
+             </item>
+             <item row="12" column="0">
+              <widget class="QComboBox" name="paddingMode">
+               <item>
+                <property name="text">
+                 <string>border</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>reflection</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>zeros</string>
+                </property>
+               </item>
               </widget>
              </item>
             </layout>

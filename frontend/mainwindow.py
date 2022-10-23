@@ -69,9 +69,6 @@ class GenerateWindow(QObject):
     def __init__(self, *args, **kwargs):
         super(GenerateWindow, self).__init__(*args, **kwargs)
         self.deforum = None
-        self.init_steps()
-
-    def init_steps(self):
         self.previewpos = "outerdock"
         self.path_setup = None
         self.ipixmap = None
@@ -144,6 +141,7 @@ class GenerateWindow(QObject):
         self.w.actionThumbnails.triggered.connect(self.show_thumbnails)
         self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings)
         self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings)
+        self.w.actionLoad_Default_Settings.triggered.connect(self.load_default_diffusion_settings)
         self.w.actionRestart.triggered.connect(self.restart)
         self.w.actionImageLab.triggered.connect(self.show_image_lab)
 
@@ -499,45 +497,35 @@ class GenerateWindow(QObject):
         self.outpaint.canvas.setPixmap(self.outpaint.canvas.pixmap)
         self.outpaint.canvas.update()
 
+    def translate_sampler(self, sampler):
+        if sampler == "k_lms":
+            sampler = "klms"
+        elif sampler == "k_dpm_2":
+            sampler = "dpm2"
+        elif sampler == "k_dpm_2_a":
+            sampler = "dpm2_ancestral"
+        elif sampler == "k_heun":
+            sampler = "heun"
+        elif sampler == "k_euler":
+            sampler = "euler"
+        elif sampler == "k_euler_a":
+            sampler = "euler_ancestral"
+
+        return sampler
+
     # deforum
     def run_deforum(self, progress_callback=None):
 
         self.currentFrames = []
         self.renderedFrames = 0
         self.now = 0
-
-        use_init = self.animSliders.w.useInit.isChecked()
-        adabins = self.animSliders.w.adabins.isChecked()
-        scale = self.w.sampler.w.scale.value() / 100
-        ddim_eta = self.animSliders.w.ddim_eta.value() / 1000
-        strength = self.animSliders.w.strength.value() / 1000
-        mask_contrast_adjust = self.animSliders.w.mask_contrast.value() / 1000
-        mask_brightness_adjust = self.animSliders.w.mask_brightness.value() / 1000
-        mask_blur = self.animSliders.w.mask_blur.value() / 1000
-        fov = self.animSliders.w.fov.value()
+        self.progress = 0.0
+        self.update = 0
+        self.updateRate = self.w.sizer_count.w.previewSlider.value()
         max_frames = self.animSliders.w.frames.value()
-        midas_weight = self.animSliders.w.midas_weight.value() / 1000
-        near_plane = self.animSliders.w.near_plane.value()
-        far_plane = self.animSliders.w.far_plane.value()
-        cadence = self.animKeys.w.cadenceSlider.value()
-        clearLatent = self.animSliders.w.clearLatent.isChecked()
-        clearSample = self.animSliders.w.clearSample.isChecked()
-        angle = self.animKeys.w.angle.toPlainText()
-        zoom = self.animKeys.w.zoom.toPlainText()
-        translation_x = self.animKeys.w.trans_x.toPlainText()
-        translation_y = self.animKeys.w.trans_y.toPlainText()
-        translation_z = self.animKeys.w.trans_z.toPlainText()
-        rotation_3d_x = self.animKeys.w.rot_x.toPlainText()
-        rotation_3d_y = self.animKeys.w.rot_y.toPlainText()
-        rotation_3d_z = self.animKeys.w.rot_z.toPlainText()
+        self.onePercent = 100 / (1 * self.w.sampler.w.steps.value() * max_frames * max_frames)
+
         flip_2d_perspective = False
-        perspective_flip_theta = self.animKeys.w.persp_theta.toPlainText()
-        perspective_flip_phi = self.animKeys.w.persp_phi.toPlainText()
-        perspective_flip_gamma = self.animKeys.w.persp_gamma.toPlainText()
-        perspective_flip_fv = self.animKeys.w.persp_fv.toPlainText()
-        noise_schedule = self.animKeys.w.noise_sched.toPlainText()
-        strength_schedule = self.animKeys.w.strength_sched.toPlainText()
-        contrast_schedule = self.animKeys.w.contrast_sched.toPlainText()
 
         keyframes = self.w.prompt.w.keyFrames.toPlainText()
         prompts = self.w.prompt.w.textEdit.toPlainText()
@@ -559,79 +547,94 @@ class GenerateWindow(QObject):
 
         # print(prompt_series)
         show_sample_per_step = True
-        self.progress = 0.0
-        self.update = 0
-        self.steps = self.w.sampler.w.steps.value()
 
-        self.onePercent = 100 / (1 * self.steps * max_frames * max_frames)
-        self.updateRate = self.w.sizer_count.w.previewSlider.value()
-        self.torch_gc()
-        sampler = self.w.sampler.w.sampler.currentText()
-        if sampler == "k_lms":
-            sampler = "klms"
-        elif sampler == "k_dpm_2":
-            sampler = "dpm2"
-        elif sampler == "k_dpm_2_a":
-            sampler = "dpm2_ancestral"
-        elif sampler == "k_heun":
-            sampler = "heun"
-        elif sampler == "k_euler":
-            sampler = "euler"
-        elif sampler == "k_euler_a":
-            sampler = "euler_ancestral"
-        else:
-            sampler = sampler
         W = self.w.sizer_count.w.widthSlider.value()
         H = self.w.sizer_count.w.heightSlider.value()
         W, H = map(lambda x: x - x % 64, (W, H))
         self.w.sizer_count.w.widthSlider.setValue(W)
         self.w.sizer_count.w.heightSlider.setValue(H)
-        cpudepth = self.animSliders.w.cpudepth_checkBox.isChecked()
-        self.deforum.render_animation(H = H,
-                                      W = W,
-                                      animation_prompts=prompt_series,
-                                      steps=self.steps,
-                                      adabins=adabins,
-                                      scale=scale,
-                                      ddim_eta=ddim_eta,
-                                      strength=strength,
-                                      mask_contrast_adjust=mask_contrast_adjust,
-                                      mask_brightness_adjust=mask_brightness_adjust,
-                                      # mask_blur = mask_blur,
-                                      sampler_name=sampler,
-                                      fov=fov,
-                                      max_frames=max_frames,
-                                      midas_weight=midas_weight,
-                                      near_plane=near_plane,
-                                      far_plane=far_plane,
-                                      image_callback=self.imageCallback_signal,
-                                      use_init=use_init,
-                                      clear_latent=clearLatent,
-                                      clear_sample=clearSample,
-                                      step_callback=self.deforumstepCallback_signal if self.w.sampler.w.tensorPreview.isChecked() else None,
-                                      show_sample_per_step=show_sample_per_step,
-                                      angle=angle,
-                                      zoom=zoom,
-                                      translation_x=translation_x,
-                                      translation_y=translation_y,
-                                      translation_z=translation_z,
-                                      rotation_3d_x=rotation_3d_x,
-                                      rotation_3d_y=rotation_3d_y,
-                                      rotation_3d_z=rotation_3d_z,
-                                      flip_2d_perspective=flip_2d_perspective,
-                                      perspective_flip_theta=perspective_flip_theta,
-                                      perspective_flip_phi=perspective_flip_phi,
-                                      perspective_flip_gamma=perspective_flip_gamma,
-                                      perspective_flip_fv=perspective_flip_fv,
-                                      noise_schedule=noise_schedule,
-                                      strength_schedule=strength_schedule,
-                                      contrast_schedule=contrast_schedule,
-                                      diffusion_cadence=cadence,
-                                      shouldStop=False,
-                                      compviscallback=self.deforumstepCallback_signal,
-                                      cpudepth=cpudepth,
 
-                                      )
+        self.torch_gc()
+
+        self.deforum.render_animation(
+            image_callback=self.imageCallback_signal,
+            step_callback=self.deforumstepCallback_signal if self.w.sampler.w.tensorPreview.isChecked() else None,
+            compviscallback=self.deforumstepCallback_signal,
+            animation_prompts=prompt_series,
+            H=H,
+            W=W,
+            seed=random.randint(0, 2**32 - 1) if self.w.sampler.w.seed.text() == '' else int(self.w.sampler.w.seed.text()),
+            sampler_name=self.translate_sampler(self.w.sampler.w.sampler.currentText()),
+            steps=self.w.sampler.w.steps.value(),
+            scale=self.w.sampler.w.scale.value() / 100,
+            ddim_eta=self.animSliders.w.ddim_eta.value() / 1000,
+            dynamic_threshold=None,
+            static_threshold=None,
+            save_samples=self.animKeys.w.saveSamples.isChecked(),
+            save_settings=self.animKeys.w.saveSettings.isChecked(),
+            display_samples=self.animKeys.w.displaySamples.isChecked(),
+            save_sample_per_step=self.animKeys.w.saveStepSample.isChecked(),
+            show_sample_per_step=self.animKeys.w.showStepSample.isChecked(),
+            prompt_weighting=self.animKeys.w.promptWeighting.isChecked(),
+            log_weighted_subprompts=self.animKeys.w.logPromptWeight.isChecked(),
+            adabins=self.animSliders.w.adabins.isChecked(),
+            batch_name="StableFun",
+            seed_behavior=self.w.sampler.w.seedBehavior.currentText(),
+            make_grid=self.animKeys.w.makeGrid.isChecked(),
+            use_init=self.animKeys.w.useInit.isChecked(),
+            strength=self.animSliders.w.strength.value() / 1000,
+            strength_0_no_init=self.animKeys.w.strength0.isChecked(),
+            init_image="",
+            use_mask=self.animKeys.w.useMask.isChecked(),
+            use_alpha_as_mask=self.animKeys.w.useAlphaMask.isChecked(),
+            mask_file="",  # @param {type:"string"}
+            mask_contrast_adjust=self.animSliders.w.mask_contrast.value() / 1000,
+            mask_brightness_adjust=self.animSliders.w.mask_brightness.value() / 1000,
+            overlay_mask=self.animKeys.w.overlayMask.isChecked(),
+            #mask_blur = self.animSliders.w.mask_blur.value() / 1000,
+            mask_overlay_blur=5,
+            precision='autocast',
+            timestring="",
+            init_latent=None,
+            init_sample=None,
+            init_c=None,
+            animation_mode='3D',
+            max_frames = self.animSliders.w.frames.value(),
+            border=self.animKeys.w.border.currentText(),  # @param ['wrap', 'replicate'] {type:'string'}
+            angle=self.animKeys.w.angle.toPlainText(),
+            zoom=self.animKeys.w.zoom.toPlainText(),
+            translation_x=self.animKeys.w.trans_x.toPlainText(),
+            translation_y=self.animKeys.w.trans_y.toPlainText(),
+            translation_z=self.animKeys.w.trans_z.toPlainText(),
+            rotation_3d_x=self.animKeys.w.rot_x.toPlainText(),
+            rotation_3d_y=self.animKeys.w.rot_y.toPlainText(),
+            rotation_3d_z=self.animKeys.w.rot_z.toPlainText(),
+            flip_2d_perspective=flip_2d_perspective,
+            perspective_flip_theta=self.animKeys.w.persp_theta.toPlainText(),
+            perspective_flip_phi=self.animKeys.w.persp_phi.toPlainText(),
+            perspective_flip_gamma=self.animKeys.w.persp_gamma.toPlainText(),
+            perspective_flip_fv=self.animKeys.w.persp_fv.toPlainText(),
+            noise_schedule=self.animKeys.w.noise_sched.toPlainText(),
+            strength_schedule=self.animKeys.w.strength_sched.toPlainText(),
+            contrast_schedule=self.animKeys.w.contrast_sched.toPlainText(),
+            diffusion_cadence=self.animKeys.w.cadenceSlider.value(),
+            color_coherence=self.animKeys.w.colorCoherence.currentText(),  # @param ['None', 'Match Frame 0 HSV', 'Match Frame 0 LAB', 'Match Frame 0 RGB'] {type:'string'}
+            use_depth_warping=self.animKeys.w.useDepthWarp.isChecked(),  # @param {type:"boolean"}
+            midas_weight=self.animSliders.w.midas_weight.value() / 1000,
+            near_plane=self.animSliders.w.near_plane.value(),
+            far_plane=self.animSliders.w.far_plane.value(),
+            fov=self.animSliders.w.fov.value(),
+            padding_mode=self.w.sampler.w.paddingMode.currentText(),  # @param ['border', 'reflection', 'zeros'] {type:'string'}
+            sampling_mode=self.w.sampler.w.sampleMode.currentText(),  # @param ['bicubic', 'bilinear', 'nearest'] {type:'string'}
+            save_depth_maps=self.animKeys.w.saveDepthMask.isChecked(),  # @param {type:"boolean"}
+            use_mask_video=self.animKeys.w.useMaskVideo.isChecked(),  # @param {type:"boolean"}
+            resume_from_timestring=self.animKeys.w.resumeTimestring.isChecked(),  # @param {type:"boolean"}
+            resume_timestring=self.animKeys.w.timestring.text(),
+            clear_latent=self.animSliders.w.clearLatent.isChecked(),
+            clear_sample=self.animSliders.w.clearSample.isChecked(),
+            shouldStop=False,
+            cpudepth=self.animSliders.w.cpudepth_checkBox.isChecked()
+            )
 
         self.torch_gc()
         self.stop_painters()
@@ -677,16 +680,19 @@ class GenerateWindow(QObject):
         self.deforum.signals = Callbacks()
         self.w.prompt.w.runButton.setEnabled(False)
         self.prompt_fetcher.w.dreamPrompt.setEnabled(False)
+        self.torch_gc()
         self.progress = 0.0
         self.update = 0
         self.onePercent = 100 / (1 * self.w.sampler.w.steps.value())
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
 
+        sampler_name = self.translate_sampler(self.w.sampler.w.sampler.currentText())
+
         self.deforum.run_txt2img(strength=0,#strength=self.animSliders.w.strength.value() / 1000,
-                                 seed=self.w.sampler.w.seed.text(),
+                                 seed=random.randint(0, 2**32 - 1) if self.w.sampler.w.seed.text() == '' else int(self.w.sampler.w.seed.text()),
                                  use_init=self.animSliders.w.useInit.isChecked(),
                                  init_image=None,
-                                 sampler_name=self.w.sampler.w.sampler.currentText(),
+                                 sampler_name=sampler_name,
                                  ddim_eta=self.animSliders.w.ddim_eta.value() / 1000,
                                  animation_mode='None',
                                  prompts=self.w.prompt.w.textEdit.toPlainText(),
@@ -706,6 +712,12 @@ class GenerateWindow(QObject):
                                  scale=self.w.sampler.w.scale.value() / 100,
                                  step_callback=self.deforumstepCallback_signal if self.w.sampler.w.tensorPreview.isChecked() else None,
                                  compviscallback=self.deforumstepCallback_signal)
+
+        self.torch_gc()
+        self.stop_painters()
+
+        self.signals.reenable_runbutton.emit()
+
 
     def deforum_txt2img_thread(self):
         # for debug
@@ -812,29 +824,11 @@ class GenerateWindow(QObject):
         prompt_list = self.w.prompt.w.textEdit.toPlainText()
         prompt_list = prompt_list.split('\n')
         # self.w.setCentralWidget(self.dynaimage.w)
-        width = self.w.sizer_count.w.widthSlider.value()
-        height = self.w.sizer_count.w.heightSlider.value()
-        scale = self.w.sampler.w.scale.value() / 100
-        self.steps = self.w.sampler.w.steps.value()
+        steps = self.w.sampler.w.steps.value()
         samples = self.w.sizer_count.w.samplesSlider.value()
-        batchsize = self.w.sizer_count.w.batchSizeSlider.value()
-        seamless = self.w.sampler.w.seamless.isChecked()
-        full_precision = self.w.sampler.w.fullPrecision.isChecked()
-        sampler = self.w.sampler.w.sampler.currentText()
-        upscale = self.w.sizer_count.w.upScale.isChecked()
-        upscale_scale = self.w.sizer_count.w.upscaleScale.value()
-        upscale_strength = self.w.sizer_count.w.upscaleStrength.value()
-        use_gfpgan = self.w.sizer_count.w.useGfpgan.isChecked()
-        gfpgan_strength = self.w.sizer_count.w.gfpganSlider.value() / 100
+        batchsize = self.w.sizer_count.w.samplesSlider.value()
 
-        self.onePercent = 100 / (batchsize * self.steps * samples * len(prompt_list))
-
-        if self.w.sampler.w.seed.text() != '':
-            seed = int(self.w.sampler.w.seed.text())
-        else:
-            seed = ''
-
-        outdir = gs.system.txt2imgOut
+        self.onePercent = 100 / (batchsize * steps * samples * len(prompt_list))
 
         """The full list of arguments to Generate() are:
         gr = Generate(
@@ -865,33 +859,33 @@ class GenerateWindow(QObject):
                 print(prompt)
                 self.torch_gc()
                 results = self.gr.prompt2image(prompt=prompt,
-                                               outdir=outdir,
-                                               cfg_scale=scale,
-                                               width=width,
-                                               height=height,
-                                               iterations=samples,
-                                               steps=self.steps,
-                                               seamless=seamless,
-                                               sampler_name=sampler,
-                                               seed=seed,
-                                               upscale=upscale,
-                                               upscale_scale=upscale_scale,
-                                               upscale_strength=upscale_strength,
-                                               use_gfpgan=use_gfpgan,
-                                               gfpgan_strength=gfpgan_strength,
+                                               outdir=gs.system.txt2imgOut,
+                                               cfg_scale=self.w.sampler.w.scale.value() / 100,
+                                               width=self.w.sizer_count.w.widthSlider.value(),
+                                               height=self.w.sizer_count.w.heightSlider.value(),
+                                               iterations=self.w.sizer_count.w.samplesSlider.value(),
+                                               steps=self.w.sampler.w.steps.value(),
+                                               seamless=self.w.sampler.w.seamless.isChecked(),
+                                               sampler_name=self.w.sampler.w.sampler.currentText(),
+                                               seed=random.randint(0, 2**32 - 1) if self.w.sampler.w.seed.text() == '' else int(self.w.sampler.w.seed.text()),
+                                               upscale=self.w.sizer_count.w.upScale.isChecked(),
+                                               upscale_scale=self.w.sizer_count.w.upscaleScale.value(),
+                                               upscale_strength=self.w.sizer_count.w.upscaleStrength.value(),
+                                               use_gfpgan=self.w.sizer_count.w.useGfpgan.isChecked(),
+                                               gfpgan_strength=self.w.sizer_count.w.gfpganSlider.value() / 100,
                                                strength=0.0,
-                                               full_precision=full_precision,
+                                               full_precision=self.w.sampler.w.fullPrecision.isChecked(),
                                                step_callback=self.deforumstepCallback_signal,
                                                image_callback=self.imageCallback_signal)
                 for row in results:
                     print(f'filename={row[0]}')
                     print(f'seed    ={row[1]}')
                     filename = random.randint(10000, 99999)
-                    output = f'outputs/{filename}.png'
+                    output = f'{gs.system.txt2imgOut}/{filename}.png'
                     row[0].save(output)
                     self.image_path = output
                     self.signals.deforum_image_cb.emit()
-
+                self.torch_gc()
             self.torch_gc()
         self.signals.reenable_runbutton.emit()
         # self.stop_painters()
@@ -975,8 +969,15 @@ class GenerateWindow(QObject):
         os.makedirs(gs.system.vid2vidSingleFrame, exist_ok=True)
         os.makedirs(gs.system.vid2vidOut, exist_ok=True)
 
-    def load_settings(self):
-        settings.load_settings_json()
+    def load_default_diffusion_settings(self):
+        self.load_settings(True)
+
+    def load_settings(self, default=False):
+        if not default:
+            settings.load_settings_json()
+        else:
+            settings.load_default_settings_json()
+
         self.load_last_prompt()
 
         self.animKeys.w.angle.setText(gs.diffusion.angle)
@@ -987,6 +988,7 @@ class GenerateWindow(QObject):
         self.animKeys.w.rot_x.setText(gs.diffusion.rot_x)
         self.animKeys.w.rot_y.setText(gs.diffusion.rot_y)
         self.animKeys.w.rot_z.setText(gs.diffusion.rot_z)
+        self.animKeys.w.flip2dPerspective.setChecked(gs.diffusion.flip2dPerspective)
         self.animKeys.w.persp_theta.setText(gs.diffusion.persp_theta)
         self.animKeys.w.persp_phi.setText(gs.diffusion.persp_phi)
         self.animKeys.w.persp_gamma.setText(gs.diffusion.persp_gamma)
@@ -995,6 +997,28 @@ class GenerateWindow(QObject):
         self.animKeys.w.strength_sched.setText(gs.diffusion.strength_sched)
         self.animKeys.w.contrast_sched.setText(gs.diffusion.contrast_sched)
         self.animKeys.w.cadenceSlider.setValue(gs.diffusion.cadence)
+
+        self.animKeys.w.saveStepSample.setChecked(gs.diffusion.saveStepSample)
+        self.animKeys.w.showStepSample.setChecked(gs.diffusion.showStepSample)
+        self.animKeys.w.promptWeighting.setChecked(gs.diffusion.promptWeighting)
+        self.animKeys.w.logPromptWeight.setChecked(gs.diffusion.logPromptWeight)
+        self.animKeys.w.saveSamples.setChecked(gs.diffusion.saveSamples)
+        self.animKeys.w.saveSettings.setChecked(gs.diffusion.saveSettings)
+        self.animKeys.w.displaySamples.setChecked(gs.diffusion.displaySamples)
+        self.animKeys.w.makeGrid.setChecked(gs.diffusion.makeGrid)
+        self.animKeys.w.useInit.setChecked(gs.diffusion.useInit)
+        self.animKeys.w.strength0.setChecked(gs.diffusion.strength0)
+        self.animKeys.w.useMask.setChecked(gs.diffusion.useMask)
+        self.animKeys.w.useAlphaMask.setChecked(gs.diffusion.useAlphaMask)
+        self.animKeys.w.overlayMask.setChecked(gs.diffusion.overlayMask)
+        self.animKeys.w.useDepthWarp.setChecked(gs.diffusion.useDepthWarp)
+        self.animKeys.w.saveDepthMask.setChecked(gs.diffusion.saveDepthMask)
+        self.animKeys.w.useMaskVideo.setChecked(gs.diffusion.useMaskVideo)
+        self.animKeys.w.resumeTimestring.setChecked(gs.diffusion.resumeTimestring)
+        self.animKeys.w.saveStepSample.setChecked(gs.diffusion.saveStepSample)
+        self.animKeys.w.saveStepSample.setChecked(gs.diffusion.saveStepSample)
+        self.animKeys.w.colorCoherence.setCurrentIndex(gs.diffusion.colorCoherence)
+        self.animKeys.w.border.setCurrentIndex(gs.diffusion.border)
 
         self.w.sizer_count.w.heightSlider.setValue(gs.diffusion.H)
         self.w.sizer_count.w.widthSlider.setValue(gs.diffusion.W)
@@ -1016,6 +1040,7 @@ class GenerateWindow(QObject):
         self.w.sampler.w.sampler.setCurrentIndex(gs.diffusion.sampler)
         self.w.sampler.w.sampleMode.setCurrentIndex(gs.diffusion.sampleMode)
         self.w.sampler.w.seedBehavior.setCurrentIndex(gs.diffusion.seedBehavior)
+        self.w.sampler.w.paddingMode.setCurrentIndex(gs.diffusion.paddingMode)
 
         self.animSliders.w.frames.setValue(gs.diffusion.frames)
         self.animSliders.w.ddim_eta.setValue(gs.diffusion.ddim_eta)
@@ -1086,6 +1111,7 @@ class GenerateWindow(QObject):
         gs.diffusion.rot_x = self.animKeys.w.rot_x.toPlainText()
         gs.diffusion.rot_y = self.animKeys.w.rot_y.toPlainText()
         gs.diffusion.rot_z = self.animKeys.w.rot_z.toPlainText()
+        gs.diffusion.flip2dPerspective = self.animKeys.w.flip2dPerspective.setChecked()
         gs.diffusion.persp_theta = self.animKeys.w.persp_theta.toPlainText()
         gs.diffusion.persp_phi = self.animKeys.w.persp_phi.toPlainText()
         gs.diffusion.persp_gamma = self.animKeys.w.persp_gamma.toPlainText()
@@ -1094,6 +1120,28 @@ class GenerateWindow(QObject):
         gs.diffusion.strength_sched = self.animKeys.w.strength_sched.toPlainText()
         gs.diffusion.contrast_sched = self.animKeys.w.contrast_sched.toPlainText()
         gs.diffusion.cadence = self.animKeys.w.cadenceSlider.value()
+
+        gs.diffusion.saveStepSample = self.animKeys.w.saveStepSample.isChecked()
+        gs.diffusion.showStepSample = self.animKeys.w.showStepSample.isChecked()
+        gs.diffusion.promptWeighting = self.animKeys.w.promptWeighting.isChecked()
+        gs.diffusion.logPromptWeight = self.animKeys.w.logPromptWeight.isChecked()
+        gs.diffusion.saveSamples = self.animKeys.w.saveSamples.isChecked()
+        gs.diffusion.saveSettings = self.animKeys.w.saveSettings.isChecked()
+        gs.diffusion.displaySamples = self.animKeys.w.displaySamples.isChecked()
+        gs.diffusion.makeGrid = self.animKeys.w.makeGrid.isChecked()
+        gs.diffusion.useInit = self.animKeys.w.useInit.isChecked()
+        gs.diffusion.strength0 = self.animKeys.w.strength0.isChecked()
+        gs.diffusion.useMask = self.animKeys.w.useMask.isChecked()
+        gs.diffusion.useAlphaMask = self.animKeys.w.useAlphaMask.isChecked()
+        gs.diffusion.overlayMask = self.animKeys.w.overlayMask.isChecked()
+        gs.diffusion.useDepthWarp = self.animKeys.w.useDepthWarp.isChecked()
+        gs.diffusion.saveDepthMask = self.animKeys.w.saveDepthMask.isChecked()
+        gs.diffusion.useMaskVideo = self.animKeys.w.useMaskVideo.isChecked()
+        gs.diffusion.resumeTimestring = self.animKeys.w.resumeTimestring.isChecked()
+        gs.diffusion.saveStepSample = self.animKeys.w.saveStepSample.isChecked()
+        gs.diffusion.saveStepSample = self.animKeys.w.saveStepSample.isChecked()
+        gs.diffusion.colorCoherence = self.animKeys.w.colorCoherence.currentIndex()
+        gs.diffusion.border = self.animKeys.w.border.currentIndex()
 
         gs.diffusion.H = self.w.sizer_count.w.heightSlider.value()
         gs.diffusion.W = self.w.sizer_count.w.widthSlider.value()
@@ -1116,6 +1164,7 @@ class GenerateWindow(QObject):
         gs.diffusion.sampleMode = self.w.sampler.w.sampleMode.currentIndex()
         gs.diffusion.seedBehavior = self.w.sampler.w.seedBehavior.currentIndex()
         gs.diffusion.processType = self.w.sampler.w.processType.currentIndex()
+        gs.diffusion.paddingMode = self.w.sampler.w.paddingMode.currentIndex()
 
         gs.diffusion.frames = self.animSliders.w.frames.value()
         gs.diffusion.ddim_eta = self.animSliders.w.ddim_eta.value()

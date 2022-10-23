@@ -298,16 +298,16 @@ class DeforumGenerator():
 
     def next_seed(self, seed_behavior, seed):
         if seed_behavior == 'iter':
-            seed += 1
-        else:
+            seed = int(seed) + 1
+        elif seed_behavior == 'random':
             seed = random.randint(0, 2**32 - 1)
         return seed
+
     #@profile
     def render_animation(self,
                          image_callback=None,
                          step_callback=None,
                          compviscallback=None,
-
                          # prompts="a beautiful forest by Asher Brown Durand, trending on Artstation",
                          animation_prompts='test',
                          H=512,
@@ -318,12 +318,12 @@ class DeforumGenerator():
                          steps=20,  # @param
                          scale=7,  # @param
                          ddim_eta=0.0,  # @param
-                         # dynamic_threshold=None,
-                         # static_threshold=None,
+                         dynamic_threshold=None,
+                         static_threshold=None,
                          # @markdown **Save & Display Settings**
-                         # save_samples=True,  # @param {type:"boolean"}
-                         # save_settings=True,  # @param {type:"boolean"}
-                         # display_samples=True,  # @param {type:"boolean"}
+                         save_samples=True,  # @param {type:"boolean"}
+                         save_settings=True,  # @param {type:"boolean"}
+                         display_samples=True,  # @param {type:"boolean"}
                          save_sample_per_step=False,  # @param {type:"boolean"}
                          show_sample_per_step=False,  # @param {type:"boolean"}
                          prompt_weighting=False,  # @param {type:"boolean"}
@@ -358,10 +358,9 @@ class DeforumGenerator():
 
                          # n_samples=1,  # doesnt do anything
                          precision='autocast',
-                         C=4,
-                         f=8,
 
-                         prompt="",
+
+                         #prompt="",
                          timestring="",
                          init_latent=None,
                          init_sample=None,
@@ -389,10 +388,11 @@ class DeforumGenerator():
                          noise_schedule="0: (0.02)",  # @param {type:"string"}
                          strength_schedule="0: (0.65)",  # @param {type:"string"}
                          contrast_schedule="0: (1.0)",  # @param {type:"string"}
+                         diffusion_cadence=1,  # @param ['1','2','3','4','5','6','7','8'] {type:'string'}
                          # @markdown ####**Coherence:**
                          color_coherence='Match Frame 0 LAB',
                          # @param ['None', 'Match Frame 0 HSV', 'Match Frame 0 LAB', 'Match Frame 0 RGB'] {type:'string'}
-                         diffusion_cadence=1,  # @param ['1','2','3','4','5','6','7','8'] {type:'string'}
+
                          # @markdown ####**3D Depth Warping:**
                          use_depth_warping=True,  # @param {type:"boolean"}
                          midas_weight=0.3,  # @param {type:"number"}
@@ -424,29 +424,17 @@ class DeforumGenerator():
                          # keys={}
                          cpudepth=False,
                          ):
+        # hardcoded
+        C = 4
+        f = 8
 
-
-
-        max_frames = max_frames
-
-        near_plane = near_plane
-        far_plane = far_plane
-        fov = fov
-        sampling_mode = sampling_mode
-        padding_mode = padding_mode
         self.creation_timestamp = strftime("%d_%b_%Y_%H_%M_%S", gmtime())
         outdir = os.path.join(self.outdir, self.creation_timestamp)
         self.sampler_name = sampler_name
 
-        print(sampler_name)
-
-
-        scale = scale
-        ddim_eta = ddim_eta
         # create output folder for the batch
         os.makedirs(outdir, exist_ok=True)
         print(f"Saving animation frames to {outdir}")
-
 
         if clear_latent:
             init_latent = None
@@ -458,7 +446,6 @@ class DeforumGenerator():
         # if not use_init:
 
         if "sd" not in gs.models:
-            #gs.models["sd"] = self.load_model()
             self.load_model()
 
         # animations use key framed prompts
@@ -1175,7 +1162,7 @@ class DeforumGenerator():
         torch.cuda.empty_cache()
 
         self.render_image_batch(strength=strength,
-                                seed=seed,
+                                seed=int(seed),
                                 use_init=use_init,
                                 init_image=None,
                                 sampler_name=sampler_name,

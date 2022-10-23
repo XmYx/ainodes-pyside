@@ -1205,6 +1205,7 @@ class DeforumGenerator():
                                 scale=scale,
                                 step_callback=step_callback,
                                 image_callback=image_callback)
+        return
 
     def sanitize(self, prompt):
         whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ')
@@ -1334,10 +1335,10 @@ class DeforumGenerator():
                         return_latent=False,
                         return_sample=False,
                         return_c=False )
-                    print(results)
+                    #print(results)
                     for image in results:
-                        print("we should start decoding 1 by 1 here")
-                        print(image)
+                        #print("we should start decoding 1 by 1 here")
+                        #print(image)
                         if make_grid:
                             all_images.append(T.functional.pil_to_tensor(image))
                         if save_samples:
@@ -1360,12 +1361,13 @@ class DeforumGenerator():
                 seed = self.next_seed(seed_behavior, seed)
 
             # print(len(all_images))
-            if make_grid:
+            """if make_grid:
                 grid = make_grid(all_images, nrow=int(len(all_images) / grid_rows))
                 grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
                 filename = f"{timestring}_{iprompt:05d}_grid_{seed}.png"
                 grid_image = Image.fromarray(grid.astype(np.uint8))
-                grid_image.save(os.path.join(outdir, filename))
+                grid_image.save(os.path.join(outdir, filename))"""
+            return
 
 
 

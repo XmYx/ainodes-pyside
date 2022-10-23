@@ -8,6 +8,7 @@ import time
 from time import gmtime, strftime
 import traceback
 from types import SimpleNamespace
+import torchvision.transforms as T
 import torchvision.transforms.functional as TF
 from torchvision.utils import make_grid
 import cv2
@@ -334,8 +335,8 @@ class DeforumGenerator():
                          # filename_format="{timestring}_{index}_{prompt}.png",
                          # @param ["{timestring}_{index}_{seed}.png","{timestring}_{index}_{prompt}.png"]
                          seed_behavior="iter",  # @param ["iter","fixed","random"]
-                         make_grid=False,  # @param {type:"boolean"}
-                         # grid_rows=2,  # @param
+                         makegrid=False,  # @param {type:"boolean"}
+                         grid_rows=2,  # @param
                          outdir="output",
                          use_init=False,  # @param {type:"boolean"}
                          strength=0.0,  # @param {type:"number"}
@@ -788,7 +789,7 @@ class DeforumGenerator():
                  return_c=False):
         seed_everything(seed)
         os.makedirs(outdir, exist_ok=True)
-
+        self.sample_number = n_samples
         sampler = PLMSSampler() if sampler_name == 'plms' else DDIMSampler()
 
         ddim_sampler = DDIMSampler()
@@ -1144,7 +1145,7 @@ class DeforumGenerator():
                     save_settings,
                     save_samples,
                     n_batch,
-                    make_grid,
+                    makegrid,
                     grid_rows,
                     filename_format,
                     seed_behavior,
@@ -1161,7 +1162,6 @@ class DeforumGenerator():
 
         timestring = time.strftime('%Y%m%d%H%M%S')
         strength = max(0.0, min(1.0, strength))
-
         if seed == '':
             seed = random.randint(0, 2 ** 32 - 1)
         if not use_init:
@@ -1194,7 +1194,7 @@ class DeforumGenerator():
                                 save_settings=save_settings,
                                 save_samples=save_samples,
                                 n_batch=n_batch,
-                                make_grid=make_grid,
+                                makegrid=makegrid,
                                 grid_rows=grid_rows,
                                 filename_format=filename_format,
                                 seed_behavior=seed_behavior,
@@ -1227,7 +1227,7 @@ class DeforumGenerator():
                            save_settings,
                            save_samples,
                            n_batch,
-                           make_grid,
+                           makegrid,
                            grid_rows,
                            filename_format,
                            seed_behavior,
@@ -1339,7 +1339,7 @@ class DeforumGenerator():
                     for image in results:
                         #print("we should start decoding 1 by 1 here")
                         #print(image)
-                        if make_grid:
+                        if makegrid:
                             all_images.append(T.functional.pil_to_tensor(image))
                         if save_samples:
                             if filename_format == "{timestring}_{index}_{prompt}.png":
@@ -1360,9 +1360,10 @@ class DeforumGenerator():
                         #st.session_state['currentImages'].append(fpath)
                         index += 1
                 seed = self.next_seed(seed_behavior, seed)
-
-            # print(len(all_images))
-            if make_grid:
+            print(len(all_images))
+            print(grid_rows)
+            print(makegrid)
+            if makegrid:
                 grid = make_grid(all_images, nrow=int(len(all_images) / grid_rows))
                 grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
                 filename = f"{timestring}_{iprompt:05d}_grid_{seed}.png"
@@ -1370,8 +1371,10 @@ class DeforumGenerator():
                 grid_image = Image.fromarray(grid.astype(np.uint8))
                 grid_image.save(fpath)
                 if image_callback is not None:
-                    self.sample_number = n_samples + 1
+                    #self.sample_number = n_samples + 1
                     image_callback(fpath)
+                    self.sample_number = 1
+                    image_callback(grid_image)
 
             return
 

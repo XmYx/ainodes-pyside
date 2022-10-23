@@ -688,6 +688,12 @@ class GenerateWindow(QObject):
         self.currentFrames = []
         self.renderedFrames = 0
 
+
+        n_samples = self.w.sizer_count.w.samplesSlider.value()
+        if n_samples == 1:
+            makegrid = False
+        else:
+            makegrid = self.animKeys.w.makeGrid.isChecked()
         sampler_name = self.translate_sampler(self.w.sampler.w.sampler.currentText())
         self.deforum.sampler_name = sampler_name
         self.deforum.run_txt2img(strength=0,#strength=self.animSliders.w.strength.value() / 1000,
@@ -703,14 +709,14 @@ class GenerateWindow(QObject):
                                  save_settings=False,
                                  save_samples=True,
                                  n_batch=self.w.sizer_count.w.batchSizeSlider.value(),
-                                 make_grid=False,
-                                 grid_rows=0,
+                                 makegrid=makegrid,
+                                 grid_rows=2,
                                  filename_format="{timestring}_{index}_{prompt}.png",
                                  seed_behavior=self.w.sampler.w.seedBehavior.currentText(),
                                  steps=self.w.sampler.w.steps.value(),
                                  H=self.w.sizer_count.w.heightSlider.value(),
                                  W=self.w.sizer_count.w.widthSlider.value(),
-                                 n_samples=self.w.sizer_count.w.samplesSlider.value(),  # batchsize
+                                 n_samples=n_samples,  # batchsize
                                  scale=self.w.sampler.w.scale.value() / 100,
                                  step_callback=self.deforumstepCallback_signal if self.w.sampler.w.tensorPreview.isChecked() else None,
                                  image_callback=self.imageCallback_signal)
@@ -809,13 +815,11 @@ class GenerateWindow(QObject):
             if self.deforum.sample_number > 1:
                 #self.image_path = image
                 self.signals.add_image_to_thumbnail_signal.emit(image)
-                print("more samples found")
-        else:
-            print("one sample found")
-            self.currentFrames.append(image)
-            self.renderedFrames += 1
-            self.image = image
-            self.signals.txt2img_image_cb.emit()
+            else:
+                self.currentFrames.append(image)
+                self.renderedFrames += 1
+                self.image = image
+                self.signals.txt2img_image_cb.emit()
 
     # text2img
     def run_txt2img_lm(self, progress_callback=None):

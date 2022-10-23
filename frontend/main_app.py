@@ -194,6 +194,7 @@ if __name__ == "__main__":
     mainWindow.w.sizer_count.w.widthSlider.valueChanged.connect(mainWindow.update_outpaint_parameters)
     mainWindow.w.sizer_count.w.heightSlider.valueChanged.connect(mainWindow.update_outpaint_parameters)
 
+    mainWindow.outpaint.canvas.signals.outpaint_signal.connect(mainWindow.deforum_outpaint_thread)
 
     sys.exit(app.exec())
 

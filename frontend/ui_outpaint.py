@@ -1,4 +1,4 @@
-from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect, QLineF, QPointF
+from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect, QLineF, QPointF, QObject
 from PySide6.QtGui import Qt, QColor, QFont, QPalette, QPainter, QPen, QPolygon, QBrush, QPainterPath, QAction, QCursor, \
     QPixmap, QTransform, QDragEnterEvent, QDragMoveEvent, QImage
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
@@ -28,6 +28,8 @@ class Rectangle(object):
         self.image = None
         self.color = __idleColor__
 
+class Callbacks(QObject):
+    outpaint_signal = Signal()
 
 
 
@@ -45,6 +47,7 @@ class Canvas(QGraphicsView):
 
     def __init__(self, parent=None):
         QGraphicsView.__init__(self, parent)
+        self.signals = Callbacks()
         self.reset()
     def reset(self):
         self.zoom = 1
@@ -105,7 +108,7 @@ class Canvas(QGraphicsView):
         rect = {}
         uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
         rect[uid] = Rectangle(self.scene.scenePos.x() - self.w / 2, self.scene.scenePos.y() - self.h / 2, self.w, self.h, uid)
-
+        self.selected_item = uid
 
         self.rectlist.append(rect[uid])
 
@@ -179,10 +182,28 @@ class Canvas(QGraphicsView):
                     #newimage = QImage(self.w, self.h, QImage.Format_ARGB32)
                     if i.image is not None:
                         rect = QRect((self.scene.scenePos.x() - self.w / 2) - i.x, (self.scene.scenePos.y() - self.h / 2) - i.y, self.w, self.h)
+
+
+
                         newimage = i.image.copy(rect)
-                        newimage.save(f"test{x}.jpg")
+
+
+
+
+                        newimage.save(f"test{x}.png")
+
+                        #newimage2 = QImage(self.w, self.h, QImage.Format_ARGB32)
+                        #newpainter = QPainter()
+                        #newpainter.begin(newimage2)
+                        #newpainter.drawImage(0,256,newimage)
+                        #newpainter.end()
+                        #newimage2.save(f"test2_{x}.png")
+
                         print(f"test{x}.jpg saved...")
-                        self.outpaintsource = f"test{x}.jpg"
+                        self.outpaintsource = f"test{x}.png"
+                        self.addrect()
+                        #self.selected_item = i.id
+                        self.signals.outpaint_signal.emit()
 
 
             #if i.x <= self.scene.scenePos.x() - self.w / 2 <= i.x + i.w and i.y <= self.scene.scenePos.y() - self.h / 2 <= i.y + i.h:
@@ -289,7 +310,7 @@ class Canvas(QGraphicsView):
                                     f"-"
                                     f"-"
                                     f"-\n"
-                                    f"{self.scene.scenePos.x()}\n{self.scene.scenePos.y()}\n")
+                                    f"--")
         super(Canvas, self).paintEvent(e)
 
     def generic_mouseMoveEvent(self, e):

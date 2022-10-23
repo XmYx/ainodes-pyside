@@ -23,7 +23,8 @@ from pytorch_lightning import seed_everything
 from scipy.ndimage import gaussian_filter
 from torch import autocast
 from tqdm import tqdm, trange
-
+from PIL import Image
+import numpy as np
 from backend.deforum import DepthModel, sampler_fn
 
 from backend.deforum.deforum_generator import prepare_mask, DeformAnimKeys, sample_from_cv2, \
@@ -811,7 +812,7 @@ class DeforumGenerator():
         init_latent = None
         mask_image = None
         #init_image = None
-        use_alpha_as_mask = True
+        #use_alpha_as_mask = True
         use_mask = False
         if init_latent is not None:
             print('init_latent is not None')
@@ -1401,15 +1402,16 @@ class DeforumGenerator():
                          outdir='output/outpaint',
                          n_samples=1,
                          n_rows=1,
-                         ddim_eta=0.0,
+                         ddim_eta=0.4,
                          blend_mask=None,
-                         mask_blur=10,
-                         strength=0.65,
+                         mask_blur=15,
+                         strength=0.95,
                          n_iter=1,
                          scale=7,
                          skip_save=False,
                          skip_grid=True,
                          file_prefix="outpaint",
+                         image_callback=None,
                          ):
         
         if "sd" not in gs.models:
@@ -1448,7 +1450,7 @@ class DeforumGenerator():
     
         grid_path = ''
     
-        image_guide  = init_image if init_image is not None else None
+        image_guide  = init_image
         latent_guide = None
     
         t_start = None
@@ -1463,27 +1465,89 @@ class DeforumGenerator():
         sampler = ddim_simplified.DDIMSampler_simple(gs.models["sd"])
 
         sampler.make_schedule(ddim_num_steps=steps, ddim_eta=ddim_eta, verbose=False)
-    
-        if image_guide:
-            image_guide = image_path_to_torch(image_guide, device)  # [1, 3, 512, 512]
-            latent_guide = torch_image_to_latent(gs.models["sd"], image_guide, n_samples=n_samples)  # [1, 4, 64, 64]
-            print(f'image_guide')
-    
-        if blend_mask:
-            [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(
-                device, blend_mask, blur=mask_blur)  # [512, 512]  [1, 4, 64, 64]
-            masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]  # [3, 512, 512]
-            # masked_image_for_blend = mask_for_reconstruction * image_guide[0]  # [3, 512, 512]
-            print(f'blend mask')
-    
-        elif image_guide is not None:
+
+        img = Image.open(init_image)
+
+        #if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
+        #    alpha = img.convert('RGBA').split()[-1]
+        #    alpha.save('mask.png')
+
+
+        #img = Image.open('mask.png')
+
+        width = img.size[0]
+        height = img.size[1]
+        for i in range(0,width):# process all pixels
+            for j in range(0,height):
+                data = img.getpixel((i,j))
+                #print(data)
+                #print(data)
+                # data[0] = Red,  [1] = Green, [2] = Blue
+                # data[0,1,2] range = 0~255
+                if data[3] == 0:# and data[1] < 1 and data[2] < 1:
+                    #put black
+                    img.putpixel((i,j),(255,255,255))
+                else :
+                    #Put white
+                    img.putpixel((i,j),(0,0,0))
+
+
+        img.save('mask2.png')
+        blend_mask = 'mask2.png'
+
+        #if image_guide:
+        #    image_guide = image_path_to_torch(image_guide, device)  # [1, 3, 512, 512]
+        #    latent_guide = torch_image_to_latent(gs.models["sd"], image_guide, n_samples=n_samples)  # [1, 4, 64, 64]
+        #   print(f'image_guide')
+        #
+
+
+        #if blend_mask:
+        #    [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(
+        #        device, blend_mask, blur=mask_blur)  # [512, 512]  [1, 4, 64, 64]
+        #    masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]  # [3, 512, 512]
+        #    # masked_image_for_blend = mask_for_reconstruction * image_guide[0]  # [3, 512, 512]
+        #    print(f'blend mask')
+
+
+        image_guide = image_path_to_torch(image_guide, device)
+        latent_guide = torch_image_to_latent(gs.models["sd"], image_guide, n_samples=n_samples)
+        [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(device, blend_mask, blur=mask_blur)
+        masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]
+
+        print(type(latent_guide))
+        print(type(mask_for_reconstruction))
+        print(type(latent_mask_for_blend))
+        print(type(masked_image_for_blend))
+
+        latent_guide, latent_mask_for_blend = load_img(init_image,
+                                          shape=(W, H),
+                                          use_alpha_as_mask=True)
+
+        latent_guide = latent_guide.to("cuda")
+
+        with autocast("cuda"):
+            latent_guide = gs.models["sd"].get_first_stage_encoding(
+                gs.models["sd"].encode_first_stage(latent_guide))  # move to latent space
+        latent_mask_for_blend = prepare_mask(latent_mask_for_blend,
+                            latent_guide.shape,
+                            1.0,
+                            1.0)
+
+        latent_guide = latent_guide.to("cuda")
+
+        latent_mask_for_blend = latent_mask_for_blend.to("cuda")
+
+
+
+        if image_guide is not None:
             assert 0. <= strength <= 1., 'can only work with strength in [0.0, 1.0]'
             t_start = int(strength * steps)
     
             print(f"target t_start is {t_start} steps")
     
         multiple_mode = (n_iter * len(prompts_data) * n_samples > 1)
-    
+
         with torch.no_grad(), gs.models["sd"].ema_scope(), torch.cuda.amp.autocast():
             tic = time.time()
             all_samples = list()
@@ -1513,23 +1577,25 @@ class DeforumGenerator():
     
                     if masked_image_for_blend is not None:
                         x_samples = mask_for_reconstruction * x_samples + masked_image_for_blend
-    
+
                     all_samples.append(x_samples)
-    
+
                     generated_time = time.time()
     
                     if (not skip_save) and (not multiple_mode):
                         for x_sample in x_samples:
                             image = sampleToImage(x_sample)
-    
-                            save_image(
-                                image,
-                                os.path.join(sample_path, f"{base_count:05}.png"),
-                                    pnginfo=metadata(
-                                    prompt=prompts[0],  # FIXME [0]
-                                    seed=seed,
-                                    generation_time=generated_time - tic
-                                        ))
+                            image.save(os.path.join(sample_path, f"{base_count:05}.png"))
+                            if image_callback is not None:
+                                image_callback(image)
+                            #save_image(
+                            #    image,
+                            #    os.path.join(sample_path, f"{base_count:05}.png"),
+                            #        pnginfo=metadata(
+                            #        prompt=prompts[0],  # FIXME [0]
+                            #        seed=seed,
+                            #        generation_time=generated_time - tic
+                            #            ))
     
                             base_count += 1
     

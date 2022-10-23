@@ -302,7 +302,6 @@ class GenerateWindow(QObject):
         self.w.actiontest_save_output.triggered.connect(self.test_save_outpaint)
 
 
-
     def load_upscalers(self):
         gfpgan = False
         try:
@@ -750,15 +749,19 @@ class GenerateWindow(QObject):
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
         self.currentFrames = []
         self.renderedFrames = 0
-
+        self.deforum.sample_number = 1
         if self.w.sizer_count.w.samplesSlider.value() == 1:
             makegrid = False
         else:
             makegrid = self.animKeys.w.makeGrid.isChecked()
         sampler_name = self.translate_sampler(self.w.sampler.w.sampler.currentText())
+
+        #self.outpaint.canvas.outpaintsource = 'test0.jpg'
         init_image = self.outpaint.canvas.outpaintsource
+        init_image = 'test0.png'
         self.deforum.sampler_name = sampler_name
-        self.deforum.outpaint_txt2img(init_image=init_image)
+        self.deforum.outpaint_txt2img(init_image=init_image,
+                                      image_callback=self.imageCallback_signal)
 
         #self.torch_gc()
         #self.stop_painters()
@@ -868,6 +871,11 @@ class GenerateWindow(QObject):
                 self.renderedFrames += 1
                 self.image = image
                 self.signals.txt2img_image_cb.emit()
+        elif self.choice == "Outpaint":
+            self.currentFrames.append(image)
+            self.renderedFrames += 1
+            self.image = image
+            self.signals.txt2img_image_cb.emit()
 
     # text2img
     def run_txt2img_lm(self, progress_callback=None):

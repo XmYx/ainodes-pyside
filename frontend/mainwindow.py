@@ -392,8 +392,6 @@ class GenerateWindow(QObject):
         out_text = ''
         prompts_txt = self.prompt_fetcher.w.input.toPlainText()
         prompts_array = prompts_txt.split('\n')
-        print('ai prompts')
-        print(prompts_array)
         for prompt in prompts_array:
             out_text += generate_prompt(prompt)
         self.prompt_fetcher.w.output.setPlainText(out_text)

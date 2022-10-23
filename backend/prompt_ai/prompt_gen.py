@@ -8,8 +8,6 @@ gpt2_pipe = pipeline('text-generation', model='Gustavosta/MagicPrompt-Stable-Dif
 
 
 def generate_prompt(starting_text):
-    print('was ai prompt')
-
     response_end = ''
     all_prompts = []
     try:
@@ -29,11 +27,6 @@ def generate_prompt(starting_text):
                 starting_text = starting_text.join(text_array)
 
             response = gpt2_pipe(starting_text, max_length=(len(starting_text) + random.randint(60, 90)), num_return_sequences=4)
-
-            print('response' + str(count))
-            print(response)
-            print(type(response))
-
             for prompt in response:
                 temp_prompt = prompt['generated_text']
                 temp_prompt = temp_prompt.replace('\n','')

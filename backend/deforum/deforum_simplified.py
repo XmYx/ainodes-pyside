@@ -1362,12 +1362,17 @@ class DeforumGenerator():
                 seed = self.next_seed(seed_behavior, seed)
 
             # print(len(all_images))
-            """if make_grid:
+            if make_grid:
                 grid = make_grid(all_images, nrow=int(len(all_images) / grid_rows))
                 grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
                 filename = f"{timestring}_{iprompt:05d}_grid_{seed}.png"
+                fpath = os.path.join(outdir, filename)
                 grid_image = Image.fromarray(grid.astype(np.uint8))
-                grid_image.save(os.path.join(outdir, filename))"""
+                grid_image.save(fpath)
+                if image_callback is not None:
+                    self.sample_number = n_samples + 1
+                    image_callback(fpath)
+
             return
 
 

@@ -655,17 +655,11 @@ class GenerateWindow(QObject):
         self.signals.compviscallback.emit()
 
     def deforumstepCallback_signal(self, data, data2=None):
-        print(data)
-        if data2 is not None:
-            print(data2)
-        pass
-
         self.data = data
         if data2 is not None:
             self.data2 = data2
         else:
             self.data2 = None
-
         self.signals.deforum_step.emit()
 
     def deforum_thread(self):
@@ -811,10 +805,11 @@ class GenerateWindow(QObject):
     # callback
     def imageCallback_signal(self, image, *args, **kwargs):
 
-        if self.sample_number > 1 and self.choice == "Text to Image":
-            #self.image_path = image
-            self.signals.add_image_to_thumbnail_signal.emit(image)
-            print("more samples found")
+        if self.choice == "Text to Image":
+            if self.deforum.sample_number > 1:
+                #self.image_path = image
+                self.signals.add_image_to_thumbnail_signal.emit(image)
+                print("more samples found")
         else:
             print("one sample found")
             self.currentFrames.append(image)

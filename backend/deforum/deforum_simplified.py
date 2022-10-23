@@ -1158,7 +1158,7 @@ class DeforumGenerator():
                     scale,
                     step_callback,
                     image_callback):
-
+        self.sample_number = n_samples
         if "sd" not in gs.models:
             self.load_model()
 

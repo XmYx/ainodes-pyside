@@ -153,7 +153,11 @@ class Canvas(QGraphicsView):
         #self.zoom = 1.0
         #self.updateView()
         x = 0
-
+        outpaintimage = QPixmap(512,512)
+        outpaintimage.fill(Qt.transparent)
+        outpainter = QPainter()
+        outpainter.begin(outpaintimage)
+        outpainter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         for i in self.rectlist:
 
             rangeXmin = i.x - self.w
@@ -180,31 +184,23 @@ class Canvas(QGraphicsView):
                     i.color = __selColor__
                     self.update()
                     #newimage = QImage(self.w, self.h, QImage.Format_ARGB32)
+
                     if i.image is not None:
                         rect = QRect((self.scene.scenePos.x() - self.w / 2) - i.x, (self.scene.scenePos.y() - self.h / 2) - i.y, self.w, self.h)
-
-
-
                         newimage = i.image.copy(rect)
-
-
-
+                        outpainter.drawImage(0,0,newimage)
 
                         newimage.save(f"test{x}.png")
-
-                        #newimage2 = QImage(self.w, self.h, QImage.Format_ARGB32)
-                        #newpainter = QPainter()
-                        #newpainter.begin(newimage2)
-                        #newpainter.drawImage(0,256,newimage)
-                        #newpainter.end()
-                        #newimage2.save(f"test2_{x}.png")
-
+                        outpaintimage.save(f"outpaint{x}.png")
                         print(f"test{x}.jpg saved...")
-                        self.outpaintsource = f"test{x}.png"
+
                         self.addrect()
                         #self.selected_item = i.id
-                        self.signals.outpaint_signal.emit()
 
+        outpainter.end()
+        outpaintimage.save("outpaint.png")
+        self.outpaintsource = "outpaint.png"
+        self.signals.outpaint_signal.emit()
 
             #if i.x <= self.scene.scenePos.x() - self.w / 2 <= i.x + i.w and i.y <= self.scene.scenePos.y() - self.h / 2 <= i.y + i.h:
             #    print("found")

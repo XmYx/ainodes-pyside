@@ -1234,7 +1234,7 @@ class DeforumGenerator():
                            steps,
                            H,
                            W,
-                           n_samples, #batchsize
+                           n_samples,
                            scale,
                            step_callback,
                            image_callback):

@@ -1,9 +1,10 @@
 from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect, QLineF, QPointF
 from PySide6.QtGui import Qt, QColor, QFont, QPalette, QPainter, QPen, QPolygon, QBrush, QPainterPath, QAction, QCursor, \
-    QPixmap, QTransform, QDragEnterEvent, QDragMoveEvent
+    QPixmap, QTransform, QDragEnterEvent, QDragMoveEvent, QImage
+from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockWidget, QMenu, QGraphicsScene, \
     QGraphicsView, QGraphicsItem, QGraphicsWidget, QLabel, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsRectItem, \
-    QGraphicsTextItem
+    QGraphicsTextItem, QScrollArea, QHBoxLayout, QLayout, QAbstractScrollArea
 
 from datetime import datetime
 from uuid import uuid4
@@ -42,18 +43,19 @@ class Scene(QGraphicsScene):
 
 class Canvas(QGraphicsView):
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         QGraphicsView.__init__(self, parent)
+        self.reset()
+    def reset(self):
         self.zoom = 1
         self.rotate = 0
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
         self.w = 256
         self.h = 256
-        self.pixmap = QPixmap(1024, 1024)
+        self.pixmap = QPixmap(2048, 2048)
         self.pixmap.fill(__backgroudColor__)
         self.bgitem = QGraphicsPixmapItem()
         self.rectItem = QGraphicsRectItem(256, 256, 512, 512)
-
         self.rectlist = []
         #rect = QRect(QPoint(256, 256), QSize(512, 512))
         #ainter = QPainter()
@@ -66,7 +68,7 @@ class Canvas(QGraphicsView):
 
         self.debugtext = QGraphicsTextItem("0, 0\n")
 
-        self.helpText = QGraphicsTextItem("C - Hand Drag\nV - Place Rectangles")
+        #self.helpText = QGraphicsTextItem("C - Hand Drag\nV - Place Rectangles")
         self.bgitem.setPixmap(self.pixmap)
         #self.setPixmap(self.pixmap)
         self.scene = Scene()
@@ -83,10 +85,11 @@ class Canvas(QGraphicsView):
         self.update()
         self.setScene(self.scene)
         self.fitInView(self.bgitem, Qt.AspectRatioMode.KeepAspectRatio)
-        self.setSceneRect(QRectF(self.viewport().rect()))
+
 
         self.hover_item = None
         self.selected_item = None
+        self.outpaintitem = None
 
 
     def getXScale(self):
@@ -112,21 +115,68 @@ class Canvas(QGraphicsView):
         Yscale = self.getYScale()
         scaledWidth = (self.w / 2) / Xscale
         scaledHeight = (self.h / 2) / Yscale
-        self.rectItem.setRect((x - scaledWidth) * Xscale, (y - scaledHeight) * Yscale, self.w, self.h)
+        if self.mode == "generic" or "outpaint":
+            self.rectItem.setRect((x - scaledWidth) * Xscale, (y - scaledHeight) * Yscale, self.w, self.h)
+        else:
+            self.rectItem.setRect(self.width(), self.height(), 5, 5)
         self.bgitem.setPixmap(self.pixmap)
         self.update()
 
     def hoverCheck(self):
+        matchFound = False
         for i in self.rectlist:
-            if i.x < self.scene.scenePos.x() < i.x + i.w and i.y < self.scene.scenePos.y() < i.y + i.h:
+            print(i.x)
+            if i.x <= self.scene.scenePos.x() <= i.x + i.w and i.y <= self.scene.scenePos.y() <= i.y + i.h:
+                print("found")
                 i.color = __selColor__
+                self.update()
                 self.hover_item = i.id
+                matchFound = True
             else:
                 i.color = __idleColor__
+                self.update()
+            if not matchFound:
                 self.hover_item = None
+        #self.update()
+
+    def region_to_outpaint(self):
+        print("Region to paint")
+        oldZoom = self.zoom
+        self.zoom = 1.0
+        self.updateView()
+        x = 0
+
+        for i in self.rectlist:
+            if i.x <= self.scene.scenePos.x() - self.w / 2 <= i.x + i.w and i.y <= self.scene.scenePos.y() - self.h / 2 <= i.y + i.h:
+                print("found")
+                x += 1
+                i.color = __selColor__
+                if i.image is not None:
+                    i.image.save(f"test{x}.jpg")
+
+        """if self.selected_item is not None:
+            for i in self.rectlist:
+                print("check1")
+                if i.image is None:
+                    ("check2")
+                    for image_rect in self.rectlist:
+                        print("check3")
+                        if image_rect.image is not None:
+                            print(image_rect.x, image_rect.y, i.x, i.y)
 
 
-
+                            if image_rect.x < i.x < image_rect.x + image_rect.w or image_rect.y < i.y < image_rect.y + image_rect.h:
+                                #area = QRect(i.x, i.y, i.w, i.h)
+                                #image = QImage(i.w, i.h, QImage.Format_ARGB32)
+                                #painter = QPainter()
+                                #painter.begin(image)
+                                #self.render(painter, QRectF(0,0,i.w,i.h), area, Qt.AspectRatioMode.IgnoreAspectRatio)
+                                #painter.end()
+                                image_rect.image.save(f"test{x}.jpg")
+                                x += 1
+                                print(f"saved image from  {i.x}, {i.y}, {i.w}, {i.h}")"""
+        self.zoom = oldZoom
+        self.updateView()
     def mousePressEvent(self, e):
         fn = getattr(self, "%s_mousePressEvent" % self.mode, None)
         if fn:
@@ -135,46 +185,64 @@ class Canvas(QGraphicsView):
 
 
     def mouseMoveEvent(self, e):
-            fn = getattr(self, "%s_mouseMoveEvent" % self.mode, None)
-            if fn:
-                fn(e)
-                super(Canvas, self).mouseMoveEvent(e)
+        fn = getattr(self, "%s_mouseMoveEvent" % self.mode, None)
+        if fn:
+            fn(e)
+            super(Canvas, self).mouseMoveEvent(e)
 
     def mouseReleaseEvent(self, e):
-            fn = getattr(self, "%s_mouseReleaseEvent" % self.mode, None)
-            if fn:
-                fn(e)
-                super(Canvas, self).mouseReleaseEvent(e)
+        fn = getattr(self, "%s_mouseReleaseEvent" % self.mode, None)
+        if fn:
+            fn(e)
+            super(Canvas, self).mouseReleaseEvent(e)
 
     def mouseDoubleClickEvent(self, e):
         fn = getattr(self, "%s_mouseDoubleClickEvent" % self.mode, None)
         if fn:
             return fn(e)
     def paintEvent(self, e):
-
         painter = QPainter()
         painter.begin(self.pixmap)
 
-        painter.drawText(0, 50, 256, 256, Qt.AlignHCenter, "C - Hand Drag\nV - Place Rectangles")
+        #painter.drawText(0, 50, 256, 256, Qt.AlignHCenter, "C - Hand Drag\nV - Place Rectangles")
 
-        for i in self.rectlist:
-            rect = QRect(i.x, i.y, i.w, i.h)
-            if i.image is not None:
-                pic = i.image.copy(0, 0, i.image.width(), i.image.height())
-                pixmap = QPixmap.fromImage(pic)
-                #painter.drawImage(QRect(QPoint(i.x, i.y), QSize(i.w, i.h)), pic)
-                painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
-                #painter.drawPixmap()
-            else:
-                if self.mode == "generic":
-                    painter.setPen(i.color)
-                    painter.drawRect(rect)
+        #Show Outpaint Preview rectangle
+        #rect = QRect(0, self.height() - 256, 256, 256)
+        #painter.drawRect(rect)
+
+
+        if self.rectlist is not []:
+            for i in self.rectlist:
+                rect = QRect(i.x, i.y, i.w, i.h)
+                if i.image is not None:
+                    pic = i.image.copy(0, 0, i.image.width(), i.image.height())
+                    pixmap = QPixmap.fromImage(pic)
+                    #painter.drawImage(QRect(QPoint(i.x, i.y), QSize(i.w, i.h)), pic)
+
+
+
+                    painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
+                    #self.drawForeground(painter, rect)
+                    #painter.drawPixmap()
+                else:
+                    if self.mode == "generic" or self.mode == "outpaint":
+                        painter.setPen(i.color)
+                        painter.drawRect(rect)
         painter.end()
 
         self.bgitem.setPixmap(self.pixmap)
-        self.setSceneRect(QRectF(self.viewport().rect()))
+
+        #self.setSceneRect(QRectF(self.viewport().rect()))
+
         self.update()
-        self.debugtext.setPlainText(f"{self.scene.pos}, {self.scene.scenePos}\nHover Item: {self.hover_item}\n{self.selected_item}")
+        help2 = "None"
+        if self.hover_item is not None:
+            for items in self.rectlist:
+                if items.id == self.hover_item:
+                    help2 = f"hover item details:{items.x}, {items.y}"
+
+
+        self.debugtext.setPlainText(f"{self.scene.pos}, {self.scene.scenePos}\nHover Item: {self.hover_item}\nSelected Item:{self.selected_item}\nMode: {self.mode}\n{help2}")
         super(Canvas, self).paintEvent(e)
 
     def generic_mouseMoveEvent(self, e):
@@ -188,13 +256,16 @@ class Canvas(QGraphicsView):
         if e.key() == 67:
             self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
             self.mode = "drag"
+            self.drawRect(self.width(), self.height())
         elif e.key() == 86:
             self.setDragMode(QGraphicsView.DragMode.NoDrag)
             self.mode = "generic"
         elif e.key() == 66:
             self.setDragMode(QGraphicsView.DragMode.NoDrag)
             self.mode = "select"
-
+            self.drawRect(self.width(), self.height())
+        elif e.key() == 78:
+            self.mode = "outpaint"
     def keyReleaseEvent(self, e):
         super(Canvas, self).keyReleaseEvent(e)
 
@@ -207,7 +278,6 @@ class Canvas(QGraphicsView):
     def select_mouseMoveEvent(self, e):
         self.hoverCheck()
         self.update()
-        return
     def select_mouseReleaseEvent(self, event):
         return
     def generic_mousePressEvent(self, e):
@@ -242,13 +312,23 @@ class Canvas(QGraphicsView):
         #self.update()"""
 
     def generic_mouseReleaseEvent(self, e):
-            self.last_x = None
-            self.last_y = None
+        self.last_x = None
+        self.last_y = None
     def drag_mouseMoveEvent(self, e):
         return
     def drag_mouseReleaseEvent(self, event):
         return
     def drag_mousePressEvent(self, event):
+        return
+    def outpaint_mouseMoveEvent(self, e):
+        if self.scene.pos is not None:
+            self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), self.w, self.h)
+        self.update()
+        return
+    def outpaint_mouseReleaseEvent(self, event):
+        return
+    def outpaint_mousePressEvent(self, event):
+        self.region_to_outpaint()
         return
     def wheelEvent(self, event):
 
@@ -480,7 +560,7 @@ class OutpaintUI(QDockWidget):
         #self.sample_1 = VideoSample(20)
         #self.timeline.videoSamples.append(self.sample_1)
         self.tZoom = QSlider()
-        
+
         self.tZoom.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.tZoom.setMinimumSize(QSize(100, 15))
         self.tZoom.setMaximumSize(QSize(1000, 15))
@@ -488,7 +568,6 @@ class OutpaintUI(QDockWidget):
         self.tZoom.setMaximum(10.0)
         self.tZoom.setValue(1.0)
         self.tZoom.setOrientation(Qt.Horizontal)
-
         self.verticalLayout_2.addWidget(self.canvas)
         #self.verticalLayout_2.addWidget(self.tZoom)
 
@@ -496,6 +575,7 @@ class OutpaintUI(QDockWidget):
         #self.tZoom.valueChanged.connect(self.update_timelineZoom)
         #self.timeline.scale = 1
 
+        #self.verticalLayout_2.addWidget(self.viewport)
 
     def rectangleDraw(self):
         self.outpaint.rectangle = QRect(self.pos.x(), self.pos.y(), 400, 400)

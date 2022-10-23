@@ -1347,6 +1347,7 @@ class DeforumGenerator():
                             else:
                                 filename = f"{timestring}_{index:05}_{seed}.png"
                             fpath = os.path.join(outdir, filename)
+                            print(f"DEBUG:{image}")
                             image.save(fpath)
                             if image_callback is not None and n_samples == 1:
                                 image_callback(image)

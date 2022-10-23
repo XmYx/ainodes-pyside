@@ -725,7 +725,6 @@ class GenerateWindow(QObject):
     def deforum_txt2img_thread(self):
         # for debug
         #self.run_deforum_txt2img()
-
         # Pass the function to execute
         worker = Worker(self.run_deforum_txt2img)
         # Execute
@@ -807,7 +806,7 @@ class GenerateWindow(QObject):
     # callback
     def imageCallback_signal(self, image, *args, **kwargs):
 
-        if self.w.sizer_count.w.samplesSlider.value() > 1:
+        if self.sample_number > 1 and self.choice == "Text to Image":
             #self.image_path = image
             self.signals.add_image_to_thumbnail_signal.emit(image)
             print("more samples found")
@@ -1235,8 +1234,11 @@ class GenerateWindow(QObject):
     def taskSwitcher(self):
         self.save_last_prompt()
         self.choice = self.w.sampler.w.processType.currentText()
+        self.sample_number = self.w.sizer_count.w.samplesSlider.value()
+
+
         if self.choice == "Text to Video":
-            self.deforum_thread()
+                self.deforum_thread()
         elif self.choice == "Text to Image LM":
             self.txt2img_lm_thread()
         elif self.choice == 'Text to Image':

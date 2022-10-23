@@ -693,6 +693,7 @@ class GenerateWindow(QObject):
         else:
             makegrid = self.animKeys.w.makeGrid.isChecked()
         sampler_name = self.translate_sampler(self.w.sampler.w.sampler.currentText())
+        #init_image = self.outpaint.canvas.outpaintsource if
         self.deforum.sampler_name = sampler_name
         self.deforum.run_txt2img(strength=0,#strength=self.animSliders.w.strength.value() / 1000,
                                  seed=random.randint(0, 2**32 - 1) if self.w.sampler.w.seed.text() == '' else int(self.w.sampler.w.seed.text()),
@@ -724,12 +725,47 @@ class GenerateWindow(QObject):
 
         self.signals.reenable_runbutton.emit()
 
+    def run_deforum_outpaint(self, progress_callback=None):
+        self.deforum = DeforumGenerator()
+        self.deforum.signals = Callbacks()
+        #self.w.prompt.w.runButton.setEnabled(False)
+        #self.prompt_fetcher.w.dreamPrompt.setEnabled(False)
+        #self.torch_gc()
+        self.progress = 0.0
+        self.update = 0
+        self.onePercent = 100 / (1 * self.w.sampler.w.steps.value())
+        self.updateRate = self.w.sizer_count.w.previewSlider.value()
+        self.currentFrames = []
+        self.renderedFrames = 0
+
+        if self.w.sizer_count.w.samplesSlider.value() == 1:
+            makegrid = False
+        else:
+            makegrid = self.animKeys.w.makeGrid.isChecked()
+        sampler_name = self.translate_sampler(self.w.sampler.w.sampler.currentText())
+        init_image = self.outpaint.canvas.outpaintsource
+        self.deforum.sampler_name = sampler_name
+        self.deforum.outpaint_txt2img(init_image=init_image)
+
+        #self.torch_gc()
+        #self.stop_painters()
+
+        self.signals.reenable_runbutton.emit()
+
 
     def deforum_txt2img_thread(self):
         # for debug
         #self.run_deforum_txt2img()
         # Pass the function to execute
         worker = Worker(self.run_deforum_txt2img)
+        # Execute
+        self.threadpool.start(worker)
+
+    def deforum_outpaint_thread(self):
+        # for debug
+        #self.run_deforum_txt2img()
+        # Pass the function to execute
+        worker = Worker(self.run_deforum_outpaint)
         # Execute
         self.threadpool.start(worker)
 
@@ -770,7 +806,8 @@ class GenerateWindow(QObject):
             self.timeline.timeline.pointerTimePos = self.now
 
         elif self.renderedFrames > 0 and self.videoPreview == False:
-            qimage = ImageQt(self.image)
+            image = self.image.convert("RGBA")
+            qimage = ImageQt(image)
             if self.outpaint.canvas.selected_item is not None:
                 for items in self.outpaint.canvas.rectlist:
                     if items.id == self.outpaint.canvas.selected_item:
@@ -1245,6 +1282,8 @@ class GenerateWindow(QObject):
             self.txt2img_lm_thread()
         elif self.choice == 'Text to Image':
             self.deforum_txt2img_thread()
+        elif self.choice == 'Outpaint':
+            self.deforum_outpaint_thread()
 
     # dont know yet
     def load_history(self):

@@ -50,9 +50,9 @@ class Canvas(QGraphicsView):
         self.zoom = 1
         self.rotate = 0
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
-        self.w = 256
-        self.h = 256
-        self.pixmap = QPixmap(2048, 2048)
+        self.w = 512
+        self.h = 512
+        self.pixmap = QPixmap(4096, 4096)
         self.pixmap.fill(__backgroudColor__)
         self.bgitem = QGraphicsPixmapItem()
         self.rectItem = QGraphicsRectItem(256, 256, 512, 512)
@@ -84,12 +84,13 @@ class Canvas(QGraphicsView):
         self.setMouseTracking(True)
         self.update()
         self.setScene(self.scene)
-        self.fitInView(self.bgitem, Qt.AspectRatioMode.KeepAspectRatio)
+        self.fitInView(self.bgitem, Qt.AspectRatioMode.IgnoreAspectRatio)
 
 
         self.hover_item = None
         self.selected_item = None
         self.outpaintitem = None
+        self.outpaintsource = None
 
 
     def getXScale(self):
@@ -115,8 +116,12 @@ class Canvas(QGraphicsView):
         Yscale = self.getYScale()
         scaledWidth = (self.w / 2) / Xscale
         scaledHeight = (self.h / 2) / Yscale
+        x = (x - scaledWidth) * Xscale
+        y = (y - scaledHeight) * Yscale
+        if x < 0: x = 0
+        if y < 0: y = 0
         if self.mode == "generic" or "outpaint":
-            self.rectItem.setRect((x - scaledWidth) * Xscale, (y - scaledHeight) * Yscale, self.w, self.h)
+            self.rectItem.setRect(x, y, self.w, self.h)
         else:
             self.rectItem.setRect(self.width(), self.height(), 5, 5)
         self.bgitem.setPixmap(self.pixmap)
@@ -139,20 +144,53 @@ class Canvas(QGraphicsView):
                 self.hover_item = None
         #self.update()
 
-    def region_to_outpaint(self):
+    def region_to_outpaint(self, event):
         print("Region to paint")
-        oldZoom = self.zoom
-        self.zoom = 1.0
-        self.updateView()
+        #oldZoom = self.zoom
+        #self.zoom = 1.0
+        #self.updateView()
         x = 0
 
         for i in self.rectlist:
-            if i.x <= self.scene.scenePos.x() - self.w / 2 <= i.x + i.w and i.y <= self.scene.scenePos.y() - self.h / 2 <= i.y + i.h:
-                print("found")
-                x += 1
-                i.color = __selColor__
-                if i.image is not None:
-                    i.image.save(f"test{x}.jpg")
+
+            rangeXmin = i.x - self.w
+            rangeXmax = i.x + i.w
+            rangeYmin = i.y - self.h
+            rangeYmax = i.y + i.h
+            if i.image is not None:
+                print(f"this is our object: {i.x, i.y}")
+                print(f"rangeYMin: {rangeYmin}")
+            #point =
+            #viewpoint = mapFromScene(self.scene)
+            #print(viewpoint)
+
+            if (self.scene.scenePos.y() - self.h / 2) >= i.y - self.h and (self.scene.scenePos.x() - self.w / 2) >= i.x - self.w:
+                if (self.scene.scenePos.y() - self.h / 2) <= i.y + self.h and (self.scene.scenePos.x() - self.w / 2) <= i.x + i.w:
+
+
+            #if i.x - self.w <= self.scene.scenePos.x() - self.w / 2 <= i.x + i.w or i.y - self.h <= self.scene.scenePos.y() + self.h / 2 <= i.y + i.h:
+
+
+
+
+                    print("MATCH")
+                    i.color = __selColor__
+                    self.update()
+                    #newimage = QImage(self.w, self.h, QImage.Format_ARGB32)
+                    if i.image is not None:
+                        rect = QRect((self.scene.scenePos.x() - self.w / 2) - i.x, (self.scene.scenePos.y() - self.h / 2) - i.y, self.w, self.h)
+                        newimage = i.image.copy(rect)
+                        newimage.save(f"test{x}.jpg")
+                        print(f"test{x}.jpg saved...")
+                        self.outpaintsource = f"test{x}.jpg"
+
+
+            #if i.x <= self.scene.scenePos.x() - self.w / 2 <= i.x + i.w and i.y <= self.scene.scenePos.y() - self.h / 2 <= i.y + i.h:
+            #    print("found")
+            #    x += 1
+            #    i.color = __selColor__
+            #    if i.image is not None:
+            #        i.image.save(f"test{x}.jpg")
 
         """if self.selected_item is not None:
             for i in self.rectlist:
@@ -175,9 +213,10 @@ class Canvas(QGraphicsView):
                                 image_rect.image.save(f"test{x}.jpg")
                                 x += 1
                                 print(f"saved image from  {i.x}, {i.y}, {i.w}, {i.h}")"""
-        self.zoom = oldZoom
-        self.updateView()
+        #self.zoom = oldZoom
+        #self.updateView()
     def mousePressEvent(self, e):
+        #self.reset()
         fn = getattr(self, "%s_mousePressEvent" % self.mode, None)
         if fn:
             fn(e)
@@ -242,11 +281,20 @@ class Canvas(QGraphicsView):
                     help2 = f"hover item details:{items.x}, {items.y}"
 
 
-        self.debugtext.setPlainText(f"{self.scene.pos}, {self.scene.scenePos}\nHover Item: {self.hover_item}\nSelected Item:{self.selected_item}\nMode: {self.mode}\n{help2}")
+        self.debugtext.setPlainText(f"{self.scene.pos}, {self.scene.scenePos}\nHover Item: {self.hover_item}\nSelected Item:{self.selected_item}\nMode: {self.mode}\n{help2}\n\n\n\n"
+                                    f"-"
+                                    f"-"
+                                    f"-"
+                                    f"-"
+                                    f"-"
+                                    f"-"
+                                    f"-\n"
+                                    f"{self.scene.scenePos.x()}\n{self.scene.scenePos.y()}\n")
         super(Canvas, self).paintEvent(e)
 
     def generic_mouseMoveEvent(self, e):
         if self.scene.pos is not None:
+
             self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), self.w, self.h)
 
         self.update()
@@ -328,7 +376,7 @@ class Canvas(QGraphicsView):
     def outpaint_mouseReleaseEvent(self, event):
         return
     def outpaint_mousePressEvent(self, event):
-        self.region_to_outpaint()
+        self.region_to_outpaint(event)
         return
     def wheelEvent(self, event):
 

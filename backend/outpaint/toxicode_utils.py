@@ -15,7 +15,7 @@ from PIL.PngImagePlugin import PngInfo
 
 
 #https://www.metadata2go.com/
-def metadata (opt, prompt = None, seed = '', generation_time = None):
+def metadata (prompt = None, seed = '', generation_time = None):
     data = PngInfo()
     if (prompt is not None):
         data.add_text('prompt',   prompt)
@@ -23,14 +23,14 @@ def metadata (opt, prompt = None, seed = '', generation_time = None):
         data.add_text('generation time', str(generation_time))
 
     data.add_text('seed',     str(seed))
-    data.add_text('steps',    str(opt.steps))
-    data.add_text('guidance', str(opt.scale))
-    if opt.image_guide:
-        if opt.blend_mask is None:
-            data.add_text('with guided image and strength', str(opt.strength))
-        else:
-            data.add_text('with guided image', 'and blend mask')
-    data.add_text('model', 'Toxicode DreamServer - Stable Diffusion 1.4')
+    #data.add_text('steps',    str(opt.steps))
+    #data.add_text('guidance', str(opt.scale))
+    #if opt.image_guide:
+    #    if opt.blend_mask is None:
+    #        data.add_text('with guided image and strength', str(opt.strength))
+    #    else:
+    #        data.add_text('with guided image', 'and blend mask')
+    data.add_text('model', 'Toxicode DreamServer - Stable Diffusion 1.5')
     return data
 
 

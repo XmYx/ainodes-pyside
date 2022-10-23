@@ -53,18 +53,18 @@ def chunk(it, size):
 
 
 
-def get_prompts_data (opt):
+def get_prompts_data (prompt, n_samples, from_file=False):
 
-    if not opt.from_file:
-        prompt = opt.prompt
+    if not from_file:
+        prompt = prompt
         assert prompt is not None
-        return [opt.n_samples * [prompt]]
+        return [n_samples * [prompt]]
 
     else:
-        print(f"reading prompts from {opt.from_file}")
-        with open(opt.from_file, "r") as f:
+        print(f"reading prompts from {from_file}")
+        with open(from_file, "r") as f:
             prompts_data = f.read().splitlines()
-            return list(chunk(prompts_data, opt.n_samples))
+            return list(chunk(prompts_data, n_samples))
 
 
 
@@ -126,8 +126,8 @@ def split_weighted_subprompts(text):
 
 
 
-def get_conditionings(model, prompts, opt):
-    unconditional_conditioning = model.get_learned_conditioning(opt.n_samples * [""])
+def get_conditionings(model, prompts, n_samples):
+    unconditional_conditioning = model.get_learned_conditioning(n_samples * [""])
     if isinstance(prompts, tuple):
         prompts = list(prompts)
 

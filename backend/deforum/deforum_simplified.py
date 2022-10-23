@@ -10,7 +10,7 @@ import traceback
 from types import SimpleNamespace
 import torchvision.transforms as T
 import torchvision.transforms.functional as TF
-from torchvision.utils import make_grid
+from torchvision.utils import make_grid, save_image
 import cv2
 import numpy as np
 import pandas as pd
@@ -22,6 +22,7 @@ from omegaconf import OmegaConf
 from pytorch_lightning import seed_everything
 from scipy.ndimage import gaussian_filter
 from torch import autocast
+from tqdm import tqdm, trange
 
 from backend.deforum import DepthModel, sampler_fn
 
@@ -35,6 +36,9 @@ from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.models.diffusion.plms import PLMSSampler
 from contextlib import contextmanager, nullcontext
 import numexpr
+from backend.outpaint.utils import *
+from backend.outpaint.toxicode_utils import *
+from backend.outpaint import ddim_simplified
 
 from typing import Any, Callable, Optional
 import torch
@@ -788,7 +792,8 @@ class DeforumGenerator():
                  frame=0,
                  return_latent=False,
                  return_sample=False,
-                 return_c=False):
+                 return_c=False,
+                 init_image=None,):
         seed_everything(seed)
         os.makedirs(outdir, exist_ok=True)
         self.sample_number = n_samples
@@ -805,8 +810,9 @@ class DeforumGenerator():
 
         init_latent = None
         mask_image = None
-        init_image = None
-
+        #init_image = None
+        use_alpha_as_mask = True
+        use_mask = False
         if init_latent is not None:
             print('init_latent is not None')
             init_latent = init_latent
@@ -1186,7 +1192,7 @@ class DeforumGenerator():
         self.render_image_batch(strength=strength,
                                 seed=int(seed),
                                 use_init=use_init,
-                                init_image=None,
+                                init_image=init_image,
                                 sampler_name=sampler_name,
                                 ddim_eta=ddim_eta,
                                 animation_mode=animation_mode,
@@ -1242,7 +1248,7 @@ class DeforumGenerator():
                            step_callback,
                            image_callback):
 
-
+        init_image = init_image
         outdir = f'{outdir}/_batch_images'
 
 
@@ -1268,6 +1274,7 @@ class DeforumGenerator():
 
         # function for init image batching
         init_array = []
+        print(f"init image should be: {init_image}")
         if use_init:
             if init_image == "":
                 raise FileNotFoundError("No path was given for init_image")
@@ -1301,6 +1308,7 @@ class DeforumGenerator():
 
                 for image in init_array:  # iterates the init images
                     init_image = image
+                    print(image)
                     results = self.generate(
                         seed = seed,
                         outdir = outdir,
@@ -1310,7 +1318,7 @@ class DeforumGenerator():
                         precision = 'autocast',
                         init_latent = None,
                         init_sample = None,
-                        use_init = False,
+                        use_init = use_init,
                         W = W,
                         H = H,
                         use_alpha_as_mask = False,
@@ -1337,7 +1345,8 @@ class DeforumGenerator():
                         frame=0,
                         return_latent=False,
                         return_sample=False,
-                        return_c=False )
+                        return_c=False,
+                        init_image=init_image)
                     #print(results)
                     for image in results:
                         #print("we should start decoding 1 by 1 here")
@@ -1350,6 +1359,7 @@ class DeforumGenerator():
                             else:
                                 filename = f"{timestring}_{index:05}_{seed}.png"
                             fpath = os.path.join(outdir, filename)
+                            image = image.convert("RGBA")
                             print(f"DEBUG:{image}")
                             image.save(fpath)
                             if image_callback is not None and n_samples == 1:
@@ -1381,7 +1391,186 @@ class DeforumGenerator():
 
             return
 
+    def outpaint_txt2img(self,
+                         init_image,
+                         prompt="fantasy landscape",
+                         seed=-1,
+                         steps=10,
+                         W=512,
+                         H=512,
+                         outdir='output/outpaint',
+                         n_samples=1,
+                         n_rows=1,
+                         ddim_eta=0.0,
+                         blend_mask=None,
+                         mask_blur=10,
+                         strength=0.65,
+                         n_iter=1,
+                         scale=7,
+                         skip_save=False,
+                         skip_grid=True,
+                         file_prefix="outpaint",
+                         ):
+        
+        if "sd" not in gs.models:
+            self.load_model()
+        #global plms_sampler
+        #global ddim_sampler
+        #plms_sampler = PLMSSampler(gs.models["sd"])
+        #ddim_sampler = DDIMSampler(gs.models["sd"])
+    
+        print(f"txt2img seed: {seed}   steps: {steps}  prompt: {prompt}")
+        print(f"size:  {W}x{H}")
+    
+        self.torch_gc()
+    
+        # seeds = torch.randint(-2 ** 63, 2 ** 63 - 1, [accelerator.num_processes])
+        # torch.manual_seed(seeds[accelerator.process_index].item())
+    
+        #sampler = choose_sampler(opt)
+    
+        # model_wrap = K.external.CompVisDenoiser(model)
+        # sigma_min, sigma_max = model_wrap.sigmas[0].item(), model_wrap.sigmas[-1].item()
+    
+    
+        os.makedirs(outdir, exist_ok=True)
+        outpath = outdir
+    
+        sample_path = os.path.join(outpath, "samples")
+        os.makedirs(sample_path, exist_ok=True)
+    
+        base_count = len(os.listdir(sample_path))
+    
+        batch_size = n_samples
+        n_rows     = n_rows if n_rows > 0 else batch_size
+    
+        prompts_data = get_prompts_data(prompt, n_samples)
+    
+        grid_path = ''
+    
+        image_guide  = init_image if init_image is not None else None
+        latent_guide = None
+    
+        t_start = None
+        masked_image_for_blend  = None
+        mask_for_reconstruction = None
+        latent_mask_for_blend   = None
+        C = 4
+        f = 8
+        device = self.device
+        # this explains the [1, 4, 64, 64]
+        shape = (batch_size, C, H//f, W//f)
+        sampler = ddim_simplified.DDIMSampler_simple(gs.models["sd"])
 
+        sampler.make_schedule(ddim_num_steps=steps, ddim_eta=ddim_eta, verbose=False)
+    
+        if image_guide:
+            image_guide = image_path_to_torch(image_guide, device)  # [1, 3, 512, 512]
+            latent_guide = torch_image_to_latent(gs.models["sd"], image_guide, n_samples=n_samples)  # [1, 4, 64, 64]
+            print(f'image_guide')
+    
+        if blend_mask:
+            [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(
+                device, blend_mask, blur=mask_blur)  # [512, 512]  [1, 4, 64, 64]
+            masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]  # [3, 512, 512]
+            # masked_image_for_blend = mask_for_reconstruction * image_guide[0]  # [3, 512, 512]
+            print(f'blend mask')
+    
+        elif image_guide is not None:
+            assert 0. <= strength <= 1., 'can only work with strength in [0.0, 1.0]'
+            t_start = int(strength * steps)
+    
+            print(f"target t_start is {t_start} steps")
+    
+        multiple_mode = (n_iter * len(prompts_data) * n_samples > 1)
+    
+        with torch.no_grad(), gs.models["sd"].ema_scope(), torch.cuda.amp.autocast():
+            tic = time.time()
+            all_samples = list()
+            counter = 0
+            for n in trange(n_iter, desc="Sampling"):
+                for prompts in tqdm(prompts_data, desc="data"):
+    
+                    seed = seed + counter
+                    seed_everything(seed)
+    
+                    unconditional_conditioning, conditioning = get_conditionings(gs.models["sd"], prompts, n_samples)
+    
+                    samples = sampler.ddim_sampling(
+                        conditioning,               # [1, 77, 768]
+                        shape,  # (1, 4, 64, 64)
+                        x0=latent_guide,            # [1, 4, 64, 64]
+                        mask=latent_mask_for_blend,  # [1, 4, 64, 64]
+                        # 12 (if 20 steps and strength 0.75 => 15)
+                        t_start=t_start,
+                        unconditional_guidance_scale=scale,
+                        # [1, 77, 768]
+                        unconditional_conditioning=unconditional_conditioning,
+                    )  # [1, 4, 64, 64]
+    
+                    x_samples = encoded_to_torch_image(
+                        gs.models["sd"], samples)  # [1, 3, 512, 512]
+    
+                    if masked_image_for_blend is not None:
+                        x_samples = mask_for_reconstruction * x_samples + masked_image_for_blend
+    
+                    all_samples.append(x_samples)
+    
+                    generated_time = time.time()
+    
+                    if (not skip_save) and (not multiple_mode):
+                        for x_sample in x_samples:
+                            image = sampleToImage(x_sample)
+    
+                            save_image(
+                                image,
+                                os.path.join(sample_path, f"{base_count:05}.png"),
+                                    pnginfo=metadata(
+                                    prompt=prompts[0],  # FIXME [0]
+                                    seed=seed,
+                                    generation_time=generated_time - tic
+                                        ))
+    
+                            base_count += 1
+    
+    
+            if not skip_grid:
+    
+                generated_time = time.time()
+    
+                if multiple_mode:
+                    # additionally, save as grid
+                    grid = torch.stack(all_samples, 0)
+                    grid = rearrange(grid, 'n b c h w -> (n b) c h w')
+                    grid = make_grid(grid, nrow=n_rows)
+    
+                    # to image
+                    # grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
+                    # image = Image.fromarray(grid.astype(np.uint8))
+                else:
+                    grid = all_samples[0][0]
+    
+                image = sampleToImage(grid)
+                grid_path = os.path.join(outpath, f'{file_prefix}-0000.png')
+    
+                print(image)
+    
+                save_image(image,
+                           grid_path,
+                           pnginfo=metadata(prompt= prompts[0],  # FIXME [0]
+                                           seed= seed,
+                                           generation_time= generated_time - tic
+                                           ))
+
+            toc = time.time()
+    
+            counter += 1
+    
+        self.torch_gc()
+    
+        print(f"Sampling took {toc - tic:g}s, i.e. produced {n_iter * n_samples / (toc - tic):.2f} samples/sec.")
+    
+        return [image, grid_path]
 
 
 class CFGDenoiser(nn.Module):

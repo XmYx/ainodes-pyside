@@ -57,6 +57,7 @@ class Callbacks(QObject):
     deforum_step = Signal()
     deforum_image_cb = Signal()
     compviscallback = Signal()
+    add_image_to_thumbnail_signal = Signal()
 
 
 class GenerateWindow(QObject):
@@ -119,6 +120,7 @@ class GenerateWindow(QObject):
         self.signals.deforum_step.connect(self.deforumstepCallback_func)
         self.signals.deforum_image_cb.connect(self.add_image_to_thumbnail)
         self.signals.compviscallback.connect(self.deforumTest)
+        self.signals.add_image_to_thumbnail_signal.connect(self.add_image_to_thumbnail)
 
         # self.w.thumbnails.thumbs.installEventFilter(self)
         self.w.statusBar().showMessage('Ready')
@@ -454,7 +456,7 @@ class GenerateWindow(QObject):
             del self.nodeWindow
         except:
             pass
-        self.outpaint = paintwindow_func.PaintDock()
+        self.outpaint = OutpaintUI()
         self.w.setCentralWidget(self.outpaint)
 
     def update_outpaint_parameters(self):
@@ -559,7 +561,6 @@ class GenerateWindow(QObject):
         self.deforum.render_animation(
             image_callback=self.imageCallback_signal,
             step_callback=self.deforumstepCallback_signal if self.w.sampler.w.tensorPreview.isChecked() else None,
-            compviscallback=self.deforumstepCallback_signal,
             animation_prompts=prompt_series,
             H=H,
             W=W,
@@ -685,6 +686,8 @@ class GenerateWindow(QObject):
         self.update = 0
         self.onePercent = 100 / (1 * self.w.sampler.w.steps.value())
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
+        self.currentFrames = []
+        self.renderedFrames = 0
 
         sampler_name = self.translate_sampler(self.w.sampler.w.sampler.currentText())
 
@@ -708,10 +711,10 @@ class GenerateWindow(QObject):
                                  steps=self.w.sampler.w.steps.value(),
                                  H=self.w.sizer_count.w.heightSlider.value(),
                                  W=self.w.sizer_count.w.widthSlider.value(),
-                                 n_samples=self.w.sizer_count.w.batchSizeSlider.value(),  # batchsize
+                                 n_samples=self.w.sizer_count.w.samplesSlider.value(),  # batchsize
                                  scale=self.w.sampler.w.scale.value() / 100,
                                  step_callback=self.deforumstepCallback_signal if self.w.sampler.w.tensorPreview.isChecked() else None,
-                                 compviscallback=self.deforumstepCallback_signal)
+                                 image_callback=self.imageCallback_signal)
 
         self.torch_gc()
         self.stop_painters()
@@ -739,7 +742,7 @@ class GenerateWindow(QObject):
                 self.liveUpdate(self.data)
             else:
                 self.liveUpdate(self.data['denoised'], self.data['i'])
-        elif self.choice == "Text to Image":
+        elif self.choice == "Text to Image LM" or self.choice == "Text to Image":
             self.liveUpdate(self.data)
 
     @Slot()
@@ -801,11 +804,15 @@ class GenerateWindow(QObject):
 
     # callback
     def imageCallback_signal(self, image, *args, **kwargs):
-        self.currentFrames.append(image)
-        self.renderedFrames += 1
-        self.image = image
 
-        self.signals.txt2img_image_cb.emit()
+        if self.w.sizer_count.w.samplesSlider.value() > 1:
+            self.image_path = image
+            self.signals.add_image_to_thumbnail_signal.emit()
+        else:
+            self.currentFrames.append(image)
+            self.renderedFrames += 1
+            self.image = image
+            self.signals.txt2img_image_cb.emit()
 
     # text2img
     def run_txt2img_lm(self, progress_callback=None):
@@ -929,11 +936,15 @@ class GenerateWindow(QObject):
         # vins = random.randint(10000, 99999)
         imageSize = item.icon().actualSize(QSize(10000, 10000))
         qimage = QImage(item.icon().pixmap(imageSize).toImage())
-        # self.outpaint.canvas.pixmap = QPixmap(qimage.size())
-
-        for items in self.outpaint.canvas.rectlist:
-            print(f"adding image{qimage}")
-            items.image = qimage
+        pixmap = QPixmap(imageSize)
+        painter = QPainter()
+        painter.begin(pixmap)
+        painter.drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
+        painter.end()
+        self.dynaimage.w.label.setPixmap(pixmap)
+        #for items in self.outpaint.canvas.rectlist:
+        #    print(f"adding image{qimage}")
+        #    items.image = qimage
 
         # self.vpainter[vins] = QPainter()
         # newItem = QGraphicsPixmapItem()

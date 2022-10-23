@@ -307,7 +307,6 @@ class DeforumGenerator():
     def render_animation(self,
                          image_callback=None,
                          step_callback=None,
-                         compviscallback=None,
                          # prompts="a beautiful forest by Asher Brown Durand, trending on Artstation",
                          animation_prompts='test',
                          H=512,
@@ -703,8 +702,7 @@ class DeforumGenerator():
                                               C=C,
                                               f=f,
                                               mask_overlay_blur=mask_overlay_blur,
-                                              step_callback=step_callback,
-                                              compviscallback=compviscallback)
+                                              step_callback=step_callback,)
                 if sample is not None:
                     if image_callback is not None and diffusion_cadence == 0:
                         image_callback(image, seed, upscaled=False)
@@ -784,7 +782,6 @@ class DeforumGenerator():
                  f,
                  mask_overlay_blur,
                  step_callback,
-                 compviscallback,
                  frame=0,
                  return_latent=False,
                  return_sample=False,
@@ -962,9 +959,26 @@ class DeforumGenerator():
 
                             if return_latent:
                                 results.append(samples.clone())
+                            if n_samples > 1:
+                                x_samples = None
+                                for i in range(len(samples)):
+                                    print("we should be decoding a batch now...")
+                                    x_samples_ddim = gs.models["sd"].decode_first_stage(samples[i].unsqueeze(0))
 
-                            x_samples = gs.models["sd"].decode_first_stage(samples)
+                                    x_sample = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
+                                    x_sample = 255. * rearrange(x_sample[0].cpu().numpy(), 'c h w -> h w c')
+                                    x_sample = x_sample.astype(np.uint8)
+                                    image = Image.fromarray(x_sample)
+                                    results.append(image)
 
+                                    print(x_samples)
+                                    #x_sample = torch.clamp((x_samples + 1.0) / 2.0, min=0.0, max=1.0)
+                                    #x_sample = 255. * rearrange(x_sample[0].cpu().numpy(), 'c h w -> h w c')
+                                    #x_sample = x_sample.astype(np.uint8)
+                                    #image = Image.fromarray(x_sample)
+                                    #results.append(image)
+                            else:
+                                x_samples = gs.models["sd"].decode_first_stage(samples)
                             if use_mask and overlay_mask:
                                 # Overlay the masked image after the image is generated
                                 if init_sample is not None:
@@ -985,20 +999,26 @@ class DeforumGenerator():
                                 mask_fullres = gaussian_filter(mask_fullres, mask_overlay_blur)
                                 mask_fullres = torch.Tensor(mask_fullres).to(self.device)
 
-                                x_samples = img_original * mask_fullres + x_samples * ((mask_fullres * -1.0) + 1)
+                                #x_samples = img_original * mask_fullres + x_samples * ((mask_fullres * -1.0) + 1)
 
                             if return_sample:
                                 results.append(x_samples.clone())
-
-                            x_samples = torch.clamp((x_samples + 1.0) / 2.0, min=0.0, max=1.0)
+                            if x_samples is not None:
+                                x_samples = torch.clamp((x_samples + 1.0) / 2.0, min=0.0, max=1.0)
 
                             if return_c:
                                 results.append(c.clone())
+                            if x_samples is not None:
+                                for x_sample in x_samples:
+                                    x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
+                                    image = Image.fromarray(x_sample.astype(np.uint8))
+                                    results.append(image)
+            self.torch_gc()
+            return results
 
-                            for x_sample in x_samples:
-                                x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
-                                image = Image.fromarray(x_sample.astype(np.uint8))
-                                results.append(image)
+
+
+
 
         except Exception as e:
             print(e)
@@ -1134,7 +1154,7 @@ class DeforumGenerator():
                     n_samples, #batchsize
                     scale,
                     step_callback,
-                    compviscallback):
+                    image_callback):
 
         if "sd" not in gs.models:
             self.load_model()
@@ -1158,8 +1178,7 @@ class DeforumGenerator():
             use_init = True
 
         # clean up unused memory
-        gc.collect()
-        torch.cuda.empty_cache()
+        self.torch_gc()
 
         self.render_image_batch(strength=strength,
                                 seed=int(seed),
@@ -1185,7 +1204,7 @@ class DeforumGenerator():
                                 n_samples=n_samples, #batchsize
                                 scale=scale,
                                 step_callback=step_callback,
-                                compviscallback=compviscallback)
+                                image_callback=image_callback)
 
     def sanitize(self, prompt):
         whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ')
@@ -1217,7 +1236,7 @@ class DeforumGenerator():
                            n_samples, #batchsize
                            scale,
                            step_callback,
-                           compviscallback):
+                           image_callback):
 
 
         outdir = f'{outdir}/_batch_images'
@@ -1311,13 +1330,13 @@ class DeforumGenerator():
                         f = 8,
                         mask_overlay_blur = 0,
                         step_callback = step_callback,
-                        compviscallback = compviscallback,
                         frame=0,
                         return_latent=False,
                         return_sample=False,
                         return_c=False )
                     print(results)
                     for image in results:
+                        print("we should start decoding 1 by 1 here")
                         print(image)
                         if make_grid:
                             all_images.append(T.functional.pil_to_tensor(image))
@@ -1328,6 +1347,12 @@ class DeforumGenerator():
                                 filename = f"{timestring}_{index:05}_{seed}.png"
                             fpath = os.path.join(outdir, filename)
                             image.save(fpath)
+                            if image_callback is not None and n_samples == 1:
+                                image_callback(image)
+                            elif image_callback is not None and n_samples > 1:
+                                image_callback(fpath)
+
+
                         #st.session_state['node_pipe'] = image
                         #image_pipe.image(image)
                         #st.session_state['currentImages'].append(fpath)

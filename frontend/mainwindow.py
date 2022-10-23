@@ -833,8 +833,9 @@ class GenerateWindow(QObject):
         # self.w.setCentralWidget(self.dynaimage.w)
         steps = self.w.sampler.w.steps.value()
         samples = self.w.sizer_count.w.samplesSlider.value()
+        batch_size = self.w.sizer_count.w.batchSizeSlider.value()
 
-        self.onePercent = 100 / (steps * samples * len(prompt_list))
+        self.onePercent = 100 / (steps * samples * batch_size * len(prompt_list))
 
         """The full list of arguments to Generate() are:
         gr = Generate(
@@ -860,7 +861,7 @@ class GenerateWindow(QObject):
 
         self.progress = 0.0
         self.update = 0
-        for i in range(samples):
+        for i in range(batch_size):
             for prompt in prompt_list:
                 print(prompt)
                 self.torch_gc()

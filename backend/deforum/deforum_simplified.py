@@ -1014,7 +1014,7 @@ class DeforumGenerator():
                                     image = Image.fromarray(x_sample.astype(np.uint8))
                                     results.append(image)
             self.torch_gc()
-            return results
+            #return results
 
 
 
@@ -1023,7 +1023,7 @@ class DeforumGenerator():
         except Exception as e:
             print(e)
             self.torch_gc()
-            return None, None
+            return results
         self.torch_gc()
         return results
     #@profile
@@ -1333,7 +1333,7 @@ class DeforumGenerator():
                         step_callback = step_callback,
                         frame=0,
                         return_latent=False,
-                        return_sample=False,
+                        return_sample=True,
                         return_c=False )
                     #print(results)
                     for image in results:

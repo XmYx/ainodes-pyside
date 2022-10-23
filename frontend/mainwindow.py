@@ -655,6 +655,11 @@ class GenerateWindow(QObject):
         self.signals.compviscallback.emit()
 
     def deforumstepCallback_signal(self, data, data2=None):
+        print(data)
+        if data2 is not None:
+            print(data2)
+        pass
+
         self.data = data
         if data2 is not None:
             self.data2 = data2
@@ -679,9 +684,9 @@ class GenerateWindow(QObject):
     def run_deforum_txt2img(self, progress_callback=None):
         self.deforum = DeforumGenerator()
         self.deforum.signals = Callbacks()
-        self.w.prompt.w.runButton.setEnabled(False)
-        self.prompt_fetcher.w.dreamPrompt.setEnabled(False)
-        self.torch_gc()
+        #self.w.prompt.w.runButton.setEnabled(False)
+        #self.prompt_fetcher.w.dreamPrompt.setEnabled(False)
+        #self.torch_gc()
         self.progress = 0.0
         self.update = 0
         self.onePercent = 100 / (1 * self.w.sampler.w.steps.value())
@@ -690,7 +695,7 @@ class GenerateWindow(QObject):
         self.renderedFrames = 0
 
         sampler_name = self.translate_sampler(self.w.sampler.w.sampler.currentText())
-
+        self.deforum.sampler_name = sampler_name
         self.deforum.run_txt2img(strength=0,#strength=self.animSliders.w.strength.value() / 1000,
                                  seed=random.randint(0, 2**32 - 1) if self.w.sampler.w.seed.text() == '' else int(self.w.sampler.w.seed.text()),
                                  use_init=self.animSliders.w.useInit.isChecked(),
@@ -736,12 +741,12 @@ class GenerateWindow(QObject):
         self.updateRate = self.w.sizer_count.w.previewSlider.value()
         self.progress = self.progress + self.onePercent
         self.w.progressBar.setValue(self.progress)
-        if self.choice == "Text to Video":
+        if self.choice == "Text to Video" or self.choice == "Text to Image":
             if self.deforum.sampler_name == "ddim" or self.deforum.sampler_name == "plms":
                 self.liveUpdate(self.data)
             else:
                 self.liveUpdate(self.data['denoised'], self.data['i'])
-        elif self.choice == "Text to Image LM" or self.choice == "Text to Image":
+        elif self.choice == "Text to Image LM":
             self.liveUpdate(self.data)
 
     @Slot(str)

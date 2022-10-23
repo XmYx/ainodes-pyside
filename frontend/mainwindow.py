@@ -34,7 +34,7 @@ import backend.settings as settings
 from backend.deforum.deforum_simplified import DeforumGenerator
 from backend.ui_func import getLatestGeneratedImagesFromPath
 from backend.worker import Worker
-
+from backend.prompt_ai.prompt_gen import generate_prompt
 from frontend.ui_classes import *
 from frontend.nodeeditor import *
 from frontend.ui_image_lab import ImageLab
@@ -99,6 +99,7 @@ class GenerateWindow(QObject):
         self.ftimer = QTimer(self)
         self.signals = Callbacks()
         self.image_lab = ImageLab()
+
         # self.kf = Keyframes()
 
         settings.load_settings_json()
@@ -293,10 +294,13 @@ class GenerateWindow(QObject):
         self.vpainter["iins"] = QPainter()
         self.tpixmap = QPixmap(512, 512)
         self.prompt_fetcher.w.getPrompts.clicked.connect(self.get_prompts)
+        self.prompt_fetcher.w.aiPrompt.clicked.connect(self.ai_prompt)
         self.prompt_fetcher.w.usePrompt.clicked.connect(self.use_prompt)
         self.prompt_fetcher.w.dreamPrompt.clicked.connect(self.dream_prompt)
+
         self.load_settings()
         self.w.actiontest_save_output.triggered.connect(self.test_save_outpaint)
+
 
 
     def load_upscalers(self):
@@ -383,6 +387,17 @@ class GenerateWindow(QObject):
 
     def show_image_lab(self):
         self.image_lab.show()
+
+    def ai_prompt(self):
+        out_text = ''
+        prompts_txt = self.prompt_fetcher.w.input.toPlainText()
+        prompts_array = prompts_txt.split('\n')
+        print('ai prompts')
+        print(prompts_array)
+        for prompt in prompts_array:
+            out_text += generate_prompt(prompt)
+        self.prompt_fetcher.w.output.setPlainText(out_text)
+
 
     def use_prompt(self):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()

@@ -57,7 +57,7 @@ class Callbacks(QObject):
     deforum_step = Signal()
     deforum_image_cb = Signal()
     compviscallback = Signal()
-    add_image_to_thumbnail_signal = Signal()
+    add_image_to_thumbnail_signal = Signal(str)
 
 
 class GenerateWindow(QObject):
@@ -716,8 +716,8 @@ class GenerateWindow(QObject):
                                  step_callback=self.deforumstepCallback_signal if self.w.sampler.w.tensorPreview.isChecked() else None,
                                  image_callback=self.imageCallback_signal)
 
-        self.torch_gc()
-        self.stop_painters()
+        #self.torch_gc()
+        #self.stop_painters()
 
         self.signals.reenable_runbutton.emit()
 
@@ -745,11 +745,13 @@ class GenerateWindow(QObject):
         elif self.choice == "Text to Image LM" or self.choice == "Text to Image":
             self.liveUpdate(self.data)
 
-    @Slot()
-    def add_image_to_thumbnail(self):
-        self.w.statusBar().showMessage("Ready...")
+    @Slot(str)
+    def add_image_to_thumbnail(self, path):
+        #self.w.statusBar().showMessage("Ready...")
+
+        #path = self.image_path
         self.w.thumbnails.thumbs.addItem(
-            QListWidgetItem(QIcon(self.image_path), str(self.w.prompt.w.textEdit.toPlainText())))
+            QListWidgetItem(QIcon(path), str(path)))
 
     @Slot()
     def imageCallback_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
@@ -806,9 +808,11 @@ class GenerateWindow(QObject):
     def imageCallback_signal(self, image, *args, **kwargs):
 
         if self.w.sizer_count.w.samplesSlider.value() > 1:
-            self.image_path = image
-            self.signals.add_image_to_thumbnail_signal.emit()
+            #self.image_path = image
+            self.signals.add_image_to_thumbnail_signal.emit(image)
+            print("more samples found")
         else:
+            print("one sample found")
             self.currentFrames.append(image)
             self.renderedFrames += 1
             self.image = image

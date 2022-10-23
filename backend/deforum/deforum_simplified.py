@@ -183,6 +183,7 @@ def log_tokenization(text, model, log=False, weight=1):
 class DeforumGenerator():
 
     def __init__(self):
+        self.sample_number = None
         self.device = 'cuda'
         self.outdir = gs.system.txt2vidSingleFrame
         self.shouldStop = False
@@ -704,6 +705,7 @@ class DeforumGenerator():
                                               f=f,
                                               mask_overlay_blur=mask_overlay_blur,
                                               step_callback=step_callback,)
+                self.sample_number = n_samples
                 if sample is not None:
                     if image_callback is not None and diffusion_cadence == 0:
                         image_callback(image, seed, upscaled=False)
@@ -1025,8 +1027,9 @@ class DeforumGenerator():
             print(e)
             self.torch_gc()
             return results
-        self.torch_gc()
-        return results
+        finally:
+            self.torch_gc()
+            return results
     #@profile
     def sampler_fn(self,
                    init_latent,
@@ -1156,7 +1159,7 @@ class DeforumGenerator():
                     scale,
                     step_callback,
                     image_callback):
-
+        self.sample_number = n_samples
         if "sd" not in gs.models:
             self.load_model()
 

@@ -688,9 +688,7 @@ class GenerateWindow(QObject):
         self.currentFrames = []
         self.renderedFrames = 0
 
-
-        n_samples = self.w.sizer_count.w.samplesSlider.value()
-        if n_samples == 1:
+        if self.w.sizer_count.w.samplesSlider.value() == 1:
             makegrid = False
         else:
             makegrid = self.animKeys.w.makeGrid.isChecked()
@@ -716,7 +714,7 @@ class GenerateWindow(QObject):
                                  steps=self.w.sampler.w.steps.value(),
                                  H=self.w.sizer_count.w.heightSlider.value(),
                                  W=self.w.sizer_count.w.widthSlider.value(),
-                                 n_samples=n_samples,  # batchsize
+                                 n_samples=self.w.sizer_count.w.samplesSlider.value(),  # batchsize
                                  scale=self.w.sampler.w.scale.value() / 100,
                                  step_callback=self.deforumstepCallback_signal if self.w.sampler.w.tensorPreview.isChecked() else None,
                                  image_callback=self.imageCallback_signal)

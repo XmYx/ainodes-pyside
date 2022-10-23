@@ -1333,7 +1333,7 @@ class DeforumGenerator():
                         step_callback = step_callback,
                         frame=0,
                         return_latent=False,
-                        return_sample=True,
+                        return_sample=False,
                         return_c=False )
                     #print(results)
                     for image in results:

@@ -74,7 +74,7 @@
             <x>0</x>
             <y>0</y>
             <width>241</width>
-            <height>409</height>
+            <height>401</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -107,7 +107,7 @@
                 <number>256</number>
                </property>
                <property name="maximum">
-                <number>2048</number>
+                <number>3072</number>
                </property>
                <property name="singleStep">
                 <number>64</number>
@@ -172,7 +172,7 @@
                 <number>1</number>
                </property>
                <property name="maximum">
-                <number>100</number>
+                <number>1500</number>
                </property>
                <property name="pageStep">
                 <number>1</number>
@@ -243,7 +243,7 @@
                 <number>256</number>
                </property>
                <property name="maximum">
-                <number>2048</number>
+                <number>3072</number>
                </property>
                <property name="singleStep">
                 <number>64</number>

@@ -1307,8 +1307,8 @@ class GenerateWindow(QObject):
         self.livePainter.begin(tpixmap)
         x_samples = torch.clamp((data1 + 1.0) / 2.0, min=0.0, max=1.0)
         if len(x_samples) != 1:
-            raise Exception(
-                f'>> expected to get a single image, but got {len(x_samples)}')
+            print(
+                f'we got {len(x_samples)} Tensors but Tensor Preview will show only one')
         x_sample = 255.0 * rearrange(
             x_samples[0].cpu().numpy(), 'c h w -> h w c'
         )

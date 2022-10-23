@@ -1024,8 +1024,9 @@ class DeforumGenerator():
             print(e)
             self.torch_gc()
             return results
-        self.torch_gc()
-        return results
+        finally:
+            self.torch_gc()
+            return results
     #@profile
     def sampler_fn(self,
                    init_latent,

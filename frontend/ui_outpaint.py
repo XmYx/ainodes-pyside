@@ -204,7 +204,7 @@ class Canvas(QGraphicsView):
                     i.color = __selColor__
                     self.update()
                     if i.image is not None:
-                        rect = QRect((self.scene.scenePos.x() - self.w / 2) - i.x, (self.scene.scenePos.y() - self.h / 2) - i.y, self.w, self.h)
+                        rect = QRect(int((self.scene.scenePos.x() - self.w / 2) - i.x), int((self.scene.scenePos.y() - self.h / 2) - i.y), self.w, self.h)
                         newimage = i.image.copy(rect)
                         outpainter.drawImage(0,0,newimage)
                         self.addrect()

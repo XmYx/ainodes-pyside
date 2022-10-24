@@ -1402,7 +1402,7 @@ class DeforumGenerator():
                          outdir='output/outpaint',
                          n_samples=1,
                          n_rows=1,
-                         ddim_eta=0.4,
+                         ddim_eta=0.0,
                          blend_mask=None,
                          mask_blur=15,
                          strength=0.95,

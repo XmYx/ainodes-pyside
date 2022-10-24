@@ -752,6 +752,8 @@ class GenerateWindow(QObject):
         #init_image = 'test0.png'
         self.deforum.sampler_name = sampler_name
         self.deforum.outpaint_txt2img(init_image=init_image,
+                                      prompt=self.w.prompt.w.textEdit.toPlainText(),
+                                      strength=self.animSliders.w.strength.value() / 1000,
                                       mask_blur=self.animSliders.w.mask_blur.value() / 10,
                                       scale=self.w.sampler.w.scale.value() / 100,
                                       ddim_eta=self.animSliders.w.ddim_eta.value() / 1000,

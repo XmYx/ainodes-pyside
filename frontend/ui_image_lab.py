@@ -1,3 +1,4 @@
+import gc
 import os
 import sys
 import traceback
@@ -87,8 +88,6 @@ class ImageLab:
                 self.fileList.append(path)
         self.imageLab.w.filesCount.display(str(len(self.fileList)))
 
-
-
     def run_gfpgan(self, image, strength, seed, upsampler_scale=4):
         print(f'>> GFPGAN - Restoring Faces for image seed:{seed}')
 
@@ -113,7 +112,6 @@ class ImageLab:
 
         return res
 
-
     def real_esrgan_upscale(self, image, strength, upsampler_scale, seed):
         print(
             f'>> Real-ESRGAN Upscaling seed:{seed} : scale:{upsampler_scale}x'
@@ -137,6 +135,11 @@ class ImageLab:
             torch.cuda.empty_cache()
 
         return res
+
+    def torch_gc(self):
+        gc.collect()
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
 
     def upscale_and_reconstruct(self,
                                 image_list,
@@ -185,10 +188,10 @@ class ImageLab:
             image = image.convert("RGBA")
             image.save(outpath)
 
+            self.torch_gc()
+
             if image_callback is not None:
                 image_callback(image, seed, upscaled=True)
-
-
 
     def run_upscale(self):
         model_name=''
@@ -206,9 +209,9 @@ class ImageLab:
                 self.upscale_and_reconstruct(self.fileList,
                                              upscale          = self.imageLab.w.ESRGAN.isChecked(),
                                              upscale_scale    = self.imageLab.w.esrScale.value(),
-                                             upscale_strength = self.imageLab.w.esrStrength.value(),
+                                             upscale_strength = self.imageLab.w.esrStrength.value()/100,
                                              use_gfpgan       = self.imageLab.w.GFPGAN.isChecked(),
-                                             strength         = self.imageLab.w.gfpStrength.value(),
+                                             strength         = self.imageLab.w.gfpStrength.value()/100,
                                              image_callback   = None)
 
         """

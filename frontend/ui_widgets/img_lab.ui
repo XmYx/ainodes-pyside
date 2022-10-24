@@ -75,7 +75,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QCheckBox" name="upscaleCheck">
+             <widget class="QCheckBox" name="ESRGAN">
               <property name="text">
                <string>Upscale</string>
               </property>
@@ -140,7 +140,7 @@
              </widget>
             </item>
             <item row="12" column="0">
-             <widget class="QPushButton" name="Upscale">
+             <widget class="QPushButton" name="startUpscale">
               <property name="text">
                <string>Start Upscale</string>
               </property>

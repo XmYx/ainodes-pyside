@@ -302,55 +302,6 @@ class GenerateWindow(QObject):
         self.w.actiontest_save_output.triggered.connect(self.test_save_outpaint)
 
 
-    def load_upscalers(self):
-        gfpgan = False
-        try:
-            from realesrgan import RealESRGANer
-
-            gfpgan = True
-        except ModuleNotFoundError:
-            pass
-
-        if gfpgan:
-            print('Loading models from RealESRGAN and facexlib')
-            try:
-                from basicsr.archs.rrdbnet_arch import RRDBNet
-                from facexlib.utils.face_restoration_helper import FaceRestoreHelper
-
-                RealESRGANer(
-                    scale=2,
-                    model_path='https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth',
-                    model=RRDBNet(
-                        num_in_ch=3,
-                        num_out_ch=3,
-                        num_feat=64,
-                        num_block=23,
-                        num_grow_ch=32,
-                        scale=2,
-                    ),
-                )
-
-                RealESRGANer(
-                    scale=4,
-                    model_path='https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth',
-                    model=RRDBNet(
-                        num_in_ch=3,
-                        num_out_ch=3,
-                        num_feat=64,
-                        num_block=23,
-                        num_grow_ch=32,
-                        scale=4,
-                    ),
-                )
-
-                FaceRestoreHelper(1, det_model='retinaface_resnet50')
-                print('...success')
-            except Exception:
-                import traceback
-
-                print('Error loading GFPGAN:')
-                print(traceback.format_exc())
-
     def prepare_loading(self):
         transformers.logging.set_verbosity_error()
 
@@ -774,11 +725,11 @@ class GenerateWindow(QObject):
 
     def deforum_txt2img_thread(self):
         # for debug
-        #self.run_deforum_txt2img()
+        self.run_deforum_txt2img()
         # Pass the function to execute
-        worker = Worker(self.run_deforum_txt2img)
+        #worker = Worker(self.run_deforum_txt2img)
         # Execute
-        self.threadpool.start(worker)
+        #self.threadpool.start(worker)
 
     def deforum_outpaint_thread(self):
         # for debug

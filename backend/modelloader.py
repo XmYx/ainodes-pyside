@@ -1,10 +1,8 @@
-import streamlit as st
 import os
 import base64
 import sys
 from omegaconf import OmegaConf
 import torch
-#from backend.helpers import DepthModel
 from ldm.util import instantiate_from_config
 
 from backend.singleton import singleton
@@ -62,12 +60,15 @@ def load_realesrgan(model_name: str):
         instance.model.to('cpu')
     elif gs.system.extraModelsGpu:
         instance = RealESRGANer(scale=2, model_path=model_path, model=realesrgan_models[model_name], pre_pad=0,
-                                half=gs.diffusion.fullPrecision,
-                                device=torch.device(f'cuda:{gs.system.extraModelsGpu}'))
+                                half=gs.diffusion.fullPrecision,)
+                                #device=torch.device(f'cuda:{gs.system.extraModelsGpu}'))
     else:
-        instance = RealESRGANer(scale=2, model_path=model_path, model=realesrgan_models[model_name], pre_pad=0,
-                                half=gs.diffusion.fullPrecision,
-                                device=torch.device(f'cuda:{gs.system.gpu}'))
+        instance = RealESRGANer(scale=2,
+                                model_path=model_path,
+                                model=realesrgan_models[model_name],
+                                pre_pad=0,
+                                half=gs.diffusion.fullPrecision,)
+                                #device=torch.device(f'cuda:{str(gs.system.gpu)}'))
     instance.model.name = model_name
 
     return instance
@@ -93,21 +94,7 @@ def load_model_from_config(config, ckpt, verbose=False):
     model.eval()
     return model
 
-
-def load_models(continue_prev_run=False, use_gfpgan=False, use_realesrgan=False, realesrgan_model="RealESRGAN_x4plus"):
-    """Load the different models. We also reuse the models that are already in memory to speed things up instead of loading them again. """
-
-    print("Loading models.")
-
-    # Generate random run ID
-    # Used to link runs linked w/ continue_prev_run which is not yet implemented
-    # Use URL and filesystem safe version just in case.
-    gs.run_id = base64.urlsafe_b64encode(
-        os.urandom(6)
-    ).decode("ascii")
-
-    # check what models we want to use and if the they are already loaded.
-
+def load_upscaler(use_gfpgan=False, use_realesrgan=False, realesrgan_model="RealESRGAN_x4plus"):
     if use_gfpgan:
         if "GFPGAN" in gs.models:
             print("GFPGAN already loaded")
@@ -121,9 +108,9 @@ def load_models(continue_prev_run=False, use_gfpgan=False, use_realesrgan=False,
                     import traceback
                     print("Error loading GFPGAN:", file=sys.stderr)
                     print(traceback.format_exc(), file=sys.stderr)
-    else:
-        if "GFPGAN" in gs.models:
-            del gs.models["GFPGAN"]
+            else:
+                if "GFPGAN" in gs.models:
+                    del gs.models["GFPGAN"]
 
     if use_realesrgan:
         if "RealESRGAN" in gs.models and gs.models["RealESRGAN"].model.name == realesrgan_model:
@@ -145,6 +132,23 @@ def load_models(continue_prev_run=False, use_gfpgan=False, use_realesrgan=False,
     else:
         if "RealESRGAN" in gs.models:
             del gs.models["RealESRGAN"]
+
+def load_models(continue_prev_run=False, use_gfpgan=False, use_realesrgan=False, realesrgan_model="RealESRGAN_x4plus"):
+    """Load the different models. We also reuse the models that are already in memory to speed things up instead of loading them again. """
+
+    print("Loading models.")
+
+    # Generate random run ID
+    # Used to link runs linked w/ continue_prev_run which is not yet implemented
+    # Use URL and filesystem safe version just in case.
+    gs.run_id = base64.urlsafe_b64encode(
+        os.urandom(6)
+    ).decode("ascii")
+
+    # check what models we want to use and if the they are already loaded.
+    # extern now for be able to load just those models
+    load_upscaler(use_gfpgan, use_realesrgan, realesrgan_model)
+
 
     if "model" in gs.models:
         print("Model already loaded")

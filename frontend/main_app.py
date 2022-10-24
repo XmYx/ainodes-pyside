@@ -195,7 +195,14 @@ if __name__ == "__main__":
     mainWindow.w.sizer_count.w.heightSlider.valueChanged.connect(mainWindow.update_outpaint_parameters)
 
     mainWindow.outpaint.canvas.signals.outpaint_signal.connect(mainWindow.deforum_outpaint_thread)
+    mainWindow.outpaint.canvas.signals.txt2img_signal.connect(mainWindow.deforum_txt2img_thread)
+    mainWindow.outpaint_controls.w.rendermode.currentTextChanged.connect(mainWindow.change_outpaint_rendermode)
 
+
+    mainWindow.outpaint_controls.w.genericButton.triggered.connect(mainWindow.outpaint_mode_generic)
+    mainWindow.outpaint_controls.w.selectButton.triggered.connect(mainWindow.outpaint_mode_select)
+    mainWindow.outpaint_controls.w.outpaintButton.triggered.connect(mainWindow.outpaint_mode_outpaint)
+    mainWindow.outpaint_controls.w.dragButton.triggered.connect(mainWindow.outpaint_mode_drag)
     sys.exit(app.exec())
 
 

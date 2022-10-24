@@ -99,6 +99,7 @@ class GenerateWindow(QObject):
         self.ftimer = QTimer(self)
         self.signals = Callbacks()
         self.image_lab = ImageLab()
+        self.outpaint_controls = OutpaintControls()
 
         # self.kf = Keyframes()
 
@@ -231,11 +232,11 @@ class GenerateWindow(QObject):
 
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(512, 256))
 
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.compass.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.compass.w.dockWidget)
 
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.animKeys.w.dockWidget)
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sampler.w.dockWidget)
-        self.w.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.w.sizer_count.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animKeys.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.sampler.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.sizer_count.w.dockWidget)
 
         self.w.tabifyDockWidget(self.animKeys.w.dockWidget, self.w.sampler.w.dockWidget)
         self.w.tabifyDockWidget(self.w.sampler.w.dockWidget, self.w.sizer_count.w.dockWidget)
@@ -251,6 +252,7 @@ class GenerateWindow(QObject):
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.dynaview.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.path_setup.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.dynaimage.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.outpaint_controls.w.dockWidget)
 
         self.dynaimage.w.setMinimumSize(QtCore.QSize(400, 256))
 
@@ -300,7 +302,45 @@ class GenerateWindow(QObject):
 
         self.load_settings()
         self.w.actiontest_save_output.triggered.connect(self.outpaint.canvas.reset)
+    def outpaint_mode_generic(self):
+        self.outpaint.canvas.mode = 'generic'
+        self.outpaint.canvas.update()
+    def outpaint_mode_select(self):
+        self.outpaint.canvas.mode = 'select'
+        self.outpaint.canvas.update()
+    def outpaint_mode_outpaint(self):
+        self.outpaint.canvas.mode = 'outpaint'
+        self.outpaint.canvas.update()
+    def outpaint_mode_drag(self):
+        self.outpaint.canvas.mode = 'drag'
+        self.outpaint.canvas.update()
+    def change_outpaint_rendermode(self):
 
+
+
+        self.rendermode = self.outpaint_controls.w.rendermode.currentText()
+        print(f"render mode changed to {self.rendermode}")
+        if self.rendermode == 1:
+            self.outpaint.canvas.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+        elif self.rendermode == 2:
+            self.outpaint.canvas.painter.setCompositionMode(QPainter.CompositionMode_DestinationOver)
+        elif self.rendermode == 3:
+            self.outpaint.canvas.painter.setCompositionMode(QPainter.CompositionMode_Xor)
+        elif self.rendermode == 4:
+            self.outpaint.canvas.painter.setCompositionMode(QPainter.CompositionMode_Plus)
+        elif self.rendermode == 5:
+            self.outpaint.canvas.painter.setCompositionMode(QPainter.CompositionMode_Multiply)
+        elif self.rendermode == 6:
+            self.outpaint.canvas.painter.setCompositionMode(QPainter.CompositionMode_Screen)
+        elif self.rendermode == 7:
+            self.outpaint.canvas.painter.setCompositionMode(QPainter.CompositionMode_Overlay)
+        elif self.rendermode == 8:
+            self.outpaint.canvas.painter.setCompositionMode(QPainter.RasterOp_SourceOrDestination)
+        elif self.rendermode == 9:
+            self.outpaint.canvas.painter.setCompositionMode(QPainter.RasterOp_SourceAndDestination)
+        elif self.rendermode == 10:
+            self.outpaint.canvas.painter.setCompositionMode(QPainter.RasterOp_SourceXorDestination)
+        self.outpaint.canvas.update()
 
     def prepare_loading(self):
         transformers.logging.set_verbosity_error()
@@ -725,15 +765,18 @@ class GenerateWindow(QObject):
 
     def deforum_txt2img_thread(self):
         # for debug
-        self.run_deforum_txt2img()
+        #self.run_deforum_txt2img()
         # Pass the function to execute
+
         #worker = Worker(self.run_deforum_txt2img)
-        # Execute
-        #self.threadpool.start(worker)
+
+        self.choice = "Text to Image"
+        worker = Worker(self.run_deforum_txt2img)
+
 
     def deforum_outpaint_thread(self):
         # for debug
-        #self.run_deforum_txt2img()
+        self.choice = "Outpaint"
         # Pass the function to execute
         worker = Worker(self.run_deforum_outpaint)
         # Execute
@@ -777,12 +820,26 @@ class GenerateWindow(QObject):
             self.timeline.timeline.pointerTimePos = self.now
 
         elif self.renderedFrames > 0 and self.videoPreview == False:
-            image = self.image.convert("RGBA")
-            qimage = ImageQt(image)
+            image = self.image #.convert("RGBA")
+            self.painter.setRenderHint(QPainter.LosslessImageRendering)
+            qimage = ImageQt(image.convert("RGBA"))
             if self.outpaint.canvas.selected_item is not None:
                 for items in self.outpaint.canvas.rectlist:
                     if items.id == self.outpaint.canvas.selected_item:
-                        items.image = qimage
+                        templist = items.images
+                        templist.append(qimage)
+                        #print("adding image")
+                        #items.image = qimage
+                        items.images = templist
+
+                        if items.index == None:
+                            items.index = 0
+                        else:
+                            items.index = items.index + 1
+                        items.image = items.images[items.index]
+                        items.order = len(self.outpaint.canvas.rectlist)
+                        print(items.order)
+
 
 
             self.painter.drawImage(QRect(0, 0, self.image.im.size[0], self.image.im.size[1]), qimage)

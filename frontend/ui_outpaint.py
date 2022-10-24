@@ -26,10 +26,14 @@ class Rectangle(object):
         self.w = w
         self.h = h
         self.image = None
+        self.index = None
+        self.images = []
+        self.order = None
         self.color = __idleColor__
 
 class Callbacks(QObject):
     outpaint_signal = Signal()
+    txt2img_signal = Signal()
 
 
 
@@ -85,6 +89,8 @@ class Canvas(QGraphicsView):
         self.pen_color = QColor('#000000')
         self.mode = 'drag'
         self.setMouseTracking(True)
+        self.painter = QPainter()
+
         self.update()
         self.setScene(self.scene)
         self.fitInView(self.bgitem, Qt.AspectRatioMode.IgnoreAspectRatio)
@@ -95,6 +101,7 @@ class Canvas(QGraphicsView):
         self.outpaintitem = None
         self.outpaintsource = None
 
+        self.rendermode = 1
 
     def getXScale(self):
         return float(1024)/float(self.width())
@@ -135,7 +142,7 @@ class Canvas(QGraphicsView):
         for i in self.rectlist:
             print(i.x)
             if i.x <= self.scene.scenePos.x() <= i.x + i.w and i.y <= self.scene.scenePos.y() <= i.y + i.h:
-                print("found")
+                print(f"found{id}")
                 i.color = __selColor__
                 self.update()
                 self.hover_item = i.id
@@ -145,95 +152,68 @@ class Canvas(QGraphicsView):
                 self.update()
             if not matchFound:
                 self.hover_item = None
-        #self.update()
+        self.update()
+    def first_rectangle(self):
+        self.hoverCheck()
+        if self.hover_item is None:
+            self.addrect()
+            self.signals.txt2img_signal.emit()
+            self.mode = "outpaint"
+
+    def redo_outpaint(self, id):
+        outpaintimage = QPixmap(self.w, self.h)
+        outpaintimage.fill(Qt.transparent)
+        outpainter = QPainter()
+        outpainter.begin(outpaintimage)
+        outpainter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+        outpainter.setRenderHint(QPainter.LosslessImageRendering)
+        self.selected_item = id
+        for x in self.rectlist:
+            if x.id == id:
+                x.image = None
+                self.update()
+                for i in self.rectlist:
+                    if x.y >= i.y - self.h and x.x >= i.x - self.w:
+                        if x.y <= i.y + self.h and x.x <= i.x + i.w:
+                            if i.id != x.id:
+                                #i.color = __selColor__
+                                #self.update()
+                                    if i.image is not None:
+                                        print("Found an image to outpaint")
+                                        rect = QRect(x.x - i.x, x.y - i.y, self.w, self.h)
+                                        newimage = i.image.copy(rect)
+                                        outpainter.drawImage(0,0,newimage)
+                                        #self.addrect()
+        outpaintimage.save("outpaint.png")
+        outpainter.end()
+        self.outpaintsource = "outpaint.png"
+        self.redo = True
+        self.signals.outpaint_signal.emit()
 
     def region_to_outpaint(self, event):
-        print("Region to paint")
-        #oldZoom = self.zoom
-        #self.zoom = 1.0
-        #self.updateView()
-        x = 0
-        outpaintimage = QPixmap(512,512)
+        outpaintimage = QPixmap(self.w, self.h)
         outpaintimage.fill(Qt.transparent)
         outpainter = QPainter()
         outpainter.begin(outpaintimage)
         outpainter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         outpainter.setRenderHint(QPainter.LosslessImageRendering)
         for i in self.rectlist:
-
-            rangeXmin = i.x - self.w
-            rangeXmax = i.x + i.w
-            rangeYmin = i.y - self.h
-            rangeYmax = i.y + i.h
-            if i.image is not None:
-                print(f"this is our object: {i.x, i.y}")
-                print(f"rangeYMin: {rangeYmin}")
-            #point =
-            #viewpoint = mapFromScene(self.scene)
-            #print(viewpoint)
-
             if (self.scene.scenePos.y() - self.h / 2) >= i.y - self.h and (self.scene.scenePos.x() - self.w / 2) >= i.x - self.w:
                 if (self.scene.scenePos.y() - self.h / 2) <= i.y + self.h and (self.scene.scenePos.x() - self.w / 2) <= i.x + i.w:
-
-
-            #if i.x - self.w <= self.scene.scenePos.x() - self.w / 2 <= i.x + i.w or i.y - self.h <= self.scene.scenePos.y() + self.h / 2 <= i.y + i.h:
-
-
-
-
-                    print("MATCH")
+                    print("Found an image to outpaint")
                     i.color = __selColor__
                     self.update()
-                    #newimage = QImage(self.w, self.h, QImage.Format_ARGB32)
-
                     if i.image is not None:
                         rect = QRect((self.scene.scenePos.x() - self.w / 2) - i.x, (self.scene.scenePos.y() - self.h / 2) - i.y, self.w, self.h)
                         newimage = i.image.copy(rect)
                         outpainter.drawImage(0,0,newimage)
-
-                        #newimage.save(f"test{x}.png")
-                        #outpaintimage.save(f"outpaint{x}.png")
-                        print(f"test{x}.jpg saved...")
-
                         self.addrect()
-                        #self.selected_item = i.id
-
-
         outpaintimage.save("outpaint.png")
         outpainter.end()
         self.outpaintsource = "outpaint.png"
         self.signals.outpaint_signal.emit()
 
-            #if i.x <= self.scene.scenePos.x() - self.w / 2 <= i.x + i.w and i.y <= self.scene.scenePos.y() - self.h / 2 <= i.y + i.h:
-            #    print("found")
-            #    x += 1
-            #    i.color = __selColor__
-            #    if i.image is not None:
-            #        i.image.save(f"test{x}.jpg")
 
-        """if self.selected_item is not None:
-            for i in self.rectlist:
-                print("check1")
-                if i.image is None:
-                    ("check2")
-                    for image_rect in self.rectlist:
-                        print("check3")
-                        if image_rect.image is not None:
-                            print(image_rect.x, image_rect.y, i.x, i.y)
-
-
-                            if image_rect.x < i.x < image_rect.x + image_rect.w or image_rect.y < i.y < image_rect.y + image_rect.h:
-                                #area = QRect(i.x, i.y, i.w, i.h)
-                                #image = QImage(i.w, i.h, QImage.Format_ARGB32)
-                                #painter = QPainter()
-                                #painter.begin(image)
-                                #self.render(painter, QRectF(0,0,i.w,i.h), area, Qt.AspectRatioMode.IgnoreAspectRatio)
-                                #painter.end()
-                                image_rect.image.save(f"test{x}.jpg")
-                                x += 1
-                                print(f"saved image from  {i.x}, {i.y}, {i.w}, {i.h}")"""
-        #self.zoom = oldZoom
-        #self.updateView()
     def mousePressEvent(self, e):
         #self.reset()
         fn = getattr(self, "%s_mousePressEvent" % self.mode, None)
@@ -258,18 +238,25 @@ class Canvas(QGraphicsView):
         fn = getattr(self, "%s_mouseDoubleClickEvent" % self.mode, None)
         if fn:
             return fn(e)
+    def sortRects(self, e):
+        if e.order is not None:
+            key = e.order
+        else:
+            key = 0
+        return key
     def paintEvent(self, e):
-        painter = QPainter()
-        painter.begin(self.pixmap)
+        #print(self.rendermode)
 
+        self.painter.setCompositionMode(QPainter.CompositionMode_Screen)
+        self.painter.setRenderHint(QPainter.LosslessImageRendering)
+        self.painter.begin(self.pixmap)
+        #self.pixmap.fill(Qt.black)
         #painter.drawText(0, 50, 256, 256, Qt.AlignHCenter, "C - Hand Drag\nV - Place Rectangles")
-
         #Show Outpaint Preview rectangle
         #rect = QRect(0, self.height() - 256, 256, 256)
         #painter.drawRect(rect)
-
-
         if self.rectlist is not []:
+            self.rectlist.sort(reverse=False, key=self.sortRects)
             for i in self.rectlist:
                 rect = QRect(i.x, i.y, i.w, i.h)
                 if i.image is not None:
@@ -279,14 +266,14 @@ class Canvas(QGraphicsView):
 
 
 
-                    painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
+                    self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
                     #self.drawForeground(painter, rect)
                     #painter.drawPixmap()
                 else:
                     if self.mode == "generic" or self.mode == "outpaint":
-                        painter.setPen(i.color)
-                        painter.drawRect(rect)
-        painter.end()
+                        self.painter.setPen(i.color)
+                        self.painter.drawRect(rect)
+        self.painter.end()
 
         self.bgitem.setPixmap(self.pixmap)
 
@@ -337,10 +324,17 @@ class Canvas(QGraphicsView):
         super(Canvas, self).keyReleaseEvent(e)
 
     def select_mousePressEvent(self, e):
-        if self.hover_item is not None:
-            self.selected_item = self.hover_item
+        if e.button() == Qt.RightButton:
+            if self.hover_item is not None:
+                self.selected_item = self.hover_item
+                self.redo_outpaint(self.selected_item)
+            else:
+                self.selected_item = None
         else:
-            self.selected_item = None
+            if self.hover_item is not None:
+                self.selected_item = self.hover_item
+            else:
+                self.selected_item = None
 
     def select_mouseMoveEvent(self, e):
         self.hoverCheck()
@@ -352,7 +346,8 @@ class Canvas(QGraphicsView):
         self._start = e.pos()
         self.posx = e.pos().x()
         self.posy = e.pos().y()
-        self.addrect()
+        self.first_rectangle()
+        #self.addrect()
 
         return
 

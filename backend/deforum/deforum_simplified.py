@@ -39,7 +39,7 @@ from contextlib import contextmanager, nullcontext
 import numexpr
 from backend.outpaint.utils import *
 from backend.outpaint.toxicode_utils import *
-from backend.outpaint import ddim_simplified
+from backend.outpaint.ddim_simplified import DDIMSampler_simple
 
 from typing import Any, Callable, Optional
 import torch
@@ -1462,7 +1462,7 @@ class DeforumGenerator():
         device = self.device
         # this explains the [1, 4, 64, 64]
         shape = (batch_size, C, H//f, W//f)
-        sampler = ddim_simplified.DDIMSampler_simple(gs.models["sd"])
+        sampler = DDIMSampler_simple()
 
         sampler.make_schedule(ddim_num_steps=steps, ddim_eta=ddim_eta, verbose=False)
 

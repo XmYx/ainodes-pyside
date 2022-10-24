@@ -6,13 +6,13 @@ from tqdm import tqdm
 
 from ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, make_ddim_timesteps, noise_like, \
     extract_into_tensor
-
-
+from backend.singleton import singleton
+gs = singleton
 class DDIMSampler_simple(object):
-    def __init__(self, model, schedule="linear", **kwargs):
+    def __init__(self, schedule="linear", **kwargs):
         super().__init__()
-        self.model = model
-        self.ddpm_num_timesteps = model.num_timesteps
+        #gs.models["sd"] = model
+        self.ddpm_num_timesteps = gs.models["sd"].num_timesteps
         self.schedule = schedule
 
     def register_buffer(self, name, attr):
@@ -31,15 +31,15 @@ class DDIMSampler_simple(object):
 
         self.ddim_timesteps = make_ddim_timesteps(ddim_discr_method=ddim_discretize, num_ddim_timesteps=ddim_num_steps,
                                                   num_ddpm_timesteps=self.ddpm_num_timesteps, verbose=verbose)
-        alphas_cumprod = self.model.alphas_cumprod
+        alphas_cumprod = gs.models["sd"].alphas_cumprod
         assert alphas_cumprod.shape[0] == self.ddpm_num_timesteps, 'alphas have to be defined for each timestep'
 
-        def to_torch(x): return x.clone().detach().to(torch.float32).to(self.model.device)
+        def to_torch(x): return x.clone().detach().to(torch.float32).to(gs.models["sd"].device)
 
-        self.register_buffer('betas', to_torch(self.model.betas))
+        self.register_buffer('betas', to_torch(gs.models["sd"].betas))
         self.register_buffer('alphas_cumprod', to_torch(alphas_cumprod))
         self.register_buffer('alphas_cumprod_prev', to_torch(
-            self.model.alphas_cumprod_prev))
+            gs.models["sd"].alphas_cumprod_prev))
 
         # calculations for diffusion q(x_t | x_{t-1}) and others
         self.register_buffer('sqrt_alphas_cumprod',
@@ -80,7 +80,7 @@ class DDIMSampler_simple(object):
             unconditional_guidance_scale=1.,
             unconditional_conditioning=None):
 
-        device = self.model.betas.device
+        device = gs.models["sd"].betas.device
         batch_size = shape[0]
 
         timesteps = self.ddim_timesteps
@@ -122,7 +122,7 @@ class DDIMSampler_simple(object):
                 assert x0 is not None
                 # TODO: deterministic forward pass?
 
-                img_orig_with_noise = self.model.q_sample(
+                img_orig_with_noise = gs.models["sd"].q_sample(
                     x0, ts)  # [1, 4, 64, 64] => [1, 4, 64, 64]
                 # equivalent to
                 # img_orig_with_noise = self.stochastic_encode(x0, tensor([index]*batch_size).to(device))
@@ -158,12 +158,12 @@ class DDIMSampler_simple(object):
         b, *_, device = *x.shape, x.device
 
         if unconditional_conditioning is None or unconditional_guidance_scale == 1.:
-            e_t = self.model.apply_model(x, t, c)
+            e_t = gs.models["sd"].apply_model(x, t, c)
         else:
             x_in = torch.cat([x] * 2)
             t_in = torch.cat([t] * 2)
             c_in = torch.cat([unconditional_conditioning, c])
-            e_t_uncond, e_t = self.model.apply_model(x_in, t_in, c_in).chunk(2)
+            e_t_uncond, e_t = gs.models["sd"].apply_model(x_in, t_in, c_in).chunk(2)
             e_t = e_t_uncond + unconditional_guidance_scale * \
                 (e_t - e_t_uncond)
 

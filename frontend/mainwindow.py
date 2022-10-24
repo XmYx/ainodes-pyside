@@ -772,6 +772,7 @@ class GenerateWindow(QObject):
 
         self.choice = "Text to Image"
         worker = Worker(self.run_deforum_txt2img)
+        self.threadpool.start(worker)
 
 
     def deforum_outpaint_thread(self):

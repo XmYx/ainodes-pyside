@@ -158,6 +158,7 @@ class Canvas(QGraphicsView):
         outpainter = QPainter()
         outpainter.begin(outpaintimage)
         outpainter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+        outpainter.setRenderHint(QPainter.LosslessImageRendering)
         for i in self.rectlist:
 
             rangeXmin = i.x - self.w
@@ -190,15 +191,16 @@ class Canvas(QGraphicsView):
                         newimage = i.image.copy(rect)
                         outpainter.drawImage(0,0,newimage)
 
-                        newimage.save(f"test{x}.png")
-                        outpaintimage.save(f"outpaint{x}.png")
+                        #newimage.save(f"test{x}.png")
+                        #outpaintimage.save(f"outpaint{x}.png")
                         print(f"test{x}.jpg saved...")
 
                         self.addrect()
                         #self.selected_item = i.id
 
-        outpainter.end()
+
         outpaintimage.save("outpaint.png")
+        outpainter.end()
         self.outpaintsource = "outpaint.png"
         self.signals.outpaint_signal.emit()
 

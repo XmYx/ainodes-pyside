@@ -299,7 +299,7 @@ class GenerateWindow(QObject):
         self.prompt_fetcher.w.dreamPrompt.clicked.connect(self.dream_prompt)
 
         self.load_settings()
-        self.w.actiontest_save_output.triggered.connect(self.test_save_outpaint)
+        self.w.actiontest_save_output.triggered.connect(self.outpaint.canvas.reset)
 
 
     def prepare_loading(self):
@@ -709,7 +709,7 @@ class GenerateWindow(QObject):
 
         #self.outpaint.canvas.outpaintsource = 'test0.jpg'
         init_image = self.outpaint.canvas.outpaintsource
-        init_image = 'test0.png'
+        #init_image = 'test0.png'
         self.deforum.sampler_name = sampler_name
         self.deforum.outpaint_txt2img(init_image=init_image,
                                       mask_blur=self.animSliders.w.mask_blur.value() / 10,
@@ -768,6 +768,7 @@ class GenerateWindow(QObject):
         self.painter.begin(self.ipixmap)
         if self.videoPreview == True and self.renderedFrames > 0:
             qimage = ImageQt(self.currentFrames[self.now])
+            self.painter.setRenderHint(QPainter.LosslessImageRendering)
             self.painter.drawImage(QRect(0, 0, self.image.im.size[0], self.image.im.size[1]), qimage)
             if advance == True:
                 self.now += 1
@@ -816,7 +817,7 @@ class GenerateWindow(QObject):
     # callback
     def imageCallback_signal(self, image, *args, **kwargs):
 
-        if self.choice == "Text to Image":
+        if self.choice == "Text to Image" or self.choice == "Text to Image LM":
             if self.deforum.sample_number > 1:
                 #self.image_path = image
                 self.signals.add_image_to_thumbnail_signal.emit(image)

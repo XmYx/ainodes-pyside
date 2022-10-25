@@ -2,7 +2,7 @@ import sys
 from PIL import Image
 
 
-def get_ascii(image_path, ratio=0.55, greysacale_type=1):
+def to_ascii(image_path, ratio=0.55, greysacale_type=1):
     img = Image.open(image_path)
 
     # resize the image
@@ -20,9 +20,9 @@ def get_ascii(image_path, ratio=0.55, greysacale_type=1):
     pixels = img.getdata()
 
     # replace each pixel with a character from array
-    chars = ["B", "S", "#", "&", "@", "$", "%", "*", "!", ":", "."]
+    chars =     ["B", "S", "#", "&", "@", "$", "%", "*", "!", ":", "."]
     if greysacale_type != 1:
-        chars = ["@", "#", "S", "%", "?", "*", "+", ";", ":", "," "."]
+        chars = ["@", "#", "S", "%", "?", "*", "+", ";", ":", ",", "."]
     new_pixels = [chars[pixel // 25] for pixel in pixels]
     new_pixels = ''.join(new_pixels)
 
@@ -30,4 +30,6 @@ def get_ascii(image_path, ratio=0.55, greysacale_type=1):
     new_pixels_count = len(new_pixels)
     ascii_image = [new_pixels[index:index + new_width] for index in range(0, new_pixels_count, new_width)]
     ascii_image = "\n".join(ascii_image)
-    return ascii_image
+    f = open(image_path + '.txt', 'w')
+    f.write(ascii_image)
+    f.close

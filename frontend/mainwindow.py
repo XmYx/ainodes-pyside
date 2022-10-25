@@ -35,6 +35,7 @@ from backend.deforum.deforum_simplified import DeforumGenerator
 from backend.ui_func import getLatestGeneratedImagesFromPath
 from backend.worker import Worker
 from backend.prompt_ai.prompt_gen import generate_prompt
+
 from frontend.ui_classes import *
 from frontend.nodeeditor import *
 from frontend.ui_image_lab import ImageLab
@@ -58,6 +59,7 @@ class Callbacks(QObject):
     deforum_image_cb = Signal()
     compviscallback = Signal()
     add_image_to_thumbnail_signal = Signal(str)
+    setStatusBar = Signal(str)
 
 
 class GenerateWindow(QObject):
@@ -124,7 +126,7 @@ class GenerateWindow(QObject):
         self.signals.deforum_image_cb.connect(self.add_image_to_thumbnail)
         self.signals.compviscallback.connect(self.deforumTest)
         self.signals.add_image_to_thumbnail_signal.connect(self.add_image_to_thumbnail)
-
+        self.signals.setStatusBar.connect(self.set_status_bar)
         # This is simply to show the bar
         self.w.progressBar.setGeometry(30, 40, 200, 25)
         self.w.progressBar.setValue(0)
@@ -293,8 +295,13 @@ class GenerateWindow(QObject):
         self.outpaint_controls.w.outpaintButton.clicked.connect(self.outpaint_mode_outpaint)
         self.outpaint_controls.w.dragButton.clicked.connect(self.outpaint_mode_drag)
 
-
         self.image_lab.signals.upscale_start.connect(self.upscale_start)
+        self.image_lab.signals.upscale_stop.connect(self.upscale_stop)
+        self.image_lab.signals.upscale_counter.connect(self.upscale_count)
+        self.image_lab.signals.img_to_txt_start.connect(self.img_to_text_start)
+
+
+
         self.w.actionAnim.triggered.connect(self.show_anim)
         self.w.actionPreview.triggered.connect(self.show_preview)
         self.w.actionPrompt.triggered.connect(self.show_prompt)
@@ -485,12 +492,6 @@ class GenerateWindow(QObject):
         #self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.prompt.w.dockWidget)
         #self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)
         #self.outpaint = OutpaintUI()
-
-
-    def upscale_start(self):
-        self.w.statusBar().showMessage("Upscale Started...")
-
-
     def outpaint_mode_generic(self):
         print("generic mode")
         self.outpaint.canvas.mode = 'generic'
@@ -567,6 +568,29 @@ class GenerateWindow(QObject):
 
     def show_image_lab(self):
         self.image_lab.show()
+
+    def set_status_bar(self, txt):
+        self.w.statusBar().showMessage(txt)
+
+    def upscale_start(self):
+        self.signals.setStatusBar.emit("Upscale started...")
+        self.upscale_thread()
+
+    def upscale_stop(self):
+        self.signals.setStatusBar.emit("Upscale finished...")
+
+    def upscale_count(self, num):
+        self.signals.setStatusBar.emit(f"Upscaled {str(num)} image(s)...")
+
+    def upscale_thread(self):
+        worker = Worker(self.image_lab.run_upscale)
+        # Execute
+        self.threadpool.start(worker)
+
+    def img_to_text_start(self):
+        worker = Worker(self.image_lab.run_img2txt)
+        # Execute
+        self.threadpool.start(worker)
 
     def ai_prompt(self):
         out_text = ''

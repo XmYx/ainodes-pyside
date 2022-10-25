@@ -13,22 +13,11 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
     <widget class="QDockWidget" name="dockWidget">
      <widget class="QWidget" name="dockWidgetContents">
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0" rowspan="2">
-        <widget class="QWidget" name="widget" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>0</height>
-          </size>
-         </property>
-         <layout class="QVBoxLayout" name="dropZone"/>
-        </widget>
-       </item>
        <item row="0" column="1">
         <widget class="QWidget" name="widget_2" native="true">
          <property name="minimumSize">
@@ -44,172 +33,289 @@
           </size>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="4" column="0">
-             <widget class="QLabel" name="esrStrength_lable">
-              <property name="text">
-               <string>RealESRGAN Strength</string>
+           <widget class="QTabWidget" name="tabWidget">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="Upscale">
+             <attribute name="title">
+              <string>Upscale</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <property name="leftMargin">
+               <number>5</number>
               </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <widget class="QRadioButton" name="RealESRGAN">
-              <property name="text">
-               <string>RealESRGAN</string>
+              <property name="topMargin">
+               <number>0</number>
               </property>
-              <property name="checked">
-               <bool>true</bool>
+              <property name="rightMargin">
+               <number>5</number>
               </property>
-             </widget>
-            </item>
-            <item row="10" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>GFPGAN Strength</string>
+              <property name="bottomMargin">
+               <number>0</number>
               </property>
-             </widget>
-            </item>
-            <item row="7" column="0">
-             <widget class="QRadioButton" name="RealESRGANAnime">
-              <property name="text">
-               <string>RealESRGAN Anime</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QCheckBox" name="ESRGAN">
-              <property name="text">
-               <string>Upscale</string>
-              </property>
-             </widget>
-            </item>
-            <item row="13" column="0">
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="5" column="0">
-             <widget class="QSlider" name="esrStrength">
-              <property name="minimum">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="value">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QSlider" name="esrScale">
-              <property name="minimum">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="value">
-               <number>2</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>RealESRGAN Scale</string>
-              </property>
-             </widget>
-            </item>
-            <item row="8" column="0">
-             <widget class="QRadioButton" name="GoBig">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Go Big</string>
-              </property>
-             </widget>
-            </item>
-            <item row="11" column="0">
-             <widget class="QSlider" name="gfpStrength">
-              <property name="minimum">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="value">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="9" column="0">
-             <widget class="QCheckBox" name="GFPGAN">
-              <property name="text">
-               <string>GFPGAN</string>
-              </property>
-             </widget>
-            </item>
-            <item row="12" column="0">
-             <widget class="QPushButton" name="startUpscale">
-              <property name="text">
-               <string>Start Upscale</string>
-              </property>
-             </widget>
-            </item>
-            <item row="11" column="1">
-             <widget class="QLCDNumber" name="gfpStrengthNumber">
-              <property name="intValue" stdset="0">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1">
-             <widget class="QLCDNumber" name="esrStrengthNumber">
-              <property name="intValue" stdset="0">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QLCDNumber" name="esrScaleNumber">
-              <property name="intValue" stdset="0">
-               <number>2</number>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>Files</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLCDNumber" name="filesCount"/>
-            </item>
-           </layout>
+              <item>
+               <layout class="QGridLayout" name="gridLayout_3">
+                <item row="4" column="0">
+                 <widget class="QLabel" name="esrStrength_lable">
+                  <property name="text">
+                   <string>RealESRGAN Strength</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="0">
+                 <widget class="QRadioButton" name="RealESRGAN">
+                  <property name="text">
+                   <string>RealESRGAN</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="10" column="0">
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>GFPGAN Strength</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="7" column="0">
+                 <widget class="QRadioButton" name="RealESRGANAnime">
+                  <property name="text">
+                   <string>RealESRGAN Anime</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QCheckBox" name="ESRGAN">
+                  <property name="text">
+                   <string>Upscale</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="13" column="0">
+                 <spacer name="verticalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="5" column="0">
+                 <widget class="QSlider" name="esrStrength">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>100</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QSlider" name="esrScale">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>2</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label">
+                  <property name="text">
+                   <string>RealESRGAN Scale</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="8" column="0">
+                 <widget class="QRadioButton" name="GoBig">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>Go Big</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="11" column="0">
+                 <widget class="QSlider" name="gfpStrength">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>100</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="9" column="0">
+                 <widget class="QCheckBox" name="GFPGAN">
+                  <property name="text">
+                   <string>GFPGAN</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="12" column="0">
+                 <widget class="QPushButton" name="startUpscale">
+                  <property name="text">
+                   <string>Start Upscale</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="11" column="1">
+                 <widget class="QLCDNumber" name="gfpStrengthNumber">
+                  <property name="intValue" stdset="0">
+                   <number>100</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="5" column="1">
+                 <widget class="QLCDNumber" name="esrStrengthNumber">
+                  <property name="intValue" stdset="0">
+                   <number>100</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QLCDNumber" name="esrScaleNumber">
+                  <property name="intValue" stdset="0">
+                   <number>2</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>Files</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLCDNumber" name="filesCount"/>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="imgToTxt">
+             <attribute name="title">
+              <string>Img2Txt</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <layout class="QGridLayout" name="gridLayout_2">
+                <item row="0" column="0">
+                 <widget class="QCheckBox" name="grayscaleType">
+                  <property name="text">
+                   <string>Grayscale Type 1</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <spacer name="verticalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QPushButton" name="startImgToTxt">
+                  <property name="text">
+                   <string>Image to text</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QSlider" name="img2txtRatio">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>Ratio</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLCDNumber" name="img2txtRatioNumber">
+                  <property name="intValue" stdset="0">
+                   <number>1</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="0" column="0" rowspan="2">
+        <widget class="QWidget" name="widget" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <layout class="QVBoxLayout" name="dropZone"/>
         </widget>
        </item>
       </layout>
@@ -265,6 +371,22 @@
     <hint type="destinationlabel">
      <x>654</x>
      <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>img2txtRatio</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>img2txtRatioNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>535</x>
+     <y>135</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>650</x>
+     <y>136</y>
     </hint>
    </hints>
   </connection>

@@ -181,8 +181,6 @@ if __name__ == "__main__":
     mainWindow.w.preview.w.zoomInButton.clicked.connect(mainWindow.zoom_IN)
     mainWindow.w.preview.w.zoomOutButton.clicked.connect(mainWindow.zoom_OUT)
 
-    mainWindow.w.sizer_count.w.widthSlider.valueChanged.connect(mainWindow.update_outpaint_parameters)
-    mainWindow.w.sizer_count.w.heightSlider.valueChanged.connect(mainWindow.update_outpaint_parameters)
 
     mainWindow.outpaint.canvas.signals.outpaint_signal.connect(mainWindow.deforum_outpaint_thread)
     mainWindow.outpaint.canvas.signals.txt2img_signal.connect(mainWindow.deforum_txt2img_thread)
@@ -190,7 +188,8 @@ if __name__ == "__main__":
 
     mainWindow.outpaint_controls.w.redoButton.clicked.connect(mainWindow.redo_current_outpaint)
     mainWindow.outpaint_controls.w.delButton.clicked.connect(mainWindow.delete_outpaint_frame)
-
+    mainWindow.outpaint_controls.w.widthSlider.valueChanged.connect(mainWindow.update_outpaint_parameters)
+    mainWindow.outpaint_controls.w.heightSlider.valueChanged.connect(mainWindow.update_outpaint_parameters)
     mainWindow.outpaint.canvas.signals.update_selected.connect(mainWindow.show_outpaint_details)
 
 

@@ -302,7 +302,8 @@ class GenerateWindow(QObject):
         self.prompt_fetcher.w.dreamPrompt.clicked.connect(self.dream_prompt)
 
         self.load_settings()
-        self.w.actiontest_save_output.triggered.connect(self.outpaint.canvas.reset)
+        self.w.actionClearCanvas.triggered.connect(self.outpaint.canvas.reset)
+        self.w.actionSave_Canvas.triggered.connect(self.outpaint.canvas.save_canvas)
 
         self.outpaint_controls.w.rendermode.currentTextChanged.connect(self.change_outpaint_rendermode)
         self.outpaint_controls.w.genericButton.clicked.connect(self.outpaint_mode_generic)
@@ -775,7 +776,8 @@ class GenerateWindow(QObject):
                                       seed=random.randint(0, 2**32 - 1) if self.w.sampler.w.seed.text() == '' else int(self.w.sampler.w.seed.text()),
                                       prompt=self.w.prompt.w.textEdit.toPlainText(),
                                       strength=self.animSliders.w.strength.value() / 100,
-                                      mask_blur=int(self.animSliders.w.mask_blur.value() / 10),
+                                      mask_blur=int(self.outpaint_controls.w.maskBlur.value()),
+                                      recons_blur=int(self.outpaint_controls.w.reconsBlur.value()),
                                       scale=self.w.sampler.w.scale.value() / 100,
                                       ddim_eta=self.animSliders.w.ddim_eta.value() / 1000,
                                       image_callback=self.imageCallback_signal)
@@ -867,7 +869,7 @@ class GenerateWindow(QObject):
 
         elif self.renderedFrames > 0 and self.videoPreview == False:
             image = self.image #.convert("RGBA")
-            self.painter.setRenderHint(QPainter.LosslessImageRendering)
+            #self.painter.setRenderHint(QPainter.LosslessImageRendering)
             qimage = ImageQt(image.convert("RGBA"))
             if self.outpaint.canvas.selected_item is not None:
                 for items in self.outpaint.canvas.rectlist:

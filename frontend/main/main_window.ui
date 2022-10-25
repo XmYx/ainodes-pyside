@@ -32,7 +32,7 @@
      <x>0</x>
      <y>0</y>
      <width>695</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -50,7 +50,8 @@
     <addaction name="actionSave_System_Settings"/>
     <addaction name="actionSave_Diffusion_Settings"/>
     <addaction name="separator"/>
-    <addaction name="actiontest_save_output"/>
+    <addaction name="actionClearCanvas"/>
+    <addaction name="actionSave_Canvas"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -181,14 +182,19 @@
     <string>Outpaint</string>
    </property>
   </action>
-  <action name="actiontest_save_output">
+  <action name="actionClearCanvas">
    <property name="text">
-    <string>test_save_output</string>
+    <string>Clear Canvas</string>
    </property>
   </action>
   <action name="actionLoad_Default_Settings">
    <property name="text">
     <string>Load Default Settings</string>
+   </property>
+  </action>
+  <action name="actionSave_Canvas">
+   <property name="text">
+    <string>Save Canvas</string>
    </property>
   </action>
  </widget>

@@ -56,10 +56,142 @@
             <x>0</x>
             <y>0</y>
             <width>419</width>
-            <height>618</height>
+            <height>623</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="3">
+            <widget class="QPushButton" name="delButton">
+             <property name="text">
+              <string>DELETE</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="0">
+            <widget class="QListWidget" name="rectList">
+             <property name="dragEnabled">
+              <bool>true</bool>
+             </property>
+             <property name="dragDropMode">
+              <enum>QAbstractItemView::DragDrop</enum>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="resizeMode">
+              <enum>QListView::Adjust</enum>
+             </property>
+             <property name="layoutMode">
+              <enum>QListView::Batched</enum>
+             </property>
+             <property name="viewMode">
+              <enum>QListView::IconMode</enum>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
+              <widget class="QPushButton" name="dragButton">
+               <property name="text">
+                <string>drag</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="selectButton">
+               <property name="text">
+                <string>select</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QPushButton" name="outpaintButton">
+               <property name="text">
+                <string>outpaint</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QPushButton" name="genericButton">
+               <property name="text">
+                <string>generic</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="6" column="3">
+            <widget class="QLCDNumber" name="blurLCD">
+             <property name="digitCount">
+              <number>2</number>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Filled</enum>
+             </property>
+             <property name="intValue" stdset="0">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="3">
+            <widget class="QLCDNumber" name="reconsLCD">
+             <property name="digitCount">
+              <number>2</number>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Filled</enum>
+             </property>
+             <property name="intValue" stdset="0">
+              <number>50</number>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QSlider" name="reconsBlur">
+             <property name="maximum">
+              <number>200</number>
+             </property>
+             <property name="pageStep">
+              <number>1</number>
+             </property>
+             <property name="sliderPosition">
+              <number>50</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QSlider" name="maskBlur">
+             <property name="maximum">
+              <number>20</number>
+             </property>
+             <property name="pageStep">
+              <number>1</number>
+             </property>
+             <property name="value">
+              <number>10</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="0">
             <widget class="QComboBox" name="rendermode">
              <item>
@@ -114,13 +246,6 @@
              </item>
             </widget>
            </item>
-           <item row="8" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>TextLabel</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
             <widget class="QPushButton" name="redoButton">
              <property name="text">
@@ -128,63 +253,19 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="3">
-            <widget class="QPushButton" name="delButton">
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>DELETE</string>
+              <string>Mask Blur</string>
              </property>
             </widget>
            </item>
            <item row="7" column="0">
-            <widget class="QListWidget" name="rectList">
-             <property name="dragEnabled">
-              <bool>true</bool>
-             </property>
-             <property name="dragDropMode">
-              <enum>QAbstractItemView::DragDrop</enum>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>150</width>
-               <height>150</height>
-              </size>
-             </property>
-             <property name="viewMode">
-              <enum>QListView::IconMode</enum>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Reconstruction Blur</string>
              </property>
             </widget>
-           </item>
-           <item row="4" column="0">
-            <layout class="QGridLayout" name="gridLayout_3">
-             <item row="0" column="0">
-              <widget class="QPushButton" name="dragButton">
-               <property name="text">
-                <string>drag</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QPushButton" name="selectButton">
-               <property name="text">
-                <string>select</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QPushButton" name="outpaintButton">
-               <property name="text">
-                <string>outpaint</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="3">
-              <widget class="QPushButton" name="genericButton">
-               <property name="text">
-                <string>generic</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </item>
           </layout>
          </widget>
@@ -197,5 +278,38 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>maskBlur</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>blurLCD</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>172</x>
+     <y>150</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>376</x>
+     <y>151</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reconsBlur</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>reconsLCD</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>172</x>
+     <y>198</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>376</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

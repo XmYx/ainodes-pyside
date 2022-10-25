@@ -1404,7 +1404,8 @@ class DeforumGenerator():
                          n_rows=1,
                          ddim_eta=0.0,
                          blend_mask=None,
-                         mask_blur=15,
+                         mask_blur=10,
+                         recons_blur=10,
                          strength=0.95,
                          n_iter=1,
                          scale=7,
@@ -1466,8 +1467,8 @@ class DeforumGenerator():
 
         sampler.make_schedule(ddim_num_steps=steps, ddim_eta=ddim_eta, verbose=False)
 
+        mask_img = Image.open(init_image)
         img = Image.open(init_image)
-
         #if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
         #    alpha = img.convert('RGBA').split()[-1]
         #    alpha.save('mask.png')
@@ -1479,20 +1480,20 @@ class DeforumGenerator():
         height = img.size[1]
         for i in range(0,width):# process all pixels
             for j in range(0,height):
-                data = img.getpixel((i,j))
+                data = mask_img.getpixel((i,j))
                 #print(data)
                 #print(data)
                 # data[0] = Red,  [1] = Green, [2] = Blue
                 # data[0,1,2] range = 0~255
                 if data[3] == 0:# and data[1] < 1 and data[2] < 1:
                     #put black
-                    img.putpixel((i,j),(255,255,255))
+                    mask_img.putpixel((i,j),(255,255,255))
                 else :
                     #Put white
-                    img.putpixel((i,j),(0,0,0))
-
+                    mask_img.putpixel((i,j),(0,0,0))
+        blend_mask = mask_img.filter(ImageFilter.GaussianBlur(mask_blur))
         os.makedirs('output/temp', exist_ok=True)
-        img.save('output/temp/mask.png')
+        blend_mask.save('output/temp/mask.png')
         blend_mask = 'output/temp/mask.png'
 
         #if image_guide:
@@ -1512,7 +1513,7 @@ class DeforumGenerator():
 
         image_guide = image_path_to_torch(image_guide, device)
         latent_guide = torch_image_to_latent(gs.models["sd"], image_guide, n_samples=n_samples)
-        [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(device, blend_mask, blur=mask_blur)
+        [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(device, blend_mask, blur=mask_blur, recons_blur=recons_blur)
         masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]
 
         #print(type(latent_guide))

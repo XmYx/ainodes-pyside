@@ -1,6 +1,7 @@
+import os
 from datetime import datetime
 
-from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect, QLineF, QPointF, QObject
+from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect, QLineF, QPointF, QObject, QFile
 from PySide6.QtGui import Qt, QColor, QFont, QPalette, QPainter, QPen, QPolygon, QBrush, QPainterPath, QAction, QCursor, \
     QPixmap, QTransform, QDragEnterEvent, QDragMoveEvent, QImage
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
@@ -117,8 +118,8 @@ class Canvas(QGraphicsView):
         self.rendermode = 1
         #print(self.rendermode)
 
-        self.painter.setRenderHint(QPainter.LosslessImageRendering)
-        self.painter.setCompositionMode(QPainter.CompositionMode_DestinationOver)
+        #self.painter.setRenderHint(QPainter.LosslessImageRendering)
+        self.painter.setCompositionMode(QPainter.CompositionMode_Xor)
         self.soft_reset()
         self.fitInView(self.bgitem, Qt.AspectRatioMode.IgnoreAspectRatio)
 
@@ -172,6 +173,12 @@ class Canvas(QGraphicsView):
             if not matchFound:
                 self.hover_item = None
         self.update()
+    def save_canvas(self):
+        timestring = time.strftime('%Y-%m-%d-%H-%S')
+        filename = f"output/canvas/canvas_{timestring}.png"
+        os.makedirs('output/canvas', exist_ok=True)
+        file = QFile(filename)
+        self.pixmap.save(file, "PNG")
     def first_rectangle(self):
         self.hoverCheck()
         if self.hover_item is None:
@@ -215,7 +222,7 @@ class Canvas(QGraphicsView):
         outpainter = QPainter()
         outpainter.begin(outpaintimage)
         outpainter.setCompositionMode(QPainter.CompositionMode_SourceOver)
-        outpainter.setRenderHint(QPainter.LosslessImageRendering)
+        #outpainter.setRenderHint(QPainter.LosslessImageRendering)
         for i in self.rectlist:
             if (self.scene.scenePos.y() - self.h / 2) >= i.y - self.h and (self.scene.scenePos.x() - self.w / 2) >= i.x - self.w:
                 if (self.scene.scenePos.y() - self.h / 2) <= i.y + self.h and (self.scene.scenePos.x() - self.w / 2) <= i.x + i.w:

@@ -1436,10 +1436,9 @@ class DeforumGenerator():
                          image_callback=None,
                          with_inpaint=False,
                          ):
-        mask_img = Image.open(init_image)
+        print("Using 1.5 InPaint model") if with_inpaint else None
+        mask_img = Image.open("outpaint_mask.png")
         img = Image.open(init_image)
-        if mask_blur > 0:
-            mask_img = img.filter(ImageFilter.GaussianBlur(mask_blur))
         width = img.size[0]
         height = img.size[1]
         for i in range(0,width):# process all pixels
@@ -1449,16 +1448,20 @@ class DeforumGenerator():
                 #print(data)
                 # data[0] = Red,  [1] = Green, [2] = Blue
                 # data[0,1,2] range = 0~255
-                if data[3] < 10:# and data[1] < 1 and data[2] < 1:
+                if data[3] < 1:# and data[1] < 1 and data[2] < 1:
                     #put black
                     mask_img.putpixel((i,j),(255,255,255))
                 else :
                     #Put white
                     mask_img.putpixel((i,j),(0,0,0))
+        if mask_blur > 0 and with_inpaint == True:
+            mask_img = img.filter(ImageFilter.GaussianBlur(mask_blur))
+
         #mask_img = mask_img.filter(ImageFilter.GaussianBlur(mask_blur))
         os.makedirs('output/temp', exist_ok=True)
         mask_img.save('output/temp/mask.png')
-        if "sd" not in gs.models and with_inpaint == False:
+        blend_mask = 'output/temp/mask.png'
+        if with_inpaint == False:
             self.load_model()
             print(f"txt2img seed: {seed}   steps: {steps}  prompt: {prompt}")
             print(f"size:  {W}x{H}")
@@ -1514,7 +1517,7 @@ class DeforumGenerator():
 
             #img = Image.open('mask.png')
 
-            blend_mask = 'output/temp/mask.png'
+
 
             #if image_guide:
             #    image_guide = image_path_to_torch(image_guide, device)  # [1, 3, 512, 512]
@@ -1625,10 +1628,15 @@ class DeforumGenerator():
 
 
 
-        else:
-            if "sd" in gs.models or "inpaint" not in gs.models:
+        elif with_inpaint == True:
+            self.torch_gc()
+            if "inpaint" not in gs.models:
                 self.load_inpaint_model()
             sampler = DDIMSampler(gs.models["inpaint"])
+            image_guide = image_path_to_torch(init_image, self.device)
+            [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(self.device, blend_mask, blur=mask_blur, recons_blur=recons_blur)
+            masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]
+
             mask = mask_img
             image = Image.open(init_image)
             result = inpaint(
@@ -1642,7 +1650,8 @@ class DeforumGenerator():
                 num_samples=1,
                 h=height, w=width,
                 device=self.device,
-                )
+                mask_for_reconstruction=mask_for_reconstruction,
+                masked_image_for_blend=masked_image_for_blend,)
             result[0].save('output/test-' + str(seed) + '.png', 'PNG')
             image_callback(result[0])
 
@@ -1824,7 +1833,7 @@ class SamplerCallback(object):
 
 
 
-def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, num_samples=1, w=512, h=512):
+def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, mask_for_reconstruction, masked_image_for_blend, num_samples=1, w=512, h=512):
     #model = sampler.model
 
     prng = np.random.RandomState(seed)
@@ -1867,13 +1876,15 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, num_s
                 unconditional_conditioning=uc_full,
                 x_T=start_code,
             )
-            x_samples_ddim = gs.models["inpaint"].decode_first_stage(samples_cfg)
 
+
+            x_samples_ddim = gs.models["inpaint"].decode_first_stage(samples_cfg)
+            #x_samples_ddim = mask_for_reconstruction * x_samples_ddim #+ masked_image_for_blend
+            #x_samples_ddim =
             result = torch.clamp((x_samples_ddim+1.0)/2.0,
                                  min=0.0, max=1.0)
 
             result = result.cpu().numpy().transpose(0,2,3,1)
-            # result, has_nsfw_concept = check_safety(result)
             result = result*255
 
     result = [Image.fromarray(img.astype(np.uint8)) for img in result]

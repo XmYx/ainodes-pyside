@@ -774,7 +774,7 @@ class GenerateWindow(QObject):
 
                                       seed=random.randint(0, 2**32 - 1) if self.w.sampler.w.seed.text() == '' else int(self.w.sampler.w.seed.text()),
                                       prompt=self.w.prompt.w.textEdit.toPlainText(),
-                                      strength=self.animSliders.w.strength.value() / 1000,
+                                      strength=self.animSliders.w.strength.value() / 100,
                                       mask_blur=int(self.animSliders.w.mask_blur.value() / 10),
                                       scale=self.w.sampler.w.scale.value() / 100,
                                       ddim_eta=self.animSliders.w.ddim_eta.value() / 1000,

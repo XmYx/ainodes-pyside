@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>423</width>
+    <width>446</width>
     <height>670</height>
    </rect>
   </property>
@@ -55,43 +55,57 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>419</width>
-            <height>623</height>
+            <width>438</width>
+            <height>640</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="3">
-            <widget class="QPushButton" name="delButton">
-             <property name="text">
-              <string>DELETE</string>
+           <item row="18" column="3">
+            <widget class="QLCDNumber" name="ddimLCD">
+             <property name="digitCount">
+              <number>3</number>
              </property>
             </widget>
            </item>
            <item row="9" column="0">
-            <widget class="QListWidget" name="rectList">
-             <property name="dragEnabled">
-              <bool>true</bool>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Width</string>
              </property>
-             <property name="dragDropMode">
-              <enum>QAbstractItemView::DragDrop</enum>
+            </widget>
+           </item>
+           <item row="23" column="0">
+            <widget class="QSlider" name="maskBlur">
+             <property name="maximum">
+              <number>20</number>
              </property>
-             <property name="iconSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
+             <property name="pageStep">
+              <number>1</number>
              </property>
-             <property name="resizeMode">
-              <enum>QListView::Adjust</enum>
+             <property name="value">
+              <number>10</number>
              </property>
-             <property name="layoutMode">
-              <enum>QListView::Batched</enum>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
-             <property name="viewMode">
-              <enum>QListView::IconMode</enum>
+            </widget>
+           </item>
+           <item row="16" column="0">
+            <widget class="QSlider" name="scaleSilder">
+             <property name="minimum">
+              <number>1</number>
              </property>
-             <property name="wordWrap">
-              <bool>true</bool>
+             <property name="maximum">
+              <number>500</number>
+             </property>
+             <property name="pageStep">
+              <number>1</number>
+             </property>
+             <property name="value">
+              <number>75</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -127,68 +141,67 @@
              </item>
             </layout>
            </item>
-           <item row="6" column="3">
-            <widget class="QLCDNumber" name="blurLCD">
-             <property name="digitCount">
-              <number>2</number>
-             </property>
-             <property name="segmentStyle">
-              <enum>QLCDNumber::Filled</enum>
-             </property>
-             <property name="intValue" stdset="0">
-              <number>10</number>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="delButton">
+             <property name="text">
+              <string>DELETE</string>
              </property>
             </widget>
            </item>
-           <item row="8" column="3">
-            <widget class="QLCDNumber" name="reconsLCD">
-             <property name="digitCount">
-              <number>2</number>
-             </property>
-             <property name="segmentStyle">
-              <enum>QLCDNumber::Filled</enum>
-             </property>
-             <property name="intValue" stdset="0">
-              <number>50</number>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="0">
-            <widget class="QSlider" name="reconsBlur">
-             <property name="maximum">
-              <number>200</number>
-             </property>
-             <property name="pageStep">
+           <item row="14" column="0">
+            <widget class="QSlider" name="stepsSlider">
+             <property name="minimum">
               <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>250</number>
              </property>
              <property name="sliderPosition">
-              <number>50</number>
+              <number>15</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
-            <widget class="QSlider" name="maskBlur">
+           <item row="18" column="0">
+            <widget class="QSlider" name="ddimSilder">
              <property name="maximum">
-              <number>20</number>
+              <number>100</number>
              </property>
              <property name="pageStep">
               <number>1</number>
              </property>
-             <property name="value">
-              <number>10</number>
-             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
-           <item row="10" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>TextLabel</string>
+           <item row="27" column="0">
+            <widget class="QListWidget" name="rectList">
+             <property name="dragEnabled">
+              <bool>true</bool>
+             </property>
+             <property name="dragDropMode">
+              <enum>QAbstractItemView::DragDrop</enum>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="resizeMode">
+              <enum>QListView::Adjust</enum>
+             </property>
+             <property name="layoutMode">
+              <enum>QListView::Batched</enum>
+             </property>
+             <property name="viewMode">
+              <enum>QListView::IconMode</enum>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -246,6 +259,40 @@
              </item>
             </widget>
            </item>
+           <item row="15" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Scale</string>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="3">
+            <widget class="QLCDNumber" name="heightLCD">
+             <property name="digitCount">
+              <number>4</number>
+             </property>
+             <property name="intValue" stdset="0">
+              <number>512</number>
+             </property>
+            </widget>
+           </item>
+           <item row="17" column="0">
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>DDIM_ETA</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="3">
+            <widget class="QLCDNumber" name="widthLCD">
+             <property name="digitCount">
+              <number>4</number>
+             </property>
+             <property name="intValue" stdset="0">
+              <number>512</number>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="0">
             <widget class="QPushButton" name="redoButton">
              <property name="text">
@@ -253,17 +300,164 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
+           <item row="20" column="0">
+            <widget class="QSlider" name="strengthSilder">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>1</number>
+             </property>
+             <property name="value">
+              <number>100</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Height</string>
+             </property>
+            </widget>
+           </item>
+           <item row="20" column="3">
+            <widget class="QLCDNumber" name="strengthLCD">
+             <property name="digitCount">
+              <number>3</number>
+             </property>
+            </widget>
+           </item>
+           <item row="23" column="3">
+            <widget class="QLCDNumber" name="blurLCD">
+             <property name="digitCount">
+              <number>3</number>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Filled</enum>
+             </property>
+             <property name="intValue" stdset="0">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+           <item row="26" column="3">
+            <widget class="QLCDNumber" name="reconsLCD">
+             <property name="digitCount">
+              <number>3</number>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Filled</enum>
+             </property>
+             <property name="intValue" stdset="0">
+              <number>50</number>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="0">
+            <widget class="QSlider" name="heightSilder">
+             <property name="minimum">
+              <number>64</number>
+             </property>
+             <property name="maximum">
+              <number>1024</number>
+             </property>
+             <property name="singleStep">
+              <number>64</number>
+             </property>
+             <property name="pageStep">
+              <number>64</number>
+             </property>
+             <property name="sliderPosition">
+              <number>512</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="19" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>Strength</string>
+             </property>
+            </widget>
+           </item>
+           <item row="16" column="3">
+            <widget class="QLCDNumber" name="scaleLCD">
+             <property name="digitCount">
+              <number>3</number>
+             </property>
+            </widget>
+           </item>
+           <item row="25" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Reconstruction Blur</string>
+             </property>
+            </widget>
+           </item>
+           <item row="26" column="0">
+            <widget class="QSlider" name="reconsBlur">
+             <property name="maximum">
+              <number>200</number>
+             </property>
+             <property name="pageStep">
+              <number>1</number>
+             </property>
+             <property name="sliderPosition">
+              <number>50</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="22" column="0">
             <widget class="QLabel" name="label_2">
              <property name="text">
               <string>Mask Blur</string>
              </property>
             </widget>
            </item>
-           <item row="7" column="0">
-            <widget class="QLabel" name="label_3">
+           <item row="10" column="0">
+            <widget class="QSlider" name="widthSilder">
+             <property name="minimum">
+              <number>64</number>
+             </property>
+             <property name="maximum">
+              <number>1024</number>
+             </property>
+             <property name="singleStep">
+              <number>64</number>
+             </property>
+             <property name="pageStep">
+              <number>64</number>
+             </property>
+             <property name="sliderPosition">
+              <number>512</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="0">
+            <widget class="QLabel" name="label">
              <property name="text">
-              <string>Reconstruction Blur</string>
+              <string>Steps</string>
+             </property>
+            </widget>
+           </item>
+           <item row="14" column="3">
+            <widget class="QLCDNumber" name="stepsLCD">
+             <property name="digitCount">
+              <number>4</number>
+             </property>
+             <property name="intValue" stdset="0">
+              <number>15</number>
              </property>
             </widget>
            </item>
@@ -308,6 +502,102 @@
     <hint type="destinationlabel">
      <x>376</x>
      <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widthSilder</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>widthLCD</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>182</x>
+     <y>150</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>151</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>heightSilder</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>heightLCD</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>182</x>
+     <y>198</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>strengthSilder</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>strengthLCD</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>182</x>
+     <y>342</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>343</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ddimSilder</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ddimLCD</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>182</x>
+     <y>294</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>295</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scaleSilder</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scaleLCD</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>182</x>
+     <y>246</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>247</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>stepsSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>stepsLCD</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>182</x>
+     <y>246</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>247</y>
     </hint>
    </hints>
   </connection>

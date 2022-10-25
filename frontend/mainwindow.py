@@ -336,6 +336,7 @@ class GenerateWindow(QObject):
             print(f"5{e}")
             pass
         try:
+            #pass
             self.w.prompt.w.dockWidget.hide()
         except Exception as e:
             print(f"6{e}")
@@ -347,6 +348,7 @@ class GenerateWindow(QObject):
             pass
         try:
             self.timeline.hide()
+            self.animSliders.w.dockWidget.hide()
             #self.animSliders.w.hide()
         except Exception as e:
             print(f"8{e}")
@@ -390,10 +392,10 @@ class GenerateWindow(QObject):
             pass
         #self.animSliders = AnimSliders()
         #self.outpaint_controls = OutpaintControls()
-        #self.w.prompt = Prompt()
+        self.w.prompt = Prompt()
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.outpaint_controls.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.prompt.w.dockWidget)
-        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)
+        #self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)
         #self.outpaint = OutpaintUI()
     def defaultMode_restore(self):
         try:
@@ -651,10 +653,11 @@ class GenerateWindow(QObject):
         self.w.setCentralWidget(self.outpaint)
     @Slot()
     def update_outpaint_parameters(self):
-        W = self.w.sizer_count.w.widthSlider.value()
-        H = self.w.sizer_count.w.heightSlider.value()
+        W = self.outpaint_controls.w.widthSlider.value()
+        H = self.outpaint_controls.w.heightSlider.value()
         W, H = map(lambda x: x - x % 64, (W, H))
-
+        self.outpaint_controls.w.widthSlider.setValue(W)
+        self.outpaint_controls.w.heightSlider.setValue(H)
 
 
         self.outpaint.canvas.w = W
@@ -940,17 +943,16 @@ class GenerateWindow(QObject):
         #init_image = 'test0.png'
         self.deforum.sampler_name = sampler_name
         self.deforum.outpaint_txt2img(init_image=init_image,
-                                      steps=self.w.sampler.w.steps.value(),
-                                      H=self.w.sizer_count.w.heightSlider.value(),
-                                      W=self.w.sizer_count.w.widthSlider.value(),
-
+                                      steps=self.outpaint_controls.w.stepsSlider.value(),
+                                      H=self.outpaint_controls.w.heightSlider.value(),
+                                      W=self.outpaint_controls.w.widthSlider.value(),
                                       seed=random.randint(0, 2**32 - 1) if self.w.sampler.w.seed.text() == '' else int(self.w.sampler.w.seed.text()),
                                       prompt=self.w.prompt.w.textEdit.toPlainText(),
-                                      strength=self.animSliders.w.strength.value() / 100,
+                                      strength=self.outpaint_controls.w.strengthSlider.value() / 100,
                                       mask_blur=int(self.outpaint_controls.w.maskBlur.value()),
                                       recons_blur=int(self.outpaint_controls.w.reconsBlur.value()),
-                                      scale=self.w.sampler.w.scale.value() / 100,
-                                      ddim_eta=self.animSliders.w.ddim_eta.value() / 1000,
+                                      scale=self.outpaint_controls.w.scaleSlider.value() / 10,
+                                      ddim_eta=self.outpaint_controls.w.ddimSlider.value() / 10,
                                       image_callback=self.imageCallback_signal)
 
         #self.torch_gc()

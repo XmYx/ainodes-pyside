@@ -118,8 +118,8 @@ class Canvas(QGraphicsView):
         self.rendermode = 1
         #print(self.rendermode)
 
-        #self.painter.setRenderHint(QPainter.LosslessImageRendering)
-        self.painter.setCompositionMode(QPainter.CompositionMode_Xor)
+        self.painter.setRenderHint(QPainter.SmoothPixmapTransform)
+        self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         self.soft_reset()
         self.fitInView(self.bgitem, Qt.AspectRatioMode.IgnoreAspectRatio)
 

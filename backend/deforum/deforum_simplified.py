@@ -1491,9 +1491,9 @@ class DeforumGenerator():
                 else :
                     #Put white
                     mask_img.putpixel((i,j),(0,0,0))
-        blend_mask = mask_img.filter(ImageFilter.GaussianBlur(mask_blur))
+        mask_img = mask_img.filter(ImageFilter.GaussianBlur(mask_blur))
         os.makedirs('output/temp', exist_ok=True)
-        blend_mask.save('output/temp/mask.png')
+        mask_img.save('output/temp/mask.png')
         blend_mask = 'output/temp/mask.png'
 
         #if image_guide:

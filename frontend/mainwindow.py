@@ -302,6 +302,12 @@ class GenerateWindow(QObject):
 
         self.load_settings()
         self.w.actiontest_save_output.triggered.connect(self.outpaint.canvas.reset)
+        self.image_lab.signals.upscale_start.connect(self.upscale_start)
+
+    def upscale_start(self):
+        self.w.statusBar().showMessage("Upscale Started...")
+
+
     def outpaint_mode_generic(self):
         self.outpaint.canvas.mode = 'generic'
         self.outpaint.canvas.update()

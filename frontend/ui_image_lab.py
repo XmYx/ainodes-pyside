@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 import torch
 from PySide6 import QtUiTools, QtCore, QtWidgets, QtGui
-from PySide6.QtCore import QObject, QFile
+from PySide6.QtCore import QObject, QFile, Signal
 
 from backend.modelloader import load_upscaler
 from backend.singleton import singleton
@@ -59,17 +59,23 @@ class DropListView(QtWidgets.QListWidget):
         else:
             event.ignore()
 
-class ImageLab:
+class Callbacks(QObject):
+    upscale_start = Signal()
+    upscale_stop = Signal()
+    upscale_counter = Signal(int)
+
+
+class ImageLab():  # for signaling, could be a QWidget  too
 
     def __init__(self):
+        super().__init__()
+        self.signals = Callbacks()
         self.imageLab = ImageLab_ui()
         self.dropWidget = DropListView()
         self.dropWidget.setAccessibleName('fileList')
         self.dropWidget.fileDropped.connect(self.pictureDropped)
         self.imageLab.w.dropZone.addWidget(self.dropWidget)
         self.imageLab.w.startUpscale.clicked.connect(self.run_upscale)
-
-        pass
 
     def show(self):
         self.imageLab.w.show()

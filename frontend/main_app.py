@@ -152,6 +152,7 @@ if __name__ == "__main__":
     sshFile="frontend/style/QTDark.stylesheet"
 
     mainWindow = mainwindow.GenerateWindow()
+    mainWindow.defaultMode()
 
     #mainWindow = paintwindow_func.MainWindow()
     if "macOS" in platform.platform():
@@ -191,6 +192,11 @@ if __name__ == "__main__":
     mainWindow.outpaint_controls.w.delButton.clicked.connect(mainWindow.delete_outpaint_frame)
 
     mainWindow.outpaint.canvas.signals.update_selected.connect(mainWindow.show_outpaint_details)
+
+
+    mainWindow.w.actionOutpaint.triggered.connect(mainWindow.outpaintMode)
+    mainWindow.w.actionDefault.triggered.connect(mainWindow.defaultMode_restore)
+
     sys.exit(app.exec())
 
 

@@ -98,8 +98,7 @@ class GenerateWindow(QObject):
         self.progress = None
         self.ftimer = QTimer(self)
         self.signals = Callbacks()
-        self.image_lab = ImageLab()
-        self.outpaint_controls = OutpaintControls()
+
 
         # self.kf = Keyframes()
 
@@ -114,8 +113,10 @@ class GenerateWindow(QObject):
         gs.result = ""
         gs.album = getLatestGeneratedImagesFromPath()
         self.now = 0
+        self.w.statusBar().showMessage('Ready')
+        self.w.progressBar = QProgressBar()
+        self.w.statusBar().addPermanentWidget(self.w.progressBar)
 
-        self.home()
 
         self.signals.reenable_runbutton.connect(self.reenableRunButton)
         self.signals.txt2img_image_cb.connect(self.imageCallback_func)
@@ -124,47 +125,22 @@ class GenerateWindow(QObject):
         self.signals.compviscallback.connect(self.deforumTest)
         self.signals.add_image_to_thumbnail_signal.connect(self.add_image_to_thumbnail)
 
-        # self.w.thumbnails.thumbs.installEventFilter(self)
-        self.w.statusBar().showMessage('Ready')
-        self.w.progressBar = QProgressBar()
-
-        self.w.statusBar().addPermanentWidget(self.w.progressBar)
-
         # This is simply to show the bar
         self.w.progressBar.setGeometry(30, 40, 200, 25)
         self.w.progressBar.setValue(0)
 
         # self.nodeWindow = NodeWindow()
-        self.load_history()
-
-        self.w.actionAnim.triggered.connect(self.show_anim)
-        self.w.actionPreview.triggered.connect(self.show_preview)
-        self.w.actionPrompt.triggered.connect(self.show_prompt)
-        self.w.actionSampler.triggered.connect(self.show_sampler)
-        self.w.actionSliders.triggered.connect(self.show_sizer_count)
-        self.w.actionThumbnails.triggered.connect(self.show_thumbnails)
-        self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings)
-        self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings)
-        self.w.actionLoad_Default_Settings.triggered.connect(self.load_default_diffusion_settings)
-        self.w.actionRestart.triggered.connect(self.restart)
-        self.w.actionImageLab.triggered.connect(self.show_image_lab)
-
-        self.w.actionOutpaint.triggered.connect(self.show_paint)
-
-        self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
 
     # INIT UI, AND PRELOAD FUNCTIONS
-    def home(self):
+    def defaultMode(self):
         self.w.thumbnails = Thumbnails()
         self.threadpool = QThreadPool()
         self.w.preview = Preview()
         self.w.sizer_count = SizerCount()
         self.w.sampler = Sampler()
         self.w.anim = Anim()
-        self.w.prompt = Prompt()
         self.w.dynaview = Dynaview()
         self.timeline = Timeline()
-        self.animSliders = AnimSliders()
         self.animKeys = AnimKeys()
         self.animKeyEditor = AnimKeyEditor()
         self.path_setup = PathSetup()
@@ -172,8 +148,14 @@ class GenerateWindow(QObject):
         self.prompt_fetcher = FetchPrompts()
         self.dynaimage = Dynaimage()
         self.camera = Window()
-        self.outpaint = OutpaintUI()
         self.compass = Compass()
+        self.image_lab = ImageLab()
+
+        self.animSliders = AnimSliders()
+        self.outpaint_controls = OutpaintControls()
+        self.outpaint = OutpaintUI()
+        self.w.prompt = Prompt()
+
 
         # self.pw = paintwindow_func.MainWindow()
         # self.outpaint.show()
@@ -313,6 +295,195 @@ class GenerateWindow(QObject):
 
 
         self.image_lab.signals.upscale_start.connect(self.upscale_start)
+        self.w.actionAnim.triggered.connect(self.show_anim)
+        self.w.actionPreview.triggered.connect(self.show_preview)
+        self.w.actionPrompt.triggered.connect(self.show_prompt)
+        self.w.actionSampler.triggered.connect(self.show_sampler)
+        self.w.actionSliders.triggered.connect(self.show_sizer_count)
+        self.w.actionThumbnails.triggered.connect(self.show_thumbnails)
+        self.w.actionSave_System_Settings.triggered.connect(self.save_system_settings)
+        self.w.actionSave_Diffusion_Settings.triggered.connect(self.save_diffusion_settings)
+        self.w.actionLoad_Default_Settings.triggered.connect(self.load_default_diffusion_settings)
+        self.w.actionRestart.triggered.connect(self.restart)
+        self.w.actionImageLab.triggered.connect(self.show_image_lab)
+        self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
+        self.load_history()
+
+    def outpaintMode(self):
+        try:
+            self.w.thumbnails.hide()
+        except Exception as e:
+            print(f"1{e}")
+            pass
+        try:
+            self.w.preview.w.hide()
+        except Exception as e:
+            print(f"2{e}")
+            pass
+        try:
+            self.w.sizer_count.w.dockWidget.hide()
+        except Exception as e:
+            print(f"3{e}")
+            pass
+        try:
+            self.w.sampler.w.dockWidget.hide()
+        except Exception as e:
+            print(f"4{e}")
+            pass
+        try:
+            self.w.anim.w.hide()
+        except Exception as e:
+            print(f"5{e}")
+            pass
+        try:
+            self.w.prompt.w.dockWidget.hide()
+        except Exception as e:
+            print(f"6{e}")
+            pass
+        try:
+            self.w.dynaview.w.dockWidget.hide()
+        except Exception as e:
+            print(f"7{e}")
+            pass
+        try:
+            self.timeline.hide()
+            #self.animSliders.w.hide()
+        except Exception as e:
+            print(f"8{e}")
+            pass
+        try:
+            self.animKeys.w.dockWidget.hide()
+        except Exception as e:
+            print(f"9{e}")
+            pass
+        try:
+            self.animKeyEditor.w.dockWidget.hide()
+        except Exception as e:
+            print(f"10{e}")
+            pass
+        try:
+            self.path_setup.w.dockWidget.hide()
+            #self.nodeWindow = NodeWindow()
+        except Exception as e:
+            print(f"11{e}")
+            pass
+        try:
+            self.prompt_fetcher.w.dockWidget.hide()
+        except Exception as e:
+            print(f"12{e}")
+            pass
+        try:
+            self.dynaimage.w.dockWidget.hide()
+        except Exception as e:
+            print(f"13{e}")
+            pass
+        try:
+            self.camera.hide()
+            #self.outpaint.w.hide()
+        except Exception as e:
+            print(f"14{e}")
+            pass
+        try:
+            self.compass.w.dockWidget.hide()
+        except Exception as e:
+            print(f"15{e}")
+            pass
+        #self.animSliders = AnimSliders()
+        #self.outpaint_controls = OutpaintControls()
+        #self.w.prompt = Prompt()
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.outpaint_controls.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.prompt.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)
+        #self.outpaint = OutpaintUI()
+    def defaultMode_restore(self):
+        try:
+            self.w.thumbnails.show()
+        except Exception as e:
+            print(f"1{e}")
+            pass
+        try:
+            pass
+            self.w.preview.w.show()
+        except Exception as e:
+            print(f"2{e}")
+            pass
+        try:
+            self.w.sizer_count.w.dockWidget.show()
+        except Exception as e:
+            print(f"3{e}")
+            pass
+        try:
+            self.w.sampler.w.dockWidget.show()
+        except Exception as e:
+            print(f"4{e}")
+            pass
+        try:
+            pass
+            #self.w.anim.w.show()
+        except Exception as e:
+            print(f"5{e}")
+            pass
+        try:
+            self.w.prompt.w.dockWidget.show()
+        except Exception as e:
+            print(f"6{e}")
+            pass
+        try:
+            self.w.dynaview.w.dockWidget.show()
+        except Exception as e:
+            print(f"7{e}")
+            pass
+        try:
+            self.timeline.show()
+            #self.animSliders.w.hide()
+        except Exception as e:
+            print(f"8{e}")
+            pass
+        try:
+            self.animKeys.w.dockWidget.show()
+        except Exception as e:
+            print(f"9{e}")
+            pass
+        try:
+            self.animKeyEditor.w.dockWidget.show()
+        except Exception as e:
+            print(f"10{e}")
+            pass
+        try:
+            self.path_setup.w.dockWidget.show()
+            #self.nodeWindow = NodeWindow()
+        except Exception as e:
+            print(f"11{e}")
+            pass
+        try:
+            self.prompt_fetcher.w.dockWidget.show()
+        except Exception as e:
+            print(f"12{e}")
+            pass
+        try:
+            self.dynaimage.w.dockWidget.show()
+        except Exception as e:
+            print(f"13{e}")
+            pass
+        try:
+            self.camera.show()
+            #self.outpaint.w.hide()
+        except Exception as e:
+            print(f"14{e}")
+            pass
+        try:
+            self.compass.w.dockWidget.show()
+        except Exception as e:
+            print(f"15{e}")
+            pass
+        #self.animSliders = AnimSliders()
+        #self.outpaint_controls = OutpaintControls()
+        #self.w.prompt = Prompt()
+        #self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.outpaint_controls.w.dockWidget)
+        #self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.prompt.w.dockWidget)
+        #self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)
+        #self.outpaint = OutpaintUI()
+
 
     def upscale_start(self):
         self.w.statusBar().showMessage("Upscale Started...")

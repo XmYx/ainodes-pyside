@@ -977,7 +977,8 @@ class GenerateWindow(QObject):
                                       recons_blur=int(self.outpaint_controls.w.reconsBlur.value()),
                                       scale=self.outpaint_controls.w.scaleSlider.value() / 10,
                                       ddim_eta=self.outpaint_controls.w.ddimSlider.value() / 10,
-                                      image_callback=self.imageCallback_signal)
+                                      image_callback=self.imageCallback_signal,
+                                      with_inpaint=self.outpaint_controls.w.withInpaint.isChecked(),)
 
         #self.torch_gc()
         #self.stop_painters()

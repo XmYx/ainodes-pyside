@@ -64,8 +64,8 @@ class Canvas(QGraphicsView):
 
     def soft_reset(self):
         self.pixmap = QPixmap(4096, 4096)
-        #self.pixmap.fill(__backgroudColor__)
-        self.pixmap.fill(Qt.transparent)
+        self.pixmap.fill(__backgroudColor__)
+        #self.pixmap.fill(Qt.transparent)
         self.bgitem = QGraphicsPixmapItem()
         self.rectItem = QGraphicsRectItem(256, 256, 512, 512)
         self.debugtext = QGraphicsTextItem("0, 0\n")
@@ -121,7 +121,7 @@ class Canvas(QGraphicsView):
         #print(self.rendermode)
 
         self.painter.setRenderHint(QPainter.SmoothPixmapTransform)
-        self.painter.setCompositionMode(QPainter.CompositionMode_DestinationOver)
+        self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         self.soft_reset()
         self.fitInView(self.bgitem, Qt.AspectRatioMode.IgnoreAspectRatio)
 
@@ -305,7 +305,7 @@ class Canvas(QGraphicsView):
                     #painter.drawPixmap()
                 else:
                     if self.mode == "generic" or self.mode == "outpaint":
-                        self.painter.setPen(i.color)
+                        self.painter.setPen(QPen(Qt.white, 3))
                         self.painter.drawRect(rect)
         self.painter.end()
 

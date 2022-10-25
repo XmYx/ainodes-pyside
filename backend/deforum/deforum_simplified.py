@@ -34,6 +34,8 @@ from ldm.dream.devices import choose_torch_device
 
 from ldm.generate import Generate
 from ldm.models.diffusion.ddim import DDIMSampler
+from ldm.models.diffusion.ddim_inpaint import DDIMSampler_inpaint
+
 from ldm.models.diffusion.plms import PLMSSampler
 from contextlib import contextmanager, nullcontext
 import numexpr
@@ -54,6 +56,8 @@ from torch import nn
 
 #from memory_profiler import profile
 from backend.singleton import singleton
+from scripts.inpaint import make_batch
+
 gs = singleton
 
 #from frontend.mainwindow import gs
@@ -234,6 +238,23 @@ class DeforumGenerator():
                 m._orig_padding_mode = m.padding_mode
 
         #return model
+    def load_inpaint_model(self):
+        if "sd" in gs.models:
+            gs.models["sd"] = gs.models["sd"].to('cpu')
+        """Load and initialize the model from configuration variables passed at object creation time"""
+        if "inpaint" not in gs.models:
+            weights = 'models/sd-v1-5-inpaint.ckpt'
+            config = 'configs/stable-diffusion/inpaint.yaml'
+            embedding_path = None
+
+            config = OmegaConf.load(config)
+
+            gs.models["inpaint"] = instantiate_from_config(config.model)
+
+            gs.models["inpaint"].load_state_dict(torch.load(weights)["state_dict"], strict=False)
+
+            device = self.device
+            gs.models["inpaint"].half().to(device)
 
     def animkeys(self):
         self.angle_series = get_inbetweens(parse_key_frames(self.angle), self.max_frames)
@@ -798,9 +819,9 @@ class DeforumGenerator():
         seed_everything(seed)
         os.makedirs(outdir, exist_ok=True)
         self.sample_number = n_samples
-        sampler = PLMSSampler() if sampler_name == 'plms' else DDIMSampler()
+        sampler = PLMSSampler() if sampler_name == 'plms' else DDIMSampler(gs.models["sd"])
 
-        ddim_sampler = DDIMSampler()
+        ddim_sampler = DDIMSampler(gs.models["sd"])
 
         model_wrap = CompVisDenoiser(gs.models["sd"])
         batch_size = n_samples
@@ -1413,68 +1434,10 @@ class DeforumGenerator():
                          skip_grid=True,
                          file_prefix="outpaint",
                          image_callback=None,
+                         with_inpaint=False,
                          ):
-        
-        if "sd" not in gs.models:
-            self.load_model()
-        #global plms_sampler
-        #global ddim_sampler
-        #plms_sampler = PLMSSampler(gs.models["sd"])
-        #ddim_sampler = DDIMSampler(gs.models["sd"])
-    
-        print(f"txt2img seed: {seed}   steps: {steps}  prompt: {prompt}")
-        print(f"size:  {W}x{H}")
-    
-        self.torch_gc()
-    
-        # seeds = torch.randint(-2 ** 63, 2 ** 63 - 1, [accelerator.num_processes])
-        # torch.manual_seed(seeds[accelerator.process_index].item())
-    
-        #sampler = choose_sampler(opt)
-    
-        # model_wrap = K.external.CompVisDenoiser(model)
-        # sigma_min, sigma_max = model_wrap.sigmas[0].item(), model_wrap.sigmas[-1].item()
-    
-    
-        os.makedirs(outdir, exist_ok=True)
-        outpath = outdir
-    
-        sample_path = os.path.join(outpath, "samples")
-        os.makedirs(sample_path, exist_ok=True)
-    
-        base_count = len(os.listdir(sample_path))
-    
-        batch_size = n_samples
-        n_rows     = n_rows if n_rows > 0 else batch_size
-    
-        prompts_data = get_prompts_data(prompt, n_samples)
-    
-        grid_path = ''
-    
-        image_guide  = init_image
-        latent_guide = None
-    
-        t_start = None
-        masked_image_for_blend  = None
-        mask_for_reconstruction = None
-        latent_mask_for_blend   = None
-        C = 4
-        f = 8
-        device = self.device
-        # this explains the [1, 4, 64, 64]
-        shape = (batch_size, C, H//f, W//f)
-        sampler = DDIMSampler_simple()
-
-        sampler.make_schedule(ddim_num_steps=steps, ddim_eta=ddim_eta, verbose=False)
-
         mask_img = Image.open(init_image)
         img = Image.open(init_image)
-        #if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
-        #    alpha = img.convert('RGBA').split()[-1]
-        #    alpha.save('mask.png')
-
-
-        #img = Image.open('mask.png')
         if mask_blur > 0:
             mask_img = img.filter(ImageFilter.GaussianBlur(mask_blur))
         width = img.size[0]
@@ -1495,150 +1458,235 @@ class DeforumGenerator():
         #mask_img = mask_img.filter(ImageFilter.GaussianBlur(mask_blur))
         os.makedirs('output/temp', exist_ok=True)
         mask_img.save('output/temp/mask.png')
-        blend_mask = 'output/temp/mask.png'
+        if "sd" not in gs.models and with_inpaint == False:
+            self.load_model()
+            print(f"txt2img seed: {seed}   steps: {steps}  prompt: {prompt}")
+            print(f"size:  {W}x{H}")
 
-        #if image_guide:
-        #    image_guide = image_path_to_torch(image_guide, device)  # [1, 3, 512, 512]
-        #    latent_guide = torch_image_to_latent(gs.models["sd"], image_guide, n_samples=n_samples)  # [1, 4, 64, 64]
-        #   print(f'image_guide')
-        #
+            self.torch_gc()
 
+            # seeds = torch.randint(-2 ** 63, 2 ** 63 - 1, [accelerator.num_processes])
+            # torch.manual_seed(seeds[accelerator.process_index].item())
 
-        #if blend_mask:
-        #    [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(
-        #        device, blend_mask, blur=mask_blur)  # [512, 512]  [1, 4, 64, 64]
-        #    masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]  # [3, 512, 512]
-        #    # masked_image_for_blend = mask_for_reconstruction * image_guide[0]  # [3, 512, 512]
-        #    print(f'blend mask')
+            #sampler = choose_sampler(opt)
 
-
-        image_guide = image_path_to_torch(image_guide, device)
-        latent_guide = torch_image_to_latent(gs.models["sd"], image_guide, n_samples=n_samples)
-        [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(device, blend_mask, blur=mask_blur, recons_blur=recons_blur)
-        masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]
-
-        #print(type(latent_guide))
-        #print(type(mask_for_reconstruction))
-        #print(type(latent_mask_for_blend))
-        #print(type(masked_image_for_blend))
-
-        latent_guide, latent_mask_for_blend = load_img(init_image,
-                                          shape=(W, H),
-                                          use_alpha_as_mask=True)
-
-        latent_guide = latent_guide.to("cuda")
-
-        with autocast("cuda"):
-            latent_guide = gs.models["sd"].get_first_stage_encoding(
-                gs.models["sd"].encode_first_stage(latent_guide))  # move to latent space
-        latent_mask_for_blend = prepare_mask(latent_mask_for_blend,
-                            latent_guide.shape,
-                            1.0,
-                            1.0)
-
-        latent_guide = latent_guide.to("cuda")
-
-        latent_mask_for_blend = latent_mask_for_blend.to("cuda")
+            # model_wrap = K.external.CompVisDenoiser(model)
+            # sigma_min, sigma_max = model_wrap.sigmas[0].item(), model_wrap.sigmas[-1].item()
 
 
+            os.makedirs(outdir, exist_ok=True)
+            outpath = outdir
 
-        if image_guide is not None:
-            assert 0. <= strength <= 1., 'can only work with strength in [0.0, 1.0]'
-            t_start = int(strength * steps)
-    
-            print(f"target t_start is {t_start} steps")
-    
-        multiple_mode = (n_iter * len(prompts_data) * n_samples > 1)
+            sample_path = os.path.join(outpath, "samples")
+            os.makedirs(sample_path, exist_ok=True)
 
-        with torch.no_grad(), gs.models["sd"].ema_scope(), torch.cuda.amp.autocast():
-            tic = time.time()
-            all_samples = list()
-            counter = 0
-            for n in trange(n_iter, desc="Sampling"):
-                for prompts in tqdm(prompts_data, desc="data"):
-    
-                    seed = seed + counter
-                    seed_everything(seed)
-    
-                    unconditional_conditioning, conditioning = get_conditionings(gs.models["sd"], prompts, n_samples)
-    
-                    samples = sampler.ddim_sampling(
-                        conditioning,               # [1, 77, 768]
-                        shape,  # (1, 4, 64, 64)
-                        x0=latent_guide,            # [1, 4, 64, 64]
-                        mask=latent_mask_for_blend,  # [1, 4, 64, 64]
-                        # 12 (if 20 steps and strength 0.75 => 15)
-                        t_start=t_start,
-                        unconditional_guidance_scale=scale,
-                        # [1, 77, 768]
-                        unconditional_conditioning=unconditional_conditioning,
-                    )  # [1, 4, 64, 64]
-    
-                    x_samples = encoded_to_torch_image(
-                        gs.models["sd"], samples)  # [1, 3, 512, 512]
-    
-                    if masked_image_for_blend is not None:
-                        x_samples = mask_for_reconstruction * x_samples + masked_image_for_blend
+            base_count = len(os.listdir(sample_path))
 
-                    all_samples.append(x_samples)
+            batch_size = n_samples
+            n_rows     = n_rows if n_rows > 0 else batch_size
 
-                    generated_time = time.time()
-    
-                    if (not skip_save) and (not multiple_mode):
-                        for x_sample in x_samples:
-                            image = sampleToImage(x_sample)
-                            image.save(os.path.join(sample_path, f"{base_count:05}.png"))
-                            if image_callback is not None:
-                                image_callback(image)
-                            #save_image(
-                            #    image,
-                            #    os.path.join(sample_path, f"{base_count:05}.png"),
-                            #        pnginfo=metadata(
-                            #        prompt=prompts[0],  # FIXME [0]
-                            #        seed=seed,
-                            #        generation_time=generated_time - tic
-                            #            ))
-    
-                            base_count += 1
-    
-    
-            if not skip_grid:
-    
-                generated_time = time.time()
-    
-                if multiple_mode:
-                    # additionally, save as grid
-                    grid = torch.stack(all_samples, 0)
-                    grid = rearrange(grid, 'n b c h w -> (n b) c h w')
-                    grid = make_grid(grid, nrow=n_rows)
-    
-                    # to image
-                    # grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
-                    # image = Image.fromarray(grid.astype(np.uint8))
-                else:
-                    grid = all_samples[0][0]
-    
-                image = sampleToImage(grid)
-                grid_path = os.path.join(outpath, f'{file_prefix}-0000.png')
-    
-                print(image)
-    
-                save_image(image,
-                           grid_path,
-                           pnginfo=metadata(prompt= prompts[0],  # FIXME [0]
-                                           seed= seed,
-                                           generation_time= generated_time - tic
-                                           ))
+            prompts_data = get_prompts_data(prompt, n_samples)
 
-            toc = time.time()
+            grid_path = ''
+
+            image_guide  = init_image
+            latent_guide = None
+
+            t_start = None
+            masked_image_for_blend  = None
+            mask_for_reconstruction = None
+            latent_mask_for_blend   = None
+            C = 4
+            f = 8
+            device = self.device
+            # this explains the [1, 4, 64, 64]
+            shape = (batch_size, C, H//f, W//f)
+
+            sampler = DDIMSampler_simple()
+
+            sampler.make_schedule(ddim_num_steps=steps, ddim_eta=ddim_eta, verbose=False)
+
+
+            #if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
+            #    alpha = img.convert('RGBA').split()[-1]
+            #    alpha.save('mask.png')
+
+
+            #img = Image.open('mask.png')
+
+            blend_mask = 'output/temp/mask.png'
+
+            #if image_guide:
+            #    image_guide = image_path_to_torch(image_guide, device)  # [1, 3, 512, 512]
+            #    latent_guide = torch_image_to_latent(gs.models["sd"], image_guide, n_samples=n_samples)  # [1, 4, 64, 64]
+            #   print(f'image_guide')
+            #
+
+
+            #if blend_mask:
+            #    [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(
+            #        device, blend_mask, blur=mask_blur)  # [512, 512]  [1, 4, 64, 64]
+            #    masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]  # [3, 512, 512]
+            #    # masked_image_for_blend = mask_for_reconstruction * image_guide[0]  # [3, 512, 512]
+            #    print(f'blend mask')
+
+
+            image_guide = image_path_to_torch(image_guide, device)
+            latent_guide = torch_image_to_latent(gs.models["sd"], image_guide, n_samples=n_samples)
+            [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(device, blend_mask, blur=mask_blur, recons_blur=recons_blur)
+            masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]
+
+            #print(type(latent_guide))
+            #print(type(mask_for_reconstruction))
+            #print(type(latent_mask_for_blend))
+            #print(type(masked_image_for_blend))
+
+            latent_guide, latent_mask_for_blend = load_img(init_image,
+                                                           shape=(W, H),
+                                                           use_alpha_as_mask=True)
+
+            latent_guide = latent_guide.to("cuda")
+
+            with autocast("cuda"):
+                latent_guide = gs.models["sd"].get_first_stage_encoding(
+                    gs.models["sd"].encode_first_stage(latent_guide))  # move to latent space
+            latent_mask_for_blend = prepare_mask(latent_mask_for_blend,
+                                                 latent_guide.shape,
+                                                 1.0,
+                                                 1.0)
+
+            latent_guide = latent_guide.to("cuda")
+
+            latent_mask_for_blend = latent_mask_for_blend.to("cuda")
+
+
+
+            if image_guide is not None:
+                assert 0. <= strength <= 1., 'can only work with strength in [0.0, 1.0]'
+                t_start = int(strength * steps)
+
+                print(f"target t_start is {t_start} steps")
+
+            multiple_mode = (n_iter * len(prompts_data) * n_samples > 1)
+
+            with torch.no_grad(), gs.models["sd"].ema_scope(), torch.cuda.amp.autocast():
+                tic = time.time()
+                all_samples = list()
+                counter = 0
+                for n in trange(n_iter, desc="Sampling"):
+                    for prompts in tqdm(prompts_data, desc="data"):
+
+                        seed = seed + counter
+                        seed_everything(seed)
+
+                        unconditional_conditioning, conditioning = get_conditionings(gs.models["sd"], prompts, n_samples)
+
+                        samples = sampler.ddim_sampling(
+                            conditioning,               # [1, 77, 768]
+                            shape,  # (1, 4, 64, 64)
+                            x0=latent_guide,            # [1, 4, 64, 64]
+                            mask=latent_mask_for_blend,  # [1, 4, 64, 64]
+                            # 12 (if 20 steps and strength 0.75 => 15)
+                            t_start=t_start,
+                            unconditional_guidance_scale=scale,
+                            # [1, 77, 768]
+                            unconditional_conditioning=unconditional_conditioning,
+                        )  # [1, 4, 64, 64]
+
+                        x_samples = encoded_to_torch_image(
+                            gs.models["sd"], samples)  # [1, 3, 512, 512]
+
+                        if masked_image_for_blend is not None:
+                            x_samples = mask_for_reconstruction * x_samples + masked_image_for_blend
+
+                        all_samples.append(x_samples)
+
+                        generated_time = time.time()
+
+                        if (not skip_save) and (not multiple_mode):
+                            for x_sample in x_samples:
+                                image = sampleToImage(x_sample)
+                                image.save(os.path.join(sample_path, f"{base_count:05}.png"))
+                                if image_callback is not None:
+                                    image_callback(image)
+                                #save_image(
+                                #    image,
+                                #    os.path.join(sample_path, f"{base_count:05}.png"),
+                                #        pnginfo=metadata(
+                                #        prompt=prompts[0],  # FIXME [0]
+                                #        seed=seed,
+                                #        generation_time=generated_time - tic
+                                #            ))
+
+                                base_count += 1
+
+
+
+
+
+
+        else:
+            if "sd" in gs.models or "inpaint" not in gs.models:
+                self.load_inpaint_model()
+            sampler = DDIMSampler(gs.models["inpaint"])
+            mask = mask_img
+            image = Image.open(init_image)
+            result = inpaint(
+                sampler=sampler,
+                image=image,
+                mask=mask,
+                prompt=prompt,
+                seed=seed,
+                scale=scale,
+                ddim_steps=steps,
+                num_samples=1,
+                h=height, w=width,
+                device=self.device,
+                )
+            result[0].save('output/test-' + str(seed) + '.png', 'PNG')
+            image_callback(result[0])
+
+
+        #global plms_sampler
+        #global ddim_sampler
+        #plms_sampler = PLMSSampler(gs.models["sd"])
+        #ddim_sampler = DDIMSampler(gs.models["sd"])
     
-            counter += 1
-    
+        if not skip_grid:
+
+            generated_time = time.time()
+            multiple_mode = False
+            if multiple_mode:
+                # additionally, save as grid
+                grid = torch.stack(all_samples, 0)
+                grid = rearrange(grid, 'n b c h w -> (n b) c h w')
+                grid = make_grid(grid, nrow=n_rows)
+
+                # to image
+                # grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
+                # image = Image.fromarray(grid.astype(np.uint8))
+            else:
+                grid = all_samples[0][0]
+
+            image = sampleToImage(grid)
+            grid_path = os.path.join(outpath, f'{file_prefix}-0000.png')
+
+            print(image)
+
+            save_image(image,
+                       grid_path,
+                       pnginfo=metadata(prompt= prompts[0],  # FIXME [0]
+                                       seed= seed,
+                                       generation_time= generated_time - tic
+                                       ))
+
+        toc = time.time()
+
         self.torch_gc()
     
-        print(f"Sampling took {toc - tic:g}s, i.e. produced {n_iter * n_samples / (toc - tic):.2f} samples/sec.")
+        #print(f"Sampling took {toc - tic:g}s, i.e. produced {n_iter * n_samples / (toc - tic):.2f} samples/sec.")
     
-        return [image, grid_path]
+        #return [image, grid_path]
 
 
 class CFGDenoiser(nn.Module):
@@ -1773,3 +1821,90 @@ class SamplerCallback(object):
             img.copy_(new_img)
 
         self.view_sample_step(img, "x")
+
+
+
+def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, num_samples=1, w=512, h=512):
+    #model = sampler.model
+
+    prng = np.random.RandomState(seed)
+    start_code = prng.randn(num_samples, 4, h//8, w//8)
+    start_code = torch.from_numpy(start_code).to(device=device, dtype=torch.float16)
+
+    with torch.no_grad():
+        with torch.autocast("cuda"):
+            batch = make_batch_sd(image, mask, txt=prompt, device=device, num_samples=num_samples)
+
+            c = gs.models["inpaint"].cond_stage_model.encode(batch["txt"])
+
+            c_cat = list()
+            for ck in gs.models["inpaint"].concat_keys:
+                cc = batch[ck].float()
+                if ck != gs.models["inpaint"].masked_image_key:
+                    bchw = [num_samples, 4, h//8, w//8]
+                    cc = torch.nn.functional.interpolate(cc, size=bchw[-2:])
+                else:
+                    cc = gs.models["inpaint"].get_first_stage_encoding(gs.models["inpaint"].encode_first_stage(cc))
+                c_cat.append(cc)
+            c_cat = torch.cat(c_cat, dim=1)
+
+            # cond
+            cond={"c_concat": [c_cat], "c_crossattn": [c]}
+
+            # uncond cond
+            uc_cross = gs.models["inpaint"].get_unconditional_conditioning(num_samples, "")
+            uc_full = {"c_concat": [c_cat], "c_crossattn": [uc_cross]}
+
+            shape = [gs.models["inpaint"].channels, h//8, w//8]
+            samples_cfg, intermediates = sampler.sample(
+                ddim_steps,
+                num_samples,
+                shape,
+                cond,
+                verbose=False,
+                eta=1.0,
+                unconditional_guidance_scale=scale,
+                unconditional_conditioning=uc_full,
+                x_T=start_code,
+            )
+            x_samples_ddim = gs.models["inpaint"].decode_first_stage(samples_cfg)
+
+            result = torch.clamp((x_samples_ddim+1.0)/2.0,
+                                 min=0.0, max=1.0)
+
+            result = result.cpu().numpy().transpose(0,2,3,1)
+            # result, has_nsfw_concept = check_safety(result)
+            result = result*255
+
+    result = [Image.fromarray(img.astype(np.uint8)) for img in result]
+    # result = [put_watermark(img for img in result]
+
+    return result
+
+
+def make_batch_sd(
+        image,
+        mask,
+        txt,
+        device,
+        num_samples=1):
+    image = np.array(image.convert("RGB"))
+    image = image[None].transpose(0,3,1,2)
+    image = torch.from_numpy(image).to(dtype=torch.float32)/127.5-1.0
+
+    mask = np.array(mask.convert("L"))
+    mask = mask.astype(np.float32)/255.0
+    mask = mask[None,None]
+    mask[mask < 0.5] = 0
+    mask[mask >= 0.5] = 1
+    mask = torch.from_numpy(mask)
+
+    masked_image = image * (mask < 0.5)
+
+    batch = {
+        "image": repeat(image.to(device=device), "1 ... -> n ...", n=num_samples),
+        "txt": num_samples * [txt],
+        "mask": repeat(mask.to(device=device), "1 ... -> n ...", n=num_samples),
+        "masked_image": repeat(masked_image.to(device=device), "1 ... -> n ...", n=num_samples),
+    }
+    return batch

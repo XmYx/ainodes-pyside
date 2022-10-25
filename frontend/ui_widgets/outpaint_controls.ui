@@ -91,7 +91,7 @@
             </widget>
            </item>
            <item row="16" column="0">
-            <widget class="QSlider" name="scaleSilder">
+            <widget class="QSlider" name="scaleSlider">
              <property name="minimum">
               <number>1</number>
              </property>
@@ -165,7 +165,7 @@
             </widget>
            </item>
            <item row="18" column="0">
-            <widget class="QSlider" name="ddimSilder">
+            <widget class="QSlider" name="ddimSlider">
              <property name="maximum">
               <number>100</number>
              </property>
@@ -301,7 +301,7 @@
             </widget>
            </item>
            <item row="20" column="0">
-            <widget class="QSlider" name="strengthSilder">
+            <widget class="QSlider" name="strengthSlider">
              <property name="maximum">
               <number>100</number>
              </property>
@@ -357,7 +357,7 @@
             </widget>
            </item>
            <item row="12" column="0">
-            <widget class="QSlider" name="heightSilder">
+            <widget class="QSlider" name="heightSlider">
              <property name="minimum">
               <number>64</number>
              </property>
@@ -423,7 +423,7 @@
             </widget>
            </item>
            <item row="10" column="0">
-            <widget class="QSlider" name="widthSilder">
+            <widget class="QSlider" name="widthSlider">
              <property name="minimum">
               <number>64</number>
              </property>
@@ -506,7 +506,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>widthSilder</sender>
+   <sender>widthSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>widthLCD</receiver>
    <slot>display(int)</slot>
@@ -522,7 +522,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>heightSilder</sender>
+   <sender>heightSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>heightLCD</receiver>
    <slot>display(int)</slot>
@@ -538,7 +538,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>strengthSilder</sender>
+   <sender>strengthSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>strengthLCD</receiver>
    <slot>display(int)</slot>
@@ -554,7 +554,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>ddimSilder</sender>
+   <sender>ddimSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>ddimLCD</receiver>
    <slot>display(int)</slot>
@@ -570,7 +570,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>scaleSilder</sender>
+   <sender>scaleSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>scaleLCD</receiver>
    <slot>display(int)</slot>

@@ -207,13 +207,13 @@ class Canvas(QGraphicsView):
                         if x.y <= i.y + self.h and x.x <= i.x + i.w:
                             if i.id != x.id:
                                     if x.y > i.y:
-                                        Ymaskoffset = self.offset
-                                    else:
                                         Ymaskoffset = -self.offset
-                                    if x.x > i.x:
-                                        Xmaskoffset = self.offset
                                     else:
+                                        Ymaskoffset = self.offset
+                                    if x.x > i.x:
                                         Xmaskoffset = -self.offset
+                                    else:
+                                        Xmaskoffset = self.offset
                                 #i.color = __selColor__
                                 #self.update()
                                     if i.image is not None:
@@ -268,13 +268,13 @@ class Canvas(QGraphicsView):
                 if (self.scene.scenePos.y() - self.h / 2) <= i.y + self.h and (self.scene.scenePos.x() - self.w / 2) <= i.x + i.w:
                     print("Found an image to outpaint")
                     if (self.scene.scenePos.y() - self.h / 2) > i.y:
-                        Ymaskoffset = self.offset
-                    else:
                         Ymaskoffset = -self.offset
-                    if (self.scene.scenePos.x() - self.w / 2) > i.x:
-                        Xmaskoffset = self.offset
                     else:
+                        Ymaskoffset = self.offset
+                    if (self.scene.scenePos.x() - self.w / 2) > i.x:
                         Xmaskoffset = -self.offset
+                    else:
+                        Xmaskoffset = self.offset
                     i.color = __selColor__
                     self.update()
                     if i.image is not None and i.active == True:

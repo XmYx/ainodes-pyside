@@ -189,8 +189,6 @@ class GenerateWindow(QObject):
         widget.setMaximumSize(200, 200)
         widget.setMinimumSize(100, 100)
 
-        widget.mouseMoveEvent
-
         self.compass.w.camlayout.addWidget(widget)
 
         # self.w.setCentralWidget(self.nodeWindow)
@@ -229,6 +227,9 @@ class GenerateWindow(QObject):
         self.animSliders.w.midas_weightNumber.display(str(self.animSliders.w.midas_weight.value()))
         self.animSliders.w.near_planeNumber.display(str(self.animSliders.w.near_plane.value()))
         self.animSliders.w.far_planeNumber.display(str(self.animSliders.w.far_plane.value()))
+
+        self.outpaint_controls.w.rectList.itemClicked.connect(self.select_outpaint_image)
+
 
         self.w.dynaview.w.setMinimumSize(QtCore.QSize(512, 256))
 
@@ -302,6 +303,14 @@ class GenerateWindow(QObject):
 
         self.load_settings()
         self.w.actiontest_save_output.triggered.connect(self.outpaint.canvas.reset)
+
+        self.outpaint_controls.w.rendermode.currentTextChanged.connect(self.change_outpaint_rendermode)
+        self.outpaint_controls.w.genericButton.clicked.connect(self.outpaint_mode_generic)
+        self.outpaint_controls.w.selectButton.clicked.connect(self.outpaint_mode_select)
+        self.outpaint_controls.w.outpaintButton.clicked.connect(self.outpaint_mode_outpaint)
+        self.outpaint_controls.w.dragButton.clicked.connect(self.outpaint_mode_drag)
+
+
         self.image_lab.signals.upscale_start.connect(self.upscale_start)
 
     def upscale_start(self):
@@ -309,6 +318,7 @@ class GenerateWindow(QObject):
 
 
     def outpaint_mode_generic(self):
+        print("generic mode")
         self.outpaint.canvas.mode = 'generic'
         self.outpaint.canvas.update()
     def outpaint_mode_select(self):
@@ -467,7 +477,7 @@ class GenerateWindow(QObject):
             pass
         self.outpaint = OutpaintUI()
         self.w.setCentralWidget(self.outpaint)
-
+    @Slot()
     def update_outpaint_parameters(self):
         W = self.w.sizer_count.w.widthSlider.value()
         H = self.w.sizer_count.w.heightSlider.value()
@@ -678,7 +688,7 @@ class GenerateWindow(QObject):
 
         self.w.prompt.w.runButton.setEnabled(False)
         self.prompt_fetcher.w.dreamPrompt.setEnabled(False)
-        QTimer.singleShot(100, lambda: self.pass_object())  # todo why we need that timer here doing nothing?
+        #QTimer.singleShot(100, lambda: self.pass_object())  # todo why we need that timer here doing nothing?
 
         worker = Worker(self.run_deforum)
         # Execute
@@ -758,9 +768,14 @@ class GenerateWindow(QObject):
         #init_image = 'test0.png'
         self.deforum.sampler_name = sampler_name
         self.deforum.outpaint_txt2img(init_image=init_image,
+                                      steps=self.w.sampler.w.steps.value(),
+                                      H=self.w.sizer_count.w.heightSlider.value(),
+                                      W=self.w.sizer_count.w.widthSlider.value(),
+
+                                      seed=random.randint(0, 2**32 - 1) if self.w.sampler.w.seed.text() == '' else int(self.w.sampler.w.seed.text()),
                                       prompt=self.w.prompt.w.textEdit.toPlainText(),
                                       strength=self.animSliders.w.strength.value() / 1000,
-                                      mask_blur=self.animSliders.w.mask_blur.value() / 10,
+                                      mask_blur=int(self.animSliders.w.mask_blur.value() / 10),
                                       scale=self.w.sampler.w.scale.value() / 100,
                                       ddim_eta=self.animSliders.w.ddim_eta.value() / 1000,
                                       image_callback=self.imageCallback_signal)
@@ -770,7 +785,8 @@ class GenerateWindow(QObject):
 
         self.signals.reenable_runbutton.emit()
 
-
+    def redo_current_outpaint(self):
+        self.outpaint.canvas.redo_outpaint(self.outpaint.canvas.selected_item)
     def deforum_txt2img_thread(self):
         # for debug
         #self.run_deforum_txt2img()
@@ -807,11 +823,32 @@ class GenerateWindow(QObject):
 
     @Slot(str)
     def add_image_to_thumbnail(self, path):
-        #self.w.statusBar().showMessage("Ready...")
 
-        #path = self.image_path
         self.w.thumbnails.thumbs.addItem(
             QListWidgetItem(QIcon(path), str(path)))
+
+
+    @Slot()
+    def outpaint_callback(self):
+
+        image = self.image #.convert("RGBA")
+        self.painter.setRenderHint(QPainter.LosslessImageRendering)
+        qimage = ImageQt(image.convert("RGBA"))
+        if self.outpaint.canvas.selected_item is not None:
+            for items in self.outpaint.canvas.rectlist:
+                if items.id == self.outpaint.canvas.selected_item:
+                    templist = items.images
+                    templist.append(qimage)
+                    items.images = templist
+                    if items.index == None:
+                        items.index = 0
+                    else:
+                        items.index = items.index + 1
+                    items.image = items.images[items.index]
+                    items.order = len(self.outpaint.canvas.rectlist)
+                    items.timestring = time.time()
+                    print(items.order)
+        self.painter.end()
 
     @Slot()
     def imageCallback_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
@@ -847,6 +884,7 @@ class GenerateWindow(QObject):
                             items.index = items.index + 1
                         items.image = items.images[items.index]
                         items.order = len(self.outpaint.canvas.rectlist)
+                        items.timestring = time.time()
                         print(items.order)
 
 
@@ -859,6 +897,7 @@ class GenerateWindow(QObject):
 
     @Slot()
     def reenableRunButton(self):
+        self.show_outpaint_details()
         try:
             self.w.prompt.w.runButton.setEnabled(True)
             self.prompt_fetcher.w.dreamPrompt.setEnabled(True)
@@ -869,7 +908,18 @@ class GenerateWindow(QObject):
         except:
             pass
 
-    # timer
+    @Slot()
+    def show_outpaint_details(self):
+        if self.outpaint.canvas.selected_item is not None:
+            self.outpaint_controls.w.rectList.clear()
+            for items in self.outpaint.canvas.rectlist:
+                if items.id == self.outpaint.canvas.selected_item:
+                    if items.images is not []:
+                        for i in items.images:
+                            if i is not None:
+                                image = i.copy(0, 0, i.width(), i.height())
+                                pixmap = QPixmap.fromImage(image)
+                                self.outpaint_controls.w.rectList.addItem(QListWidgetItem(QIcon(pixmap), f"{items.id}"))
     def start_timer(self, *args, **kwargs):
         self.ftimer.timeout.connect(self.imageCallback_func)
 
@@ -1014,37 +1064,50 @@ class GenerateWindow(QObject):
         self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
         self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         self.vpainter[vins].endNativePainting()
+    def select_outpaint_image(self, item):
+        width=self.w.sizer_count.w.widthSlider.value()
+        height=self.w.sizer_count.w.heightSlider.value()
+        templist = self.outpaint.canvas.rectlist
+
+        imageSize = item.icon().actualSize(QSize(width, height))
+        if self.outpaint.canvas.selected_item is not None:
+            for i in templist:
+                if i.id == self.outpaint.canvas.selected_item:
+                    qimage = QImage(item.icon().actualSize(QSize(width, height)), QImage.Format_ARGB32)
+                    painter = QPainter()
+                    painter.begin(qimage)
+                    painter.drawPixmap(0, 0, item.icon().pixmap(imageSize))
+                    painter.end()
+                    #qimage = QImage(item.icon().pixmap(imageSize).toImage())
+                    i.image = qimage
+                    i.timestring = time.time()
+
+        self.outpaint.canvas.rectlist = []
+        self.outpaint.canvas.update()
+        #QTimer.singleShot(500)
+        self.outpaint.canvas.rectlist = templist
+        self.outpaint.canvas.update()
+    def delete_outpaint_frame(self):
+        templist = self.outpaint.canvas.rectlist
+        if self.outpaint.canvas.selected_item is not None:
+            for i in templist:
+                if i.id == self.outpaint.canvas.selected_item:
+                    i.active = False
+        self.outpaint.canvas.rectlist = templist
+
+        self.outpaint.canvas.update()
 
     def viewImageClicked(self, item):
-
         # vins = random.randint(10000, 99999)
         imageSize = item.icon().actualSize(QSize(10000, 10000))
         qimage = QImage(item.icon().pixmap(imageSize).toImage())
         pixmap = QPixmap(imageSize)
+
         painter = QPainter()
         painter.begin(pixmap)
         painter.drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
         painter.end()
         self.dynaimage.w.label.setPixmap(pixmap)
-        #for items in self.outpaint.canvas.rectlist:
-        #    print(f"adding image{qimage}")
-        #    items.image = qimage
-
-        # self.vpainter[vins] = QPainter()
-        # newItem = QGraphicsPixmapItem()
-        # self.vpainter[vins].begin(self.outpaint.canvas.pixmap)
-        # self.vpainter[vins].drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
-        # newItem.setPixmap(self.newPixmap[vins])
-
-        # for items in self.w.preview.w.scene.items():
-        #    self.w.preview.w.scene.removeItem(items)
-
-        # self.outpaint.canvas.setPixmap(self.outpaint.canvas.pixmap)
-        # self.w.preview.w.scene.addItem(newItem)
-        # self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
-        # self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
-        # self.vpainter[vins].end()
-
     def zoom_IN(self):
         self.w.preview.w.graphicsView.scale(1.25, 1.25)
 

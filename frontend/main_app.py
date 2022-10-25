@@ -143,10 +143,6 @@ if __name__ == "__main__":
     # Add the menu to the tray
     tray.setContextMenu(menu)
 
-
-
-
-
     pixmap = QPixmap('frontend/main/splash_2.png')
     splash = QSplashScreen(pixmap)
     splash.show()
@@ -154,8 +150,6 @@ if __name__ == "__main__":
 
 
     sshFile="frontend/style/QTDark.stylesheet"
-
-    #with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
 
     mainWindow = mainwindow.GenerateWindow()
 
@@ -169,19 +163,15 @@ if __name__ == "__main__":
     mainWindow.w.setWindowIcon(QIcon('frontend/main/splash_2.png'))
     with open(sshFile,"r") as fh:
         mainWindow.w.setStyleSheet(fh.read())
-    #app.setIcon(QIcon('frontend/main/splash.png'))
+    #app.setIcon(QIcon('frontend/main/splash_2.png'))
     mainWindow.w.show()
-    #mainWindow.nodeWindow.show()
+
     mainWindow.w.resize(1280, 720)
     splash.finish(mainWindow.w)
-    #mainWindow.progress_thread()
 
-    #mainWindow.thumbnails.setGeometry(680,0,800,600)
     #mainWindow.w.thumbnails.tileAction.triggered.connect(mainWindow.tileImageClicked)
     mainWindow.w.prompt.w.runButton.clicked.connect(mainWindow.taskSwitcher)
 
-
-    #mainWindow.runner.runButton.clicked.connect(mainWindow.progress_thread)
     mainWindow.w.actionSoft_Restart.triggered.connect(restart_with_reloader)
     mainWindow.w.actionNodes.triggered.connect(mainWindow.show_nodes)
     mainWindow.w.sampler.w.scale.valueChanged.connect(mainWindow.update_scaleNumber)
@@ -189,20 +179,18 @@ if __name__ == "__main__":
 
     mainWindow.w.preview.w.zoomInButton.clicked.connect(mainWindow.zoom_IN)
     mainWindow.w.preview.w.zoomOutButton.clicked.connect(mainWindow.zoom_OUT)
-    #mainWindow.timeline.timeline.start()
-    #mainWindow.deforum_thread()
+
     mainWindow.w.sizer_count.w.widthSlider.valueChanged.connect(mainWindow.update_outpaint_parameters)
     mainWindow.w.sizer_count.w.heightSlider.valueChanged.connect(mainWindow.update_outpaint_parameters)
 
     mainWindow.outpaint.canvas.signals.outpaint_signal.connect(mainWindow.deforum_outpaint_thread)
     mainWindow.outpaint.canvas.signals.txt2img_signal.connect(mainWindow.deforum_txt2img_thread)
-    mainWindow.outpaint_controls.w.rendermode.currentTextChanged.connect(mainWindow.change_outpaint_rendermode)
 
 
-    mainWindow.outpaint_controls.w.genericButton.triggered.connect(mainWindow.outpaint_mode_generic)
-    mainWindow.outpaint_controls.w.selectButton.triggered.connect(mainWindow.outpaint_mode_select)
-    mainWindow.outpaint_controls.w.outpaintButton.triggered.connect(mainWindow.outpaint_mode_outpaint)
-    mainWindow.outpaint_controls.w.dragButton.triggered.connect(mainWindow.outpaint_mode_drag)
+    mainWindow.outpaint_controls.w.redoButton.clicked.connect(mainWindow.redo_current_outpaint)
+    mainWindow.outpaint_controls.w.delButton.clicked.connect(mainWindow.delete_outpaint_frame)
+
+    mainWindow.outpaint.canvas.signals.update_selected.connect(mainWindow.show_outpaint_details)
     sys.exit(app.exec())
 
 

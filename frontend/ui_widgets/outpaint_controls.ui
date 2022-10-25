@@ -55,8 +55,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>415</width>
-            <height>640</height>
+            <width>419</width>
+            <height>618</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
@@ -122,49 +122,65 @@
             </widget>
            </item>
            <item row="0" column="0">
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="redoButton">
              <property name="text">
               <string>REDO</string>
              </property>
             </widget>
            </item>
            <item row="0" column="3">
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="delButton">
              <property name="text">
               <string>DELETE</string>
              </property>
             </widget>
            </item>
            <item row="7" column="0">
-            <widget class="QListWidget" name="listWidget"/>
+            <widget class="QListWidget" name="rectList">
+             <property name="dragEnabled">
+              <bool>true</bool>
+             </property>
+             <property name="dragDropMode">
+              <enum>QAbstractItemView::DragDrop</enum>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>150</width>
+               <height>150</height>
+              </size>
+             </property>
+             <property name="viewMode">
+              <enum>QListView::IconMode</enum>
+             </property>
+            </widget>
            </item>
            <item row="4" column="0">
             <layout class="QGridLayout" name="gridLayout_3">
-             <item row="0" column="2">
-              <widget class="QToolButton" name="outpaintButton">
+             <item row="0" column="0">
+              <widget class="QPushButton" name="dragButton">
                <property name="text">
-                <string>outpaint</string>
+                <string>drag</string>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QToolButton" name="selectButton">
+              <widget class="QPushButton" name="selectButton">
                <property name="text">
                 <string>select</string>
                </property>
               </widget>
              </item>
-             <item row="0" column="0">
-              <widget class="QToolButton" name="genericButton">
+             <item row="0" column="2">
+              <widget class="QPushButton" name="outpaintButton">
                <property name="text">
-                <string>generic</string>
+                <string>outpaint</string>
                </property>
               </widget>
              </item>
              <item row="0" column="3">
-              <widget class="QToolButton" name="dragButton">
+              <widget class="QPushButton" name="genericButton">
                <property name="text">
-                <string>drag</string>
+                <string>generic</string>
                </property>
               </widget>
              </item>

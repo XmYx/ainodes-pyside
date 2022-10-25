@@ -1474,7 +1474,7 @@ class DeforumGenerator():
 
 
         #img = Image.open('mask.png')
-
+        #img = img.filter(ImageFilter.GaussianBlur(mask_blur))
         width = img.size[0]
         height = img.size[1]
         for i in range(0,width):# process all pixels
@@ -1491,9 +1491,9 @@ class DeforumGenerator():
                     #Put white
                     img.putpixel((i,j),(0,0,0))
 
-
-        img.save('mask2.png')
-        blend_mask = 'mask2.png'
+        os.makedirs('output/temp', exist_ok=True)
+        img.save('output/temp/mask.png')
+        blend_mask = 'output/temp/mask.png'
 
         #if image_guide:
         #    image_guide = image_path_to_torch(image_guide, device)  # [1, 3, 512, 512]
@@ -1515,12 +1515,12 @@ class DeforumGenerator():
         [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(device, blend_mask, blur=mask_blur)
         masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]
 
-        print(type(latent_guide))
-        print(type(mask_for_reconstruction))
-        print(type(latent_mask_for_blend))
-        print(type(masked_image_for_blend))
+        #print(type(latent_guide))
+        #print(type(mask_for_reconstruction))
+        #print(type(latent_mask_for_blend))
+        #print(type(masked_image_for_blend))
 
-        latent_guide, latent_mask_for_blend = load_img(init_image,
+        """latent_guide, latent_mask_for_blend = load_img(init_image,
                                           shape=(W, H),
                                           use_alpha_as_mask=True)
 
@@ -1536,7 +1536,7 @@ class DeforumGenerator():
 
         latent_guide = latent_guide.to("cuda")
 
-        latent_mask_for_blend = latent_mask_for_blend.to("cuda")
+        latent_mask_for_blend = latent_mask_for_blend.to("cuda")"""
 
 
 

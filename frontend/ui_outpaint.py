@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect, QLineF, QPointF, QObject
 from PySide6.QtGui import Qt, QColor, QFont, QPalette, QPainter, QPen, QPolygon, QBrush, QPainterPath, QAction, QCursor, \
     QPixmap, QTransform, QDragEnterEvent, QDragMoveEvent, QImage
@@ -5,8 +7,8 @@ from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockWidget, QMenu, QGraphicsScene, \
     QGraphicsView, QGraphicsItem, QGraphicsWidget, QLabel, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsRectItem, \
     QGraphicsTextItem, QScrollArea, QHBoxLayout, QLayout, QAbstractScrollArea
-
-from datetime import datetime
+from time import gmtime, strftime
+import time
 from uuid import uuid4
 
 __textColor__ = QColor(187, 187, 187)
@@ -30,10 +32,13 @@ class Rectangle(object):
         self.images = []
         self.order = None
         self.color = __idleColor__
+        self.timestring = time.time()
+        self.active = True
 
 class Callbacks(QObject):
     outpaint_signal = Signal()
     txt2img_signal = Signal()
+    update_selected = Signal()
 
 
 
@@ -53,16 +58,32 @@ class Canvas(QGraphicsView):
         QGraphicsView.__init__(self, parent)
         self.signals = Callbacks()
         self.reset()
+
+    def soft_reset(self):
+        self.pixmap = QPixmap(4096, 4096)
+        #self.pixmap.fill(__backgroudColor__)
+        self.pixmap.fill(Qt.transparent)
+        self.bgitem = QGraphicsPixmapItem()
+        self.rectItem = QGraphicsRectItem(256, 256, 512, 512)
+        self.debugtext = QGraphicsTextItem("0, 0\n")
+
+        #self.helpText = QGraphicsTextItem("C - Hand Drag\nV - Place Rectangles")
+        self.bgitem.setPixmap(self.pixmap)
+        #self.setPixmap(self.pixmap)
+
+
+        self.scene.addItem(self.bgitem)
+        self.scene.addItem(self.rectItem)
+        self.scene.addItem(self.debugtext)
+
+
     def reset(self):
         self.zoom = 1
         self.rotate = 0
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
         self.w = 512
         self.h = 512
-        self.pixmap = QPixmap(4096, 4096)
-        self.pixmap.fill(__backgroudColor__)
-        self.bgitem = QGraphicsPixmapItem()
-        self.rectItem = QGraphicsRectItem(256, 256, 512, 512)
+
         self.rectlist = []
         #rect = QRect(QPoint(256, 256), QSize(512, 512))
         #ainter = QPainter()
@@ -73,16 +94,8 @@ class Canvas(QGraphicsView):
         #painter.drawRect(rect)
         #painter.end()
 
-        self.debugtext = QGraphicsTextItem("0, 0\n")
-
-        #self.helpText = QGraphicsTextItem("C - Hand Drag\nV - Place Rectangles")
-        self.bgitem.setPixmap(self.pixmap)
-        #self.setPixmap(self.pixmap)
         self.scene = Scene()
 
-        self.scene.addItem(self.bgitem)
-        self.scene.addItem(self.rectItem)
-        self.scene.addItem(self.debugtext)
         #self.scene.addItem(self.helpText)
 
         self.last_x, self.last_y = None, None
@@ -93,7 +106,7 @@ class Canvas(QGraphicsView):
 
         self.update()
         self.setScene(self.scene)
-        self.fitInView(self.bgitem, Qt.AspectRatioMode.IgnoreAspectRatio)
+
 
 
         self.hover_item = None
@@ -102,6 +115,12 @@ class Canvas(QGraphicsView):
         self.outpaintsource = None
 
         self.rendermode = 1
+        #print(self.rendermode)
+
+        self.painter.setRenderHint(QPainter.LosslessImageRendering)
+        self.painter.setCompositionMode(QPainter.CompositionMode_DestinationOver)
+        self.soft_reset()
+        self.fitInView(self.bgitem, Qt.AspectRatioMode.IgnoreAspectRatio)
 
     def getXScale(self):
         return float(1024)/float(self.width())
@@ -140,9 +159,9 @@ class Canvas(QGraphicsView):
     def hoverCheck(self):
         matchFound = False
         for i in self.rectlist:
-            print(i.x)
+            #print(i.x)
             if i.x <= self.scene.scenePos.x() <= i.x + i.w and i.y <= self.scene.scenePos.y() <= i.y + i.h:
-                print(f"found{id}")
+                #print(f"found{id}")
                 i.color = __selColor__
                 self.update()
                 self.hover_item = i.id
@@ -203,7 +222,7 @@ class Canvas(QGraphicsView):
                     print("Found an image to outpaint")
                     i.color = __selColor__
                     self.update()
-                    if i.image is not None:
+                    if i.image is not None and i.active == True:
                         rect = QRect(int((self.scene.scenePos.x() - self.w / 2) - i.x), int((self.scene.scenePos.y() - self.h / 2) - i.y), self.w, self.h)
                         newimage = i.image.copy(rect)
                         outpainter.drawImage(0,0,newimage)
@@ -215,6 +234,9 @@ class Canvas(QGraphicsView):
 
 
     def mousePressEvent(self, e):
+        #for i in self.rectlist:
+        #    print(i.order)
+
         #self.reset()
         fn = getattr(self, "%s_mousePressEvent" % self.mode, None)
         if fn:
@@ -240,26 +262,27 @@ class Canvas(QGraphicsView):
             return fn(e)
     def sortRects(self, e):
         if e.order is not None:
-            key = e.order
+            key = e.timestring
         else:
             key = 0
         return key
     def paintEvent(self, e):
-        #print(self.rendermode)
 
-        self.painter.setCompositionMode(QPainter.CompositionMode_Screen)
-        self.painter.setRenderHint(QPainter.LosslessImageRendering)
+
         self.painter.begin(self.pixmap)
+
         #self.pixmap.fill(Qt.black)
         #painter.drawText(0, 50, 256, 256, Qt.AlignHCenter, "C - Hand Drag\nV - Place Rectangles")
         #Show Outpaint Preview rectangle
         #rect = QRect(0, self.height() - 256, 256, 256)
         #painter.drawRect(rect)
-        if self.rectlist is not []:
+        if self.rectlist is not [] and self.rectlist is not None:
             self.rectlist.sort(reverse=False, key=self.sortRects)
             for i in self.rectlist:
+
+
                 rect = QRect(i.x, i.y, i.w, i.h)
-                if i.image is not None:
+                if i.image is not None and i.active == True:
                     pic = i.image.copy(0, 0, i.image.width(), i.image.height())
                     pixmap = QPixmap.fromImage(pic)
                     #painter.drawImage(QRect(QPoint(i.x, i.y), QSize(i.w, i.h)), pic)
@@ -324,17 +347,14 @@ class Canvas(QGraphicsView):
         super(Canvas, self).keyReleaseEvent(e)
 
     def select_mousePressEvent(self, e):
-        if e.button() == Qt.RightButton:
-            if self.hover_item is not None:
-                self.selected_item = self.hover_item
-                self.redo_outpaint(self.selected_item)
-            else:
-                self.selected_item = None
+        if self.hover_item is not None:
+            self.selected_item = self.hover_item
+            self.signals.update_selected.emit()
+            #self.scene.clear()
+            self.pixmap.fill(Qt.black)
+            self.pixmap.fill(Qt.transparent)
         else:
-            if self.hover_item is not None:
-                self.selected_item = self.hover_item
-            else:
-                self.selected_item = None
+            self.selected_item = None
 
     def select_mouseMoveEvent(self, e):
         self.hoverCheck()
@@ -342,13 +362,10 @@ class Canvas(QGraphicsView):
     def select_mouseReleaseEvent(self, event):
         return
     def generic_mousePressEvent(self, e):
-
         self._start = e.pos()
         self.posx = e.pos().x()
         self.posy = e.pos().y()
         self.first_rectangle()
-        #self.addrect()
-
         return
 
     def generic_mouseReleaseEvent(self, event):

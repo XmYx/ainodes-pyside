@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 
+from PIL import Image
 from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect, QLineF, QPointF, QObject, QFile
 from PySide6.QtGui import Qt, QColor, QFont, QPalette, QPainter, QPen, QPolygon, QBrush, QPainterPath, QAction, QCursor, \
     QPixmap, QTransform, QDragEnterEvent, QDragMoveEvent, QImage
@@ -35,6 +36,7 @@ class Rectangle(object):
         self.color = __idleColor__
         self.timestring = time.time()
         self.active = True
+        self.PILImage = None
 
 class Callbacks(QObject):
     outpaint_signal = Signal()
@@ -119,7 +121,7 @@ class Canvas(QGraphicsView):
         #print(self.rendermode)
 
         self.painter.setRenderHint(QPainter.SmoothPixmapTransform)
-        self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+        self.painter.setCompositionMode(QPainter.CompositionMode_DestinationOver)
         self.soft_reset()
         self.fitInView(self.bgitem, Qt.AspectRatioMode.IgnoreAspectRatio)
 
@@ -217,6 +219,8 @@ class Canvas(QGraphicsView):
         self.signals.outpaint_signal.emit()
 
     def region_to_outpaint(self, event):
+
+
         outpaintimage = QPixmap(self.w, self.h)
         outpaintimage.fill(Qt.transparent)
         outpainter = QPainter()

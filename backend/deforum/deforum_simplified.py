@@ -1475,7 +1475,8 @@ class DeforumGenerator():
 
 
         #img = Image.open('mask.png')
-        #img = img.filter(ImageFilter.GaussianBlur(mask_blur))
+        if mask_blur > 0:
+            mask_img = img.filter(ImageFilter.GaussianBlur(mask_blur))
         width = img.size[0]
         height = img.size[1]
         for i in range(0,width):# process all pixels
@@ -1485,13 +1486,13 @@ class DeforumGenerator():
                 #print(data)
                 # data[0] = Red,  [1] = Green, [2] = Blue
                 # data[0,1,2] range = 0~255
-                if data[3] == 0:# and data[1] < 1 and data[2] < 1:
+                if data[3] < 10:# and data[1] < 1 and data[2] < 1:
                     #put black
                     mask_img.putpixel((i,j),(255,255,255))
                 else :
                     #Put white
                     mask_img.putpixel((i,j),(0,0,0))
-        mask_img = mask_img.filter(ImageFilter.GaussianBlur(mask_blur))
+        #mask_img = mask_img.filter(ImageFilter.GaussianBlur(mask_blur))
         os.makedirs('output/temp', exist_ok=True)
         mask_img.save('output/temp/mask.png')
         blend_mask = 'output/temp/mask.png'
@@ -1521,7 +1522,7 @@ class DeforumGenerator():
         #print(type(latent_mask_for_blend))
         #print(type(masked_image_for_blend))
 
-        """latent_guide, latent_mask_for_blend = load_img(init_image,
+        latent_guide, latent_mask_for_blend = load_img(init_image,
                                           shape=(W, H),
                                           use_alpha_as_mask=True)
 
@@ -1537,7 +1538,7 @@ class DeforumGenerator():
 
         latent_guide = latent_guide.to("cuda")
 
-        latent_mask_for_blend = latent_mask_for_blend.to("cuda")"""
+        latent_mask_for_blend = latent_mask_for_blend.to("cuda")
 
 
 

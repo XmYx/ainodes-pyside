@@ -38,8 +38,8 @@ def metadata (prompt = None, seed = '', generation_time = None):
 def get_mask_for_latent_blending(device, path, blur = 0, recons_blur=0):
     mask_image = Image.open(path).convert("L")
 
-    #if blur > 0:
-    #    mask_image = mask_image.filter(ImageFilter.GaussianBlur(blur))
+    if blur > 0:
+        mask_image = mask_image.filter(ImageFilter.GaussianBlur(blur))
 
     mask_for_reconstruction = mask_image.point(lambda x: 255 if x > 0 else 0)
     if recons_blur > 0:

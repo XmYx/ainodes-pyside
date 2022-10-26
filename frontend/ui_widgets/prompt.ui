@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>688</width>
-    <height>376</height>
+    <height>180</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="baseSize">
    <size>
-    <width>400</width>
-    <height>70</height>
+    <width>0</width>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -54,6 +54,18 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
      </property>
      <widget class="QWidget" name="dockWidgetContents">
       <property name="sizePolicy">
@@ -92,7 +104,7 @@
             <x>0</x>
             <y>0</y>
             <width>686</width>
-            <height>350</height>
+            <height>154</height>
            </rect>
           </property>
           <property name="layoutDirection">

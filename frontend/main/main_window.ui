@@ -32,7 +32,7 @@
      <x>0</x>
      <y>0</y>
      <width>695</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -79,9 +79,20 @@
     <addaction name="separator"/>
     <addaction name="actionAbout_aiNodes"/>
    </widget>
+   <widget class="QMenu" name="menuSample_Process">
+    <property name="title">
+     <string>Diffusion Process</string>
+    </property>
+    <addaction name="actionDeforum_Text_to_Image"/>
+    <addaction name="actionLow_Mem_Text_To_Image"/>
+    <addaction name="actionImage_To_Image"/>
+    <addaction name="actionDeforum_Text_To_Video"/>
+    <addaction name="actionDeforum_Video_to_Video"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuWindow"/>
+   <addaction name="menuSample_Process"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
@@ -201,6 +212,31 @@
   <action name="actionDefault">
    <property name="text">
     <string>Default</string>
+   </property>
+  </action>
+  <action name="actionDeforum_Text_to_Image">
+   <property name="text">
+    <string>Deforum Text to Image</string>
+   </property>
+  </action>
+  <action name="actionLow_Mem_Text_To_Image">
+   <property name="text">
+    <string>Low Mem Text To Image</string>
+   </property>
+  </action>
+  <action name="actionDeforum_Text_To_Video">
+   <property name="text">
+    <string>Deforum Text To Video</string>
+   </property>
+  </action>
+  <action name="actionImage_To_Image">
+   <property name="text">
+    <string>Image To Image</string>
+   </property>
+  </action>
+  <action name="actionDeforum_Video_to_Video">
+   <property name="text">
+    <string>Deforum Video to Video</string>
    </property>
   </action>
  </widget>

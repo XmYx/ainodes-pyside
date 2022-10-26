@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>797</width>
-    <height>486</height>
+    <width>885</width>
+    <height>244</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QGridLayout" name="gridLayout_2">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -26,8 +26,11 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item>
+   <item row="0" column="0">
     <widget class="QDockWidget" name="dockWidget">
+     <property name="windowTitle">
+      <string>Prompt Fetcher</string>
+     </property>
      <widget class="QWidget" name="dockWidgetContents">
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="leftMargin">
@@ -52,8 +55,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>795</width>
-            <height>460</height>
+            <width>883</width>
+            <height>218</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -77,53 +80,48 @@
              <property name="rightMargin">
               <number>5</number>
              </property>
-             <item row="3" column="0" colspan="4">
-              <widget class="QTextEdit" name="output"/>
-             </item>
-             <item row="4" column="1">
-              <widget class="QPushButton" name="usePrompt">
-               <property name="text">
-                <string>Use selected Prompt</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="2">
+             <item row="3" column="2">
               <widget class="QPushButton" name="dreamPrompt">
                <property name="text">
                 <string>Dream Prompt</string>
                </property>
               </widget>
              </item>
-             <item row="4" column="3">
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+             <item row="3" column="1">
+              <widget class="QPushButton" name="usePrompt">
+               <property name="text">
+                <string>Use selected Prompt</string>
                </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
+              </widget>
              </item>
-             <item row="0" column="0" colspan="4">
+             <item row="1" column="0" rowspan="3">
               <widget class="QTextEdit" name="input"/>
              </item>
-             <item row="4" column="0">
-              <spacer name="horizontalSpacer">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
+             <item row="1" column="3" rowspan="3">
+              <widget class="QTextEdit" name="output"/>
              </item>
-             <item row="2" column="2">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Input</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Output</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QPushButton" name="getPrompts">
+               <property name="text">
+                <string>Download Prompts</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
               <widget class="QPushButton" name="aiPrompt">
                <property name="text">
                 <string>Prompts AI</string>
@@ -131,11 +129,17 @@
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QPushButton" name="getPrompts">
-               <property name="text">
-                <string>Download Prompts</string>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
                </property>
-              </widget>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
              </item>
             </layout>
            </item>

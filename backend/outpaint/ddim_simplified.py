@@ -21,6 +21,9 @@ class DDIMSampler_simple(object):
                 attr = attr.to(torch.device("cuda"))
         setattr(self, name, attr)
 
+    def to_torch(self, x):
+        return x.clone().detach().to(torch.float32).to(gs.models["sd"].device)
+
     def make_schedule(
         self,
         ddim_num_steps,
@@ -34,23 +37,23 @@ class DDIMSampler_simple(object):
         alphas_cumprod = gs.models["sd"].alphas_cumprod
         assert alphas_cumprod.shape[0] == self.ddpm_num_timesteps, 'alphas have to be defined for each timestep'
 
-        def to_torch(x): return x.clone().detach().to(torch.float32).to(gs.models["sd"].device)
+    
 
-        self.register_buffer('betas', to_torch(gs.models["sd"].betas))
-        self.register_buffer('alphas_cumprod', to_torch(alphas_cumprod))
-        self.register_buffer('alphas_cumprod_prev', to_torch(
+        self.register_buffer('betas', self.to_torch(gs.models["sd"].betas))
+        self.register_buffer('alphas_cumprod', self.to_torch(alphas_cumprod))
+        self.register_buffer('alphas_cumprod_prev', self.to_torch(
             gs.models["sd"].alphas_cumprod_prev))
 
         # calculations for diffusion q(x_t | x_{t-1}) and others
         self.register_buffer('sqrt_alphas_cumprod',
-                             to_torch(np.sqrt(alphas_cumprod.cpu())))
-        self.register_buffer('sqrt_one_minus_alphas_cumprod', to_torch(
+                             self.to_torch(np.sqrt(alphas_cumprod.cpu())))
+        self.register_buffer('sqrt_one_minus_alphas_cumprod', self.to_torch(
             np.sqrt(1. - alphas_cumprod.cpu())))
         self.register_buffer('log_one_minus_alphas_cumprod',
-                             to_torch(np.log(1. - alphas_cumprod.cpu())))
+                             self.to_torch(np.log(1. - alphas_cumprod.cpu())))
         self.register_buffer('sqrt_recip_alphas_cumprod',
-                             to_torch(np.sqrt(1. / alphas_cumprod.cpu())))
-        self.register_buffer('sqrt_recipm1_alphas_cumprod', to_torch(
+                             self.to_torch(np.sqrt(1. / alphas_cumprod.cpu())))
+        self.register_buffer('sqrt_recipm1_alphas_cumprod', self.to_torch(
             np.sqrt(1. / alphas_cumprod.cpu() - 1)))
 
         # ddim sampling parameters

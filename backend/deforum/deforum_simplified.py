@@ -209,7 +209,9 @@ class DeforumGenerator():
 
     def load_model(self):
         """Load and initialize the model from configuration variables passed at object creation time"""
-
+        if "inpaint" in gs.models:
+            gs.models["inpaint"] = gs.models["inpaint"].to("cpu")
+            del gs.models["inpaint"]
         weights = gs.system.sdPath
         config = 'configs/stable-diffusion/v1-inference.yaml'
         embedding_path = None
@@ -241,6 +243,7 @@ class DeforumGenerator():
     def load_inpaint_model(self):
         if "sd" in gs.models:
             gs.models["sd"] = gs.models["sd"].to('cpu')
+            del gs.models["sd"]
         """Load and initialize the model from configuration variables passed at object creation time"""
         if "inpaint" not in gs.models:
             weights = 'models/sd-v1-5-inpaint.ckpt'

@@ -259,7 +259,7 @@ class GenerateWindow(QObject):
         self.w.sizer_count.w.dockWidget.setWindowTitle('Image Setup')
         self.animSliders.w.dockWidget.setWindowTitle('Anim Setup')
         self.timeline.setWindowTitle('Timeline')
-        #self.w.prompt.w.dockWidget.setWindowTitle('Prompt')
+        self.w.prompt.w.dockWidget.setWindowTitle('Prompt')
         self.w.dynaview.w.dockWidget.setWindowTitle('Tensor Preview')
         self.dynaimage.w.dockWidget.setWindowTitle('Image Preview')
         self.w.preview.w.setWindowTitle('Canvas')
@@ -297,6 +297,7 @@ class GenerateWindow(QObject):
         self.outpaint_controls.w.selectButton.clicked.connect(self.outpaint_mode_select)
         self.outpaint_controls.w.outpaintButton.clicked.connect(self.outpaint_mode_outpaint)
         self.outpaint_controls.w.dragButton.clicked.connect(self.outpaint_mode_drag)
+        self.outpaint_controls.w.offsetSlider.valueChanged.connect(self.outpaint.canvas.set_offset(int(self.outpaint_controls.w.offsetSlider.value())))
 
         self.image_lab.signals.upscale_start.connect(self.upscale_start)
         self.image_lab.signals.upscale_stop.connect(self.upscale_stop)
@@ -514,8 +515,12 @@ class GenerateWindow(QObject):
         self.w.prompt = Prompt()
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.outpaint_controls.w.dockWidget)
         self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.w.prompt.w.dockWidget)
-        #self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)
+        print(int(self.outpaint_controls.w.offsetSlider.value()))        #self.w.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.animSliders.w.dockWidget)
         #self.outpaint = OutpaintUI()
+    def outpaint_offset_signal(self):
+        print("something happened..")
+        value = int(self.outpaint_controls.w.offsetSlider.value())
+        self.outpaint.canvas.set_offset(value)
     def defaultMode_restore(self):
         try:
             self.w.thumbnails.show()
@@ -1006,6 +1011,7 @@ class GenerateWindow(QObject):
         worker = Worker(self.run_deforum)
         # Execute
         self.threadpool.start(worker)
+        worker.finished.connect(self.reenableRunButton)
 
     def run_deforum_txt2img(self, progress_callback=None):
         self.deforum = DeforumGenerator()

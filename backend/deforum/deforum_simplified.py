@@ -210,8 +210,9 @@ class DeforumGenerator():
     def load_model(self):
         """Load and initialize the model from configuration variables passed at object creation time"""
         if "inpaint" in gs.models:
-            gs.models["inpaint"] = gs.models["inpaint"].to("cpu")
+            gs.models["inpaint"].to("cpu")
             del gs.models["inpaint"]
+            self.torch_gc()
         weights = gs.system.sdPath
         config = 'configs/stable-diffusion/v1-inference.yaml'
         embedding_path = None
@@ -242,8 +243,9 @@ class DeforumGenerator():
         #return model
     def load_inpaint_model(self):
         if "sd" in gs.models:
-            gs.models["sd"] = gs.models["sd"].to('cpu')
+            gs.models["sd"].to('cpu')
             del gs.models["sd"]
+            self.torch_gc()
         """Load and initialize the model from configuration variables passed at object creation time"""
         if "inpaint" not in gs.models:
             weights = 'models/sd-v1-5-inpaint.ckpt'
@@ -534,7 +536,7 @@ class DeforumGenerator():
         using_vid_init = animation_mode == 'Video Input'
 
         # load depth model for 3D
-        predict_depths = (animation_mode == '3D' and use_depth_warping) or save_depth_maps
+        predict_depths = animation_mode == '3D' or use_depth_warping or save_depth_maps
         if predict_depths:
                 if cpudepth == True:
                     print("Loading depth models to cpu")
@@ -651,6 +653,9 @@ class DeforumGenerator():
                     else:  # '3D'
                         prev_img_cv2 = sample_to_cv2(prev_sample)
                         depth = depth_model.predict(prev_img_cv2, midas_weight) if depth_model else None
+
+
+
                         prev_img = anim_frame_warp_3d(prev_img_cv2, depth, gs, frame_idx, near_plane, far_plane,
                                                       fov, sampling_mode, padding_mode)
 
@@ -1442,12 +1447,16 @@ class DeforumGenerator():
         print("Using 1.5 InPaint model") if with_inpaint else None
         mask_img = Image.open("outpaint_mask.png")
         img = Image.open(init_image)
+
+        #mask_img = img.split()[-1]
+
+
         width = img.size[0]
         height = img.size[1]
         for i in range(0,width):# process all pixels
             for j in range(0,height):
                 data = mask_img.getpixel((i,j))
-                #print(data)
+                #print(data[3])
                 #print(data)
                 # data[0] = Red,  [1] = Green, [2] = Blue
                 # data[0,1,2] range = 0~255
@@ -1457,10 +1466,12 @@ class DeforumGenerator():
                 else :
                     #Put white
                     mask_img.putpixel((i,j),(0,0,0))
+        #mask_img = mask_img.convert('L')
         if mask_blur > 0 and with_inpaint == True:
-            mask_img = img.filter(ImageFilter.GaussianBlur(mask_blur))
+            mask_img = mask_img.filter(ImageFilter.GaussianBlur(mask_blur))
 
         #mask_img = mask_img.filter(ImageFilter.GaussianBlur(mask_blur))
+        #mask_img = mask_img.convert('L')
         os.makedirs('output/temp', exist_ok=True)
         mask_img.save('output/temp/mask.png')
         blend_mask = 'output/temp/mask.png'
@@ -1541,18 +1552,18 @@ class DeforumGenerator():
             latent_guide = torch_image_to_latent(gs.models["sd"], image_guide, n_samples=n_samples)
             [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(device, blend_mask, blur=mask_blur, recons_blur=recons_blur)
             masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]
-
-            #print(type(latent_guide))
+            latent_guide = latent_guide.to("cuda")
+            latent_mask_for_blend = latent_mask_for_blend.to("cuda")
             #print(type(mask_for_reconstruction))
             #print(type(latent_mask_for_blend))
             #print(type(masked_image_for_blend))
 
-            latent_guide, latent_mask_for_blend = load_img(init_image,
+            """latent_guide, latent_mask_for_blend = load_img(init_image,
                                                            shape=(W, H),
                                                            use_alpha_as_mask=True)
 
-            latent_guide = latent_guide.to("cuda")
 
+            latent_guide = latent_guide.to("cuda")
             with autocast("cuda"):
                 latent_guide = gs.models["sd"].get_first_stage_encoding(
                     gs.models["sd"].encode_first_stage(latent_guide))  # move to latent space
@@ -1561,10 +1572,8 @@ class DeforumGenerator():
                                                  1.0,
                                                  1.0)
 
-            latent_guide = latent_guide.to("cuda")
 
-            latent_mask_for_blend = latent_mask_for_blend.to("cuda")
-
+            latent_mask_for_blend = latent_mask_for_blend.to("cuda")"""
 
 
             if image_guide is not None:
@@ -1879,18 +1888,35 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, mask_
                 unconditional_conditioning=uc_full,
                 x_T=start_code,
             )
+            x_samples = encoded_to_torch_image(
+                gs.models["inpaint"], samples_cfg)  # [1, 3, 512, 512]
+            all_samples = []
+            if masked_image_for_blend is not None:
+                x_samples = mask_for_reconstruction * x_samples + masked_image_for_blend
+
+            all_samples.append(x_samples)
+
+            generated_time = time.time()
+
+            for x_sample in x_samples:
+                image = sampleToImage(x_sample)
+                result = [image]
 
 
-            x_samples_ddim = gs.models["inpaint"].decode_first_stage(samples_cfg)
-            #x_samples_ddim = mask_for_reconstruction * x_samples_ddim #+ masked_image_for_blend
-            #x_samples_ddim =
-            result = torch.clamp((x_samples_ddim+1.0)/2.0,
-                                 min=0.0, max=1.0)
+                #image.save(os.path.join(sample_path, f"{base_count:05}.png"))
+                #if image_callback is not None:
+                #    image_callback(image)
 
-            result = result.cpu().numpy().transpose(0,2,3,1)
-            result = result*255
 
-    result = [Image.fromarray(img.astype(np.uint8)) for img in result]
+
+
+            #result = torch.clamp((x_samples+1.0)/2.0,
+            #                     min=0.0, max=1.0)
+
+            #result = result.cpu().numpy().transpose(0,2,3,1)
+            #result = result*255
+
+    #result = [Image.fromarray(img.astype(np.uint8)) for img in result]
     # result = [put_watermark(img for img in result]
 
     return result

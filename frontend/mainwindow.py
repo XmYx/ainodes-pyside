@@ -303,6 +303,8 @@ class GenerateWindow(QObject):
         self.outpaint_controls.w.dragButton.clicked.connect(self.outpaint_mode_drag)
         self.outpaint_controls.w.offsetSlider.valueChanged.connect(self.outpaint.canvas.set_offset(int(self.outpaint_controls.w.offsetSlider.value())))
 
+        self.outpaint_controls.w.previewBatch.clicked.connect(self.run_batch_outpaint_thread)
+
         self.image_lab.signals.upscale_start.connect(self.upscale_start)
         self.image_lab.signals.upscale_stop.connect(self.upscale_stop)
         self.image_lab.signals.upscale_counter.connect(self.upscale_count)
@@ -334,6 +336,30 @@ class GenerateWindow(QObject):
 
         self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
         self.load_history()
+
+
+    def run_batch_outpaint(self, progress_callback=False):
+        self.run_deforum_txt2img()
+        # make sure you prepare all the variables from the controll window.
+        # I did a hack for it to work in the first place
+        itemList = self.outpaint.canvas.create_tempBatch()
+
+        self.outpaint.canvas.draw_tempBatch(itemList)
+
+        for items in itemList:
+            selected_item = self.outpaint.canvas.addrect_atpos(items["x"], items["y"])
+            self.outpaint.canvas.reusable_outpaint(selected_item)
+            self.run_deforum_outpaint()
+
+
+
+
+    def run_batch_outpaint_thread(self):
+        worker = Worker(self.run_batch_outpaint)
+        # Execute
+        self.threadpool.start(worker)
+
+
 
 
     def show_system_settup(self):

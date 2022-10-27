@@ -67,10 +67,6 @@ class Worker(QRunnable):
 
         # Retrieve args/kwargs here; and fire processing using them
         try:
-            while gs.wait == True:
-                sleep(1)
-            #glob_lock.lock()
-            gs.wait = True
             result = self.fn(*self.args, **self.kwargs)
         except:
             traceback.print_exc()
@@ -79,10 +75,4 @@ class Worker(QRunnable):
         else:
             self.signals.result.emit(result)  # Return the result of the processing
         finally:
-            #glob_lock.unlock()
             self.signals.finished.emit()  # Done
-    @Slot()
-    def release_mutex(self):
-        gs.wait = False
-        #glob_lock.unlock()
-

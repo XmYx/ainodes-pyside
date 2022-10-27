@@ -71,6 +71,8 @@ class Canvas(QGraphicsView):
         QGraphicsView.__init__(self, parent)
         self.signals = Callbacks()
         self.reset()
+        self.tempbatch = []
+        self.first_image = True
 
     def soft_reset(self):
         self.pixmap = QPixmap(4096, 4096)
@@ -155,6 +157,8 @@ class Canvas(QGraphicsView):
         self.selected_item = uid
         self.rectlist.append(rect[uid])
         self.newimage = True
+        return self.selected_item
+
     def addrect(self):
         rect = {}
         uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
@@ -165,6 +169,10 @@ class Canvas(QGraphicsView):
 
     @Slot()
     def create_tempBatch(self, randomize = False):
+        self.rows = 5
+        self.cols = 5
+        self.offset = 128
+        self.first_image = True
         row = 1
         col = 1
         x = 0
@@ -172,14 +180,15 @@ class Canvas(QGraphicsView):
         print("here...")
         self.tempbatch = []
         while row < self.rows:
-            self.tempbatch = self.add_cols(self.cols, self.offset, x, y, randomize)
+            self.add_cols(self.cols, self.offset, x, y, randomize)
             row = row + 1
             print(row)
             y = y + self.h - self.offset + (random.randint(-50, 50))
             if y >= self.pixmap.height() - 4 * self.offset:
                 row = self.rows
         self.pen = QPen(Qt.green, 3, Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
-        self.draw_tempBatch()
+        return self.tempbatch
+
 
     def add_cols(self, cols, offset, x, y, randomize = False):
         col = 1
@@ -196,21 +205,14 @@ class Canvas(QGraphicsView):
             if x >= self.pixmap.width():
                 col = cols
         #return tempbatch
-    def draw_tempBatch(self, run = True):
+    def draw_tempBatch(self, tempbatch, run = True):
         self.painter.begin(self.pixmap)
-
 
         self.pixmap.fill(__backgroudColor__)
         self.painter.end()
-        for items in self.tempbatch:
+        for items in tempbatch:
             self.draw_tempRects(items["x"], items["y"], self.w, self.h)
-        if run:
-            for items in self.tempbatch:
-                self.addrect_atpos(items["x"], items["y"])
-                self.reusable_outpaint(self.selected_item)
-                while gs.wait == True:
-                    time.sleep(1)
-                    #self.qWait.wait(glob_lock)
+
 
 
     def draw_tempRects(self, x, y, width, height):
@@ -346,47 +348,35 @@ class Canvas(QGraphicsView):
         self.selected_item = id
         for x in self.rectlist:
             if x.id == id:
-                if x.x == 0:
-                    if x.image is None:
-                        self.addrect_atpos(x.x, x.y)
-                        #self.lockedMutex.lock()
-                        self.signals.txt2img_signal_direct.emit()
-
-                        #self.lockedMutex.unlock()
-                        self.mode = "outpaint"
-                        outpaintimage = None
-                else:
-
-
-                    #x.image = None
-                    #self.update()
-                    for i in self.rectlist:
-                        if x.y >= i.y - self.h and x.x >= i.x - self.w:
-                            if x.y <= i.y + self.h and x.x <= i.x + i.w:
-                                if i.id != x.id:
-                                    if x.y > i.y:
-                                        Ymaskoffset = self.offset
-                                    else:
-                                        Ymaskoffset = -self.offset
-                                    if x.x > i.x:
-                                        Xmaskoffset = self.offset
-                                    else:
-                                        Xmaskoffset = -self.offset
-                                    #i.color = __selColor__
-                                    #self.update()
-                                    if i.image is not None:
-                                        print("Found an image to outpaint")
-                                        rect = QRect(x.x - i.x, x.y - i.y, self.w, self.h)
-                                        maskrect = QRect(x.x - i.x + Xmaskoffset, x.y - i.y + Ymaskoffset, self.w, self.h)
-                                        newimage = i.image.copy(rect)
-                                        maskimage = i.image.copy(maskrect)
-                                        maskpainter.begin(outpaintmaskimage)
-                                        maskpainter.drawImage(0,0,maskimage)
-                                        maskpainter.end()
-                                        outpainter.begin(outpaintimage)
-                                        outpainter.drawImage(0,0,newimage)
-                                        outpainter.end()
-                                        #self.addrect()
+                #x.image = None
+                #self.update()
+                for i in self.rectlist:
+                    if x.y >= i.y - self.h and x.x >= i.x - self.w:
+                        if x.y <= i.y + self.h and x.x <= i.x + i.w:
+                            if i.id != x.id:
+                                if x.y > i.y:
+                                    Ymaskoffset = self.offset
+                                else:
+                                    Ymaskoffset = -self.offset
+                                if x.x > i.x:
+                                    Xmaskoffset = self.offset
+                                else:
+                                    Xmaskoffset = -self.offset
+                                #i.color = __selColor__
+                                #self.update()
+                                if i.image is not None:
+                                    print("Found an image to outpaint")
+                                    rect = QRect(x.x - i.x, x.y - i.y, self.w, self.h)
+                                    maskrect = QRect(x.x - i.x + Xmaskoffset, x.y - i.y + Ymaskoffset, self.w, self.h)
+                                    newimage = i.image.copy(rect)
+                                    maskimage = i.image.copy(maskrect)
+                                    maskpainter.begin(outpaintmaskimage)
+                                    maskpainter.drawImage(0,0,maskimage)
+                                    maskpainter.end()
+                                    outpainter.begin(outpaintimage)
+                                    outpainter.drawImage(0,0,newimage)
+                                    outpainter.end()
+                                    #self.addrect()
         if self.mode == 'outpaint' and outpaintimage is not None:
             outpaintimage.save("outpaint.png")
             #outpainter.end()
@@ -395,11 +385,8 @@ class Canvas(QGraphicsView):
             #self.redo = True
             #self.lockedMutex.lock()
 
-            self.signals.outpaint_signal_direct.emit()
+            #self.signals.outpaint_signal_direct.emit()
 
-            #while self.generatorbusy == True:
-            #    self.qWait.wait(self.lockedMutex)
-            #self.lockedMutex.unlock()
 
     def region_to_outpaint(self, event):
 
@@ -875,13 +862,6 @@ class Canvas(QGraphicsView):
     # Set Font
     def setTextFont(self, font):
         self.font = font"""
-
-
-
-
-
-
-
 
 class OutpaintUI(QDockWidget):
 

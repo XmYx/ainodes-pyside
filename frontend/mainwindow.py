@@ -457,7 +457,13 @@ class GenerateWindow(QObject):
         self.timeline.show()
 
     def videoDropped(self, list):
-        print(list)
+        if len(list) > 0:
+            self.input_video = list[0]
+            if '.mp4' in self.input_video:
+                self.set_status_bar(f'Video ready to process at: {self.input_video}')
+            else:
+                self.set_status_bar(f'Only mp4 supported at the moment')
+
 
     def cleanup_video_drop_zone(self):
         for i in reversed(range(self.set_txt2vid.w.dropZone.count())):

@@ -63,6 +63,7 @@ class Callbacks(QObject):
     compviscallback = Signal()
     add_image_to_thumbnail_signal = Signal(str)
     setStatusBar = Signal(str)
+    vid2vid_one_percent = Signal(int)
 
 
 class GenerateWindow(QObject):
@@ -74,6 +75,7 @@ class GenerateWindow(QObject):
 
     def __init__(self, *args, **kwargs):
         super(GenerateWindow, self).__init__(*args, **kwargs)
+        self.input_video = None
         self.video_drop_zone = None
         self.deforum = None
         self.previewpos = "outerdock"
@@ -976,6 +978,10 @@ class GenerateWindow(QObject):
 
         return sampler
 
+    def set_one_percent(self, max_frames):
+        print('one percent: ',max_frames)
+        self.onePercent = 100 / (1 * self.set_txt2vid.w.steps.value() * max_frames * max_frames)
+
     # deforum
     def run_deforum(self, progress_callback=None):
 
@@ -988,27 +994,6 @@ class GenerateWindow(QObject):
         max_frames = self.set_txt2vid.w.frames.value()
         self.onePercent = 100 / (1 * self.set_txt2vid.w.steps.value() * max_frames * max_frames)
 
-        keyframes = self.w.prompt.w.keyFrames.toPlainText()
-        prompts = self.w.prompt.w.textEdit.toPlainText()
-        prompt_series = pd.Series([np.nan for a in range(max_frames)])
-        if keyframes == '':
-            keyframes = "0"
-        prom = prompts
-        key = keyframes
-
-        new_prom = list(prom.split("\n"))
-        new_key = list(key.split("\n"))
-
-        prompts = dict(zip(new_key, new_prom))
-
-        for i, prompt in prompts.items():
-            n = int(i)
-            prompt_series[n] = prompt
-        prompt_series = prompt_series.ffill().bfill()
-
-        # print(prompt_series)
-        show_sample_per_step = True
-
         W = self.set_txt2vid.w.imageWidth.value()
         H = self.set_txt2vid.w.imageHeight.value()
         W, H = map(lambda x: x - x % 64, (W, H))
@@ -1019,15 +1004,19 @@ class GenerateWindow(QObject):
 
         if self.set_txt2vid.w.anim2D.isChecked():
             animation_mode='2D'
+            video_init_path = None
         elif self.set_txt2vid.w.anim3D.isChecked():
             animation_mode='3D'
+            video_init_path = None
         elif self.set_txt2vid.w.animVid.isChecked():
             animation_mode='Video Input'
+            video_init_path = self.input_video
 
         self.deforum.render_animation(
             image_callback=self.imageCallback_signal,
             step_callback=self.deforumstepCallback_signal if self.set_txt2vid.w.tensorPreview.isChecked() else None,
-            animation_prompts=prompt_series,
+            prompts=self.w.prompt.w.textEdit.toPlainText(),
+            keyframes=self.w.prompt.w.keyFrames.toPlainText(),
             H=H,
             W=W,
             seed=random.randint(0, 2**32 - 1) if self.set_txt2vid.w.seed.text() == '' else int(self.set_txt2vid.w.seed.text()),
@@ -1052,6 +1041,7 @@ class GenerateWindow(QObject):
             strength=self.set_txt2vid.w.strength.value() / 1000,
             strength_0_no_init=self.set_txt2vid.w.strength0.isChecked(),
             init_image="",
+            video_init_path=video_init_path,
             use_mask=self.set_txt2vid.w.useMask.isChecked(),
             use_alpha_as_mask=self.set_txt2vid.w.useAlphaMask.isChecked(),
             mask_file="",  # @param {type:"string"}
@@ -1131,7 +1121,11 @@ class GenerateWindow(QObject):
     def deforum_txt2vid_thread(self):
         self.deforum = DeforumGenerator()
         self.deforum.signals = Callbacks()
+        self.signals.deforum_step.connect(self.deforumstepCallback_func)
+        self.signals.deforum_image_cb.connect(self.add_image_to_thumbnail)
+
         self.w.prompt.w.stopButton.clicked.connect(self.deforum.setStop)
+        self.signals.vid2vid_one_percent.connect(self.set_one_percent)
 
         self.w.prompt.w.runButton.setEnabled(False)
         self.prompt_fetcher.w.dreamPrompt.setEnabled(False)
@@ -1392,6 +1386,11 @@ class GenerateWindow(QObject):
                 self.image = image
                 self.signals.txt2img_image_cb.emit()
         elif self.choice == "Outpaint":
+            self.currentFrames.append(image)
+            self.renderedFrames += 1
+            self.image = image
+            self.signals.txt2img_image_cb.emit()
+        elif self.choice == "Deforum Video to Video":
             self.currentFrames.append(image)
             self.renderedFrames += 1
             self.image = image
@@ -1846,7 +1845,7 @@ class GenerateWindow(QObject):
 
 
         if self.choice == "Deforum Text to Video":
-                self.deforum_txt2vid_thread()
+            self.deforum_txt2vid_thread()
         elif self.choice == "Text to Image LM":
             self.txt2img_lm_thread()
         elif self.choice == 'Text to Image':
@@ -1854,7 +1853,7 @@ class GenerateWindow(QObject):
         elif self.choice == 'Outpaint':
             self.deforum_outpaint_thread()
         elif self.choice == 'Deforum Video to Video':
-            self.deforum_vid2vid_thread()
+            self.deforum_txt2vid_thread()
 
     # dont know yet
     def load_history(self):

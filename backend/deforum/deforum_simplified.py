@@ -1,5 +1,6 @@
 # InvokeAI Generator import
 import json
+import pathlib
 import random
 import re
 import subprocess
@@ -16,7 +17,7 @@ import numpy as np
 import pandas as pd
 import torch, os
 from PIL import Image
-from PySide6.QtCore import Slot, Signal
+from PySide6.QtCore import Slot, Signal, QObject
 from einops import rearrange, repeat
 from omegaconf import OmegaConf
 from pytorch_lightning import seed_everything
@@ -336,12 +337,15 @@ class DeforumGenerator():
             seed = random.randint(0, 2**32 - 1)
         return seed
 
+
+
     #@profile
     def render_animation(self,
                          image_callback=None,
                          step_callback=None,
                          # prompts="a beautiful forest by Asher Brown Durand, trending on Artstation",
-                         animation_prompts='test',
+                         prompts='test',
+                         keyframes='0',
                          H=512,
                          W=512,
                          seed=-1,  # @param
@@ -436,7 +440,7 @@ class DeforumGenerator():
                          save_depth_maps=False,  # @param {type:"boolean"}
 
                          # @markdown ####**Video Input:**
-                         # video_init_path='/content/video_in.mp4',  # @param {type:"string"}
+                         video_init_path='/content/video_in.mp4',  # @param {type:"string"}
                          # extract_nth_frame=1,  # @param {type:"number"}
                          # overwrite_extracted_frames=True,  # @param {type:"boolean"}
                          use_mask_video=False,  # @param {type:"boolean"}
@@ -480,8 +484,43 @@ class DeforumGenerator():
         if "sd" not in gs.models:
             self.load_model()
 
-        # animations use key framed prompts
-        # prompts = animation_prompts
+        using_vid_init = animation_mode == 'Video Input'
+
+        if using_vid_init:
+            video_in_frame_path = gs.system.vid2vidTmp
+            os.makedirs(os.path.join(video_in_frame_path), exist_ok=True)
+
+            # save the video frames from input video
+            print(f"Exporting Video Frames (1 every {1}) frames to {video_in_frame_path}...")
+            try:
+                for f in pathlib.Path(video_in_frame_path).glob('*.jpg'):
+                    f.unlink()
+            except:
+                pass
+            vf = r'select=not(mod(n\,' + str(1) + '))'
+            process = subprocess.Popen([
+                gs.system.ffmpegPath, '-i', f'{video_init_path}',
+                '-vf', f'{vf}', '-vsync', 'vfr', '-q:v', '2',
+                '-loglevel', 'error', '-stats',
+                os.path.join(video_in_frame_path, '%05d.jpg')
+            ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)  # .stdout.decode('utf-8')
+
+            stdout, stderr = process.communicate()
+            if process.returncode != 0:
+                print(stderr)
+                raise RuntimeError(stderr)
+
+            # determine max frames from length of input frames
+            max_frames = len([f for f in pathlib.Path(video_in_frame_path).glob('*.jpg')])
+
+            self.signals.vid2vid_one_percent.emit(max_frames)
+
+            use_init = True
+            print(f"Loading {max_frames} input frames from {video_in_frame_path} and saving video frames to {gs.system.vid2vidOut}")
+
+
+
+
 
         # expand key frame strings to values
         anim_keyframes_dict = {
@@ -530,10 +569,25 @@ class DeforumGenerator():
         # prompt_series = pd.Series([np.nan for a in range(max_frames)])
         # for i, prompt in animation_prompts.items():
         #    prompt_series[i] = prompt
-        prompt_series = animation_prompts
+
+        prompt_series = pd.Series([np.nan for a in range(max_frames)])
+        if keyframes == '':
+            keyframes = "0"
+        prom = prompts
+        key = keyframes
+
+        new_prom = list(prom.split("\n"))
+        new_key = list(key.split("\n"))
+
+        prompts = dict(zip(new_key, new_prom))
+
+        for i, prompt in prompts.items():
+            n = int(i)
+            prompt_series[n] = prompt
+        prompt_series = prompt_series.ffill().bfill()
 
         # check for video inits
-        using_vid_init = animation_mode == 'Video Input'
+
 
         # load depth model for 3D
         predict_depths = animation_mode == '3D' or use_depth_warping or save_depth_maps
@@ -691,12 +745,13 @@ class DeforumGenerator():
                         f"Rx: {gs.rotation_3d_x_series[frame_idx]} Ry: {gs.rotation_3d_y_series[frame_idx]} Rz: {gs.rotation_3d_z_series[frame_idx]}")
 
                 # grab init image for current frame
+                init_image = None
                 if using_vid_init:
-                    init_frame = os.path.join(outdir, 'inputframes', f"{frame_idx + 1:05}.jpg")
+                    init_frame = os.path.join(gs.system.vid2vidTmp, f"{frame_idx + 1:05}.jpg")
                     print(f"Using video init frame {init_frame}")
                     init_image = init_frame
                     if use_mask_video:
-                        mask_frame = os.path.join(outdir, 'maskframes', f"{frame_idx + 1:05}.jpg")
+                        mask_frame = os.path.join(gs.system.vid2vidMask, f"{frame_idx + 1:05}.jpg")
                         mask_file = mask_frame
 
 
@@ -715,6 +770,7 @@ class DeforumGenerator():
                                               precision=precision,
                                               init_latent=init_latent,
                                               init_sample=init_sample,
+                                              init_image=init_image,
                                               use_init=use_init,
                                               W=W,
                                               H=H,
@@ -1777,7 +1833,7 @@ class SamplerCallback(object):
         print("view_sample_step")
         if self.save_sample_per_step or self.show_sample_per_step:
             self.step_callback(latents)
-            # samples = gs.models["sd"].decode_first_stage(latents)
+            samples = gs.models["sd"].decode_first_stage(latents)
             if self.save_sample_per_step:
                 fname = f'{path_name_modifier}_{self.step_index:05}.png'
                 for i, sample in enumerate(samples):

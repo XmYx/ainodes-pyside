@@ -271,7 +271,7 @@ def load_img(path, shape, use_alpha_as_mask=False):
     else:
         image = image.convert('RGB')
 
-    image = image.resize(shape, resample=Image.LANCZOS)
+    image = image.resize(shape, resample=Image.Resampling.LANCZOS)
 
     mask_image = None
     if use_alpha_as_mask:
@@ -638,7 +638,7 @@ def log_tokenization(text, model, log=False, weight=1):
             f">> Tokens Discarded ({totalTokens-usedTokens}):\n{discarded}\x1b[0m"
         )
 
-def generate(args, frame = 0, return_latent=False, return_sample=False, return_c=False):
+def generate_old(args, frame = 0, return_latent=False, return_sample=False, return_c=False):
     seed_everything(args.seed)
     os.makedirs(args.outdir, exist_ok=True)
 
@@ -1584,4 +1584,3 @@ def render_interpolation(args, anim_args):
 
     #clear init_c
     args.init_c = None
-

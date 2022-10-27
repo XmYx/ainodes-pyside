@@ -1,10 +1,12 @@
 import traceback, sys, os
 
-from PySide6.QtCore import QRunnable, Signal, QObject, Slot
+from PySide6.QtCore import QRunnable, Signal, QObject, Slot, QMutex
 from backend.singleton import singleton
+from time import sleep
 
 gs = singleton
 
+glob_lock = QMutex()
 
 class WorkerSignals(QObject):
     '''
@@ -45,7 +47,7 @@ class Worker(QRunnable):
 
     '''
 
-    def __init__(self, fn, *args, **kwargs):
+    def __init__(self, fn, lock=False, *args, **kwargs):
         super(Worker, self).__init__()
 
         # Store constructor arguments (re-used for processing)
@@ -53,7 +55,7 @@ class Worker(QRunnable):
         self.args = args
         self.kwargs = kwargs
         self.signals = WorkerSignals()
-
+        self.lock = lock
         # Add the callback to our kwargs
         self.kwargs['progress_callback'] = self.signals.progress
 
@@ -65,6 +67,10 @@ class Worker(QRunnable):
 
         # Retrieve args/kwargs here; and fire processing using them
         try:
+            while gs.wait == True:
+                sleep(1)
+            #glob_lock.lock()
+            gs.wait = True
             result = self.fn(*self.args, **self.kwargs)
         except:
             traceback.print_exc()
@@ -73,5 +79,10 @@ class Worker(QRunnable):
         else:
             self.signals.result.emit(result)  # Return the result of the processing
         finally:
+            #glob_lock.unlock()
             self.signals.finished.emit()  # Done
+    @Slot()
+    def release_mutex(self):
+        gs.wait = False
+        #glob_lock.unlock()
 

@@ -81,6 +81,8 @@ if __name__ == "__main__":
 
     mainWindow.outpaint.canvas.signals.outpaint_signal.connect(mainWindow.deforum_outpaint_thread)
     mainWindow.outpaint.canvas.signals.txt2img_signal.connect(mainWindow.deforum_txt2img_thread)
+    #mainWindow.outpaint.canvas.signals.outpaint_signal_direct.connect(mainWindow.run_deforum_outpaint)
+    mainWindow.outpaint.canvas.signals.txt2img_signal_direct.connect(mainWindow.run_deforum_txt2img)
 
 
     mainWindow.outpaint_controls.w.redoButton.clicked.connect(mainWindow.redo_current_outpaint)
@@ -100,5 +102,3 @@ if __name__ == "__main__":
 
 
 #run_with_reloader(main())
-
-

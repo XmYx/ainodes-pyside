@@ -12,6 +12,7 @@ from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockW
 from time import gmtime, strftime
 import time
 from uuid import uuid4
+import random
 
 __textColor__ = QColor(187, 187, 187)
 __backgroudColor__ = QColor(60, 63, 65)
@@ -23,7 +24,7 @@ __selColor__ = QColor(255, 102, 102)
 
 
 class Rectangle(object):
-    def __init__(self, x, y, w, h, id):
+    def __init__(self, x, y, w, h, id, order = None):
         self.id = id
         self.x = x
         self.y = y
@@ -32,7 +33,7 @@ class Rectangle(object):
         self.image = None
         self.index = None
         self.images = []
-        self.order = None
+        self.order = order
         self.color = __idleColor__
         self.timestring = time.time()
         self.active = True
@@ -126,6 +127,9 @@ class Canvas(QGraphicsView):
         self.fitInView(self.bgitem, Qt.AspectRatioMode.KeepAspectRatio)
         self.updateView()
         self.offset = 0
+        self.counter = 0
+        self.newimage = False
+        self.txt2img = False
     def getXScale(self):
         return float(1024)/float(self.width())
     def getYScale(self):
@@ -161,13 +165,14 @@ class Canvas(QGraphicsView):
         self.update()
 
     def hoverCheck(self):
+        print(self.rectlist)
         matchFound = False
         for i in self.rectlist:
-            #print(i.x)
+            print(i.id)
             if i.x <= self.scene.scenePos.x() <= i.x + i.w and i.y <= self.scene.scenePos.y() <= i.y + i.h:
                 #print(f"found{id}")
-                i.color = __selColor__
-                self.update()
+                #i.color = __selColor__
+                #self.update()
                 self.hover_item = i.id
                 matchFound = True
             else:
@@ -192,6 +197,132 @@ class Canvas(QGraphicsView):
     def set_offset(self, offset):
         self.offset = offset
         print(f"offset is now: {self.offset}")
+    @Slot()
+    def create_tempBatch(self, randomize = False):
+        #self.rows = 5
+        #self.cols = 5
+        #self.offset = 128
+        self.first_image = True
+        row = 1
+        col = 1
+        x = 0
+        y = 0
+        print("here...")
+        self.counter = 0
+        self.tempbatch = []
+        self.tempbatch.clear()
+        #self.rectlist.clear()
+        while row < self.rows:
+            self.add_cols(self.cols, self.offset, x, y, randomize)
+            row = row + 1
+            print(row)
+            y = y + self.h - self.offset + (random.randint(-50, 50)) if randomize else y + self.h - self.offset #
+            if y >= self.pixmap.height() - 4 * self.offset:
+                row = self.rows
+        self.pen = QPen(Qt.green, 3, Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
+        self.draw_tempBatch(self.tempbatch)
+        return self.tempbatch
+
+
+    def add_cols(self, cols, offset, x, y, randomize = False):
+        col = 1
+        while col < cols:
+            batch = {
+                "x" : x,
+                "y" : y,
+                "width" : self.w,
+                "height" : self.h
+            }
+            x = x + self.w - offset + (random.randint(-50, 50)) if randomize else x + self.w - offset
+            self.tempbatch.append(batch)
+            col = col + 1
+            if x >= self.pixmap.width():
+                col = cols
+        #return tempbatch
+    def draw_tempBatch(self, tempbatch, run = True):
+        self.painter.begin(self.pixmap)
+        self.pixmap.fill(__backgroudColor__)
+        self.painter.end()
+        self.rectlist.clear()
+        for items in tempbatch:
+            self.draw_tempRects(items["x"], items["y"], self.w, self.h)
+
+
+
+    def draw_tempRects(self, x, y, width, height):
+        self.painter.begin(self.pixmap)
+        self.painter.setPen(self.pen)
+        self.painter.drawRect(QRect(x, y, width, height))
+        self.painter.end()
+
+
+
+    def addrect_atpos(self, x, y):
+        rect = {}
+        uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
+        print(f"adding rectangles at:{x} {y}")
+        rect[uid] = Rectangle(x, y, self.w, self.h, uid, order = self.counter)
+        self.selected_item = uid
+        if self.rectlist == []:
+            self.txt2img = True
+        self.rectlist.append(rect[uid])
+        self.newimage = True
+        self.counter += 1
+        return uid
+
+    def reusable_outpaint(self, id):
+        overlap = False
+        self.offset = 0
+        outpaintimage = QPixmap(self.w, self.h)
+        outpaintimage.fill(Qt.transparent)
+        outpainter = QPainter()
+        outpaintmaskimage = QPixmap(self.w, self.h)
+        outpaintmaskimage.fill(Qt.transparent)
+        maskpainter = QPainter()
+        outpainter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+        outpainter.setRenderHint(QPainter.LosslessImageRendering)
+        self.selected_item = id
+        for x in self.rectlist:
+            if x.id == id:
+                #x.image = None
+                #self.update()
+                for i in self.rectlist:
+                    if x.y >= i.y - self.h and x.x >= i.x - self.w:
+                        if x.y <= i.y + self.h and x.x <= i.x + i.w:
+                            if i.id != x.id:
+                                if x.y > i.y:
+                                    Ymaskoffset = self.offset
+                                else:
+                                    Ymaskoffset = -self.offset
+                                if x.x > i.x:
+                                    Xmaskoffset = self.offset
+                                else:
+                                    Xmaskoffset = -self.offset
+                                #i.color = __selColor__
+                                #self.update()
+                                if i.image is not None:
+                                    print("Found an image to outpaint")
+                                    overlap = True
+                                    rect = QRect(x.x - i.x, x.y - i.y, self.w, self.h)
+                                    maskrect = QRect(x.x - i.x + Xmaskoffset, x.y - i.y + Ymaskoffset, self.w, self.h)
+                                    newimage = i.image.copy(rect)
+                                    maskimage = i.image.copy(maskrect)
+                                    maskpainter.begin(outpaintmaskimage)
+                                    maskpainter.drawImage(0,0,maskimage)
+                                    maskpainter.end()
+                                    outpainter.begin(outpaintimage)
+                                    outpainter.drawImage(0,0,newimage)
+                                    outpainter.end()
+                                    #self.addrect()
+        outpaintimage.save("outpaint.png")
+        #outpainter.end()
+        outpaintmaskimage.save("outpaint_mask.png")
+        self.outpaintsource = "outpaint.png"
+
+
+
+
+
     def redo_outpaint(self, id):
         self.offset = 0
         outpaintimage = QPixmap(self.w, self.h)
@@ -389,7 +520,7 @@ class Canvas(QGraphicsView):
 
 
         self.painter.begin(self.pixmap)
-        self.pixmap.fill(Qt.transparent)
+
         self.painter.setRenderHint(QPainter.SmoothPixmapTransform)
         self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
 
@@ -398,26 +529,30 @@ class Canvas(QGraphicsView):
         #Show Outpaint Preview rectangle
         #rect = QRect(0, self.height() - 256, 256, 256)
         #painter.drawRect(rect)
-        if self.rectlist is not [] and self.rectlist is not None:
-            self.rectlist.sort(reverse=False, key=self.sortRects)
-            for i in self.rectlist:
+        #self.newimage = True
+        if self.newimage == True:
+            if self.rectlist is not [] and self.rectlist is not None:
+                self.pixmap.fill(Qt.transparent)
+                #self.rectlist.sort(reverse=False, key=self.sortRects)
+                for i in self.rectlist:
 
 
-                rect = QRect(i.x, i.y, i.w, i.h)
-                if i.image is not None and i.active == True:
-                    pic = i.image.copy(0, 0, i.image.width(), i.image.height())
-                    pixmap = QPixmap.fromImage(pic)
-                    #painter.drawImage(QRect(QPoint(i.x, i.y), QSize(i.w, i.h)), pic)
+                    rect = QRect(i.x, i.y, i.w, i.h)
+                    if i.image is not None and i.active == True:
+                        pic = i.image.copy(0, 0, i.image.width(), i.image.height())
+                        pixmap = QPixmap.fromImage(pic)
+                        #painter.drawImage(QRect(QPoint(i.x, i.y), QSize(i.w, i.h)), pic)
 
 
-
-                    self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
-                    #self.drawForeground(painter, rect)
-                    #painter.drawPixmap()
-                else:
-                    if self.mode == "generic" or self.mode == "outpaint":
-                        self.painter.setPen(QPen(Qt.white, 3))
-                        self.painter.drawRect(rect)
+                        print(f"painting at {i.x}, {i.y}")
+                        self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
+                        #self.drawForeground(painter, rect)
+                        #painter.drawPixmap()
+                    else:
+                        if self.mode == "generic" or self.mode == "outpaint":
+                            self.painter.setPen(QPen(Qt.white, 3))
+                            self.painter.drawRect(rect)
+            self.newimage = False
         self.painter.end()
 
         self.bgitem.setPixmap(self.pixmap)
@@ -473,8 +608,8 @@ class Canvas(QGraphicsView):
             self.selected_item = self.hover_item
             self.signals.update_selected.emit()
             #self.scene.clear()
-            self.pixmap.fill(Qt.black)
-            self.pixmap.fill(Qt.transparent)
+            #self.pixmap.fill(Qt.black)
+            #self.pixmap.fill(Qt.transparent)
         else:
             self.selected_item = None
 

@@ -102,6 +102,7 @@ class GenerateWindow(QObject):
         self.steps = None
         self.update = None
         self.progress = None
+        self.target_rect = None
         self.ftimer = QTimer(self)
         self.signals = Callbacks()
 
@@ -1165,6 +1166,97 @@ class GenerateWindow(QObject):
         #self.stop_painters()
 
         self.signals.reenable_runbutton.emit()
+    def sort_rects(self, e):
+        return e.order
+    def run_batch_outpaint(self, progress_callback=False):
+        #self.run_deforum_txt2img()
+        # make sure you prepare all the variables from the controll window.
+        # I did a hack for it to work in the first place
+
+        #itemList = self.outpaint.canvas.rectlist
+        """for items in itemList:
+            print(items.id)
+            print(items.x, items.y, items.id, self.outpaint.canvas.selected_item)
+            self.target_rect = items.id
+            if items.x == 0:
+                print("Running TXT2IMG")
+                self.outpaint.canvas.selected_item = items.id
+                self.choice = "Text to Image"
+                print(items.x, items.y, items.id, self.outpaint.canvas.selected_item)
+                self.run_deforum_txt2img()
+                self.outpaint.canvas.txt2img = False"""
+        #itemList.sort(reverse=False, key=self.sort_rects)
+        #self.outpaint.canvas.rectlist.sort(reverse=False, key=self.sort_rects)
+        self.run_deforum_txt2img()
+        #timer = QTimer.singleShot(5000, self.continue_batch_outpaint)
+        time.sleep(5)
+        self.continue_batch_outpaint()
+
+    def continue_batch_outpaint(self):
+        x = 0
+
+        while x < len(self.outpaint.canvas.tempbatch):
+            self.outpaint.canvas.addrect_atpos(self.outpaint.canvas.tempbatch[x]["x"], self.outpaint.canvas.tempbatch[x]["y"])
+            time.sleep(1)
+            x = self.iterate_further(x)
+            time.sleep(1)
+        """for items in self.outpaint.canvas.tempbatch:
+
+            #self.outpaint.canvas.update()
+            if x == 0:
+                self.outpaint.canvas.addrect_atpos(items["x"], items["y"])
+                self.target_rect = self.outpaint.canvas.rectlist[x].id
+                self.outpaint.canvas.selected_item = self.outpaint.canvas.rectlist[x].id
+                self.imageCallback_signal(self.image)
+            else:
+                self.outpaint.canvas.addrect_atpos(items["x"], items["y"])
+                self.target_rect = self.outpaint.canvas.rectlist[x].id
+                self.outpaint.canvas.reusable_outpaint(self.outpaint.canvas.rectlist[x].id)
+                #self.run_deforum_outpaint()
+            x += 1"""
+
+    def iterate_further(self, x):
+        if x == 0:
+            print("should call back")
+            self.imageCallback_signal(self.image)
+            time.sleep(2)
+        else:
+            self.outpaint.canvas.reusable_outpaint(self.outpaint.canvas.rectlist[x].id)
+            time.sleep(2)
+            self.run_deforum_outpaint()
+        x += 1
+        print(f"X iterated to {x}")
+        return x
+
+
+
+        """i = 0
+        while i < len(itemList):
+            #print(f"Order: {items.order} X: {items.x} Y: {items.y}")
+            if i > 0:
+                self.target_rect = itemList[i].id
+                self.outpaint.canvas.selected_item = itemList[i].id
+                self.choice = "Outpaint"
+                self.outpaint.canvas.reusable_outpaint(itemList[i].id)
+                #self.run_deforum_outpaint()
+            i = i + 1"""
+
+
+    def preview_batch_outpaint(self):
+        self.outpaint.canvas.cols = self.outpaint_controls.w.batchColumns.value()
+        self.outpaint.canvas.rows = self.outpaint_controls.w.batchRows.value()
+        self.outpaint.canvas.offset = self.outpaint_controls.w.batchOffset.value()
+        randomize = self.outpaint_controls.w.randomize.isChecked()
+
+
+        self.outpaint.canvas.create_tempBatch(randomize)
+
+
+    def run_batch_outpaint_thread(self):
+        if self.outpaint.canvas.tempbatch == []:
+            self.outpaint.canvas.create_tempBatch()
+        worker = Worker(self.run_batch_outpaint)
+        self.threadpool.start(worker)
 
     def run_deforum_outpaint(self, progress_callback=None):
         self.deforum = DeforumGenerator()
@@ -1186,7 +1278,8 @@ class GenerateWindow(QObject):
         sampler_name = self.translate_sampler(self.w.sampler.w.sampler.currentText())
 
         #self.outpaint.canvas.outpaintsource = 'test0.jpg'
-        init_image = self.outpaint.canvas.outpaintsource
+        #init_image = self.outpaint.canvas.outpaintsource
+        init_image = "outpaint.png"
         #init_image = 'test0.png'
         self.deforum.sampler_name = sampler_name
         self.deforum.outpaint_txt2img(init_image=init_image,
@@ -1288,31 +1381,31 @@ class GenerateWindow(QObject):
                 self.now = 0
             self.timeline.timeline.pointerTimePos = self.now
 
-        elif self.renderedFrames > 0 and self.videoPreview == False:
+        elif self.videoPreview == False:
             image = self.image #.convert("RGBA")
             #self.painter.setRenderHint(QPainter.LosslessImageRendering)
             qimage = ImageQt(image.convert("RGBA"))
-            if self.outpaint.canvas.selected_item is not None:
-                for items in self.outpaint.canvas.rectlist:
-                    if items.id == self.outpaint.canvas.selected_item:
-                        templist = items.images
-                        templist.append(qimage)
-                        #print("adding image")
-                        #items.image = qimage
-                        items.images = templist
-
-                        if items.index == None:
-                            items.index = 0
-                        else:
-                            items.index = items.index + 1
-                        items.image = items.images[items.index]
-                        items.order = len(self.outpaint.canvas.rectlist)
-                        items.timestring = time.time()
-                        print(items.order)
 
 
 
             self.painter.drawImage(QRect(0, 0, self.image.im.size[0], self.image.im.size[1]), qimage)
+        if self.outpaint.canvas.selected_item is not None:
+            for items in self.outpaint.canvas.rectlist:
+                if items.id == self.outpaint.canvas.selected_item:
+                    templist = items.images
+                    templist.append(qimage)
+                    #print("adding image")
+                    #items.image = qimage
+                    items.images = templist
+
+                    if items.index == None:
+                        items.index = 0
+                    else:
+                        items.index = items.index + 1
+                    items.image = items.images[items.index]
+                    #items.order = len(self.outpaint.canvas.rectlist)
+                    #items.timestring = time.time()
+                    print(f"added image at {items.x}, {items.y}")
 
         self.dynaimage.w.label.setPixmap(
             self.ipixmap.scaled(self.image.im.size[0], self.image.im.size[1], Qt.AspectRatioMode.KeepAspectRatio))
@@ -1321,6 +1414,7 @@ class GenerateWindow(QObject):
     @Slot()
     def reenableRunButton(self):
         self.show_outpaint_details()
+        self.outpaint.canvas.newimage = True
         try:
             self.w.prompt.w.runButton.setEnabled(True)
             self.prompt_fetcher.w.dreamPrompt.setEnabled(True)
@@ -1333,10 +1427,13 @@ class GenerateWindow(QObject):
 
     @Slot()
     def show_outpaint_details(self):
+        #print("Slot Triggered")
         if self.outpaint.canvas.selected_item is not None:
             self.outpaint_controls.w.rectList.clear()
             for items in self.outpaint.canvas.rectlist:
+                print(items.images)
                 if items.id == self.outpaint.canvas.selected_item:
+                    print(items.images)
                     if items.images is not []:
                         for i in items.images:
                             if i is not None:
@@ -1355,7 +1452,10 @@ class GenerateWindow(QObject):
 
     # callback
     def imageCallback_signal(self, image, *args, **kwargs):
+        self.image = image
+        self.signals.txt2img_image_cb.emit()
 
+        """
         if self.choice == "Text to Image" or self.choice == "Text to Image LM":
             if self.deforum.sample_number > 1:
                 #self.image_path = image
@@ -1365,11 +1465,11 @@ class GenerateWindow(QObject):
                 self.renderedFrames += 1
                 self.image = image
                 self.signals.txt2img_image_cb.emit()
-        elif self.choice == "Outpaint":
+        else:
             self.currentFrames.append(image)
             self.renderedFrames += 1
             self.image = image
-            self.signals.txt2img_image_cb.emit()
+            self.signals.txt2img_image_cb.emit()"""
 
     # text2img
     def run_txt2img_lm(self, progress_callback=None):
@@ -1506,10 +1606,11 @@ class GenerateWindow(QObject):
                     i.image = qimage
                     i.timestring = time.time()
 
-        self.outpaint.canvas.rectlist = []
+        #self.outpaint.canvas.rectlist.clear()
         self.outpaint.canvas.update()
         #QTimer.singleShot(500)
         self.outpaint.canvas.rectlist = templist
+        self.outpaint.canvas.newimage = True
         self.outpaint.canvas.update()
 
     def delete_outpaint_frame(self):

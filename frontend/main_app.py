@@ -90,6 +90,8 @@ if __name__ == "__main__":
     mainWindow.outpaint.canvas.signals.update_selected.connect(mainWindow.show_outpaint_details)
     mainWindow.outpaint_controls.w.offsetSlider.valueChanged.connect(mainWindow.outpaint_offset_signal)
 
+    mainWindow.outpaint_controls.w.previewBatch.clicked.connect(mainWindow.preview_batch_outpaint)
+    mainWindow.outpaint_controls.w.runBatch.clicked.connect(mainWindow.run_batch_outpaint_thread)
 
     mainWindow.w.actionOutpaint.triggered.connect(mainWindow.outpaintMode)
     mainWindow.w.actionDefault.triggered.connect(mainWindow.defaultMode_restore)

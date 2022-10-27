@@ -46,6 +46,8 @@
     <property name="title">
      <string>Edit</string>
     </property>
+    <addaction name="actionEdit_System_Settings"/>
+    <addaction name="separator"/>
     <addaction name="actionLoad_Default_Settings"/>
     <addaction name="actionSave_System_Settings"/>
     <addaction name="actionSave_Diffusion_Settings"/>
@@ -237,6 +239,11 @@
   <action name="actionDeforum_Video_to_Video">
    <property name="text">
     <string>Deforum Video to Video</string>
+   </property>
+  </action>
+  <action name="actionEdit_System_Settings">
+   <property name="text">
+    <string>Edit System Settings</string>
    </property>
   </action>
  </widget>

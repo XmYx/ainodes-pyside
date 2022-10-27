@@ -44,6 +44,8 @@ from frontend.ui_outpaint import OutpaintUI
 from frontend.ui_timeline import Timeline, KeyFrame
 from frontend import paintwindow_func
 from frontend.ui_camera_controller import Window
+from frontend.ui_video_dropzone import DropListView
+
 from ldm.generate import Generate
 
 from PySide6.QtCore import *
@@ -72,6 +74,7 @@ class GenerateWindow(QObject):
 
     def __init__(self, *args, **kwargs):
         super(GenerateWindow, self).__init__(*args, **kwargs)
+        self.video_drop_zone = None
         self.deforum = None
         self.previewpos = "outerdock"
         self.path_setup = None
@@ -267,6 +270,7 @@ class GenerateWindow(QObject):
         self.outpaint.setWindowTitle('Outpaint')
         self.compass.w.dockWidget.setWindowTitle('Compass')
         self.set_txt2img.w.dockWidget.setWindowTitle('Text to Image Setup')
+        self.set_txt2img.w.dockWidget.setWindowTitle('Text to Video Setup')
 
         self.vpainter = {}
         self.w.preview.w.scene = QGraphicsScene()
@@ -317,17 +321,35 @@ class GenerateWindow(QObject):
         self.w.actionLoad_Default_Settings.triggered.connect(self.load_default_diffusion_settings)
         self.w.actionRestart.triggered.connect(self.restart)
         self.w.actionImageLab.triggered.connect(self.show_image_lab)
+
+        #new ui stuff
         self.w.actionDeforum_Text_to_Image.triggered.connect(self.deforum_txt2img_view)
         self.w.actionLow_Mem_Text_To_Image.triggered.connect(self.low_mem_txt2img_view)
         self.w.actionImage_To_Image.triggered.connect(self.deforum_txt2img_view)
         self.w.actionDeforum_Text_To_Video.triggered.connect(self.deforum_txt2vid_view)
         self.w.actionDeforum_Video_to_Video.triggered.connect(self.deforum_vid2vid_view)
 
+        self.w.actionEdit_System_Settings.triggered.connect(self.show_system_settup)
+
+
         self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
         self.load_history()
 
+
+    def show_system_settup(self):
+        self.w.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, self.path_setup.w.dockWidget)
+        if self.choice == 'Text to Image':
+            self.w.tabifyDockWidget(self.set_txt2img.w.dockWidget, self.path_setup.w.dockWidget)
+        if self.choice == 'Text to Image LM':
+            self.w.tabifyDockWidget(self.set_txt2img.w.dockWidget, self.path_setup.w.dockWidget)
+        if self.choice == 'Deforum Text to Video':
+            self.w.tabifyDockWidget(self.set_txt2vid.w.dockWidget, self.path_setup.w.dockWidget)
+
+        self.path_setup.w.dockWidget.show()
+
     def deforum_txt2img_view(self):
         self.choice = 'Text to Image'
+        self.video_drop_zone = None
         for dock in self.w.findChildren(QDockWidget):
             dock.hide()
         self.w.prompt.w.dockWidget.setWindowTitle('Text to Image Prompt')
@@ -359,6 +381,7 @@ class GenerateWindow(QObject):
 
     def low_mem_txt2img_view(self):
         self.choice = 'Text to Image LM'
+        self.video_drop_zone = None
         for dock in self.w.findChildren(QDockWidget):
             dock.hide()
         self.w.prompt.w.dockWidget.setWindowTitle('Text to Image Prompt')
@@ -389,9 +412,12 @@ class GenerateWindow(QObject):
 
     def img2img_view(self):
         self.choice = 'Image to Image'
+        self.video_drop_zone = None
 
     def deforum_txt2vid_view(self):
         self.choice = 'Deforum Text to Video'
+        if self.video_drop_zone is not None:
+            self.cleanup_video_drop_zone()
 
         for dock in self.w.findChildren(QDockWidget):
             dock.hide()
@@ -417,6 +443,11 @@ class GenerateWindow(QObject):
         #self.w.prompt.w.dockWidget.
 
 
+        self.set_txt2vid.w.anim2D.setDisabled(False)
+        self.set_txt2vid.w.anim3D.setDisabled(False)
+        self.set_txt2vid.w.animVid.setDisabled(True)
+        self.set_txt2vid.w.anim2D.setChecked(True)
+
         self.dynaimage.w.dockWidget.show()
         self.set_txt2vid.w.dockWidget.show()
         self.w.prompt.w.dockWidget.show()
@@ -425,9 +456,68 @@ class GenerateWindow(QObject):
         self.w.thumbnails.show()
         self.timeline.show()
 
+    def videoDropped(self, list):
+        print(list)
+
+    def cleanup_video_drop_zone(self):
+        for i in reversed(range(self.set_txt2vid.w.dropZone.count())):
+            self.set_txt2vid.w.dropZone.itemAt(i).widget().setParent(None)
+        self.video_drop_zone=None
 
     def deforum_vid2vid_view(self):
         self.choice = 'Deforum Video to Video'
+
+        for dock in self.w.findChildren(QDockWidget):
+            dock.hide()
+        self.w.prompt.w.dockWidget.setWindowTitle('Text to Image Prompt')
+        self.prompt_fetcher.w.setWindowTitle('Prompt Fetcher')
+
+        #self.w.setCentralWidget(self.dynaimage.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.set_txt2vid.w.dockWidget)
+
+        self.w.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, self.dynaimage.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, self.w.dynaview.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, self.w.thumbnails)
+
+        self.w.tabifyDockWidget(self.dynaimage.w.dockWidget, self.w.thumbnails)
+        self.w.tabifyDockWidget(self.w.thumbnails, self.w.dynaview.w.dockWidget)
+
+        self.w.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.w.prompt.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.prompt_fetcher.w.dockWidget)
+        self.w.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.timeline)
+        self.w.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.w.prompt.w.dockWidget)
+        self.w.tabifyDockWidget(self.w.prompt.w.dockWidget, self.timeline)
+
+        #self.w.prompt.w.dockWidget.
+
+        self.set_txt2vid.w.anim2D.setDisabled(True)
+        self.set_txt2vid.w.anim3D.setDisabled(True)
+        self.set_txt2vid.w.animVid.setDisabled(False)
+        self.set_txt2vid.w.animVid.setChecked(True)
+
+
+        if self.video_drop_zone is not None:
+            self.cleanup_video_drop_zone()
+
+
+        self.video_drop_zone=DropListView()
+        self.video_drop_zone.setAccessibleName('fileList')
+        self.video_drop_zone.fileDropped.connect(self.videoDropped)
+        self.video_drop_zone.setFixedWidth(60)
+        self.video_drop_zone.setFixedHeight(60)
+        self.video_drop_zone.insertItem(0, 'Drop')
+        self.video_drop_zone.insertItem(1, 'Video')
+        self.video_drop_zone.insertItem(2, 'here')
+        self.set_txt2vid.w.dropZone.addWidget(self.video_drop_zone)
+
+        self.dynaimage.w.dockWidget.show()
+        self.set_txt2vid.w.dockWidget.show()
+        self.w.prompt.w.dockWidget.show()
+        self.w.dynaview.w.dockWidget.show()
+        self.prompt_fetcher.w.dockWidget.show()
+        self.w.thumbnails.show()
+        self.timeline.show()
+
 
     def outpaintMode(self):
         try:
@@ -895,6 +985,13 @@ class GenerateWindow(QObject):
 
         self.torch_gc()
 
+        if self.set_txt2vid.w.anim2D.isChecked():
+            animation_mode='2D'
+        elif self.set_txt2vid.w.anim3D.isChecked():
+            animation_mode='3D'
+        elif self.set_txt2vid.w.animVid.isChecked():
+            animation_mode='Video Input'
+
         self.deforum.render_animation(
             image_callback=self.imageCallback_signal,
             step_callback=self.deforumstepCallback_signal if self.set_txt2vid.w.tensorPreview.isChecked() else None,
@@ -936,7 +1033,7 @@ class GenerateWindow(QObject):
             init_latent=None,
             init_sample=None,
             init_c=None,
-            animation_mode='2D',
+            animation_mode=animation_mode,
             max_frames = self.set_txt2vid.w.frames.value(),
             border=self.set_txt2vid.w.border.currentText(),  # @param ['wrap', 'replicate'] {type:'string'}
             angle=self.set_txt2vid.w.angle.toPlainText(),
@@ -1384,6 +1481,7 @@ class GenerateWindow(QObject):
         self.w.preview.w.graphicsView.fitInView(newItem, Qt.AspectRatioMode.KeepAspectRatio)
         self.w.preview.w.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         self.vpainter[vins].endNativePainting()
+
     def select_outpaint_image(self, item):
         width=self.w.sizer_count.w.widthSlider.value()
         height=self.w.sizer_count.w.heightSlider.value()
@@ -1407,6 +1505,7 @@ class GenerateWindow(QObject):
         #QTimer.singleShot(500)
         self.outpaint.canvas.rectlist = templist
         self.outpaint.canvas.update()
+
     def delete_outpaint_frame(self):
         templist = self.outpaint.canvas.rectlist
         if self.outpaint.canvas.selected_item is not None:
@@ -1428,6 +1527,7 @@ class GenerateWindow(QObject):
         painter.drawImage(QRect(QPoint(0, 0), QSize(qimage.size())), qimage)
         painter.end()
         self.dynaimage.w.label.setPixmap(pixmap)
+
     def zoom_IN(self):
         self.w.preview.w.graphicsView.scale(1.25, 1.25)
 
@@ -1483,7 +1583,6 @@ class GenerateWindow(QObject):
         self.set_txt2vid.w.saveSamples.setChecked(gs.diffusion.saveSamples)
         self.set_txt2vid.w.saveSettings.setChecked(gs.diffusion.saveSettings)
         self.set_txt2vid.w.displaySamples.setChecked(gs.diffusion.displaySamples)
-        self.set_txt2vid.w.makeGrid.setChecked(gs.diffusion.makeGrid)
         self.set_txt2vid.w.useInit.setChecked(gs.diffusion.useInit)
         self.set_txt2vid.w.strength0.setChecked(gs.diffusion.strength0)
         self.set_txt2vid.w.useMask.setChecked(gs.diffusion.useMask)

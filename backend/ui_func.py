@@ -24,7 +24,7 @@ def getLatestGeneratedImagesFromPath():
             if file.endswith(ext):
                 files.append(os.path.join(r, file))
     # sort the files by date
-    files.sort(reverse=True, key=os.path.getmtime)
+    files.sort(reverse=False, key=os.path.getmtime)
     latest = files
     latest.reverse()
 

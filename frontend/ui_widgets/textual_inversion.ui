@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>840</width>
+    <height>528</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="accessibleName">
+   <string>textualInversion</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QDockWidget" name="dockWidget">
+     <property name="accessibleName">
+      <string>textualInversion</string>
+     </property>
+     <widget class="QWidget" name="dockWidgetContents">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>838</width>
+            <height>502</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <property name="leftMargin">
+              <number>5</number>
+             </property>
+             <property name="rightMargin">
+              <number>5</number>
+             </property>
+             <item row="9" column="1">
+              <widget class="QLineEdit" name="lineEdit_7"/>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>Output Path</string>
+               </property>
+              </widget>
+             </item>
+             <item row="12" column="5">
+              <widget class="QLabel" name="label_25">
+               <property name="text">
+                <string>Sample Steps</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="3">
+              <widget class="QLineEdit" name="lineEdit_2"/>
+             </item>
+             <item row="19" column="1">
+              <widget class="QLineEdit" name="lineEdit_12"/>
+             </item>
+             <item row="14" column="1">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>TextLabel</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Tokenizer Name</string>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="5">
+              <widget class="QLineEdit" name="lineEdit_23">
+               <property name="text">
+                <string>2</string>
+               </property>
+              </widget>
+             </item>
+             <item row="12" column="1">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Initializer Token</string>
+               </property>
+              </widget>
+             </item>
+             <item row="16" column="1">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>Learnable Property</string>
+               </property>
+              </widget>
+             </item>
+             <item row="10" column="5">
+              <widget class="QLabel" name="label_24">
+               <property name="text">
+                <string>Batch Size</string>
+               </property>
+              </widget>
+             </item>
+             <item row="11" column="3">
+              <widget class="QLineEdit" name="lineEdit_16">
+               <property name="text">
+                <string>5000</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="3">
+              <widget class="QLineEdit" name="lineEdit_11">
+               <property name="text">
+                <string>1</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="5">
+              <widget class="QLineEdit" name="lineEdit_31">
+               <property name="text">
+                <string>500</string>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="3">
+              <widget class="QLineEdit" name="lineEdit_15">
+               <property name="text">
+                <string>100</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="3">
+              <widget class="QLineEdit" name="lineEdit_5">
+               <property name="text">
+                <string>512</string>
+               </property>
+              </widget>
+             </item>
+             <item row="17" column="3">
+              <widget class="QLineEdit" name="lineEdit_19">
+               <property name="text">
+                <string>constant</string>
+               </property>
+              </widget>
+             </item>
+             <item row="18" column="3">
+              <widget class="QLabel" name="label_15">
+               <property name="text">
+                <string>Warum Steps</string>
+               </property>
+              </widget>
+             </item>
+             <item row="16" column="5">
+              <widget class="QLabel" name="label_14">
+               <property name="text">
+                <string>Beta 1</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="lineEdit"/>
+             </item>
+             <item row="11" column="1">
+              <widget class="QLineEdit" name="lineEdit_8"/>
+             </item>
+             <item row="8" column="3">
+              <widget class="QLabel" name="label_20">
+               <property name="text">
+                <string>Number of Training Steps</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="5">
+              <widget class="QLineEdit" name="lineEdit_6">
+               <property name="text">
+                <string>1</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="3">
+              <widget class="QLabel" name="label_21">
+               <property name="text">
+                <string>Resolution</string>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="1">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Train Data Dir</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="5">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Precission</string>
+               </property>
+              </widget>
+             </item>
+             <item row="18" column="5">
+              <widget class="QLabel" name="label_13">
+               <property name="text">
+                <string>Beta 2</string>
+               </property>
+              </widget>
+             </item>
+             <item row="19" column="5">
+              <widget class="QLineEdit" name="lineEdit_22">
+               <property name="text">
+                <string>0.999</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Seed</string>
+               </property>
+              </widget>
+             </item>
+             <item row="19" column="3">
+              <widget class="QLineEdit" name="lineEdit_20">
+               <property name="text">
+                <string>500</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QCheckBox" name="checkBox">
+               <property name="text">
+                <string>Center Image</string>
+               </property>
+              </widget>
+             </item>
+             <item row="10" column="3">
+              <widget class="QLabel" name="label_19">
+               <property name="text">
+                <string>Maximum Number of Training Steps</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Pretrained Model Path</string>
+               </property>
+              </widget>
+             </item>
+             <item row="13" column="3">
+              <widget class="QLineEdit" name="lineEdit_17">
+               <property name="text">
+                <string>1</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="5">
+              <widget class="QLabel" name="label_32">
+               <property name="text">
+                <string>CHPK Freq</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="5">
+              <widget class="QComboBox" name="comboBox_2">
+               <item>
+                <property name="text">
+                 <string>fp16</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>bf16</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>no</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="6" column="3">
+              <widget class="QLabel" name="label_31">
+               <property name="text">
+                <string>Batch Size</string>
+               </property>
+              </widget>
+             </item>
+             <item row="15" column="3">
+              <widget class="QLineEdit" name="lineEdit_18">
+               <property name="text">
+                <string>0.0005</string>
+               </property>
+              </widget>
+             </item>
+             <item row="13" column="1">
+              <widget class="QLineEdit" name="lineEdit_9"/>
+             </item>
+             <item row="5" column="1">
+              <widget class="QLineEdit" name="lineEdit_13"/>
+             </item>
+             <item row="12" column="3">
+              <widget class="QLabel" name="label_18">
+               <property name="text">
+                <string>Gradient Accumulation Steps</string>
+               </property>
+              </widget>
+             </item>
+             <item row="15" column="1">
+              <widget class="QLineEdit" name="lineEdit_10"/>
+             </item>
+             <item row="18" column="1">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>number of Trainig Iterations</string>
+               </property>
+              </widget>
+             </item>
+             <item row="20" column="3">
+              <spacer name="verticalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="8" column="5">
+              <widget class="QLabel" name="label_23">
+               <property name="text">
+                <string>Random Batches</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QCheckBox" name="checkBox_2">
+               <property name="text">
+                <string>Scale Learning Rate</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="5">
+              <widget class="QLabel" name="label_22">
+               <property name="text">
+                <string>Rank</string>
+               </property>
+              </widget>
+             </item>
+             <item row="17" column="1">
+              <widget class="QComboBox" name="comboBox">
+               <item>
+                <property name="text">
+                 <string>object</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>style</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="11" column="5">
+              <widget class="QLineEdit" name="lineEdit_24">
+               <property name="text">
+                <string>1</string>
+               </property>
+              </widget>
+             </item>
+             <item row="14" column="3">
+              <widget class="QLabel" name="label_17">
+               <property name="text">
+                <string>Learning Rate</string>
+               </property>
+              </widget>
+             </item>
+             <item row="13" column="5">
+              <widget class="QLineEdit" name="lineEdit_25">
+               <property name="text">
+                <string>100</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="1">
+              <widget class="QLineEdit" name="lineEdit_4"/>
+             </item>
+             <item row="10" column="1">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Placeholder Token</string>
+               </property>
+              </widget>
+             </item>
+             <item row="14" column="5">
+              <widget class="QLabel" name="label_26">
+               <property name="text">
+                <string>Templates</string>
+               </property>
+              </widget>
+             </item>
+             <item row="17" column="5">
+              <widget class="QLineEdit" name="lineEdit_21">
+               <property name="text">
+                <string>0.9</string>
+               </property>
+              </widget>
+             </item>
+             <item row="15" column="5">
+              <widget class="QLineEdit" name="lineEdit_26"/>
+             </item>
+             <item row="16" column="3">
+              <widget class="QLabel" name="label_16">
+               <property name="text">
+                <string>Rate Schedule</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

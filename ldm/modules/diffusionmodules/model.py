@@ -1,5 +1,4 @@
 # pytorch_diffusion + derived encoder decoder
-import gc
 import math
 import torch
 import torch.nn as nn
@@ -9,7 +8,6 @@ from einops import rearrange
 from ldm.util import instantiate_from_config
 from ldm.modules.attention import LinearAttention
 
-import psutil
 
 def get_timestep_embedding(timesteps, embedding_dim):
     """
@@ -121,30 +119,18 @@ class ResnetBlock(nn.Module):
                                                     padding=0)
 
     def forward(self, x, temb):
-        h1 = x
-        h2 = self.norm1(h1)
-        del h1
-
-        h3 = nonlinearity(h2)
-        del h2
-
-        h4 = self.conv1(h3)
-        del h3
+        h = x
+        h = self.norm1(h)
+        h = nonlinearity(h)
+        h = self.conv1(h)
 
         if temb is not None:
-            h4 = h4 + self.temb_proj(nonlinearity(temb))[:,:,None,None]
+            h = h + self.temb_proj(nonlinearity(temb))[:,:,None,None]
 
-        h5 = self.norm2(h4)
-        del h4
-
-        h6 = nonlinearity(h5)
-        del h5
-
-        h7 = self.dropout(h6)
-        del h6
-
-        h8 = self.conv2(h7)
-        del h7
+        h = self.norm2(h)
+        h = nonlinearity(h)
+        h = self.dropout(h)
+        h = self.conv2(h)
 
         if self.in_channels != self.out_channels:
             if self.use_conv_shortcut:
@@ -152,7 +138,8 @@ class ResnetBlock(nn.Module):
             else:
                 x = self.nin_shortcut(x)
 
-        return x + h8
+        return x+h
+
 
 class LinAttnBlock(LinearAttention):
     """to match AttnBlock usage"""
@@ -191,74 +178,28 @@ class AttnBlock(nn.Module):
     def forward(self, x):
         h_ = x
         h_ = self.norm(h_)
-        q1 = self.q(h_)
-        k1 = self.k(h_)
+        q = self.q(h_)
+        k = self.k(h_)
         v = self.v(h_)
 
         # compute attention
-        b, c, h, w = q1.shape
+        b,c,h,w = q.shape
+        q = q.reshape(b,c,h*w)
+        q = q.permute(0,2,1)   # b,hw,c
+        k = k.reshape(b,c,h*w) # b,c,hw
+        w_ = torch.bmm(q,k)     # b,hw,hw    w[b,i,j]=sum_c q[b,i,c]k[b,c,j]
+        w_ = w_ * (int(c)**(-0.5))
+        w_ = torch.nn.functional.softmax(w_, dim=2)
 
-        q2 = q1.reshape(b, c, h*w)
-        del q1
+        # attend to values
+        v = v.reshape(b,c,h*w)
+        w_ = w_.permute(0,2,1)   # b,hw,hw (first hw of k, second of q)
+        h_ = torch.bmm(v,w_)     # b, c,hw (hw of q) h_[b,c,j] = sum_i v[b,c,i] w_[b,i,j]
+        h_ = h_.reshape(b,c,h,w)
 
-        q = q2.permute(0, 2, 1)   # b,hw,c
-        del q2
+        h_ = self.proj_out(h_)
 
-        k = k1.reshape(b, c, h*w) # b,c,hw
-        del k1
-
-        h_ = torch.zeros_like(k, device=q.device)
-
-        device_type = 'mps' if q.device.type == 'mps' else 'cuda'
-        if device_type == 'cuda':
-            stats = torch.cuda.memory_stats(q.device)
-            mem_active = stats['active_bytes.all.current']
-            mem_reserved = stats['reserved_bytes.all.current']
-            mem_free_cuda, _ = torch.cuda.mem_get_info(torch.cuda.current_device())
-            mem_free_torch = mem_reserved - mem_active
-            mem_free_total = mem_free_cuda + mem_free_torch
-
-            tensor_size = q.shape[0] * q.shape[1] * k.shape[2] * 4
-            mem_required = tensor_size * 2.5
-            steps = 1
-
-            if mem_required > mem_free_total:
-                steps = 2**(math.ceil(math.log(mem_required / mem_free_total, 2)))
-            
-            slice_size = q.shape[1] // steps if (q.shape[1] % steps) == 0 else q.shape[1]
-
-        else:
-            if psutil.virtual_memory().available / (1024**3) < 12:
-                slice_size = 1
-            else:
-                slice_size = min(q.shape[1], math.floor(2**30 / (q.shape[0] * q.shape[1])))
-        
-        for i in range(0, q.shape[1], slice_size):
-            end = i + slice_size
-
-            w1 = torch.bmm(q[:, i:end], k)     # b,hw,hw    w[b,i,j]=sum_c q[b,i,c]k[b,c,j]
-            w2 = w1 * (int(c)**(-0.5))
-            del w1
-            w3 = torch.nn.functional.softmax(w2, dim=2)
-            del w2
-
-            # attend to values
-            v1 = v.reshape(b, c, h*w)
-            w4 = w3.permute(0, 2, 1)   # b,hw,hw (first hw of k, second of q)
-            del w3
-
-            h_[:, :, i:end] = torch.bmm(v1, w4)     # b, c,hw (hw of q) h_[b,c,j] = sum_i v[b,c,i] w_[b,i,j]
-            del v1, w4
-
-        h2 = h_.reshape(b, c, h, w)
-        del h_
-
-        h3 = self.proj_out(h2)
-        del h2
-
-        h3 += x
-
-        return h3
+        return x+h_
 
 
 def make_attn(in_channels, attn_type="vanilla"):
@@ -599,56 +540,31 @@ class Decoder(nn.Module):
         temb = None
 
         # z to block_in
-        h1 = self.conv_in(z)
+        h = self.conv_in(z)
 
         # middle
-        h2 = self.mid.block_1(h1, temb)
-        del h1
-
-        h3 = self.mid.attn_1(h2)
-        del h2
-
-        h = self.mid.block_2(h3, temb)
-        del h3
-
-        # prepare for up sampling
-        device_type = 'mps' if h.device.type == 'mps' else 'cuda'
-        gc.collect()
-        if device_type == 'cuda':
-            torch.cuda.empty_cache()
+        h = self.mid.block_1(h, temb)
+        h = self.mid.attn_1(h)
+        h = self.mid.block_2(h, temb)
 
         # upsampling
         for i_level in reversed(range(self.num_resolutions)):
             for i_block in range(self.num_res_blocks+1):
                 h = self.up[i_level].block[i_block](h, temb)
                 if len(self.up[i_level].attn) > 0:
-                    t = h
-                    h = self.up[i_level].attn[i_block](t)
-                    del t
-
+                    h = self.up[i_level].attn[i_block](h)
             if i_level != 0:
-                t = h
-                h = self.up[i_level].upsample(t)
-                del t
+                h = self.up[i_level].upsample(h)
 
         # end
         if self.give_pre_end:
             return h
 
-        h1 = self.norm_out(h)
-        del h
-
-        h2 = nonlinearity(h1)
-        del h1
-
-        h = self.conv_out(h2)
-        del h2
-
+        h = self.norm_out(h)
+        h = nonlinearity(h)
+        h = self.conv_out(h)
         if self.tanh_out:
-            t = h
-            h = torch.tanh(t)
-            del t
-
+            h = torch.tanh(h)
         return h
 
 
@@ -916,3 +832,4 @@ class FirstStagePostProcessor(nn.Module):
         if self.do_reshape:
             z = rearrange(z,'b c h w -> b (h w) c')
         return z
+

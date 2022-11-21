@@ -128,9 +128,25 @@ dmypy.json
 # Pyre type checker
 .pyre/
 frontend/example_calculator/.DS_Store
-src/AdaBins/
-src/MiDaS/
-src/pytorch3d-lite/
-/src/AdaBins/
-/src/MiDaS/
-/src/pytorch3d-lite/
+/src/
+ldm/modules/attention.py
+*.ckpt
+*.sha256
+*.mp4
+/configs/ainodes/last_prompt.txt
+/configs/ainodes/prompt_history.txt
+/configs/ainodes/prompt_history_raw.txt
+configs/ainodes - Copy/last_prompt.txt
+configs/ainodes - Copy/settings.json
+configs/ainodes/settings.json
+/models/
+/output/*
+/outputs/*
+/.idea/codeStyles/
+/.idea/codeStyles/codeStyleConfig.xml
+/.idea/codeStyles/Project.xml
+/support_models/
+/repositories/
+/src/k-diffusion/
+/src/realesrgan/
+/src/taming-transformers/

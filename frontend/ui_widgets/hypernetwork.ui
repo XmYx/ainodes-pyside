@@ -1,0 +1,1291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>475</width>
+    <height>729</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QDockWidget" name="dockWidget">
+     <widget class="QWidget" name="dockWidgetContents">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>538</width>
+            <height>686</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QTabWidget" name="tabWidget">
+             <property name="currentIndex">
+              <number>1</number>
+             </property>
+             <widget class="QWidget" name="tab">
+              <attribute name="title">
+               <string>Create Hypernetwork</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_3">
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_20">
+                 <property name="text">
+                  <string>Activation Function</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QCheckBox" name="size_768">
+                 <property name="text">
+                  <string>768</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0" colspan="2">
+                <widget class="QLineEdit" name="layer_structure">
+                 <property name="text">
+                  <string>1, 2, 1</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0" colspan="2">
+                <widget class="QComboBox" name="activation_func"/>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_19">
+                 <property name="text">
+                  <string>Layer Structure</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0">
+                <widget class="QLabel" name="label_22">
+                 <property name="text">
+                  <string>Weight Init</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="0">
+                <spacer name="verticalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="4" column="0">
+                <widget class="QCheckBox" name="size_320">
+                 <property name="text">
+                  <string>320</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QCheckBox" name="overwrite_old">
+                 <property name="text">
+                  <string>Overwrite Existing</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QCheckBox" name="size_640">
+                 <property name="text">
+                  <string>640</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0" colspan="2">
+                <widget class="QComboBox" name="weight_init">
+                 <item>
+                  <property name="text">
+                   <string>Normal</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>KaimingUniform</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>KaimingNormal</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>XavierUniform</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>XavierNormal</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_21">
+                 <property name="text">
+                  <string>Enable Sizes</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QLineEdit" name="name"/>
+               </item>
+               <item row="14" column="1">
+                <widget class="QCheckBox" name="use_dropout">
+                 <property name="text">
+                  <string>Use dropout</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0">
+                <widget class="QCheckBox" name="add_layer_norm">
+                 <property name="text">
+                  <string>Add layer normalization</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_18">
+                 <property name="text">
+                  <string>Name</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QCheckBox" name="size_1280">
+                 <property name="text">
+                  <string>1280</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0">
+                <widget class="QPushButton" name="create_network">
+                 <property name="text">
+                  <string>Create Hypernetwork</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_3">
+              <attribute name="title">
+               <string>Preprocess Input</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_5">
+               <item row="12" column="3">
+                <widget class="QCheckBox" name="process_caption_deepbooru">
+                 <property name="text">
+                  <string>Deepbooru caption</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="24" column="0" colspan="4">
+                <widget class="QSlider" name="process_focal_crop_edges_weight">
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>1</number>
+                 </property>
+                 <property name="value">
+                  <number>5</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0" colspan="4">
+                <widget class="QSlider" name="split_threshold">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>5</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>5</number>
+                 </property>
+                 <property name="value">
+                  <number>50</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0">
+                <widget class="QLabel" name="label_27">
+                 <property name="text">
+                  <string>Split threshold</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="19" column="0">
+                <widget class="QLabel" name="label_29">
+                 <property name="text">
+                  <string>Face weight</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="18" column="0">
+                <widget class="QCheckBox" name="process_focal_crop">
+                 <property name="text">
+                  <string>Focal point crop</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="4">
+                <widget class="QLCDNumber" name="process_widthNumber">
+                 <property name="intValue" stdset="0">
+                  <number>512</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="20" column="0" colspan="4">
+                <widget class="QSlider" name="process_focal_crop_face_weight">
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>1</number>
+                 </property>
+                 <property name="value">
+                  <number>9</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="4">
+                <widget class="QLCDNumber" name="split_thresholdNumber">
+                 <property name="value" stdset="0">
+                  <double>1.000000000000000</double>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="24" column="4">
+                <widget class="QLCDNumber" name="process_focal_crop_edges_weightNumber">
+                 <property name="value" stdset="0">
+                  <double>0.500000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="25" column="0" colspan="5">
+                <widget class="QPushButton" name="runPreprocess">
+                 <property name="text">
+                  <string>Run Preprocess</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0" colspan="5">
+                <widget class="QComboBox" name="preprocess_txt_action">
+                 <item>
+                  <property name="text">
+                   <string>ignore</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>copy</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>prepend</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>append</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="26" column="0">
+                <spacer name="verticalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="12" column="1">
+                <widget class="QCheckBox" name="process_caption">
+                 <property name="text">
+                  <string>Auto Caption</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="21" column="0">
+                <widget class="QLabel" name="label_30">
+                 <property name="text">
+                  <string>Entropy weight</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0" colspan="4">
+                <widget class="QSlider" name="process_width">
+                 <property name="maximum">
+                  <number>2048</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>64</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>64</number>
+                 </property>
+                 <property name="value">
+                  <number>512</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_24">
+                 <property name="text">
+                  <string>Width</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0" colspan="4">
+                <widget class="QLabel" name="label_26">
+                 <property name="text">
+                  <string>Existing Caption Files</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0" colspan="5">
+                <widget class="QLineEdit" name="process_dst"/>
+               </item>
+               <item row="3" column="0">
+                <widget class="QPushButton" name="procerss_destination_folder">
+                 <property name="text">
+                  <string>Destination</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="23" column="0">
+                <widget class="QLabel" name="label_31">
+                 <property name="text">
+                  <string>Edges weight</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="4">
+                <widget class="QLCDNumber" name="process_heightNumber">
+                 <property name="intValue" stdset="0">
+                  <number>512</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QPushButton" name="process_input_files">
+                 <property name="text">
+                  <string>Input Files</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="22" column="0" colspan="4">
+                <widget class="QSlider" name="process_focal_crop_entropy_weight">
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>1</number>
+                 </property>
+                 <property name="value">
+                  <number>3</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="0">
+                <widget class="QLabel" name="label_28">
+                 <property name="text">
+                  <string>Split overlap</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="18" column="1">
+                <widget class="QCheckBox" name="process_focal_crop_debug">
+                 <property name="text">
+                  <string>Debug Images</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_25">
+                 <property name="text">
+                  <string>Height</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="20" column="4">
+                <widget class="QLCDNumber" name="process_focal_crop_face_weightNumber">
+                 <property name="value" stdset="0">
+                  <double>0.900000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0" colspan="4">
+                <widget class="QSlider" name="process_height">
+                 <property name="maximum">
+                  <number>2048</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>64</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>64</number>
+                 </property>
+                 <property name="value">
+                  <number>512</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0">
+                <widget class="QCheckBox" name="process_split">
+                 <property name="text">
+                  <string>Split Oversize</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0" colspan="5">
+                <widget class="QLineEdit" name="process_src"/>
+               </item>
+               <item row="12" column="0">
+                <widget class="QCheckBox" name="process_flip">
+                 <property name="text">
+                  <string>Flipped Copy</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="17" column="4">
+                <widget class="QLCDNumber" name="overlap_ratioNumber">
+                 <property name="value" stdset="0">
+                  <double>0.200000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="17" column="0" colspan="4">
+                <widget class="QSlider" name="overlap_ratio">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>5</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>5</number>
+                 </property>
+                 <property name="value">
+                  <number>20</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="22" column="4">
+                <widget class="QLCDNumber" name="process_focal_crop_entropy_weightNumber">
+                 <property name="value" stdset="0">
+                  <double>0.300000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="2">
+                <widget class="QCheckBox" name="style_caption">
+                 <property name="text">
+                  <string>Style Caption</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="Hypernetwork">
+              <attribute name="title">
+               <string>Hypernetwork Training</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout">
+               <item row="15" column="0">
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>Training Height</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="17" column="0">
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>Steps</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Hypernetwork Name</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="21" column="0">
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>Save Network any n Step</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0">
+                <widget class="QLineEdit" name="template_file">
+                 <property name="text">
+                  <string>data/hyper/templates/hypernetwork.txt</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QComboBox" name="hypernetwork_list"/>
+               </item>
+               <item row="14" column="2">
+                <widget class="QLCDNumber" name="training_widthNumber">
+                 <property name="intValue" stdset="0">
+                  <number>512</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="2">
+                <widget class="QLCDNumber" name="training_heightNumber">
+                 <property name="intValue" stdset="0">
+                  <number>512</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0">
+                <widget class="QSlider" name="training_width">
+                 <property name="maximum">
+                  <number>2048</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>64</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>64</number>
+                 </property>
+                 <property name="value">
+                  <number>512</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLineEdit" name="log_directory">
+                 <property name="text">
+                  <string>data/hyper/output</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="20" column="0">
+                <widget class="QSlider" name="create_image_every">
+                 <property name="maximum">
+                  <number>5000</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>10</number>
+                 </property>
+                 <property name="value">
+                  <number>500</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="22" column="0">
+                <widget class="QSlider" name="save_hypernetwork_every">
+                 <property name="maximum">
+                  <number>5000</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>10</number>
+                 </property>
+                 <property name="value">
+                  <number>500</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QPushButton" name="logsFolder">
+                 <property name="text">
+                  <string>Select Logs Folder</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="18" column="0">
+                <widget class="QSlider" name="steps">
+                 <property name="maximum">
+                  <number>100000</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>1</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>100</number>
+                 </property>
+                 <property name="value">
+                  <number>20000</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="29" column="0">
+                <spacer name="verticalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="18" column="2">
+                <widget class="QLCDNumber" name="stepsNumber">
+                 <property name="digitCount">
+                  <number>6</number>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>20000</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="25" column="0" colspan="3">
+                <widget class="Line" name="line">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QComboBox" name="ckpt_list"/>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLineEdit" name="data_root">
+                 <property name="text">
+                  <string>data/input/images</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="20" column="2">
+                <widget class="QLCDNumber" name="create_image_everyNumber">
+                 <property name="intValue" stdset="0">
+                  <number>500</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLineEdit" name="learn_rate">
+                 <property name="text">
+                  <string>5e-5:100, 5e-6:1500, 5e-7:10000, 5e-8:20000</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QPushButton" name="pathInputImages">
+                 <property name="text">
+                  <string>Select path to input Images</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="0">
+                <widget class="QPushButton" name="promptTemplateFile">
+                 <property name="text">
+                  <string>Select Prompt template File</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="2">
+                <widget class="QSpinBox" name="batch_size">
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
+                 <property name="value">
+                  <number>1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="19" column="0">
+                <widget class="QLabel" name="label_3">
+                 <property name="text">
+                  <string>Save Image any n Step</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="26" column="0">
+                <widget class="QPushButton" name="train_hypernetwork">
+                 <property name="text">
+                  <string>Start Training</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="2">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>Batch Size</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="0">
+                <widget class="QSlider" name="training_height">
+                 <property name="maximum">
+                  <number>2048</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>64</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>64</number>
+                 </property>
+                 <property name="value">
+                  <number>512</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="26" column="2">
+                <widget class="QPushButton" name="Stop">
+                 <property name="text">
+                  <string>Stop Training</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>Learn Rate</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="22" column="2">
+                <widget class="QLCDNumber" name="save_hypernetwork_everyNumber">
+                 <property name="intValue" stdset="0">
+                  <number>500</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0">
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>Training width</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_23">
+                 <property name="text">
+                  <string>CKPT to train on</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_2">
+              <attribute name="title">
+               <string>Training Monitor</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_4">
+               <item row="0" column="1">
+                <widget class="QLCDNumber" name="lcdNumber"/>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <spacer name="verticalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="PreviewSamples">
+              <attribute name="title">
+               <string>Preview</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_2">
+               <item row="4" column="0">
+                <widget class="QSlider" name="preview_height">
+                 <property name="maximum">
+                  <number>2048</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>64</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>64</number>
+                 </property>
+                 <property name="value">
+                  <number>512</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0">
+                <widget class="QComboBox" name="preview_sampler_index"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="QSlider" name="preview_width">
+                 <property name="maximum">
+                  <number>2048</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>64</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>64</number>
+                 </property>
+                 <property name="value">
+                  <number>512</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_16">
+                 <property name="text">
+                  <string>Width</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>Steps</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0" colspan="2">
+                <widget class="QTextEdit" name="preview_prompt"/>
+               </item>
+               <item row="11" column="0">
+                <widget class="QLabel" name="label_13">
+                 <property name="text">
+                  <string>Sampler</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0" colspan="2">
+                <widget class="QTextEdit" name="preview_negative_prompt"/>
+               </item>
+               <item row="14" column="1">
+                <widget class="QLCDNumber" name="lcdNumber_6"/>
+               </item>
+               <item row="4" column="1">
+                <widget class="QLCDNumber" name="preview_heightNumber">
+                 <property name="intValue" stdset="0">
+                  <number>512</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_11">
+                 <property name="text">
+                  <string>Negative Prompt</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1">
+                <widget class="QLCDNumber" name="preview_stepsNumber">
+                 <property name="intValue" stdset="0">
+                  <number>50</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0">
+                <widget class="QLabel" name="label_14">
+                 <property name="text">
+                  <string>Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0">
+                <widget class="QSlider" name="preview_cfg_scale">
+                 <property name="maximum">
+                  <number>300</number>
+                 </property>
+                 <property name="value">
+                  <number>75</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0">
+                <widget class="QSlider" name="preview_steps">
+                 <property name="maximum">
+                  <number>500</number>
+                 </property>
+                 <property name="value">
+                  <number>50</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0">
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>Seed</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_17">
+                 <property name="text">
+                  <string>Height</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_12">
+                 <property name="text">
+                  <string>Prompt</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLCDNumber" name="preview_widthNumber">
+                 <property name="intValue" stdset="0">
+                  <number>512</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="preview_from_txt2img">
+                 <property name="text">
+                  <string>Preview from Text 2 Image Settings</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="0">
+                <widget class="QLineEdit" name="preview_seed">
+                 <property name="text">
+                  <string>-1</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="17" column="0">
+                <spacer name="verticalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>training_width</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>training_widthNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>147</x>
+     <y>307</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>340</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>training_height</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>training_heightNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>147</x>
+     <y>358</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>340</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>steps</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>stepsNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>147</x>
+     <y>409</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>340</x>
+     <y>410</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>save_hypernetwork_every</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>save_hypernetwork_everyNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>147</x>
+     <y>511</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>340</x>
+     <y>512</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>preview_width</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>preview_stepsNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>117</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>353</x>
+     <y>552</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>preview_steps</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>preview_stepsNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>551</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>353</x>
+     <y>552</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>preview_height</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>preview_heightNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>168</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>353</x>
+     <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>create_image_every</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>create_image_everyNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>147</x>
+     <y>460</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>340</x>
+     <y>461</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>process_height</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>preview_heightNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>184</x>
+     <y>258</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>428</x>
+     <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>process_width</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>preview_widthNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>184</x>
+     <y>207</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>428</x>
+     <y>118</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

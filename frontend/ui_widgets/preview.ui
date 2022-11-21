@@ -22,6 +22,9 @@
   <property name="windowTitle">
    <string>Preview</string>
   </property>
+  <property name="accessibleName">
+   <string>preview</string>
+  </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
@@ -59,9 +62,6 @@
        </property>
        <property name="horizontalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOff</enum>
-       </property>
-       <property name="renderHints">
-        <set>QPainter::Antialiasing|QPainter::HighQualityAntialiasing|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
        </property>
        <property name="resizeAnchor">
         <enum>QGraphicsView::AnchorViewCenter</enum>

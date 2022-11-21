@@ -1,0 +1,2333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>887</width>
+    <height>770</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="accessibleName">
+   <string>setTxt2Img</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QDockWidget" name="dockWidget">
+     <property name="accessibleName">
+      <string>setTxt2Img</string>
+     </property>
+     <widget class="QWidget" name="dockWidgetContents">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>885</width>
+            <height>744</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QTabWidget" name="tabWidget">
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <widget class="QWidget" name="tab_7">
+              <attribute name="title">
+               <string>Embeddings</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_8">
+               <item row="1" column="1">
+                <widget class="QLabel" name="label_50">
+                 <property name="text">
+                  <string>Result Approx:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QComboBox" name="gradientList"/>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_53">
+                 <property name="text">
+                  <string>Hypernetwork Strength</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_48">
+                 <property name="text">
+                  <string>Gradient Steps</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0" colspan="2">
+                <widget class="QSlider" name="gradientScale">
+                 <property name="maximum">
+                  <number>500000</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0">
+                <spacer name="verticalSpacer_8">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_49">
+                 <property name="text">
+                  <string>Gradient Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0" colspan="3">
+                <widget class="Line" name="line_4">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QLCDNumber" name="resultApproxLCD">
+                 <property name="smallDecimalPoint">
+                  <bool>true</bool>
+                 </property>
+                 <property name="digitCount">
+                  <number>6</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="0" colspan="2">
+                <widget class="QSlider" name="hypernetwork_strength">
+                 <property name="maximum">
+                  <number>1000</number>
+                 </property>
+                 <property name="value">
+                  <number>500</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0" colspan="3">
+                <widget class="QTextBrowser" name="textBrowser">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>45</height>
+                  </size>
+                 </property>
+                 <property name="baseSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="html">
+                  <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:600;&quot;&gt;Aesthetic Gradient Result Approximation:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt;&quot;&gt;values below -0.25 should have the effect visible.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QComboBox" name="use_hypernetwork"/>
+               </item>
+               <item row="3" column="0" colspan="2">
+                <widget class="QSlider" name="gradientSteps">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_47">
+                 <property name="text">
+                  <string>Aesthetic Gradient</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="2">
+                <widget class="QLCDNumber" name="hypernetwork_strengthNumber">
+                 <property name="value" stdset="0">
+                  <double>0.500000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QLCDNumber" name="gradientStepsLCD">
+                 <property name="digitCount">
+                  <number>5</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="2">
+                <widget class="QLCDNumber" name="gradientScaleLCD">
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_54">
+                 <property name="text">
+                  <string>Hypernetwork</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="2">
+                <widget class="QCheckBox" name="apply_circular">
+                 <property name="text">
+                  <string>Apply Circular</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="Sampler">
+              <attribute name="title">
+               <string>Sampler</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_2">
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>Steps</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QCheckBox" name="cond_uncond_sync">
+                 <property name="text">
+                  <string>Speed/Ram</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="18" column="0">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>Preview Frequency</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="2">
+                <widget class="QLabel" name="label_11">
+                 <property name="text">
+                  <string>Seed Behavior</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QCheckBox" name="save_settings">
+                 <property name="text">
+                  <string>Save Settings</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="3">
+                <widget class="QCheckBox" name="checkBox_3">
+                 <property name="text">
+                  <string>Norm Weights</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="3">
+                <widget class="QLCDNumber" name="scaleNumber">
+                 <property name="value" stdset="0">
+                  <double>7.500000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QSpinBox" name="grid_rows"/>
+               </item>
+               <item row="3" column="0" colspan="2">
+                <widget class="QComboBox" name="sampler">
+                 <property name="font">
+                  <font>
+                   <pointsize>16</pointsize>
+                  </font>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>dpmpp_2m</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>ddim</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>plms</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>k_lms</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>k_dpm_2</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>k_dpm_2_a</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>k_heun</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>k_euler</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>k_euler_a</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>dpm_fast</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>dpm_adaptive</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>dpmpp_2s_a</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="5" column="0" colspan="3">
+                <widget class="QSlider" name="steps">
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>250</number>
+                 </property>
+                 <property name="value">
+                  <number>20</number>
+                 </property>
+                 <property name="sliderPosition">
+                  <number>20</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="20" column="0" colspan="3">
+                <widget class="QSlider" name="preview">
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>25</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>1</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_12">
+                 <property name="text">
+                  <string>Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QCheckBox" name="fullPrecision">
+                 <property name="text">
+                  <string>Full Precision</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QCheckBox" name="makegrid">
+                 <property name="text">
+                  <string>Grid</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>Sampler</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0">
+                <widget class="QLineEdit" name="seed"/>
+               </item>
+               <item row="21" column="0">
+                <spacer name="verticalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="8" column="2">
+                <widget class="QLabel" name="label_13">
+                 <property name="text">
+                  <string>Padding Mode</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QCheckBox" name="checkBox_2">
+                 <property name="text">
+                  <string>Prompt Weights</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="0">
+                <widget class="QLabel" name="label_16">
+                 <property name="text">
+                  <string>DDIM ETA</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="2">
+                <widget class="QComboBox" name="seed_behavior">
+                 <item>
+                  <property name="text">
+                   <string>iter</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>fixed</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>random</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="17" column="3">
+                <widget class="QLCDNumber" name="ddim_etaNumber"/>
+               </item>
+               <item row="9" column="0">
+                <widget class="QComboBox" name="sampling_mode">
+                 <item>
+                  <property name="text">
+                   <string>bicubic</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>bilinear</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>nearest</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QCheckBox" name="seamless">
+                 <property name="text">
+                  <string>Seamless</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="20" column="3">
+                <widget class="QLCDNumber" name="previewNumber"/>
+               </item>
+               <item row="9" column="2">
+                <widget class="QComboBox" name="padding_mode">
+                 <item>
+                  <property name="text">
+                   <string>border</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>reflection</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>zeros</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="17" column="0" colspan="3">
+                <widget class="QSlider" name="ddim_eta">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0" colspan="3">
+                <widget class="QSlider" name="scale">
+                 <property name="maximum">
+                  <number>300</number>
+                 </property>
+                 <property name="value">
+                  <number>75</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0" colspan="2">
+                <widget class="QLabel" name="label_14">
+                 <property name="text">
+                  <string>Sample Mode</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="3">
+                <widget class="QLCDNumber" name="stepsNumber">
+                 <property name="intValue" stdset="0">
+                  <number>20</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0" colspan="2">
+                <widget class="QCheckBox" name="tensorPreview">
+                 <property name="text">
+                  <string>Tensor Preview</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0">
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>Seed</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_2">
+              <attribute name="title">
+               <string>Image</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_7">
+               <item row="17" column="1">
+                <spacer name="verticalSpacer_7">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="5" column="1">
+                <widget class="QSlider" name="widthVal">
+                 <property name="minimum">
+                  <number>256</number>
+                 </property>
+                 <property name="maximum">
+                  <number>3072</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>64</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>64</number>
+                 </property>
+                 <property name="value">
+                  <number>512</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0" rowspan="2" colspan="2">
+                <layout class="QVBoxLayout" name="dropZone"/>
+               </item>
+               <item row="12" column="2">
+                <widget class="QCheckBox" name="annotate">
+                 <property name="text">
+                  <string>Annotate</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="1">
+                <widget class="QLabel" name="label_52">
+                 <property name="text">
+                  <string>Plot Y</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>Samples per Iteration</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="QSlider" name="n_batch">
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>2000</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>1</number>
+                 </property>
+                 <property name="value">
+                  <number>1</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QSlider" name="heightVal">
+                 <property name="minimum">
+                  <number>256</number>
+                 </property>
+                 <property name="maximum">
+                  <number>3072</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>64</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>64</number>
+                 </property>
+                 <property name="value">
+                  <number>512</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="tickInterval">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1">
+                <widget class="QLabel" name="label_51">
+                 <property name="text">
+                  <string>Plot X</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="2">
+                <widget class="QLCDNumber" name="batchSizeNumber">
+                 <property name="intValue" stdset="0">
+                  <number>1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QLCDNumber" name="heightNumber">
+                 <property name="intValue" stdset="0">
+                  <number>512</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="2">
+                <widget class="QLCDNumber" name="samplesNumber">
+                 <property name="intValue" stdset="0">
+                  <number>1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="1">
+                <widget class="QLineEdit" name="plotXLine"/>
+               </item>
+               <item row="14" column="1">
+                <widget class="QComboBox" name="plotY">
+                 <item>
+                  <property name="text">
+                   <string>seed</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>sampler</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>steps</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>ddim_eta</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>strength</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>mean_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>var_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>exposure_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>exposure_target</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>colormatch_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>colormatch_image</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>colormatch_n_colors</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>ignore_sat_weight</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>clip_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>aesthetics_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>cutn</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>cut_pow</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>init_mse_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>init_mse_image</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>blue_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>gradient_wrt</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>gradient_add_to</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>decode_method</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>grad_threshold_type</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>clamp_grad_threshold</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>clamp_start</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>clamp_stop</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>grad_inject_timing</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>T</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>lr</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="11" column="1">
+                <widget class="QComboBox" name="plotX">
+                 <item>
+                  <property name="text">
+                   <string>seed</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>sampler</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>steps</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>ddim_eta</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>strength</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>mean_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>var_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>exposure_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>exposure_target</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>colormatch_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>colormatch_image</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>colormatch_n_colors</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>ignore_sat_weight</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>clip_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>aesthetics_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>cutn</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>cut_pow</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>init_mse_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>init_mse_image</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>blue_scale</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>gradient_wrt</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>gradient_add_to</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>decode_method</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>grad_threshold_type</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>clamp_grad_threshold</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>clamp_start</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>clamp_stop</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>grad_inject_timing</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>T</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>lr</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="9" column="1">
+                <widget class="QSlider" name="n_samples">
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>1500</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>1</number>
+                 </property>
+                 <property name="value">
+                  <number>1</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QLabel" name="label_3">
+                 <property name="text">
+                  <string>Width</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="2">
+                <widget class="QLCDNumber" name="widthNumber">
+                 <property name="intValue" stdset="0">
+                  <number>512</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>Height</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Number of Iterations</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="2">
+                <widget class="QCheckBox" name="plotting">
+                 <property name="text">
+                  <string>Plotting</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="1">
+                <widget class="QLineEdit" name="plotYLine"/>
+               </item>
+               <item row="16" column="1">
+                <widget class="QCheckBox" name="hires">
+                 <property name="text">
+                  <string>HiRes Mode</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_3">
+              <attribute name="title">
+               <string>Mask</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_3">
+               <item row="5" column="1">
+                <widget class="QCheckBox" name="invert_mask">
+                 <property name="text">
+                  <string>Invert Mask</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QCheckBox" name="use_alpha_as_mask">
+                 <property name="text">
+                  <string>Use Alpha as Mask</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QCheckBox" name="use_mask">
+                 <property name="text">
+                  <string>Use Mask</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="use_init">
+                 <property name="text">
+                  <string>Use Init</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_17">
+                 <property name="text">
+                  <string>Init Strength</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_18">
+                 <property name="text">
+                  <string>Mask File</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="3">
+                <widget class="QLCDNumber" name="maskBrightNumber">
+                 <property name="value" stdset="0">
+                  <double>1.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="3">
+                <widget class="QLCDNumber" name="overlayBlurNumber">
+                 <property name="intValue" stdset="0">
+                  <number>5</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0">
+                <widget class="QLabel" name="label_20">
+                 <property name="text">
+                  <string>Mask Contrast</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="17" column="0">
+                <spacer name="verticalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="13" column="3">
+                <widget class="QLCDNumber" name="maskContrastNumber">
+                 <property name="value" stdset="0">
+                  <double>1.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_19">
+                 <property name="text">
+                  <string>Mask Brightness</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="3">
+                <widget class="QLCDNumber" name="initStrengthNumber">
+                 <property name="value" stdset="0">
+                  <double>0.300000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0">
+                <widget class="QLabel" name="label_21">
+                 <property name="text">
+                  <string>Mask Overlay Blur</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QCheckBox" name="overlay_mask">
+                 <property name="text">
+                  <string>Overlay Mask</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_38">
+                 <property name="text">
+                  <string>Init Image</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0" colspan="4">
+                <widget class="QLineEdit" name="mask_file">
+                 <property name="text">
+                  <string>https://www.filterforge.com/wiki/images/archive/b/b7/20080927223728%21Polygonal_gradient_thumb.jpg</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0" colspan="4">
+                <widget class="QLineEdit" name="init_image">
+                 <property name="text">
+                  <string>https://cdn.pixabay.com/photo/2022/07/30/13/10/green-longhorn-beetle-7353749_1280.jpg</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0" colspan="3">
+                <widget class="QSlider" name="strength">
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
+                 <property name="value">
+                  <number>3</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="0" colspan="3">
+                <widget class="QSlider" name="mask_brightness_adjust">
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
+                 <property name="value">
+                  <number>10</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0" colspan="3">
+                <widget class="QSlider" name="mask_contrast_adjust">
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
+                 <property name="value">
+                  <number>10</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="0" colspan="3">
+                <widget class="QSlider" name="mask_overlay_blur">
+                 <property name="maximum">
+                  <number>20</number>
+                 </property>
+                 <property name="value">
+                  <number>5</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QPushButton" name="SelectInit">
+                 <property name="text">
+                  <string>Select Init</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="QPushButton" name="selectMask">
+                 <property name="text">
+                  <string>Select Mask</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QCheckBox" name="strength_0_no_init">
+                 <property name="text">
+                  <string>Strength 0 with no init</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_4">
+              <attribute name="title">
+               <string>Expo/Color</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout">
+               <item row="17" column="0">
+                <spacer name="verticalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="11" column="0">
+                <widget class="QLabel" name="label_27">
+                 <property name="text">
+                  <string>Color Match Image</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_22">
+                 <property name="text">
+                  <string>Mean Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_26">
+                 <property name="text">
+                  <string>Color Match Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_24">
+                 <property name="text">
+                  <string>Exposure Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0">
+                <widget class="QLabel" name="label_28">
+                 <property name="text">
+                  <string>Color Match n Colors</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0">
+                <widget class="QLabel" name="label_29">
+                 <property name="text">
+                  <string>Ignore Sat Weight</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_25">
+                 <property name="text">
+                  <string>Exposure Target</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_23">
+                 <property name="text">
+                  <string>Var Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="1">
+                <widget class="QPushButton" name="selectColorMatch">
+                 <property name="text">
+                  <string>Select Color Match</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="2">
+                <widget class="QLCDNumber" name="colorMatchScaleNumber"/>
+               </item>
+               <item row="7" column="2">
+                <widget class="QLCDNumber" name="exposureTargetNumber"/>
+               </item>
+               <item row="5" column="2">
+                <widget class="QLCDNumber" name="exposureScaleNumber">
+                 <property name="value" stdset="0">
+                  <double>0.000000000000000</double>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QLCDNumber" name="varScaleNumber"/>
+               </item>
+               <item row="1" column="2">
+                <widget class="QLCDNumber" name="meanScaleNumber"/>
+               </item>
+               <item row="14" column="2">
+                <widget class="QLCDNumber" name="colorMatchNnumbersNumber">
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="2">
+                <widget class="QLCDNumber" name="ignoreSatWeightNumber"/>
+               </item>
+               <item row="16" column="0" colspan="2">
+                <widget class="QSlider" name="ignore_sat_weight">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0" colspan="2">
+                <widget class="QSlider" name="colormatch_n_colors">
+                 <property name="maximum">
+                  <number>20</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                 <property name="sliderPosition">
+                  <number>0</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0" colspan="2">
+                <widget class="QLineEdit" name="colormatch_image">
+                 <property name="text">
+                  <string>https://www.saasdesign.io/wp-content/uploads/2021/02/palette-3-min-980x588.png</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0" colspan="2">
+                <widget class="QSlider" name="colormatch_scale">
+                 <property name="maximum">
+                  <number>1000</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0" colspan="3">
+                <widget class="Line" name="line">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0" colspan="2">
+                <widget class="QSlider" name="exposure_target">
+                 <property name="minimum">
+                  <number>-10</number>
+                 </property>
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0" colspan="2">
+                <widget class="QSlider" name="exposure_scale">
+                 <property name="minimum">
+                  <number>0</number>
+                 </property>
+                 <property name="maximum">
+                  <number>500</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                 <property name="sliderPosition">
+                  <number>0</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0" colspan="2">
+                <widget class="QSlider" name="var_scale">
+                 <property name="minimum">
+                  <number>-300</number>
+                 </property>
+                 <property name="maximum">
+                  <number>300</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QSlider" name="mean_scale">
+                 <property name="minimum">
+                  <number>0</number>
+                 </property>
+                 <property name="maximum">
+                  <number>500</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_5">
+              <attribute name="title">
+               <string>Aestetics</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_4">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_30">
+                 <property name="text">
+                  <string>Clip Name</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_34">
+                 <property name="text">
+                  <string>Cut Pow</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0">
+                <widget class="QLabel" name="label_36">
+                 <property name="text">
+                  <string>Init MSE Image</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_31">
+                 <property name="text">
+                  <string>Clip Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="18" column="0">
+                <spacer name="verticalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="13" column="1">
+                <widget class="QPushButton" name="selectMseInit">
+                 <property name="text">
+                  <string>Select MSE Init</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QComboBox" name="clip_name">
+                 <item>
+                  <property name="text">
+                   <string>ViT-L/14</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>ViT-L/14@336px</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>ViT-B/16</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>ViT-B/32</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_32">
+                 <property name="text">
+                  <string>Aestetics Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="0">
+                <widget class="QLabel" name="label_35">
+                 <property name="text">
+                  <string>Init MSE Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="0">
+                <widget class="QLabel" name="label_37">
+                 <property name="text">
+                  <string>Blue Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_33">
+                 <property name="text">
+                  <string>Cutn</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="2">
+                <widget class="QLCDNumber" name="cutPowNumber">
+                 <property name="digitCount">
+                  <number>5</number>
+                 </property>
+                 <property name="value" stdset="0">
+                  <double>0.000100000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="2">
+                <widget class="QLCDNumber" name="initMseScaleNumber"/>
+               </item>
+               <item row="17" column="2">
+                <widget class="QLCDNumber" name="blueScaleNumber"/>
+               </item>
+               <item row="7" column="2">
+                <widget class="QLCDNumber" name="cutnNumber"/>
+               </item>
+               <item row="5" column="2">
+                <widget class="QLCDNumber" name="aesteticsScaleNumber"/>
+               </item>
+               <item row="3" column="2">
+                <widget class="QLCDNumber" name="clipScaleNumber"/>
+               </item>
+               <item row="3" column="0" colspan="2">
+                <widget class="QSlider" name="clip_scale">
+                 <property name="maximum">
+                  <number>300</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0" colspan="2">
+                <widget class="QSlider" name="aesthetics_scale">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0" colspan="2">
+                <widget class="QSlider" name="cutn">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0" colspan="2">
+                <widget class="QSlider" name="cut_pow">
+                 <property name="maximum">
+                  <number>1000</number>
+                 </property>
+                 <property name="value">
+                  <number>1</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0" colspan="3">
+                <widget class="Line" name="line_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0" colspan="2">
+                <widget class="QSlider" name="init_mse_scale">
+                 <property name="maximum">
+                  <number>1000</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0" colspan="3">
+                <widget class="Line" name="line_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="17" column="0" colspan="2">
+                <widget class="QSlider" name="blue_scale">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0" colspan="2">
+                <widget class="QLineEdit" name="init_mse_image">
+                 <property name="text">
+                  <string>https://cdn.pixabay.com/photo/2022/07/30/13/10/green-longhorn-beetle-7353749_1280.jpg</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_6">
+              <attribute name="title">
+               <string>Grad</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_5">
+               <item row="13" column="0" colspan="2">
+                <widget class="QSlider" name="clamp_stop">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="value">
+                  <number>1</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="2">
+                <widget class="QLCDNumber" name="clampGradTresholdNumber"/>
+               </item>
+               <item row="11" column="0" colspan="2">
+                <widget class="QSlider" name="clamp_start">
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
+                 <property name="value">
+                  <number>2</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0">
+                <widget class="QLabel" name="label_46">
+                 <property name="text">
+                  <string>Grad Inject Timing</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="0">
+                <spacer name="verticalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="1" column="0">
+                <widget class="QComboBox" name="gradient_wrt">
+                 <item>
+                  <property name="text">
+                   <string>x0_pred</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>x</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_44">
+                 <property name="text">
+                  <string>Clamp Start</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QComboBox" name="decode_method">
+                 <item>
+                  <property name="text">
+                   <string>None</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>autoencoder</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>linear</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="12" column="0">
+                <widget class="QLabel" name="label_45">
+                 <property name="text">
+                  <string>Clamp Stop</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="label_40">
+                 <property name="text">
+                  <string>Gradient add to</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_41">
+                 <property name="text">
+                  <string>Decoder Method</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QLabel" name="label_42">
+                 <property name="text">
+                  <string>Grad Threshold Type</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="2">
+                <widget class="QLCDNumber" name="clampStopNumber">
+                 <property name="value" stdset="0">
+                  <double>0.010000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QComboBox" name="grad_threshold_type">
+                 <item>
+                  <property name="text">
+                   <string>dynamic</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>static</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>mean</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>schedule</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="gradient_add_to">
+                 <item>
+                  <property name="text">
+                   <string>cond</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>uncond</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>both</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_39">
+                 <property name="text">
+                  <string>Gradient WRT</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="2">
+                <widget class="QLCDNumber" name="clampStartNumber">
+                 <property name="value" stdset="0">
+                  <double>0.200000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0" colspan="2">
+                <widget class="QSlider" name="clamp_grad_threshold">
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_43">
+                 <property name="text">
+                  <string>Clamp Grad Threshold</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0">
+                <widget class="QLineEdit" name="grad_inject_timing">
+                 <property name="text">
+                  <string>0.8</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab">
+              <attribute name="title">
+               <string>Upscale</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_6">
+               <item row="2" column="0">
+                <widget class="QSlider" name="upscaleScale">
+                 <property name="minimum">
+                  <number>2</number>
+                 </property>
+                 <property name="maximum">
+                  <number>50</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>1</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>GFGPAN Strength</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QSlider" name="upscaleStrength">
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>8</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>1</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="upScale">
+                 <property name="text">
+                  <string>Upscale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QCheckBox" name="useGfpgan">
+                 <property name="text">
+                  <string>GFPGAN</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="QLCDNumber" name="gfpganNumber"/>
+               </item>
+               <item row="7" column="0">
+                <widget class="QSlider" name="gfpgan">
+                 <property name="minimum">
+                  <number>0</number>
+                 </property>
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>1</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>Upscale Strength</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>Upscale Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLCDNumber" name="upscaleScaleNumber">
+                 <property name="intValue" stdset="0">
+                  <number>2</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QLCDNumber" name="upscaleStrengthNumber"/>
+               </item>
+               <item row="8" column="0">
+                <spacer name="verticalSpacer_6">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>steps</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>stepsNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>119</x>
+     <y>213</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>303</x>
+     <y>214</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>preview</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>previewNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>143</x>
+     <y>460</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>323</x>
+     <y>461</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>n_samples</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>samplesNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>252</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>n_batch</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>batchSizeNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>201</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>202</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widthVal</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>widthNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>150</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>151</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>heightVal</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>heightNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>99</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>100</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mask_overlay_blur</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>overlayBlurNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>153</x>
+     <y>422</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>423</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>upscaleScale</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>upscaleScaleNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>153</x>
+     <y>117</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>118</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>gfpgan</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>gfpganNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>153</x>
+     <y>245</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>246</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>upscaleStrength</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>upscaleStrengthNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>153</x>
+     <y>168</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>aesthetics_scale</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>aesteticsScaleNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>153</x>
+     <y>192</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>colormatch_n_colors</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>colorMatchNnumbersNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>153</x>
+     <y>405</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>406</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

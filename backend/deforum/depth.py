@@ -1,3 +1,4 @@
+import gc
 import math, os, subprocess
 import cv2
 import numpy as np
@@ -10,7 +11,10 @@ from PIL import Image
 from infer import InferenceHelper
 from midas.dpt_depth import DPTDepthModel
 from midas.transforms import Resize, NormalizeImage, PrepareForNet
+from backend.singleton import singleton
+gs = singleton
 
+#from frontend.main_app import gs
 
 def wget(url, outputdir):
     print(subprocess.run(['wget', url, '-P', outputdir], stdout=subprocess.PIPE).stdout.decode('utf-8'))
@@ -18,31 +22,47 @@ def wget(url, outputdir):
 
 class DepthModel():
     def __init__(self, device):
-        self.adabins_helper = None
+        #gs.models["adabins"] = None
         self.depth_min = 1000
         self.depth_max = -1000
         self.device = device
-        self.midas_model = None
+        #gs.models["midas_model"] = None
         self.midas_transform = None
 
-    
+    def torch_gc(self):
+        gc.collect()
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
+
     def load_adabins(self):
         if not os.path.exists('models/AdaBins_nyu.pt'):
             print("Downloading AdaBins_nyu.pt...")
             os.makedirs('models', exist_ok=True)
             wget("https://cloudflare-ipfs.com/ipfs/Qmd2mMnDLWePKmgfS8m6ntAg4nhV5VkUyAydYBp8cWWeB7/AdaBins_nyu.pt", 'models')
-        self.adabins_helper = InferenceHelper(dataset='nyu', device=self.device)
+
+        gs.models["adabins"] = InferenceHelper(dataset='nyu', device=self.device)
+        #gs.models["adabins"].to(self.device)
 
     def load_midas(self, models_path, half_precision=True):
         if not os.path.exists(os.path.join(models_path, 'dpt_large-midas-2f21e586.pt')):
             print("Downloading dpt_large-midas-2f21e586.pt...")
             wget("https://github.com/intel-isl/DPT/releases/download/1_0/dpt_large-midas-2f21e586.pt", models_path)
+        if "midas_model" not in gs.models:
+            gs.models["midas_model"] = DPTDepthModel(
+                path=f"{models_path}/dpt_large-midas-2f21e586.pt",
+                backbone="vitl16_384",
+                non_negative=True,
+            )
 
-        self.midas_model = DPTDepthModel(
-            path=f"{models_path}/dpt_large-midas-2f21e586.pt",
-            backbone="vitl16_384",
-            non_negative=True,
-        )
+
+            #gs.models["midas_model"].eval()
+            if half_precision and self.device == torch.device("cuda"):
+                gs.models["midas_model"].to(memory_format=torch.channels_last)
+                gs.models["midas_model"].half()
+            gs.models["midas_model"].to(self.device)
+        else:
+            gs.models["midas_model"].to(self.device)
+
         normalization = NormalizeImage(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
 
         self.midas_transform = T.Compose([
@@ -57,18 +77,11 @@ class DepthModel():
             normalization,
             PrepareForNet()
         ])
-
-        self.midas_model.eval()    
-        if half_precision and self.device == torch.device("cuda"):
-            self.midas_model = self.midas_model.to(memory_format=torch.channels_last)
-            self.midas_model = self.midas_model.half()
-        self.midas_model.to(self.device)
-
     def predict(self, prev_img_cv2, midas_weight) -> torch.Tensor:
         w, h = prev_img_cv2.shape[1], prev_img_cv2.shape[0]
 
         # predict depth with AdaBins    
-        use_adabins = midas_weight < 1.0 and self.adabins_helper is not None
+        use_adabins = midas_weight < 1.0 and gs.models["adabins"] is not None
         if use_adabins:
             MAX_ADABINS_AREA = 500000
             MIN_ADABINS_AREA = 448*448
@@ -92,7 +105,7 @@ class DepthModel():
             # predict depth and resize back to original dimensions
             try:
                 with torch.no_grad():
-                    _, adabins_depth = self.adabins_helper.predict_pil(depth_input)
+                    _, adabins_depth = gs.models["adabins"].predict_pil(depth_input)
                 if resized:
                     adabins_depth = TF.resize(
                         torch.from_numpy(adabins_depth), 
@@ -103,9 +116,9 @@ class DepthModel():
             except:
                 print(f"  exception encountered, falling back to pure MiDaS")
                 use_adabins = False
-            torch.cuda.empty_cache()
+            self.torch_gc()
 
-        if self.midas_model is not None:
+        if gs.models["midas_model"] is not None:
             # convert image from 0->255 uint8 to 0->1 float for feeding to MiDaS
             img_midas = prev_img_cv2.astype(np.float32) / 255.0
             img_midas_input = self.midas_transform({"image": img_midas})["image"]
@@ -116,7 +129,7 @@ class DepthModel():
                 sample = sample.to(memory_format=torch.channels_last)  
                 sample = sample.half()
             with torch.no_grad():            
-                midas_depth = self.midas_model.forward(sample)
+                midas_depth = gs.models["midas_model"].forward(sample)
             midas_depth = torch.nn.functional.interpolate(
                 midas_depth.unsqueeze(1),
                 size=img_midas.shape[:2],
@@ -124,7 +137,7 @@ class DepthModel():
                 align_corners=False,
             ).squeeze()
             midas_depth = midas_depth.cpu().numpy()
-            torch.cuda.empty_cache()
+            self.torch_gc()
 
             # MiDaS makes the near values greater, and the far values lesser. Let's reverse that and try to align with AdaBins a bit better.
             midas_depth = np.subtract(50.0, midas_depth)
@@ -140,7 +153,7 @@ class DepthModel():
             depth_tensor = torch.from_numpy(depth_map).squeeze().to(self.device)
         else:
             depth_tensor = torch.ones((h, w), device=self.device)
-        
+        self.torch_gc()
         return depth_tensor
 
     def save(self, filename: str, depth: torch.Tensor):
@@ -154,4 +167,3 @@ class DepthModel():
         temp = rearrange((depth - self.depth_min) / denom * 255, 'c h w -> h w c')
         temp = repeat(temp, 'h w 1 -> h w c', c=3)
         Image.fromarray(temp.astype(np.uint8)).save(filename)    
-

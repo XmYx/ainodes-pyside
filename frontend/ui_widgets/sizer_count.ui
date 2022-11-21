@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>184</width>
-    <height>382</height>
+    <width>243</width>
+    <height>427</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,18 +19,21 @@
   <property name="windowTitle">
    <string>Properties</string>
   </property>
+  <property name="accessibleName">
+   <string>sizeNcount</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="spacing">
-    <number>2</number>
+    <number>0</number>
    </property>
    <property name="leftMargin">
-    <number>2</number>
+    <number>0</number>
    </property>
    <property name="topMargin">
     <number>0</number>
    </property>
    <property name="rightMargin">
-    <number>2</number>
+    <number>0</number>
    </property>
    <property name="bottomMargin">
     <number>0</number>
@@ -43,6 +46,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="accessibleName">
+      <string>sizeNcount</string>
+     </property>
      <widget class="QWidget" name="dockWidgetContents">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -51,9 +57,6 @@
        </sizepolicy>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="spacing">
-        <number>0</number>
-       </property>
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -67,286 +70,321 @@
         <number>0</number>
        </property>
        <item>
-        <layout class="QGridLayout" name="gridLayout">
-         <property name="leftMargin">
-          <number>0</number>
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
          </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Height</string>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>241</width>
+            <height>401</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="leftMargin">
+            <number>5</number>
            </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QSlider" name="heightSlider">
-           <property name="minimum">
-            <number>256</number>
-           </property>
-           <property name="maximum">
-            <number>2048</number>
-           </property>
-           <property name="singleStep">
-            <number>64</number>
-           </property>
-           <property name="pageStep">
-            <number>64</number>
-           </property>
-           <property name="value">
-            <number>512</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="tickInterval">
+           <property name="topMargin">
             <number>0</number>
            </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLCDNumber" name="heightNumber"/>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLCDNumber" name="widthNumber"/>
-         </item>
-         <item row="5" column="1">
-          <widget class="QLCDNumber" name="samplesNumber"/>
-         </item>
-         <item row="3" column="0">
-          <widget class="QSlider" name="widthSlider">
-           <property name="minimum">
-            <number>256</number>
+           <property name="rightMargin">
+            <number>5</number>
            </property>
-           <property name="maximum">
-            <number>2048</number>
+           <property name="bottomMargin">
+            <number>0</number>
            </property>
-           <property name="singleStep">
-            <number>64</number>
-           </property>
-           <property name="pageStep">
-            <number>64</number>
-           </property>
-           <property name="value">
-            <number>512</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Samples</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Width</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QSlider" name="samplesSlider">
-           <property name="maximum">
-            <number>50</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="value">
-            <number>1</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QSlider" name="batchSizeSlider">
-           <property name="maximum">
-            <number>200</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="value">
-            <number>1</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="29" column="0">
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="18" column="0">
-          <widget class="QSlider" name="upscaleSlider">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>10</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Batch size</string>
-           </property>
-          </widget>
-         </item>
-         <item row="13" column="0">
-          <widget class="QSlider" name="scaleSlider">
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="15" column="1">
-          <widget class="QLCDNumber" name="stepsNumber"/>
-         </item>
-         <item row="18" column="1">
-          <widget class="QLCDNumber" name="upscaleNumber"/>
-         </item>
-         <item row="13" column="1">
-          <widget class="QLCDNumber" name="scaleNumber">
-           <property name="smallDecimalPoint">
-            <bool>false</bool>
-           </property>
-           <property name="segmentStyle">
-            <enum>QLCDNumber::Filled</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="16" column="0">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>Upscale</string>
-           </property>
-          </widget>
-         </item>
-         <item row="14" column="0">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Steps</string>
-           </property>
-          </widget>
-         </item>
-         <item row="22" column="0">
-          <widget class="QSlider" name="gfpganSlider">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>10</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="11" column="0">
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>Scale</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QLCDNumber" name="batchSizeNumber"/>
-         </item>
-         <item row="21" column="0">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>GFGPAN Strength</string>
-           </property>
-          </widget>
-         </item>
-         <item row="15" column="0">
-          <widget class="QSlider" name="stepsSlider">
-           <property name="maximum">
-            <number>300</number>
-           </property>
-           <property name="value">
-            <number>75</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="invertedAppearance">
-            <bool>false</bool>
-           </property>
-           <property name="invertedControls">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="28" column="0">
-          <widget class="QSlider" name="previewSlider">
-           <property name="minimum">
-            <number>3</number>
-           </property>
-           <property name="maximum">
-            <number>25</number>
-           </property>
-           <property name="pageStep">
-            <number>1</number>
-           </property>
-           <property name="value">
-            <number>3</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="27" column="0">
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Live Preview Frequency</string>
-           </property>
-          </widget>
-         </item>
-         <item row="22" column="1">
-          <widget class="QLCDNumber" name="gfpganNumber"/>
-         </item>
-         <item row="28" column="1">
-          <widget class="QLCDNumber" name="previewNumber"/>
-         </item>
-        </layout>
+           <item>
+            <layout class="QGridLayout" name="gridLayout">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item row="3" column="1">
+              <widget class="QLCDNumber" name="widthNumber"/>
+             </item>
+             <item row="21" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>GFGPAN Strength</string>
+               </property>
+              </widget>
+             </item>
+             <item row="18" column="0">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Upscale Strength</string>
+               </property>
+              </widget>
+             </item>
+             <item row="27" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Preview Frequency</string>
+               </property>
+              </widget>
+             </item>
+             <item row="15" column="0">
+              <widget class="QCheckBox" name="upScale">
+               <property name="text">
+                <string>Upscale</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QSlider" name="batchSizeSlider">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>200</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>1</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QSlider" name="heightSlider">
+               <property name="minimum">
+                <number>256</number>
+               </property>
+               <property name="maximum">
+                <number>3072</number>
+               </property>
+               <property name="singleStep">
+                <number>64</number>
+               </property>
+               <property name="pageStep">
+                <number>64</number>
+               </property>
+               <property name="value">
+                <number>512</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickInterval">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLCDNumber" name="heightNumber"/>
+             </item>
+             <item row="28" column="1">
+              <widget class="QLCDNumber" name="lcdNumber"/>
+             </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Samples per Iteration</string>
+               </property>
+              </widget>
+             </item>
+             <item row="19" column="1">
+              <widget class="QLCDNumber" name="upscaleStrengthNumber"/>
+             </item>
+             <item row="3" column="0">
+              <widget class="QSlider" name="widthSlider">
+               <property name="minimum">
+                <number>256</number>
+               </property>
+               <property name="maximum">
+                <number>3072</number>
+               </property>
+               <property name="singleStep">
+                <number>64</number>
+               </property>
+               <property name="pageStep">
+                <number>64</number>
+               </property>
+               <property name="value">
+                <number>512</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="22" column="0">
+              <widget class="QSlider" name="gfpganSlider">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>10</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="19" column="0">
+              <widget class="QSlider" name="upscaleStrength">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>8</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="14" column="0">
+              <widget class="Line" name="line">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="28" column="0">
+              <widget class="QSlider" name="previewSlider">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>25</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="17" column="0">
+              <widget class="QSlider" name="upscaleScale">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>8</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="29" column="0">
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="17" column="1">
+              <widget class="QLCDNumber" name="upscaleScaleNumber"/>
+             </item>
+             <item row="16" column="0">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Upscale Scale</string>
+               </property>
+              </widget>
+             </item>
+             <item row="14" column="1">
+              <widget class="Line" name="line_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="22" column="1">
+              <widget class="QLCDNumber" name="gfpganNumber"/>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Height</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Width</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="1">
+              <widget class="QLCDNumber" name="samplesNumber"/>
+             </item>
+             <item row="7" column="0">
+              <widget class="QSlider" name="samplesSlider">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>1500</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>1</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="20" column="0">
+              <widget class="QCheckBox" name="useGfpgan">
+               <property name="text">
+                <string>GFPGAN</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Number of Iterations</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QLCDNumber" name="batchSizeNumber"/>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -363,12 +401,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>46</x>
-     <y>34</y>
+     <x>49</x>
+     <y>62</y>
     </hint>
     <hint type="destinationlabel">
-     <x>126</x>
-     <y>34</y>
+     <x>234</x>
+     <y>63</y>
     </hint>
    </hints>
   </connection>
@@ -383,8 +421,8 @@
      <y>85</y>
     </hint>
     <hint type="destinationlabel">
-     <x>126</x>
-     <y>85</y>
+     <x>234</x>
+     <y>102</y>
     </hint>
    </hints>
   </connection>
@@ -399,8 +437,8 @@
      <y>136</y>
     </hint>
     <hint type="destinationlabel">
-     <x>126</x>
-     <y>136</y>
+     <x>234</x>
+     <y>141</y>
     </hint>
    </hints>
   </connection>
@@ -411,60 +449,44 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>46</x>
-     <y>187</y>
+     <x>49</x>
+     <y>179</y>
     </hint>
     <hint type="destinationlabel">
-     <x>126</x>
-     <y>187</y>
+     <x>234</x>
+     <y>180</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>stepsSlider</sender>
+   <sender>upscaleScale</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>stepsNumber</receiver>
+   <receiver>upscaleScaleNumber</receiver>
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>46</x>
-     <y>289</y>
+     <x>89</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
-     <x>126</x>
-     <y>289</y>
+     <x>202</x>
+     <y>231</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>upscaleSlider</sender>
+   <sender>upscaleStrength</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>upscaleNumber</receiver>
+   <receiver>upscaleStrengthNumber</receiver>
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>44</x>
-     <y>377</y>
+     <x>89</x>
+     <y>269</y>
     </hint>
     <hint type="destinationlabel">
-     <x>126</x>
-     <y>378</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>previewSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>previewNumber</receiver>
-   <slot>display(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>59</x>
-     <y>302</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>148</x>
-     <y>302</y>
+     <x>202</x>
+     <y>270</y>
     </hint>
    </hints>
   </connection>

@@ -1,0 +1,37 @@
+If you like our product and it helps you creating art,
+or even better it helps you generating income,
+think about those two guys who did all the hard work.
+
+Dont worry we like to do this and it was and is a lot of fun.
+
+Anyways if you like and only than you can give something back to us.
+We accept crypto, so if you want send us some support to our crypto address
+here you go:
+
+Bitcoin
+default: bc1qqxgkeu309tlcnn0c9ef9dv80du3dj06wdfrfel
+compatibility: 3BrQusoChqqKBvLRxCCVruxhFncgvSi3dG
+legacy: 1KG6iCVHG7m5G9vnqjpFEbcG3E815gPmtw
+
+BitcoinCash
+qqpke95hn5lxas7us7k0epzxsqnfxda7mgka53gqdl
+
+BitcoinGold
+default: btg1qp7lffgpxxqkt4ss3ld0cm3g6nfpctymshq385d
+compatibility: AJKVaxFBVZcHUyeeP8GLkAv9DuRAvUsF1r
+legacy: GfrwF4vzGW4Gd9h4s9wsGkDJA548E2VLNG
+
+Dogecoin
+D5QroaFZ2gykrZFa4V2kCZZoWTRhuBGcop
+
+Ethereum Classic
+0xf6F6059A00a22BdC0aE4237b32A7f2152645C55A
+
+Ethereum (We can not yet support BEP20)
+0x5028e1f935383dc76bd005A6DeA5b98f473FddCe
+
+Feel free to help making our product even better.
+If you like to offer crypto but you can not since your crypto is not listed here, get in contact with us.
+We can accept much more but we only added a few of the most known here.
+
+Get in contact osi1880vr@gmail.com

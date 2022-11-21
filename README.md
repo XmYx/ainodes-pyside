@@ -1,6 +1,6 @@
 # aiNodes - Stable Diffusion Desktop
 
-Please join our Discord for further information: https://discord.gg/4Y9jDFS9
+Please join our Discord for further information: https://discord.gg/XDQm9pk5pd
 
 Welcome to our first alpha release, please expect many improvements in a very short amount of time.
 

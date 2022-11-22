@@ -11,7 +11,7 @@ https://www.anaconda.com/products/distribution
 
 install/run:
 ```\n
-conda env create -n ainodes -f environment_310.yaml\n
+conda env create -n ainodes -f environment_310.yaml
 conda activate ainodes
 conda install pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
 git clone https://github.com/facebookresearch/xformers

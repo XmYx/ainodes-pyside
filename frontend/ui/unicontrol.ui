@@ -66,9 +66,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-289</y>
-            <width>645</width>
-            <height>1914</height>
+            <y>0</y>
+            <width>662</width>
+            <height>1632</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -1955,169 +1955,24 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_12">
-              <item row="0" column="2">
-               <widget class="QLineEdit" name="plotXLine"/>
-              </item>
-              <item row="1" column="0">
-               <widget class="QComboBox" name="plotY">
-                <item>
-                 <property name="text">
-                  <string>seed</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>sampler</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>steps</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>ddim_eta</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>strength</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>mean_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>var_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>exposure_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>exposure_target</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>colormatch_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>colormatch_image</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>colormatch_n_colors</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>ignore_sat_weight</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>clip_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>aesthetics_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>cutn</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>cut_pow</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>init_mse_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>init_mse_image</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>blue_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>gradient_wrt</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>gradient_add_to</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>decode_method</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>grad_threshold_type</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>clamp_grad_threshold</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>clamp_start</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>clamp_stop</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>grad_inject_timing</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>T</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>lr</string>
-                 </property>
-                </item>
+              <item row="0" column="3">
+               <widget class="QPushButton" name="loadbutton">
+                <property name="text">
+                 <string>Load</string>
+                </property>
                </widget>
               </item>
-              <item row="0" column="0">
+              <item row="0" column="4">
+               <widget class="QPushButton" name="unloadbutton">
+                <property name="text">
+                 <string>Unload</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1" colspan="2">
+               <widget class="QComboBox" name="plugins"/>
+              </item>
+              <item row="1" column="0">
                <widget class="QComboBox" name="plotX">
                 <item>
                  <property name="text">
@@ -2276,8 +2131,177 @@
                 </item>
                </widget>
               </item>
-              <item row="1" column="2">
+              <item row="2" column="0">
+               <widget class="QComboBox" name="plotY">
+                <item>
+                 <property name="text">
+                  <string>seed</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>sampler</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>steps</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>ddim_eta</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>strength</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>mean_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>var_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>exposure_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>exposure_target</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>colormatch_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>colormatch_image</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>colormatch_n_colors</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>ignore_sat_weight</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>clip_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>aesthetics_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>cutn</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>cut_pow</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>init_mse_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>init_mse_image</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>blue_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>gradient_wrt</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>gradient_add_to</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>decode_method</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>grad_threshold_type</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>clamp_grad_threshold</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>clamp_start</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>clamp_stop</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>grad_inject_timing</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>T</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>lr</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="1" colspan="4">
+               <widget class="QLineEdit" name="plotXLine"/>
+              </item>
+              <item row="2" column="1" colspan="4">
                <widget class="QLineEdit" name="plotYLine"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Plugins</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -2616,6 +2640,13 @@
                   <width>8</width>
                   <height>8</height>
                  </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QCheckBox" name="lowmem">
+                <property name="text">
+                 <string>Low Memory</string>
                 </property>
                </widget>
               </item>

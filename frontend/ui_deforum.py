@@ -44,7 +44,7 @@ class Deforum_UI(QObject):
         self.parent = parent
         #self.deforum = DeforumGenerator()
         self.signals = Callbacks()
-        self.deforum_six = DeforumSix()
+        #self.deforum_six = DeforumSix()
 
     def run(self):
         params = self.parent.sessionparams.update_params()
@@ -108,10 +108,11 @@ class Deforum_UI(QObject):
                                          hires=params['hires'],
                                          prompt_weighting=params['prompt_weighting'],
                                          normalize_prompt_weights=params['normalize_prompt_weights'],
+                                         lowmem=params['lowmem'],
                                          )
 
     def run_deforum_six_txt2img(self, progress_callback=None, plotting=True):
-
+        self.deforum_six = DeforumSix()
         params = self.parent.sessionparams.update_params()
         print(f"updated parameters to: {params}")
 
@@ -212,6 +213,7 @@ class Deforum_UI(QObject):
                                                  hires=params['hires'],
                                                  prompt_weighting=params['prompt_weighting'],
                                                  normalize_prompt_weights=params['normalize_prompt_weights'],
+                                                 lowmem=params['lowmem'],
                                                  )
                 if plotting:
                     all_images.append(T.functional.pil_to_tensor(self.parent.image))
@@ -234,6 +236,7 @@ class Deforum_UI(QObject):
             self.parent.imageCallback_signal(grid_image)
             grid_image.save(os.path.join(params['outdir'], filename))
         #self.signals.reenable_runbutton.emit()
+        self.deforum_six = None
         return
 
     def run_deforum_outpaint(self, params=None, progress_callback=None):

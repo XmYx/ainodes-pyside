@@ -1,0 +1,16 @@
+{
+    "plugin": {
+        "name": "example_plugin",
+        "ui_type": "none"
+
+    },
+    "process": {
+        "processType": 0,
+        "help": "This is an example plugin config file.",
+        "help2": "Please do not remove any default parameters",
+        "help3": "but feel free to add any additional ones you need",
+        "help4": "they will be loaded in gs.[plugin_name].plugin,",
+        "help5": "and gs.[plugin_name].process accordingly"
+
+    }
+}

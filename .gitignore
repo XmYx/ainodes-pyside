@@ -139,7 +139,6 @@ ldm/modules/attention.py
 configs/ainodes - Copy/last_prompt.txt
 configs/ainodes - Copy/settings.json
 configs/ainodes/settings.json
-/models/
 /output/*
 /outputs/*
 /.idea/codeStyles/

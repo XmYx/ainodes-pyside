@@ -14,7 +14,7 @@
     "adabinsPath": "models/AdaBins_nyu.pt",
     "midasPath": "models/dpt_large-midas-2f21e586.pt",
     "sdClipPath": "models/sd-clip-vit-l14-img-embed_ema_only.ckpt",
-    "sdPath": "models/sd-v1-4.ckpt",
+    "sdPath": "models/v1-5-pruned-emaonly.ckpt",
     "sdInpaintPath": "models/sd-v1-5-inpaint.ckpt",
     "customModels": "models/alternate",
     "sdInference": "configs/stable-diffusion/v1-inference.yaml",

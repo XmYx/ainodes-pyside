@@ -320,7 +320,8 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def image_preview_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
-
+        x = 0
+        y = 0
         if self.canvas.canvas.rectlist != []:
             for i in self.canvas.canvas.rectlist:
                 if i.id == self.canvas.canvas.selected_item:
@@ -340,7 +341,8 @@ class MainWindow(QMainWindow):
                     if self.lastheight is not None:
                         if self.lastheight < self.height + i.h + 20:
                             self.lastheight = self.height + i.h + 20
-                            self.canvas.canvas.resize_canvas(w=w, h=self.lastheight + self.unicontrol.w.H.value())
+                            if self.params['advanced'] == False:
+                                self.canvas.canvas.resize_canvas(w=w, h=self.lastheight + self.unicontrol.w.H.value())
                     y = self.y
 
 

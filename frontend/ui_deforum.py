@@ -115,10 +115,9 @@ class Deforum_UI(QObject):
         self.deforum_six = DeforumSix()
         params = self.parent.sessionparams.update_params()
         print(f"updated parameters to: {params}")
-
-
-
-
+        if "inpaint" in gs.models:
+            del gs.models["inpaint"]
+        self.parent.params['advanced'] = True
         seed = random.randint(0, 2 ** 32 - 1)
         #print('strength ui', float(params['strength']))
 
@@ -242,6 +241,8 @@ class Deforum_UI(QObject):
     def run_deforum_outpaint(self, params=None, progress_callback=None):
         # self.deforum = DeforumGenerator()
         # self.deforum.signals = Callbacks()
+
+        self.deforum_six = DeforumSix()
         self.progress = 0.0
         self.parent.update = 0
         self.onePercent = 100 / self.parent.unicontrol.w.steps_slider.value()
@@ -275,9 +276,7 @@ class Deforum_UI(QObject):
             ddim_eta = float(params['ddim_eta'])
             with_inpaint = bool(params['use_inpaint'])
 
-
-
-
+        self.parent.params['advanced'] = True
 
         self.deforum_six.outpaint_txt2img(init_image=init_image,
                                           steps=steps,

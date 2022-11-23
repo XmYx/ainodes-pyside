@@ -858,17 +858,17 @@ class MainWindow(QMainWindow):
             t.setLabelText(QFileDialog.Accept, button_caption)
         if title:
             t.setWindowTitle(title)
-        t.exec_()
+            t.exec_()
         return t.selectedFiles()[0]
 
-     def list_files(self, index=0):
-            paths = []
-            self.unicontrol.w.aesthetic_embedding.clear()
-            self.unicontrol.w.aesthetic_embedding.addItem("None")
-            for _, _, files in os.walk(gs.system.aesthetic_gradients):
-                for file in files:
-                    self.unicontrol.w.aesthetic_embedding.addItem(str(file))
-            #self.set_txt2img.w.gradientList.setItemText(index)
+    def list_files(self, index=0):
+        paths = []
+        self.unicontrol.w.aesthetic_embedding.clear()
+        self.unicontrol.w.aesthetic_embedding.addItem("None")
+        for _, _, files in os.walk(gs.system.aesthetic_gradients):
+            for file in files:
+                self.unicontrol.w.aesthetic_embedding.addItem(str(file))
+        #self.set_txt2img.w.gradientList.setItemText(index)
     def select_gradient(self, gradient):
         if self.unicontrol.w.aesthetic_embedding.itemText(gradient) != "None":
             gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.unicontrol.w.aesthetic_embedding.itemText(gradient))

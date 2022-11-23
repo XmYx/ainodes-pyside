@@ -149,6 +149,7 @@ class Deforum_UI(QObject):
         # print(f"Grid Dimensions: {len(plotX)}, {len(plotY)}")
         # print(self.onePercent)
         #print(params)
+        self.parent.w = params['W']
         for i in plotY:
             for j in plotX:
                 if plotting:

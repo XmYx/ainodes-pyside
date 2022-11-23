@@ -207,8 +207,6 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
     except:
         pass
 
-
-
     #HiRes_Fix
     goal_px = 512 * 512
     true_px = args.W * args.H
@@ -219,7 +217,11 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
     new_h_int = int(scale * args.H)
     t_W = int(new_W - new_w_int) // args.f
     t_H = int(new_H - new_h_int) // args.f
-
+    if hires:
+        args.oldH = args.H
+        args.oldW = args.W
+        args.H = new_H
+        args.W = new_W
 
 
     sampler = PLMSSampler(gs.models["sd"]) if args.sampler == 'plms' else DDIMSampler(gs.models["sd"])
@@ -380,12 +382,15 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
                                     verbose=False)
 
     results = []
+    #gs.x = create_random_tensors([4, args.H // 8, args.W // 8], seeds=(args.seed), seed_resize_from_h=args.H, seed_resize_from_w=args.W )
     with torch.no_grad():
         with precision_scope("cuda"):
             with gs.models["sd"].ema_scope():
                 for prompts in data:
                     if isinstance(prompts, tuple):
+
                         prompts = list(prompts)
+
                     if args.prompt_weighting:
                         uc, c = get_uc_and_c(prompts, gs.models["sd"], args, frame)
                     else:
@@ -403,13 +408,9 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
                         c = args.init_c
 
                     if args.sampler in ["klms","dpm2","dpm2_ancestral","heun","euler","euler_ancestral", "dpm_fast", "dpm_adaptive", "dpmpp_2s_a", "dpmpp_2m"]:
-                        x = t_enc
-                        if hires:
-                            args.oldH = args.H
-                            args.oldW = args.W
-                            args.H = new_H
-                            args.W = new_W
-                            x = create_random_tensors([4, new_H // 8, new_W // 8], seeds=(args.seed), seed_resize_from_h=0, seed_resize_from_w=0 )
+                        #x = t_enc
+
+                        #gs.x = create_random_tensors([4, args.H // 8, args.W // 8], seeds=(args.seed), seed_resize_from_h=args.oldH, seed_resize_from_w=args.oldW )
                         #else:
                         #    args.H = args.oldH
                         #    args.W = args.oldW

@@ -66,9 +66,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
-            <width>715</width>
-            <height>2192</height>
+            <y>-88</y>
+            <width>719</width>
+            <height>1802</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -420,7 +420,7 @@
                   </widget>
                  </item>
                  <item row="4" column="0">
-                  <widget class="QCheckBox" name="weighted_prompts">
+                  <widget class="QCheckBox" name="prompt_weighting">
                    <property name="text">
                     <string>Weighted</string>
                    </property>
@@ -869,7 +869,17 @@
                <widget class="QComboBox" name="decode_method">
                 <item>
                  <property name="text">
+                  <string>linear</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
                   <string>None</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>autoencoder</string>
                  </property>
                 </item>
                </widget>

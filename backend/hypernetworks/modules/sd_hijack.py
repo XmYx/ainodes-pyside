@@ -90,9 +90,9 @@ class StableDiffusionModelHijack:
         model_embeddings.token_embedding = EmbeddingsWithFixes(model_embeddings.token_embedding, self)
         #gs.models["sd"].cond_stage_model = FrozenCLIPEmbedderWithCustomWords(gs.models["sd"].cond_stage_model, self)
 
-        self.clip = gs.models["sd"].cond_stage_model
+        #self.clip = gs.models["sd"].cond_stage_model
 
-        apply_optimizations()
+        #apply_optimizations()
 
         def flatten(el):
             flattened = [flatten(children) for children in el.children()]
@@ -124,7 +124,7 @@ class StableDiffusionModelHijack:
         self.comments = []
 
     def tokenize(self, text):
-        _, remade_batch_tokens, _, _, _, token_count = self.clip.process_text([text])
+        _, remade_batch_tokens, _, _, _, token_count = gs.models["sd"].cond_stage_model.process_text([text])
         return remade_batch_tokens[0], token_count, get_target_prompt_token_count(token_count)
 
 

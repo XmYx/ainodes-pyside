@@ -104,10 +104,10 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                         args.use_init = False
                         args.init_sample = None
                         if args.lowmem == True:
-                            sample = generate(args, root, return_sample=True, step_callback=step_callback,
+                            sample = generate_lowmem(args, root, return_sample=True, step_callback=step_callback,
                                                      hires=True)
                         else:
-                            sample = generate_lowmem(args, root, return_sample=True, step_callback=step_callback,
+                            sample = generate(args, root, return_sample=True, step_callback=step_callback,
                                                      hires=True)
 
                         args.init_sample = sample[0]

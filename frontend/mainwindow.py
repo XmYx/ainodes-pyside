@@ -356,25 +356,33 @@ class MainWindow(QMainWindow):
         if self.canvas.canvas.rectlist != []:
             for i in self.canvas.canvas.rectlist:
                 if i.id == self.canvas.canvas.selected_item:
+                    self.lastheight = self.height
+                    #Calculate next image's X coordinate
                     x = i.x + i.w + 20
                     if i.h > self.height:
                         self.height = i.h
+                        self.lastheight = self.height
                     if self.canvas.canvas.pixmap.width() < 3000:
-                        w = self.canvas.canvas.pixmap.width() + self.unicontrol.w.W.value() + 25
+                        w = x  + self.unicontrol.w.W.value() + 25
+                        if w > self.w:
+                            self.w = w
                     else:
-                        w = self.canvas.canvas.pixmap.width()
+                        w = self.w
                     if x > 3000:
                         self.y = self.y + i.h + 20
                         x = 0
                         self.lastheight = self.lastheight + i.h + 20
                         self.height = self.lastheight
                         w = w
+                        if w > self.w:
+                            self.w = w
                     if self.lastheight is not None:
                         if self.lastheight < self.height + i.h + 20:
                             self.lastheight = self.height + i.h + 20
                             if self.params['advanced'] == False:
-                                self.canvas.canvas.resize_canvas(w=w, h=self.lastheight + self.unicontrol.w.H.value())
+                                self.canvas.canvas.resize_canvas(w=self.w, h=self.lastheight + self.unicontrol.w.H.value())
                     y = self.y
+
 
 
             if x != 0 or y > 0:
@@ -383,7 +391,7 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.h = self.unicontrol.w.H.value()
                     self.canvas.canvas.addrect_atpos(x=x, y=self.y, params=self.params)
                     print(f"resizing canvas to {self.height}")
-                    self.canvas.canvas.resize_canvas(w=w, h=self.height)
+                    self.canvas.canvas.resize_canvas(w=self.w, h=self.height)
         elif self.params['advanced'] == False or self.canvas.canvas.selected_item == None:
             w = self.unicontrol.w.W.value()
             h = self.unicontrol.w.H.value()
@@ -392,7 +400,7 @@ class MainWindow(QMainWindow):
             self.canvas.canvas.addrect_atpos(x=0, y=0)
             self.height = self.unicontrol.w.H.value()
             print(f"this should only haappen once {self.height}")
-            self.canvas.canvas.resize_canvas(w=w, h=self.height)
+            self.canvas.canvas.resize_canvas(w=self.w, h=self.height)
 
         self.lastheight = self.height
 

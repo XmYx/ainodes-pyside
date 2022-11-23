@@ -7,6 +7,16 @@ from PySide6.QtWidgets import QApplication, QSplashScreen
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
+defaultdirs = [
+    "data",
+    "data/models",
+    "data/models/alternate",
+]
+
+for i in defaultdirs:
+    os.makedirs(i, exist_ok=True)
+
+
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
     QtQuick.QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)

@@ -153,7 +153,7 @@ class SessionParams():
         skip_video_for_run_all = False
         advanced = False
         init_image = self.parent.unicontrol.w.init_image.text()
-        prompt_weighting = self.parent.unicontrol.w.weighted_prompts.isChecked()
+        prompt_weighting = self.parent.unicontrol.w.prompt_weighting.isChecked()
         normalize_prompt_weights = self.parent.unicontrol.w.normalized_prompts.isChecked()
         animation_mode = 'None'
         use_inpaint = self.parent.unicontrol.w.use_inpaint.isChecked()

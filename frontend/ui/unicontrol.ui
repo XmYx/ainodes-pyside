@@ -66,9 +66,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-488</y>
             <width>706</width>
-            <height>2167</height>
+            <height>2192</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -473,86 +473,86 @@
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <item row="10" column="0">
+                 <item row="11" column="0">
                   <widget class="QLabel" name="label_7">
                    <property name="text">
                     <string>Batch Columns</string>
                    </property>
                   </widget>
                  </item>
+                 <item row="11" column="3">
+                  <widget class="QSpinBox" name="batch_columns"/>
+                 </item>
                  <item row="10" column="3">
-                  <widget class="QSpinBox" name="spinBox_4"/>
+                  <widget class="QSpinBox" name="batch_rows"/>
                  </item>
-                 <item row="9" column="3">
-                  <widget class="QSpinBox" name="spinBox_3"/>
-                 </item>
-                 <item row="8" column="0">
+                 <item row="9" column="0">
                   <widget class="QLabel" name="label_5">
                    <property name="text">
                     <string>Batch Outpaint Overlap</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="7" column="3">
-                  <widget class="QSpinBox" name="spinBox"/>
+                 <item row="8" column="3">
+                  <widget class="QSpinBox" name="mask_offset"/>
                  </item>
-                 <item row="9" column="1" colspan="2">
+                 <item row="10" column="1" colspan="2">
                   <widget class="QSlider" name="batch_rows_slider">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
-                 <item row="10" column="1" colspan="2">
+                 <item row="11" column="1" colspan="2">
                   <widget class="QSlider" name="batch_columns_slider">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
-                 <item row="7" column="0">
+                 <item row="8" column="0">
                   <widget class="QLabel" name="label_4">
                    <property name="text">
                     <string>Outpaint Mask Offset</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="9" column="0">
+                 <item row="10" column="0">
                   <widget class="QLabel" name="label_6">
                    <property name="text">
                     <string>Batch Rows</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="0">
+                 <item row="7" column="0">
                   <widget class="QPushButton" name="delete_2">
                    <property name="text">
                     <string>Delete</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="1">
+                 <item row="7" column="1">
                   <widget class="QPushButton" name="redo">
                    <property name="text">
                     <string>Redo</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="3">
+                 <item row="6" column="3">
                   <widget class="QPushButton" name="run_hires">
                    <property name="text">
                     <string>Run Hires</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="2">
+                 <item row="5" column="2">
                   <widget class="QCheckBox" name="makegrid">
                    <property name="text">
                     <string>Make Grid</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="1">
+                 <item row="5" column="1">
                   <widget class="QCheckBox" name="strength_0_no_init">
                    <property name="text">
                     <string>Str 0 No Init</string>
@@ -566,7 +566,7 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="0">
+                 <item row="6" column="0">
                   <widget class="QCheckBox" name="save_settings">
                    <property name="text">
                     <string>Save Settings</string>
@@ -580,140 +580,146 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="0">
+                 <item row="5" column="0">
                   <widget class="QCheckBox" name="use_inpaint">
                    <property name="text">
                     <string>Use Inpaint Inference</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="3">
+                 <item row="5" column="3">
                   <widget class="QPushButton" name="update_params">
                    <property name="text">
                     <string>Update Params</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="2">
+                 <item row="7" column="2">
                   <widget class="QPushButton" name="preview_batch">
                    <property name="text">
                     <string>Preview Batch</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="2">
+                 <item row="6" column="2">
                   <widget class="QPushButton" name="prep_hires">
                    <property name="text">
                     <string>Prep Hires</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="1">
+                 <item row="6" column="1">
                   <widget class="QCheckBox" name="save_samples">
                    <property name="text">
                     <string>Save Samples</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="3">
+                 <item row="7" column="3">
                   <widget class="QPushButton" name="run_batch">
                    <property name="text">
                     <string>Run Batch</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="7" column="1" colspan="2">
-                  <widget class="QSlider" name="mask_offset">
+                 <item row="8" column="1" colspan="2">
+                  <widget class="QSlider" name="mask_offset_slider">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
-                 <item row="8" column="3">
-                  <widget class="QSpinBox" name="spinBox_2"/>
+                 <item row="9" column="3">
+                  <widget class="QSpinBox" name="rect_overlap"/>
                  </item>
-                 <item row="8" column="1" colspan="2">
-                  <widget class="QSlider" name="rect_overlap">
+                 <item row="9" column="1" colspan="2">
+                  <widget class="QSlider" name="rect_overlap_slider">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
                  <item row="2" column="2" colspan="2">
-                  <widget class="QSlider" name="reconstruction_blur">
+                  <widget class="QSlider" name="reconstruction_blur_slider">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
-                 <item row="11" column="0">
+                 <item row="12" column="0">
                   <widget class="QLabel" name="label_8">
                    <property name="text">
                     <string>Start Offset X</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="12" column="0">
+                 <item row="13" column="0">
                   <widget class="QLabel" name="label_9">
                    <property name="text">
                     <string>Start Offset Y</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="12" column="1" colspan="2">
+                 <item row="13" column="1" colspan="2">
                   <widget class="QSlider" name="start_offset_y_slider">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
-                 <item row="11" column="1" colspan="2">
+                 <item row="12" column="1" colspan="2">
                   <widget class="QSlider" name="start_offset_x_slider">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
-                 <item row="11" column="3">
-                  <widget class="QSpinBox" name="spinBox_5"/>
-                 </item>
-                 <item row="12" column="3">
-                  <widget class="QSpinBox" name="spinBox_6"/>
-                 </item>
-                 <item row="2" column="0" colspan="2">
-                  <widget class="QSlider" name="mask_blur">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QCheckBox" name="randomize">
-                   <property name="text">
-                    <string>Randomize</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
+                 <item row="4" column="1">
                   <widget class="QCheckBox" name="reverse">
                    <property name="text">
                     <string>Reverse</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="2">
+                 <item row="12" column="3">
+                  <widget class="QSpinBox" name="start_offset_x"/>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QCheckBox" name="randomize">
+                   <property name="text">
+                    <string>Randomize</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="13" column="3">
+                  <widget class="QSpinBox" name="start_offset_y"/>
+                 </item>
+                 <item row="4" column="3">
+                  <widget class="QCheckBox" name="enable_overlap">
+                   <property name="text">
+                    <string>Enable Overlap</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="2">
                   <widget class="QCheckBox" name="spiral">
                    <property name="text">
                     <string>Spiral Batch</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="3">
-                  <widget class="QCheckBox" name="enable_overlap">
-                   <property name="text">
-                    <string>Enable Overlap</string>
+                 <item row="2" column="0" colspan="2">
+                  <widget class="QSlider" name="mask_blur_slider">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QSpinBox" name="mask_blur"/>
+                 </item>
+                 <item row="3" column="2">
+                  <widget class="QSpinBox" name="reconstruction_blur"/>
                  </item>
                 </layout>
                </widget>
@@ -3253,6 +3259,246 @@
     <hint type="destinationlabel">
      <x>520</x>
      <y>1598</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mask_blur</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>mask_blur_slider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>106</x>
+     <y>301</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>189</x>
+     <y>275</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mask_blur_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>mask_blur</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>189</x>
+     <y>275</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>106</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reconstruction_blur</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>reconstruction_blur_slider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>439</x>
+     <y>301</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>522</x>
+     <y>275</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reconstruction_blur_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>reconstruction_blur</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>522</x>
+     <y>275</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>439</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mask_offset_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>mask_offset</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>433</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>605</x>
+     <y>433</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mask_offset</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>mask_offset_slider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>605</x>
+     <y>433</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>355</x>
+     <y>433</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rect_overlap</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>rect_overlap_slider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>605</x>
+     <y>460</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>355</x>
+     <y>460</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rect_overlap_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>rect_overlap</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>460</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>605</x>
+     <y>460</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>batch_rows_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>batch_rows</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>487</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>605</x>
+     <y>487</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>batch_rows</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>batch_rows_slider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>605</x>
+     <y>487</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>355</x>
+     <y>487</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>batch_columns</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>batch_columns_slider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>605</x>
+     <y>514</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>355</x>
+     <y>514</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>start_offset_x</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>start_offset_x_slider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>605</x>
+     <y>541</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>355</x>
+     <y>541</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>start_offset_x_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>start_offset_x</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>541</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>605</x>
+     <y>541</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>start_offset_y</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>start_offset_y_slider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>605</x>
+     <y>568</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>355</x>
+     <y>568</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>start_offset_y_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>start_offset_y</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>568</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>605</x>
+     <y>568</y>
     </hint>
    </hints>
   </connection>

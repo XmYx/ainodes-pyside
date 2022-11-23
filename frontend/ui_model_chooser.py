@@ -27,4 +27,6 @@ class ModelChooser_UI(QObject):
             self.parent.path_setup.w.modelList.addItem(model)
 
     def set_model(self):
+        if 'custom_model_name' not in gs.models:
+            gs.models['custom_model_name'] = ''
         load_models.load_custom_model(os.path.join(gs.system.customModels, self.parent.path_setup.w.modelList.currentText()))

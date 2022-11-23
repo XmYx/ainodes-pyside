@@ -12,7 +12,7 @@ from PIL import Image
 import pathlib
 import torchvision.transforms as T
 
-from .generate import generate, add_noise
+from .generate import generate, generate_lowmem, add_noise
 from .prompt import sanitize
 from .animation import DeformAnimKeys, sample_from_cv2, sample_to_cv2, anim_frame_warp_2d, anim_frame_warp_3d, vid2frames
 from .depth import DepthModel
@@ -103,19 +103,31 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                     if args.hires == True:
                         args.use_init = False
                         args.init_sample = None
-                        sample = generate(args, root, return_sample=True, step_callback=step_callback, hires=True)
+                        if args.lowmem == True:
+                            sample = generate(args, root, return_sample=True, step_callback=step_callback,
+                                                     hires=True)
+                        else:
+                            sample = generate_lowmem(args, root, return_sample=True, step_callback=step_callback,
+                                                     hires=True)
+
                         args.init_sample = sample[0]
                         args.use_init = True
                         args.strength = args.hiresstr
                         args.W = fpW
                         args.H = fpH
-                        results = generate(args, root, step_callback=step_callback)
+                        if args.lowmem == True:
+                            results = generate_lowmem(args, root, step_callback=step_callback)
+                        else:
+                            results = generate(args, root, step_callback=step_callback,)
                         args.init_latent = None
                         args.init_sample = None
                         args.strength = 0
                         args.use_init = gs.diffusion.use_init
                     else:
-                        results = generate(args, root, step_callback=step_callback)
+                        if args.lowmem == True:
+                            results = generate_lowmem(args, root, step_callback=step_callback)
+                        else:
+                            results = generate(args, root, step_callback=step_callback,)
                     for image in results:
                         if args.make_grid:
                             all_images.append(T.functional.pil_to_tensor(image))

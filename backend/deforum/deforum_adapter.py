@@ -1,4 +1,6 @@
 import gc, os, random, sys, time, traceback
+from contextlib import nullcontext
+
 import clip
 import numpy as np
 import pandas as pd
@@ -6,7 +8,7 @@ import torch
 from PIL import ImageFilter
 from omegaconf import OmegaConf
 from pytorch_lightning import seed_everything
-from torch import nn
+from torch import nn, autocast
 from torchvision.utils import save_image, make_grid
 from tqdm import tqdm, trange
 from einops import rearrange, repeat
@@ -28,7 +30,13 @@ from backend.hypernetworks import hypernetwork
 import backend.hypernetworks.modules.sd_hijack
 
 from backend.deforum.six.hijack import hijack_deforum
-
+def load_model_from_config_lm(ckpt, verbose=False):
+    print(f"Loading model from {ckpt}")
+    pl_sd = torch.load(ckpt, map_location="cpu")
+    if "global_step" in pl_sd:
+        print(f"Global Step: {pl_sd['global_step']}")
+    sd = pl_sd["state_dict"]
+    return sd
 class DeforumSix:
 
     def __init__(self):
@@ -38,8 +46,50 @@ class DeforumSix:
         # self.parent = parent
         self.device = 'cuda'
         self.full_precision = False
+    def load_low_memory(self):
+        if "model" not in gs.models:
+            config = "optimizedSD/v1-inference.yaml"
+            ckpt = gs.system.sdPath
+            sd = load_model_from_config_lm(f"{ckpt}")
+            li, lo = [], []
+            for key, v_ in sd.items():
+                sp = key.split(".")
+                if (sp[0]) == "model":
+                    if "input_blocks" in sp:
+                        li.append(key)
+                    elif "middle_block" in sp:
+                        li.append(key)
+                    elif "time_embed" in sp:
+                        li.append(key)
+                    else:
+                        lo.append(key)
+            for key in li:
+                sd["model1." + key[6:]] = sd.pop(key)
+            for key in lo:
+                sd["model2." + key[6:]] = sd.pop(key)
+
+            config = OmegaConf.load(f"{config}")
+
+            gs.models["model"] = instantiate_from_config(config.modelUNet)
+            _, _ = gs.models["model"].load_state_dict(sd, strict=False)
+            gs.models["model"].eval()
+
+            gs.models["modelCS"] = instantiate_from_config(config.modelCondStage)
+            _, _ = gs.models["modelCS"].load_state_dict(sd, strict=False)
+            gs.models["modelCS"].eval()
+
+            gs.models["modelFS"] = instantiate_from_config(config.modelFirstStage)
+            _, _ = gs.models["modelFS"].load_state_dict(sd, strict=False)
+            gs.models["modelFS"].eval()
+            gs.models["model"].unet_bs = 1
+            gs.models["model"].turbo = False
+            gs.models["model"].cdevice = "cuda"
+            gs.models["modelCS"].cond_stage_model.device = "cuda"
+            del sd
+
     def load_model_from_config(self, config, ckpt, verbose=False):
         config = 'configs/stable-diffusion/v1-inference_six.yaml'
+        #config = 'optimizedSD/v1-inference.yaml'
         ckpt = gs.system.sdPath
         # checks for config.yaml with the name of the model
         config_yaml_name = os.path.splitext(gs.system.sdPath)[0] + '.yaml'
@@ -64,8 +114,8 @@ class DeforumSix:
             if len(u) > 0 and verbose:
                 print("unexpected keys:")
                 print(u)
-
-            gs.models["sd"] = model.half().to("cuda")
+            model.half()
+            gs.models["sd"] = model
 
             for m in gs.models["sd"].modules():
                 if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
@@ -73,7 +123,11 @@ class DeforumSix:
 
             autoencoder_version = "sd-v1" #TODO this will be different for different models
             gs.models["sd"].linear_decode = make_linear_decode(autoencoder_version, self.device)
-
+            sd = None
+            pl_sd = []
+            m = None
+            u = None
+            model = None
             del pl_sd
             del sd
             del m, u
@@ -88,6 +142,7 @@ class DeforumSix:
             gs.model_hijack.hijack(gs.models["sd"])
             gs.models["sd"].eval()
             from  backend.aesthetics import modules
+            gs.models["sd"].to("cuda")
             print('PersonalizedCLIPEmbedder', backend.aesthetics.modules.PersonalizedCLIPEmbedder)
 
 
@@ -162,7 +217,6 @@ class DeforumSix:
             gs.models["inpaint"] = model.half().to(device)
             del model
             return
-
     def run_deforum_six(self,
                         image_callback=None,
                         step_callback=None,
@@ -320,12 +374,39 @@ class DeforumSix:
                         hires=None,
                         use_hypernetwork=None,
                         apply_strength=0,
-                        apply_circular=False
+                        apply_circular=False,
+                        lowmem=False
                         ):
+
 
         print('deforum six enabled')
         print(f'mode: {animation_mode}')
-        self.load_model_from_config(config=None, ckpt=None)
+        if lowmem == True:
+            print('Low Memory Mode enabled')
+            if "sd" in gs.models:
+                del gs.models["sd"]
+            if "inpaint" in gs.models:
+                del gs.models["inpaint"]
+            if "custom_model_name" in gs.models:
+                del gs.models["custom_model_name"]
+
+            gs.models["sd"] = None
+            self.load_low_memory()
+        else:
+            if "model" in gs.models:
+                del gs.models["model"]
+            if "modelCS" in gs.models:
+                del gs.models["modelCS"]
+            if "modelFS" in gs.models:
+                del gs.models["modelFS"]
+            self.load_model_from_config(config=None, ckpt=None)
+
+        if precision == 'autocast' and device != "cpu":
+            precision_scope = autocast
+        else:
+            precision_scope = nullcontext
+
+
         hijack_deforum.deforum_hijack()
 
         if use_hypernetwork is not None:
@@ -395,8 +476,6 @@ class DeforumSix:
             args.use_init = True
 
         # clean up unused memory
-        gc.collect()
-        torch.cuda.empty_cache()
         torch_gc()
         anim_args.animation_mode = 'None'
         args.prompt = 'corgi'
@@ -476,6 +555,23 @@ class DeforumSix:
         hijack_deforum.undo_hijack()
         del args
         del anim_args
+
+        if lowmem == True:
+            print('Low Memory Mode enabled')
+            gs.models["model"].to("cpu")
+            gs.models["modelCS"].to("cpu")
+            gs.models["modelFS"].to("cpu")
+            gs.models["sd"] = None
+        else:
+            gs.models["sd"].cond_stage_model.to("cpu")
+            gs.models["sd"].to("cpu")
+            gs.models["model"] = None
+            gs.models["modelCS"] = None
+            gs.models["modelFS"] = None
+            del gs.models["model"]
+            del gs.models["modelCS"]
+            del gs.models["modelFS"]
+
         torch_gc()
 
     def render_animation_new(self):

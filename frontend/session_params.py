@@ -157,6 +157,7 @@ class SessionParams():
         normalize_prompt_weights = self.parent.unicontrol.w.normalized_prompts.isChecked()
         animation_mode = 'None'
         use_inpaint = self.parent.unicontrol.w.use_inpaint.isChecked()
+        lowmem = self.parent.unicontrol.w.lowmem.isChecked()
         params = {
             # Basic Params
             'mode': mode,
@@ -262,7 +263,8 @@ class SessionParams():
             "skip_video_for_run_all": skip_video_for_run_all,
             "prompt_weighting": prompt_weighting,
             "normalize_prompt_weights": normalize_prompt_weights,
-            "use_inpaint": use_inpaint
+            "use_inpaint": use_inpaint,
+            "lowmem": lowmem,
         }
         return params
 

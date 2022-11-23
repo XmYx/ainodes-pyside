@@ -12,6 +12,7 @@ from PySide6 import QtCore, QtWidgets
 from einops import rearrange
 
 from backend.worker import Worker
+from frontend import plugin_loader
 from frontend.ui_model_chooser import ModelChooser_UI
 from frontend.ui_paint import PaintUI, spiralOrder, random_path
 from frontend.ui_classes import Thumbnails, PathSetup
@@ -81,6 +82,7 @@ class MainWindow(QMainWindow):
         self.tabifyDockWidget(self.path_setup.w.dockWidget, self.unicontrol.w.dockWidget)
         self.hide_default()
         self.mode = 'txt2img'
+        self.init_plugin_loader()
     def taskswitcher(self):
         print(self.unicontrol.w.use_inpaint.isChecked())
         if self.unicontrol.w.use_inpaint.isChecked() == True:
@@ -165,6 +167,23 @@ class MainWindow(QMainWindow):
                 print(e)
                 continue
     #Main Toolbar, Secondary toolbar to be added
+
+
+    def init_plugin_loader(self):
+        self.unicontrol.w.loadbutton.clicked.connect(self.load_plugin)
+        self.unicontrol.w.unloadbutton.clicked.connect(self.unload_plugin)
+        self.plugins = plugin_loader.PluginLoader(MainWindow)
+        list = self.plugins.list_plugins()
+        for i in list:
+            self.unicontrol.w.plugins.addItem(i)
+    def load_plugin(self):
+        plugin_name = self.unicontrol.w.plugins.currentText()
+        self.plugins.load_plugin(f"plugins.{plugin_name}.{plugin_name}")
+
+    def unload_plugin(self):
+        plugin_name = self.unicontrol.w.plugins.currentText()
+        self.plugins.unload_plugin(plugin_name)
+
     def create_main_toolbar(self):
         self.toolbar = QToolBar('Outpaint Tools')
         self.addToolBar(QtCore.Qt.TopToolBarArea, self.toolbar)
@@ -301,7 +320,8 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def image_preview_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
-
+        x = 0
+        y = 0
         if self.canvas.canvas.rectlist != []:
             for i in self.canvas.canvas.rectlist:
                 if i.id == self.canvas.canvas.selected_item:
@@ -321,7 +341,8 @@ class MainWindow(QMainWindow):
                     if self.lastheight is not None:
                         if self.lastheight < self.height + i.h + 20:
                             self.lastheight = self.height + i.h + 20
-                            self.canvas.canvas.resize_canvas(w=w, h=self.lastheight + self.unicontrol.w.H.value())
+                            if self.params['advanced'] == False:
+                                self.canvas.canvas.resize_canvas(w=w, h=self.lastheight + self.unicontrol.w.H.value())
                     y = self.y
 
 

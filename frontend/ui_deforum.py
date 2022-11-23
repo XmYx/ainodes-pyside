@@ -123,7 +123,7 @@ class Deforum_UI(QObject):
 
         plotting = self.parent.unicontrol.w.plotting.isChecked()
         print('plotting', plotting)
-        plotting = None
+        #plotting = None
         if plotting:
 
             attrib2 = self.parent.unicontrol.w.plotX.currentText()

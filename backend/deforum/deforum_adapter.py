@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import torch
 from PIL import ImageFilter
+from backend.devices import choose_torch_device
 from omegaconf import OmegaConf
 from pytorch_lightning import seed_everything
 from torch import nn, autocast
@@ -378,7 +379,7 @@ class DeforumSix:
                         lowmem=False
                         ):
 
-
+        gs.system.device = choose_torch_device()
         print('deforum six enabled')
         print(f'mode: {animation_mode}')
         if lowmem == True:

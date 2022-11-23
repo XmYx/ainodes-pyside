@@ -118,8 +118,7 @@ class Deforum_UI(QObject):
         print(f"updated parameters to: {params}")
         if "inpaint" in gs.models:
             del gs.models["inpaint"]
-        if self.parent.choice == 'outpaint':
-
+        if params["with_inpaint"] == True:
             self.parent.params['advanced'] = True
         else:
             self.parent.params['advanced'] = False

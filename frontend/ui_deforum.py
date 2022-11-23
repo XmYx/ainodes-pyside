@@ -112,12 +112,17 @@ class Deforum_UI(QObject):
                                          )
 
     def run_deforum_six_txt2img(self, progress_callback=None, plotting=True):
+
         self.deforum_six = DeforumSix()
         params = self.parent.sessionparams.update_params()
         print(f"updated parameters to: {params}")
         if "inpaint" in gs.models:
             del gs.models["inpaint"]
-        self.parent.params['advanced'] = False
+        if self.parent.choice == 'outpaint':
+
+            self.parent.params['advanced'] = True
+        else:
+            self.parent.params['advanced'] = False
         seed = random.randint(0, 2 ** 32 - 1)
         #print('strength ui', float(params['strength']))
 

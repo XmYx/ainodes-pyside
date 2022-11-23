@@ -583,6 +583,7 @@ class MainWindow(QMainWindow):
         self.choice = "Outpaint"
         self.create_outpaint_batch()
     def create_outpaint_batch(self, gobig_img_path=None):
+        self.params['advanced'] = True
         self.callbackbusy = True
         x = 0
         self.busy = False
@@ -644,9 +645,10 @@ class MainWindow(QMainWindow):
         self.callbackbusy = False
     def run_hires_batch(self, progress_callback=None):
         self.params['advanced'] = True
-        multi = self.unicontrol.w.multiBatch.isChecked()
-        batch_n = self.unicontrol.w.multiBatchvalue.value()
-
+        #multi = self.unicontrol.w.multiBatch.isChecked()
+        #batch_n = self.unicontrol.w.multiBatchvalue.value()
+        multi = False
+        batch_n = 1
         self.stopprocessing = False
         self.callbackbusy = False
         self.sleepytime = 0.0
@@ -839,7 +841,7 @@ class MainWindow(QMainWindow):
     def run_hires_batch_thread(self):
         worker = Worker(self.run_hires_batch)
         self.threadpool.start(worker)
-    def getfile(self, file_ext='', text='', button_caption='', button_type=0, title='', save=False):
+    def getfile(self, file_ext='', text='', button_caption='', button_type=0, title='Load', save=False):
         filter = {
             '': '',
             'txt': 'File (*.txt)',

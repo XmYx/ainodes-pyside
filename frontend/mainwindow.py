@@ -1,3 +1,4 @@
+import os
 import time
 import random
 
@@ -90,6 +91,7 @@ class MainWindow(QMainWindow):
         self.mode = 'txt2img'
         self.init_plugin_loader()
         self.connections()
+        self.list_files()
     def connections(self):
 
         self.canvas.canvas.signals.update_selected.connect(self.show_outpaint_details)
@@ -858,6 +860,24 @@ class MainWindow(QMainWindow):
             t.setWindowTitle(title)
         t.exec_()
         return t.selectedFiles()[0]
+
+     def list_files(self, index=0):
+            paths = []
+            self.unicontrol.w.aesthetic_embedding.clear()
+            self.unicontrol.w.aesthetic_embedding.addItem("None")
+            for _, _, files in os.walk(gs.system.aesthetic_gradients):
+                for file in files:
+                    self.unicontrol.w.aesthetic_embedding.addItem(str(file))
+            #self.set_txt2img.w.gradientList.setItemText(index)
+    def select_gradient(self, gradient):
+        if self.unicontrol.w.aesthetic_embedding.itemText(gradient) != "None":
+            gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.unicontrol.w.aesthetic_embedding.itemText(gradient))
+        else:
+            gs.aesthetic_embedding_path = None
+        print(f"Aesthetic Gradient set to: {gs.aesthetic_embedding_path}")
+        #print(f"debug {self.set_txt2img.w.gradientList.itemText(gradient)}")
+        #self.list_files(gradient)
+
 def QIcon_from_svg(svg_filepath, color='white'):
     img = QPixmap(svg_filepath)
     qp = QPainter(img)

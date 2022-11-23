@@ -66,7 +66,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-567</y>
+            <y>0</y>
             <width>706</width>
             <height>2192</height>
            </rect>
@@ -2647,6 +2647,9 @@
               </item>
               <item row="2" column="1" colspan="4">
                <widget class="QSlider" name="W_slider">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
                 <property name="minimum">
                  <number>256</number>
                 </property>
@@ -2669,6 +2672,9 @@
               </item>
               <item row="3" column="1" colspan="4">
                <widget class="QSlider" name="H_slider">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
                 <property name="minimum">
                  <number>256</number>
                 </property>
@@ -2691,6 +2697,9 @@
               </item>
               <item row="4" column="1" colspan="4">
                <widget class="QSlider" name="steps_slider">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
                 <property name="minimum">
                  <number>1</number>
                 </property>
@@ -2710,6 +2719,9 @@
               </item>
               <item row="5" column="1" colspan="4">
                <widget class="QSlider" name="scale_slider">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
                 <property name="maximum">
                  <number>1000</number>
                 </property>

@@ -66,7 +66,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-488</y>
+            <y>-567</y>
             <width>706</width>
             <height>2192</height>
            </rect>
@@ -3499,6 +3499,22 @@
     <hint type="destinationlabel">
      <x>605</x>
      <y>568</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>batch_columns_slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>batch_columns</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>435</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>605</x>
+     <y>435</y>
     </hint>
    </hints>
   </connection>

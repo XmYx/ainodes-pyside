@@ -117,7 +117,7 @@ class Deforum_UI(QObject):
         print(f"updated parameters to: {params}")
         if "inpaint" in gs.models:
             del gs.models["inpaint"]
-        self.parent.params['advanced'] = True
+        self.parent.params['advanced'] = False
         seed = random.randint(0, 2 ** 32 - 1)
         #print('strength ui', float(params['strength']))
 

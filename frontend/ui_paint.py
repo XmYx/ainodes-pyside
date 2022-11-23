@@ -843,7 +843,7 @@ class Canvas(QGraphicsView):
         #self.scene.addItem(self.rectItem)
         #print("Button pressed")
         self.redraw()
-        self.udpate()
+        self.update()
     def drag_mode(self):
         self.mode = "drag"
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)

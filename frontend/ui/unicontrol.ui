@@ -67,8 +67,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>662</width>
-            <height>1632</height>
+            <width>645</width>
+            <height>1913</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -78,6 +78,18 @@
            </size>
           </property>
           <layout class="QGridLayout" name="gridLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item row="3" column="0">
             <widget class="QFrame" name="adv_values">
              <property name="sizePolicy">
@@ -99,6 +111,185 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_3">
+              <property name="leftMargin">
+               <number>3</number>
+              </property>
+              <property name="topMargin">
+               <number>3</number>
+              </property>
+              <property name="rightMargin">
+               <number>3</number>
+              </property>
+              <property name="bottomMargin">
+               <number>3</number>
+              </property>
+              <item row="2" column="0">
+               <widget class="QFrame" name="frame_4">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_5">
+                 <property name="leftMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="spacing">
+                  <number>5</number>
+                 </property>
+                 <item row="5" column="0">
+                  <widget class="QCheckBox" name="use_inpaint">
+                   <property name="text">
+                    <string>Use Inpaint Inference</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0" colspan="2">
+                  <widget class="QSlider" name="mask_blur_slider">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="2">
+                  <widget class="QCheckBox" name="makegrid">
+                   <property name="text">
+                    <string>Make Grid</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="2" colspan="2">
+                  <widget class="QSlider" name="reconstruction_blur_slider">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="1">
+                  <widget class="QCheckBox" name="save_samples">
+                   <property name="text">
+                    <string>Save Samples</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="0">
+                  <widget class="QCheckBox" name="save_settings">
+                   <property name="text">
+                    <string>Save Settings</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QCheckBox" name="strength_0_no_init">
+                   <property name="text">
+                    <string>Str 0 No Init</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QDoubleSpinBox" name="mask_blur"/>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_11">
+                   <property name="text">
+                    <string>Mask Blur</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <widget class="QDoubleSpinBox" name="reconstruction_blur"/>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QLabel" name="label_17">
+                   <property name="text">
+                    <string>Reconstruction Blur</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QFrame" name="frame_5">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_6">
+                 <property name="leftMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="spacing">
+                  <number>5</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_12">
+                   <property name="text">
+                    <string>Aesthetic Embed:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2" colspan="2">
+                  <widget class="QLabel" name="label_18">
+                   <property name="text">
+                    <string>Gradient Scale</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QSpinBox" name="gradient_steps"/>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_22">
+                   <property name="text">
+                    <string>Gradient Steps</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1" colspan="4">
+                  <widget class="QComboBox" name="aesthetic_embedding"/>
+                 </item>
+                 <item row="1" column="4">
+                  <widget class="QDoubleSpinBox" name="gradient_scale"/>
+                 </item>
+                 <item row="2" column="0" colspan="2">
+                  <widget class="QSlider" name="gradient_steps_slider">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="2" colspan="3">
+                  <widget class="QSlider" name="gradient_scale_slider">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
               <item row="1" column="0">
                <widget class="QFrame" name="frame_3">
                 <property name="frameShape">
@@ -168,7 +359,7 @@
                  <item row="9" column="5">
                   <widget class="QLabel" name="label_14">
                    <property name="text">
-                    <string>Mode</string>
+                    <string>Seed Mode</string>
                    </property>
                   </widget>
                  </item>
@@ -312,7 +503,62 @@
                   <widget class="QComboBox" name="sampler">
                    <item>
                     <property name="text">
-                     <string>K Euler</string>
+                     <string>dpmpp_2m</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ddim</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>plms</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>k_lms</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>k_dpm_2</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>k_dpm_2_a</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>k_heun</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>k_euler</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>k_euler_a</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>dpm_fast</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>dpm_adaptive</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>dpmpp_2s_a</string>
                     </property>
                    </item>
                   </widget>
@@ -389,167 +635,6 @@
                 </layout>
                </widget>
               </item>
-              <item row="2" column="0">
-               <widget class="QFrame" name="frame_4">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_5">
-                 <property name="leftMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item row="1" column="0" colspan="2">
-                  <widget class="QSlider" name="mask_blur">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0" colspan="2">
-                  <widget class="QLabel" name="label_11">
-                   <property name="text">
-                    <string>Mask Blur</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QCheckBox" name="strength_0_no_init">
-                   <property name="text">
-                    <string>Str 0 No Init</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QCheckBox" name="use_inpaint">
-                   <property name="text">
-                    <string>Use Inpaint Inference</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2" colspan="2">
-                  <widget class="QLabel" name="label_17">
-                   <property name="text">
-                    <string>Reconstruction Blur</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="2">
-                  <widget class="QCheckBox" name="makegrid">
-                   <property name="text">
-                    <string>Make Grid</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QCheckBox" name="save_settings">
-                   <property name="text">
-                    <string>Save Settings</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QCheckBox" name="save_samples">
-                   <property name="text">
-                    <string>Save Samples</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2" colspan="2">
-                  <widget class="QSlider" name="reconstruction_blur">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QFrame" name="frame_5">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_6">
-                 <property name="leftMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_12">
-                   <property name="text">
-                    <string>Aesthetic Embed:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2" colspan="2">
-                  <widget class="QLabel" name="label_18">
-                   <property name="text">
-                    <string>Gradient Scale</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QSpinBox" name="gradient_steps"/>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_22">
-                   <property name="text">
-                    <string>Gradient Steps</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1" colspan="4">
-                  <widget class="QComboBox" name="aesthetic_embedding"/>
-                 </item>
-                 <item row="1" column="4">
-                  <widget class="QDoubleSpinBox" name="gradient_scale"/>
-                 </item>
-                 <item row="2" column="0" colspan="2">
-                  <widget class="QSlider" name="gradient_steps_slider">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="2" colspan="3">
-                  <widget class="QSlider" name="gradient_scale_slider">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
              </layout>
             </widget>
            </item>
@@ -574,6 +659,18 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_7">
+              <property name="leftMargin">
+               <number>3</number>
+              </property>
+              <property name="topMargin">
+               <number>3</number>
+              </property>
+              <property name="rightMargin">
+               <number>3</number>
+              </property>
+              <property name="bottomMargin">
+               <number>3</number>
+              </property>
               <item row="3" column="2" colspan="2">
                <widget class="QSlider" name="mean_scale_slider">
                 <property name="maximum">
@@ -1197,6 +1294,18 @@
                   <string>3d / Mask / Other</string>
                  </attribute>
                  <layout class="QVBoxLayout" name="verticalLayout_5">
+                  <property name="leftMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>3</number>
+                  </property>
                   <item>
                    <widget class="QFrame" name="frame_7">
                     <property name="sizePolicy">
@@ -1212,6 +1321,18 @@
                      <enum>QFrame::Raised</enum>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_11">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
                      <item row="0" column="0">
                       <widget class="QCheckBox" name="adabins">
                        <property name="text">
@@ -1694,6 +1815,18 @@
                      <enum>QFrame::Raised</enum>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_8">
+                     <property name="leftMargin">
+                      <number>3</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>3</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>3</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>3</number>
+                     </property>
                      <item row="4" column="1">
                       <widget class="QTextEdit" name="perspective_flip_phi">
                        <property name="maximumSize">
@@ -1834,6 +1967,18 @@
                      <enum>QFrame::Raised</enum>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_10">
+                     <property name="leftMargin">
+                      <number>3</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>3</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>3</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>3</number>
+                     </property>
                      <item row="0" column="0">
                       <widget class="QLabel" name="label_2">
                        <property name="text">
@@ -1955,6 +2100,18 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_12">
+              <property name="leftMargin">
+               <number>3</number>
+              </property>
+              <property name="topMargin">
+               <number>3</number>
+              </property>
+              <property name="rightMargin">
+               <number>3</number>
+              </property>
+              <property name="bottomMargin">
+               <number>3</number>
+              </property>
               <item row="0" column="3">
                <widget class="QPushButton" name="loadbutton">
                 <property name="text">
@@ -2346,6 +2503,18 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_2">
+              <property name="leftMargin">
+               <number>3</number>
+              </property>
+              <property name="topMargin">
+               <number>3</number>
+              </property>
+              <property name="rightMargin">
+               <number>3</number>
+              </property>
+              <property name="bottomMargin">
+               <number>3</number>
+              </property>
               <item row="3" column="0">
                <widget class="QLabel" name="heightlabel">
                 <property name="text">
@@ -2450,7 +2619,7 @@
                  <number>1</number>
                 </property>
                 <property name="maximum">
-                 <number>3000</number>
+                 <number>300</number>
                 </property>
                 <property name="pageStep">
                  <number>1</number>

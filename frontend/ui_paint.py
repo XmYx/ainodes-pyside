@@ -80,6 +80,7 @@ class Canvas(QGraphicsView):
 
     def __init__(self, parent=None):
         QGraphicsView.__init__(self, parent)
+        self.parent = parent
         self.last_pos = None
         self.signals = Callbacks()
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
@@ -90,7 +91,6 @@ class Canvas(QGraphicsView):
         self.selected_item = None
         self.tempbatch = None
         self.undoitems = []
-        self.parent = parent
 
 
     def resize_canvas(self, w, h):
@@ -162,7 +162,7 @@ class Canvas(QGraphicsView):
         self.last_x, self.last_y = None, None
         self.pen_color = QColor('#000000')
         self.mode = 'drag'
-        self.setMouseTracking(True)
+        #self.setMouseTracking(True)
         self.painter = QPainter()
 
         self.update()
@@ -199,14 +199,16 @@ class Canvas(QGraphicsView):
     def set_pen_color(self, c):
         self.pen_color = QColor(c)
 
-    def addrect(self):
+    def addrect(self, dummy=False):
         rect = {}
         uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
         prompt = ""
         rect[uid] = Rectangle(prompt, self.scene.scenePos.x() - self.w / 2, self.scene.scenePos.y() - self.h / 2, self.w, self.h, uid)
         self.selected_item = uid
-
         self.rectlist.append(rect[uid])
+        if dummy == True:
+            self.rectlist.remove(rect[uid])
+
     def tensor_preview(self):
         #print(self.tensor_preview_item)
         if self.tensor_preview_item is not None:
@@ -856,18 +858,20 @@ class Canvas(QGraphicsView):
     def enterEvent(self, event):
         print("Enter Event")
         is_in = True
+        self.bgitem.update()
+        self.rectItem.update()
     def add_mode(self):
-        self.outpaint_mousePressEvent(QPoint(0, 0))
+        #self.outpaint_mousePressEvent(QPoint(0, 0))
+        self.addrect(dummy=True)
         self.mode = "outpaint"
-        self.setMouseTracking(True)
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
         self.scene.addItem(self.rectItem)
-        self.enterEvent(QPoint(0,0))
-        self.parent.update()
-        self.redraw()
+        #self.enterEvent(QPoint(0,0))
+        #self.parent.update()
+        #self.redraw()
         self.setUpdatesEnabled(True)
 
-        print("Button pressed")
+        print("Add Mode")
     def keyPressEvent(self, e):
         super(Canvas, self).keyPressEvent(e)
         print(f"key pressed: {e.key()}")
@@ -971,7 +975,6 @@ class Canvas(QGraphicsView):
         self.last_pos = None
 
     def outpaint_mouseMoveEvent(self, e):
-        self.hoverCheck()
         if self.scene.pos is not None:
             self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), self.w, self.h)
         self.update()
@@ -980,10 +983,13 @@ class Canvas(QGraphicsView):
         return
     def outpaint_mousePressEvent(self, event):
         if self.scene.pos is not None:
+            self.addrect()
+            self.redraw()
             if self.ctrlmodifier == True:
-                self.addrect()
-                self.redraw()
                 return
+            elif self.ctrlmodifier == False:
+                self.drag_mode()
+
             #else:
                 #self.addrect()
                 #self.draw_rects()
@@ -991,6 +997,7 @@ class Canvas(QGraphicsView):
                 #self.redraw()
                 #self.signals.update_params.emit(self.selected_item)
                 #return
+        return
     def wheelEvent(self, event):
 
         x = event.angleDelta().y() / 120
@@ -1017,7 +1024,6 @@ class PaintUI(QDockWidget):
         if not self.objectName():
             self.setObjectName(u"Outpaint")
         self.setAccessibleName(u'outpaintCanvas')
-        self.setMouseTracking(True)  # Mouse events
         self.parent = parent
 
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -1089,10 +1095,14 @@ class PaintUI(QDockWidget):
         self.verticalLayout_2.addWidget(self.widget_2)
 
         self.setWidget(self.dockWidgetContents)
+        self.canvas.setMouseTracking(True)  # Mouse events
+        self.canvas.hoverCheck()
+        self.canvas.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+
 
 
     def rectangleDraw(self):
-        self.outpaint.rectangle = QRect(self.pos.x(), self.pos.y(), 400, 400)
+        self.canvas.rectangle = QRect(self.pos.x(), self.pos.y(), 400, 400)
 
 def spiralOrder(matrix):
     ans = []

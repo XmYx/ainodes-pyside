@@ -134,6 +134,14 @@ class Hypernetwork(QObject):
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
+class ThumbsUI(QObject):
+
+    def __init__(self, *args, **kwargs):
+        loader = QtUiTools.QUiLoader()
+        file = QFile("frontend/ui/thumbnails_new.ui")
+        file.open(QFile.ReadOnly)
+        self.w = loader.load(file)
+        file.close()
 
 class FineTune(QObject):
 

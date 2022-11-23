@@ -2,20 +2,23 @@ import time
 import random
 
 import numpy as np
+import pandas as pd
 import torch
-from PIL import Image
+from PIL import Image, ImageDraw
 from PIL.ImageQt import ImageQt
-from PySide6.QtCore import QFile, QIODevice, QEasingCurve, Slot, QRect, QThreadPool
-from PySide6.QtWidgets import QMainWindow, QToolBar, QPushButton, QGraphicsColorizeEffect
+from PySide6.QtCore import QFile, QIODevice, QEasingCurve, Slot, QRect, QThreadPool, QDir
+from PySide6.QtWidgets import QMainWindow, QToolBar, QPushButton, QGraphicsColorizeEffect, QListWidgetItem, QFileDialog, \
+    QLabel
 from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt
 from PySide6 import QtCore, QtWidgets
+from backend.deforum.six.animation import check_is_number
 from einops import rearrange
 
 from backend.worker import Worker
 from frontend import plugin_loader
 from frontend.ui_model_chooser import ModelChooser_UI
 from frontend.ui_paint import PaintUI, spiralOrder, random_path
-from frontend.ui_classes import Thumbnails, PathSetup
+from frontend.ui_classes import Thumbnails, PathSetup, ThumbsUI
 from frontend.unicontrol import UniControl
 import backend.settings as settings
 from backend.singleton import singleton
@@ -41,7 +44,10 @@ class MainWindow(QMainWindow):
         self.unicontrol = UniControl(self)
         self.sessionparams = SessionParams(self)
         self.params = self.sessionparams.create_params()
+        self.thumbs = ThumbsUI()
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.unicontrol.w.dockWidget)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
+
 
         self.create_main_toolbar()
         self.create_secondary_toolbar()
@@ -83,6 +89,29 @@ class MainWindow(QMainWindow):
         self.hide_default()
         self.mode = 'txt2img'
         self.init_plugin_loader()
+        self.connections()
+    def connections(self):
+
+        self.canvas.canvas.signals.update_selected.connect(self.show_outpaint_details)
+        self.canvas.canvas.signals.update_params.connect(self.create_params)
+        self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
+        self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_six_txt2img_thread)
+
+        self.unicontrol.w.redo.clicked.connect(self.redo_current_outpaint)
+        self.unicontrol.w.delete_2.clicked.connect(self.delete_outpaint_frame)
+        self.unicontrol.w.preview_batch.clicked.connect(self.preview_batch_outpaint)
+        #self.outpaint_controls.w.createBatch.clicked.connect(self.prepare_batch_outpaint_thread)
+        self.unicontrol.w.run_batch.clicked.connect(self.run_prepared_outpaint_batch_thread)
+        self.unicontrol.w.run_hires.clicked.connect(self.run_hires_batch_thread)
+        self.unicontrol.w.prep_hires.clicked.connect(self.run_create_outpaint_img2img_batch)
+        self.unicontrol.w.update_params.clicked.connect(self.update_params)
+
+        self.unicontrol.w.W.valueChanged.connect(self.update_outpaint_parameters)
+        self.unicontrol.w.H.valueChanged.connect(self.update_outpaint_parameters)
+        self.unicontrol.w.mask_offset.valueChanged.connect(self.outpaint_offset_signal)
+        self.unicontrol.w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.unicontrol.w.mask_offset.value())))
+        self.unicontrol.w.rect_overlap.valueChanged.connect(self.outpaint_rect_overlap)
+
     def taskswitcher(self):
         print(self.unicontrol.w.use_inpaint.isChecked())
         if self.unicontrol.w.use_inpaint.isChecked() == True:
@@ -247,7 +276,7 @@ class MainWindow(QMainWindow):
             self.unicontrol.hidePlotting_anim()
 
 
-
+        self.thumbs.w.dockWidget.setVisible(False)
 
         self.default_hidden = True
     def show_default(self):
@@ -273,7 +302,7 @@ class MainWindow(QMainWindow):
             self.unicontrol.w.scale_slider.setVisible(True)
             self.unicontrol.w.stepslabel.setVisible(True)
             self.path_setup.w.dockWidget.setVisible(True)
-
+            self.thumbs.w.dockWidget.setVisible(True)
             self.default_hidden = False
         else:
             self.hide_default()
@@ -427,7 +456,408 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.tensor_preview_item = dqimg
         self.canvas.canvas.tensor_preview()
 
+    def outpaint_offset_signal(self):
 
+        value = int(self.unicontrol.w.offset_slider.value())
+        self.canvas.canvas.set_offset(value)
+    @Slot()
+    def update_outpaint_parameters(self):
+        W = self.unicontrol.w.widthSlider.value()
+        H = self.unicontrol.w.heightSlider.value()
+        W, H = map(lambda x: x - x % 64, (W, H))
+        self.unicontrol.w.widthSlider.setValue(W)
+        self.unicontrol.w.heightSlider.setValue(H)
+
+        self.canvas.canvas.w = W
+        self.canvas.canvas.h = H
+    def prep_rect_params(self, prompt=None):
+        #prompt = str(prompt)
+        #steps = self.unicontrol.w.stepsSlider.value()
+        params = {"prompts": self.unicontrol.w.prompts.toPlainText(),
+                  "seed":random.randint(0, 2**32 - 1) if self.unicontrol.w.seed.text() == '' else int(self.unicontrol.w.seed.text()),
+                  "strength": self.unicontrol.w.strength.value(),
+                  "scale":self.unicontrol.w.scale.value(),
+                  "mask_blur":int(self.unicontrol.w.mask_blur.value()),
+                  "reconstruction_blur":int(self.unicontrol.w.reconstruction_blur.value()),
+                  "use_inpaint":self.unicontrol.w.use_inpaint.isChecked(),
+                  "mask_offset":self.unicontrol.w.mask_offset.value(),
+                  "steps":self.unicontrol.w.steps.value(),
+                  "H":self.unicontrol.w.H.value(),
+                  "W":self.unicontrol.w.W.value(),
+                  "ddim_eta":self.unicontrol.w.ddim_eta.value()
+                  }
+        #print(f"Created Params")
+        return params
+    @Slot(str)
+    def update_params(self, uid=None, params=None):
+        if self.canvas.canvas.selected_item is not None:
+            for i in self.canvas.canvas.rectlist:
+                if uid is not None:
+                    if i.id == uid:
+                        if params == None:
+                                params = self.get_params()
+                        i.params = params
+                else:
+                    if i.id == self.canvas.canvas.selected_item:
+                        params = self.get_params()
+                        i.params = params
+                        #print(f"Parameters saved for rect at {i.x}, {i.y}, {i.params['strength']}")
+    @Slot(str)
+    def create_params(self, uid=None):
+        for i in self.canvas.canvas.rectlist:
+            if i.id == uid:
+                params = self.prep_rect_params()
+                i.params = params
+                #print(i.params)
+
+
+
+    def get_params(self):
+        params = self.params()
+        print(f"Created Params")
+        return params
+    @Slot()
+    def show_outpaint_details(self):
+
+        if self.canvas.canvas.selected_item is not None:
+            self.thumbs.w.thumbnails.clear()
+            for items in self.canvas.canvas.rectlist:
+                if items.id == self.canvas.canvas.selected_item:
+                    print(items.params)
+                    if items.params != {}:
+                        #print(f"showing strength of {items.params['strength'] * 100}")
+                        self.unicontrol.w.steps.setValue(items.params['steps'])
+                        self.unicontrol.w.steps_slider.setValue(items.params['steps'])
+                        self.unicontrol.w.scale.setValue(items.params['scale'] * 10)
+                        self.unicontrol.w.scale_slider.setValue(items.params['scale'] * 10)
+                        self.unicontrol.w.strength.setValue(int(items.params['strength'] * 100))
+                        self.unicontrol.w.strength_slider.setValue(int(items.params['strength'] * 100))
+                        self.unicontrol.w.reconstruction_blur.setValue(items.params['reconstruction_blur'])
+                        self.unicontrol.w.mask_blur.setValue(items.params['mask_blur'])
+                        self.unicontrol.w.prompts.setText(items.params['prompts'])
+                        self.unicontrol.w.seed.setText(str(items.params['seed']))
+                        self.unicontrol.w.mask_offset.setValue(items.params['mask_offset'])
+
+                    if items.images is not []:
+                        for i in items.images:
+                            if i is not None:
+                                image = i.copy(0, 0, i.width(), i.height())
+                                pixmap = QPixmap.fromImage(image)
+                                self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap), f"{items.index}"))
+
+    def redo_current_outpaint(self):
+        self.canvas.canvas.redo_outpaint(self.canvas.canvas.selected_item)
+
+    def delete_outpaint_frame(self):
+        #self.canvas.canvas.undoitems = []
+        if self.canvas.canvas.selected_item is not None:
+            x = 0
+            for i in self.canvas.canvas.rectlist:
+                if i.id == self.canvas.canvas.selected_item:
+                    self.canvas.canvas.undoitems.append(i)
+                    self.canvas.canvas.rectlist.pop(x)
+                    pass
+                x += 1
+
+        self.canvas.canvas.update()
+        self.canvas.canvas.pixmap.fill(Qt.transparent)
+        self.canvas.canvas.newimage = True
+    def test_save_outpaint(self):
+
+        self.canvas.canvas.pixmap = self.canvas.canvas.pixmap.copy(QRect(64, 32, 512, 512))
+
+        self.canvas.canvas.setPixmap(self.canvas.canvas.pixmap)
+        self.canvas.canvas.update()
+    @Slot()
+    def stop_processing(self):
+        self.stopprocessing = True
+
+    def sort_rects(self, e):
+        return e.order
+    def run_batch_outpaint(self, progress_callback=False):
+        self.stopprocessing = False
+        self.callbackbusy = False
+        self.sleepytime = 0.0
+        self.choice = "Outpaint"
+        self.create_outpaint_batch()
+    def create_outpaint_batch(self, gobig_img_path=None):
+        self.callbackbusy = True
+        x = 0
+        self.busy = False
+        offset = self.unicontrol.w.mask_offset.value()
+        #self.preview_batch_outpaint()
+        if gobig_img_path is not None:
+            pil_image = Image.open(gobig_img_path).resize((self.canvas.W.value(),self.canvas.H.value()), Image.Resampling.LANCZOS).convert("RGBA")
+            qimage = ImageQt(pil_image)
+            chops_x = int(qimage.width() / self.canvas.canvas.w)
+            chops_y = int(qimage.width() / self.canvas.canvas.h)
+            self.preview_batch_outpaint(with_chops=chops_x, chops_y=chops_y)
+
+        for items in self.canvas.canvas.tempbatch:
+            if type(items) == list:
+                for item in items:
+
+                    if gobig_img_path is not None:
+                        rect = QRect(item['x'], item['y'], self.canvas.canvas.w, self.canvas.canvas.h)
+                        image = qimage.copy(rect)
+                        index = None
+                        self.hires_source = pil_image
+
+                    else:
+                        image = None
+                        index = None
+                        self.hires_source = None
+                    offset = offset + 512
+                    params = self.prep_rect_params(item["prompt"])
+                    print(params)
+                    self.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image, index=index, order=item["order"], params=params)
+
+                    #x = self.iterate_further(x)
+                    x += 1
+                    while self.busy == True:
+                        time.sleep(0.25)
+            elif type(items) == dict:
+
+                if gobig_img_path is not None:
+                    rect = QRect(item['x'], item['y'], self.canvas.canvas.w, self.canvas.canvas.h)
+                    image = qimage.copy(rect)
+                    index = None
+                    self.hires_source = pil_image
+
+                else:
+                    image = None
+                    index = None
+                    self.hires_source = None
+                offset = offset + 512
+
+                params = self.prep_rect_params(items["prompt"])
+                print(params)
+                self.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image, index=index, order=items["order"], params=params)
+
+
+                #x = self.iterate_further(x)
+                x += 1
+                while self.busy == True:
+                    time.sleep(0.25)
+        self.callbackbusy = False
+    def run_hires_batch(self, progress_callback=None):
+        self.params['advanced'] = True
+        multi = self.unicontrol.w.multiBatch.isChecked()
+        batch_n = self.unicontrol.w.multiBatchvalue.value()
+
+        self.stopprocessing = False
+        self.callbackbusy = False
+        self.sleepytime = 0.0
+        self.choice = "Outpaint"
+
+        for i in range(batch_n):
+            while self.callbackbusy == True:
+                time.sleep(0.5)
+            time.sleep(1)
+            betterslices = []
+            og_size = (512, 512)
+            tiles = (self.canvas.canvas.cols - 1) * (self.canvas.canvas.rows - 1)
+            for x in range(int(tiles)):
+                if self.stopprocessing == False:
+                    self.run_hires_step_x(x)
+                    betterslices.append((self.image.convert('RGBA'), self.canvas.canvas.rectlist[x].x, self.canvas.canvas.rectlist[x].y))
+                else:
+                    break
+
+            source_image = self.hires_source
+            alpha = Image.new("L", og_size, color=0xFF)
+            alpha_gradient = ImageDraw.Draw(alpha)
+            a = 0
+            i = 0
+            overlap = self.unicontrol.w.offsetSlider.value()
+            shape = (og_size, (0, 0))
+            while i < overlap:
+                alpha_gradient.rectangle(shape, fill=a)
+                a += 4
+                i += 1
+                shape = ((og_size[0] - i, og_size[1] - i), (i, i))
+            mask = Image.new("RGBA", og_size, color=0)
+            mask.putalpha(alpha)
+            finished_slices = []
+            for betterslice, x, y in betterslices:
+                finished_slice = addalpha(betterslice, mask)
+                finished_slices.append((finished_slice, x, y))
+            # # Once we have all our images, use grid_merge back onto the source, then save
+            final_output = grid_merge(
+                source_image.convert("RGBA"), finished_slices
+            ).convert("RGBA")
+            final_output.save('output/test_hires.png')
+            #base_filename = f"{base_filename}d"
+            print(f"All time wasted: {self.sleepytime} seconds.")
+            self.hires_source = final_output
+            self.deforum_ui.signals.prepare_hires_batch.emit('output/test_hires.png')
+    def run_hires_step_x(self, x):
+        self.choice = 'Outpaint'
+        image = self.canvas.canvas.rectlist[x].image
+        image.save('output/temp/temp.png', "PNG")
+        self.canvas.canvas.selected_item = self.canvas.canvas.rectlist[x].id
+
+
+        self.deforum_ui.run_deforum_six_txt2img()
+        while self.callbackbusy == True:
+            time.sleep(0.25)
+            self.sleepytime += 0.25
+        time.sleep(0.25)
+        self.sleepytime += 0.25
+        x += 1
+
+        self.busy = False
+        return x
+
+
+
+
+    def run_prepared_outpaint_batch(self, progress_callback=None):
+        self.stopprocessing = False
+        self.callbackbusy = False
+        self.sleepytime = 0.0
+        self.choice = "Outpaint"
+        self.params['advanced'] = True
+
+        #multi = self.unicontrol.w.multiBatch.isChecked()
+        #batch_n = self.unicontrol.w.multiBatchvalue.value()
+
+        multi = False
+        batch_n = 1
+
+        tiles = len(self.canvas.canvas.rectlist)
+        print(f"Tiles to Outpaint:{tiles}")
+
+
+
+        if multi == True:
+            for i in range(batch_n):
+                if i != 0:
+                    filename = str(random.randint(1111111,9999999))
+                    self.canvas.canvas.save_rects_as_json(filename=filename)
+                    self.canvas.canvas.save_canvas()
+                    self.canvas.canvas.rectlist.clear()
+                    self.create_outpaint_batch()
+                for x in range(tiles):
+                    #print(x)
+                    if self.stopprocessing == False:
+                        self.run_outpaint_step_x(x)
+                    else:
+                        break
+        else:
+            for x in range(tiles):
+                if self.stopprocessing == False:
+                    print(f"running step {x}")
+                    self.run_outpaint_step_x(x)
+                else:
+                    break
+            #self.canvas.canvas.save_canvas()
+
+            print(f"All time wasted: {self.sleepytime} seconds.")
+
+    def run_outpaint_step_x(self, x):
+
+        print("it should not do anything....")
+
+        self.busy = True
+        self.canvas.canvas.reusable_outpaint(self.canvas.canvas.rectlist[x].id)
+        while self.canvas.canvas.busy == True:
+            time.sleep(0.25)
+            self.sleepytime += 0.25
+        params = self.canvas.canvas.rectlist[x].params
+        print(params['prompts'])
+        self.deforum_ui.run_deforum_outpaint(params)
+        while self.callbackbusy == True:
+            time.sleep(0.25)
+            self.sleepytime += 0.25
+        time.sleep(0.25)
+        self.sleepytime += 0.25
+        x += 1
+
+        self.busy = False
+        return x
+
+    def preview_batch_outpaint(self, with_chops=None, chops_y=None):
+        if with_chops is None:
+            self.canvas.canvas.cols = self.unicontrol.w.batch_columns_slider.value()
+            self.canvas.canvas.rows = self.unicontrol.w.batch_rows_slider.value()
+        else:
+            self.canvas.canvas.cols = with_chops
+            self.canvas.canvas.rows = chops_y
+        self.canvas.canvas.offset = self.unicontrol.w.rect_overlap.value()
+        self.canvas.canvas.maskoffset = self.unicontrol.w.mask_offset.value()
+        randomize = self.unicontrol.w.randomize.isChecked()
+        spiral = self.unicontrol.w.spiral.isChecked()
+        reverse = self.unicontrol.w.reverse.isChecked()
+        startOffsetX = self.unicontrol.w.start_offset_x_slider.value()
+        startOffsetY = self.unicontrol.w.start_offset_y_slider.value()
+        prompts = self.unicontrol.w.prompts.toPlainText()
+        #keyframes = self.prompt.w.keyFrames.toPlainText()
+        keyframes = ""
+        self.canvas.canvas.create_tempBatch(prompts, keyframes, startOffsetX, startOffsetY, randomize)
+        templist = []
+        if spiral:
+            #self.canvas.canvas.tempbatch = random_path(self.canvas.canvas.tempbatch, self.canvas.canvas.cols)
+            self.canvas.canvas.tempbatch = spiralOrder(self.canvas.canvas.tempbatch)
+        if reverse:
+            self.canvas.canvas.tempbatch.reverse()
+
+        self.canvas.canvas.draw_tempBatch(self.canvas.canvas.tempbatch)
+
+    def outpaint_rect_overlap(self):
+        self.canvas.canvas.rectPreview = self.unicontrol.w.enable_overlap.isChecked()
+        if self.canvas.canvas.rectPreview == False:
+            self.canvas.canvas.newimage = True
+            self.canvas.canvas.redraw()
+        elif self.canvas.canvas.rectPreview == True:
+            self.canvas.canvas.visualize_rects()
+
+    def prepare_batch_outpaint_thread(self):
+        #self.prompt.w.stopButton.clicked.connect(self.stop_processing)
+        self.stopprocessing = False
+        #self.save_last_prompt()
+        #if self.canvas.canvas.tempbatch == [] or self.canvas.canvas.tempbatch is None:
+        #    self.preview_batch_outpaint()
+        #    #self.create_outpaint_batch()
+        worker = Worker(self.run_batch_outpaint)
+        self.threadpool.start(worker)
+    @Slot(str)
+    def run_create_outpaint_img2img_batch(self, input=None):
+        if input != False:
+            data = input
+        else:
+            data = self.getfile()
+        self.create_outpaint_batch(gobig_img_path=data)
+
+    def run_prepared_outpaint_batch_thread(self):
+        if self.canvas.canvas.rectlist == []:
+            self.create_outpaint_batch()
+        worker = Worker(self.run_prepared_outpaint_batch)
+        self.threadpool.start(worker)
+    def run_hires_batch_thread(self):
+        worker = Worker(self.run_hires_batch)
+        self.threadpool.start(worker)
+    def getfile(self, file_ext='', text='', button_caption='', button_type=0, title='', save=False):
+        filter = {
+            '': '',
+            'txt': 'File (*.txt)',
+            'dbf': 'Table/DBF (*.dbf)',
+        }.get(file_ext, '*.' + file_ext)
+
+        filter = QDir.Files
+        t = QFileDialog()
+        t.setFilter(filter)
+        if save:
+            t.setAcceptMode(QFileDialog.AcceptSave)
+        #t.selectFilter(filter or 'All Files (*.*);;')
+        if text:
+            (next(x for x in t.findChildren(QLabel) if x.text() == 'File &name:')).setText(text)
+        if button_caption:
+            t.setLabelText(QFileDialog.Accept, button_caption)
+        if title:
+            t.setWindowTitle(title)
+        t.exec_()
+        return t.selectedFiles()[0]
 def QIcon_from_svg(svg_filepath, color='white'):
     img = QPixmap(svg_filepath)
     qp = QPainter(img)
@@ -443,3 +873,46 @@ def translate_sampler_index(index):
 def translate_sampler(sampler):
     if sampler == "K Euler":
         return "euler"
+def get_inbetweens(key_frames, max_frames, integer=False, interp_method='Linear'):
+    import numexpr
+    key_frame_series = pd.Series([np.nan for a in range(max_frames)])
+
+    for i in range(0, max_frames):
+        if i in key_frames:
+            value = key_frames[i]
+            value_is_number = check_is_number(value)
+
+            if value_is_number:
+                t = i
+                key_frame_series[i] = value
+        if not value_is_number:
+            t = i
+            key_frame_series[i] = numexpr.evaluate(value)
+    key_frame_series = key_frame_series.astype(float)
+
+    if interp_method == 'Cubic' and len(key_frames.items()) <= 3:
+        interp_method = 'Quadratic'
+    if interp_method == 'Quadratic' and len(key_frames.items()) <= 2:
+        interp_method = 'Linear'
+
+    key_frame_series[0] = key_frame_series[key_frame_series.first_valid_index()]
+    key_frame_series[max_frames - 1] = key_frame_series[key_frame_series.last_valid_index()]
+    key_frame_series = key_frame_series.interpolate(method=interp_method.lower(), limit_direction='both')
+    if integer:
+        return key_frame_series.astype(int)
+    return key_frame_series
+def addalpha(im, mask):
+    imr, img, imb, ima = im.split()
+    mmr, mmg, mmb, mma = mask.split()
+    im = Image.merge(
+        "RGBA", [imr, img, imb, mma]
+    )  # we want the RGB from the original, but the transparency from the mask
+    return im
+
+
+# Alternative method composites a grid of images at the positions provided
+def grid_merge(source, slices):
+    source.convert("RGBA")
+    for slice, posx, posy in slices:  # go in reverse to get proper stacking
+        source.alpha_composite(slice, (posx, posy))
+    return source

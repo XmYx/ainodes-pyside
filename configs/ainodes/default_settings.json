@@ -157,6 +157,8 @@
     "clear_sample" : true,
     "shouldStop" : false,
     "cpudepth" : false,
-    "skip_video_for_run_all" : true
+    "skip_video_for_run_all" : true,
+    "mask_offset": 10,
+    "reconstruction_blur": 5
   }
 }

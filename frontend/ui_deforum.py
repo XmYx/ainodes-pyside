@@ -261,7 +261,9 @@ class Deforum_UI(QObject):
         gs.T = self.parent.unicontrol.w.gradient_steps.value()
         gs.lr = self.parent.unicontrol.w.gradient_scale.value() / 1000000000
         gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.unicontrol.w.aesthetic_embedding.currentText())
-        params = self.parent.params
+        if params == None:
+            params = self.parent.params
+
         if params is not None:
             #print(params)
             steps = int(params['steps'])
@@ -271,7 +273,7 @@ class Deforum_UI(QObject):
             prompt = str(params['prompts'])
             strength = float(params['strength'])
             mask_blur = float(params['mask_blur'])
-            recons_blur = float(params['recons_blur'])
+            reconstruction_blur = float(params['reconstruction_blur'])
             scale = float(params['scale'])
             ddim_eta = float(params['ddim_eta'])
             with_inpaint = bool(params['use_inpaint'])
@@ -286,7 +288,7 @@ class Deforum_UI(QObject):
                                           prompt=prompt,
                                           strength=strength,
                                           mask_blur=mask_blur,
-                                          recons_blur=recons_blur,
+                                          recons_blur=reconstruction_blur,
                                           scale=scale,
                                           ddim_eta=ddim_eta,
                                           image_callback=self.parent.image_preview_signal,

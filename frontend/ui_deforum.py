@@ -1,9 +1,9 @@
 import os
-from datetime import time
+import time
 import random
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 from PySide6.QtCore import QObject, Signal
 
 from backend.deforum.deforum_adapter import DeforumSix
@@ -12,7 +12,7 @@ from backend.singleton import singleton
 import torchvision.transforms as T
 from torchvision.utils import make_grid
 from einops import rearrange
-
+from fonts.ttf import Roboto
 from backend.worker import Worker
 
 gs = singleton
@@ -232,7 +232,7 @@ class Deforum_UI(QObject):
             grid_image = draw_grid_annotations(grid_image, grid_image.size[0], grid_image.size[1], hor_texts, ver_texts, params['W'],
                                                params['H'], params)
             self.parent.image = grid_image
-            self.parent.imageCallback_signal(grid_image)
+            self.parent.image_preview_signal(grid_image)
             grid_image.save(os.path.join(params['outdir'], filename))
         #self.signals.reenable_runbutton.emit()
         self.deforum_six = None

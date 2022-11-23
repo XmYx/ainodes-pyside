@@ -312,22 +312,67 @@
                   <widget class="QComboBox" name="sampler">
                    <item>
                     <property name="text">
-                     <string>K Euler</string>
+                     <string>Euler</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>K Euler Ancestral</string>
+                     <string>Euler Ancestral</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>K DPM</string>
+                     <string>DPM</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>New Item</string>
+                     <string>LMS</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>DPM 2</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>DPM 2 Ancestral</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Heun</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>DPM Fast</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>DPM Ancestral</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>DPMPP 2S Ancestral</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>DPMPP 2M</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ddim</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>plms</string>
                     </property>
                    </item>
                   </widget>

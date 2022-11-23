@@ -270,24 +270,26 @@ class SessionParams():
 
 
 def translate_sampler(sampler):
-    if sampler == "k_lms":
+    if sampler == "LMS":
         sampler = "klms"
-    elif sampler == "k_dpm_2":
+    elif sampler == "DPM 2":
         sampler = "dpm2"
-    elif sampler == "k_dpm_2_a":
+    elif sampler == "DPM 2 Ancestral":
         sampler = "dpm2_ancestral"
-    elif sampler == "k_heun":
+    elif sampler == "Heun":
         sampler = "heun"
-    elif sampler == "k_euler":
+    elif sampler == "Euler":
         sampler = "euler"
-    elif sampler == "k_euler_a":
+    elif sampler == "Euler Ancestral":
         sampler = "euler_ancestral"
-    elif sampler == "dpm_fast":
+    elif sampler == "DPM Fast":
         sampler = "dpm_fast"
-    elif sampler == "dpm_adaptive":
+    elif sampler == "DPM Adaptive":
         sampler = "dpm_adaptive"
-    elif sampler == "dpmpp_2s_a":
+    elif sampler == "DPMPP 2S Ancestral":
         sampler = "dpmpp_2s_a"
-    elif sampler == "dpmpp_2m":
+    elif sampler == "DPMPP 2M":
         sampler = "dpmpp_2m"
+    else:
+        sampler = sampler
     return sampler

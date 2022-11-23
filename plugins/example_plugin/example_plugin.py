@@ -20,7 +20,7 @@ while processing. To do so, just use the worker from backend.worker
         self.parent.threadpool.start(worker)
 
 It is also worth mentioning, that ui should only be modified from the main thread, therefore when displaying an image,
-set selt.parent.image, then call self.parent.image_preview_signal, which will emit a signal to call
+set self.parent.image, then call self.parent.image_preview_signal, which will emit a signal to call
 the image_preview_func from the main thread.
 """
 

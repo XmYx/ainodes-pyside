@@ -1,6 +1,7 @@
 import logging
 import time
 
+import socket
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -48,4 +49,10 @@ app.include_router(txt2img_api.router)
 
 #app.mount("/", StaticFiles(directory="www/web/static", html=True), name="static")
 
-uvicorn.run(app, host="0.0.0.0", port=8080, log_level="debug")
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+host = s.getsockname()[0]
+s.close()
+
+uvicorn.run(app, host=host, port=8080, log_level="debug")

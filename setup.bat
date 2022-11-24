@@ -1,5 +1,10 @@
 @echo off
 
+
+conda env create -f environment-installer.yaml
+conda activate ai-pixel
+
+
 set PYTHON=
 set GIT=
 set VENV_DIR=

@@ -25,7 +25,7 @@ from backend.utils import sampleToImage, encoded_to_torch_image, image_path_to_t
 from backend.ddim_simplified import DDIMSampler_simple
 from backend.singleton import singleton
 from backend.torch_gc import torch_gc
-from ldm.util import instantiate_from_config
+from ldm_v2.util import instantiate_from_config
 gs = singleton
 from backend.hypernetworks import hypernetwork
 import backend.hypernetworks.modules.sd_hijack
@@ -90,15 +90,19 @@ class DeforumSix:
 
     def load_model_from_config(self, config, ckpt, verbose=False):
         #config = 'configs/stable-diffusion/v1-inference_six.yaml'
-        config = 'configs/stable-diffusion/v2-inference-v.yaml'
+
         #config = 'optimizedSD/v1-inference.yaml'
         #ckpt = gs.system.sdPath
         #ckpt = 'models/512-base-ema.ckpt'
-        ckpt = 'models/768-v-ema.ckpt'
+
         # checks for config.yaml with the name of the model
         config_yaml_name = os.path.splitext(gs.system.sdPath)[0] + '.yaml'
         if os.path.isfile(config_yaml_name):
             config = config_yaml_name
+
+
+        config = 'configs/stable-diffusion/v2-inference-v.yaml'
+        ckpt = 'models/768-v-ema.ckpt'
 
         config = OmegaConf.load(config)
 

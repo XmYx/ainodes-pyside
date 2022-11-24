@@ -40,7 +40,7 @@ numpy~=1.23.1
 pillow~=9.2.0
 pyyaml~=6.0
 opencv-python~=4.5.5.64
-clip~=1.0
+clip
 scipy~=1.9.3
 ftfy~=6.1.1
 future~=0.18.2

@@ -89,26 +89,27 @@ class DeforumSix:
             del sd
 
     def load_model_from_config(self, config, ckpt, verbose=False):
-        #config = 'configs/stable-diffusion/v1-inference_six.yaml'
 
-        #config = 'optimizedSD/v1-inference.yaml'
-        #ckpt = gs.system.sdPath
-        #ckpt = 'models/512-base-ema.ckpt'
+        ckpt = gs.system.sdPath
 
-        # checks for config.yaml with the name of the model
+        # loads config.yaml with the name of the model
+        # the config yaml has to be provided with pöropper naming,
+        # otherwise it is not anymore possible to do all the magic with multiple versions of the model around
+        # also config.yaml needs to have one entry at root model_version
+        # model_version has to be explicid like 1.4 or 1.5 or 2.0
+        # it is important that you give the right version hint based on the SD model version
+        # if it is some custom model based on some version of SD we need to have the SD
+        # version not the version of the custom model
         config_yaml_name = os.path.splitext(gs.system.sdPath)[0] + '.yaml'
         if os.path.isfile(config_yaml_name):
             config = config_yaml_name
 
 
-        config = 'configs/stable-diffusion/v2-inference-v.yaml'
-        ckpt = 'models/768-v-ema.ckpt'
-
-        config = OmegaConf.load(config)
 
         if "sd" not in gs.models:
-            print(f"Loading model from {ckpt}")
-
+            print(f"Loading model from {ckpt} with config {config}")
+            config = OmegaConf.load(config)
+            print(config)
             pl_sd = torch.load(ckpt, map_location="cpu")
             if "global_step" in pl_sd:
                 print(f"Global Step: {pl_sd['global_step']}")

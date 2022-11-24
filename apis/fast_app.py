@@ -50,9 +50,18 @@ app.include_router(txt2img_api.router)
 #app.mount("/", StaticFiles(directory="www/web/static", html=True), name="static")
 
 
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.connect(("8.8.8.8", 80))
-host = s.getsockname()[0]
-s.close()
+#s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#s.connect(("8.8.8.8", 80))
+#host = s.getsockname()[0]
+#s.close()
 
-uvicorn.run(app, host=host, port=8080, log_level="debug")
+
+import nest_asyncio
+from pyngrok import ngrok
+
+
+ngrok_tunnel = ngrok.connect(8000)
+print('Public URL:', ngrok_tunnel.public_url)
+nest_asyncio.apply()
+
+uvicorn.run(app, port=8080, log_level="debug")

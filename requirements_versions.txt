@@ -116,3 +116,5 @@ tokenizers~=0.12.1
 pydantic~=1.10.2
 fairscale~=0.4.12
 k-samplers~=1.0.0
+open_clip_torch~=2.0.2
+torchsde

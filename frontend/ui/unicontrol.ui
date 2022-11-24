@@ -228,40 +228,39 @@
                   <widget class="QComboBox" name="seed_behavior">
                    <item>
                     <property name="text">
-                     <string>Random</string>
+                     <string>k_dpm_2_a</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>Iterate</string>
+                     <string>k_heun</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>Fixed</string>
+                     <string>k_euler</string>
                     </property>
                    </item>
-                  </widget>
-                 </item>
-                 <item row="8" column="6">
-                  <widget class="QCheckBox" name="use_last_as_init">
-                   <property name="text">
-                    <string>Use Last as Init</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="13" column="0">
-                  <widget class="QLabel" name="label_16">
-                   <property name="text">
-                    <string>DDIM_ETA</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="8" column="0">
-                  <widget class="QLabel" name="label_57">
-                   <property name="text">
-                    <string>Init Image</string>
-                   </property>
+                   <item>
+                    <property name="text">
+                     <string>k_euler_a</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>dpm_fast</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>dpm_adaptive</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>dpmpp_2s_a</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item row="7" column="0">

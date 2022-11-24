@@ -89,9 +89,12 @@ class DeforumSix:
             del sd
 
     def load_model_from_config(self, config, ckpt, verbose=False):
-        config = 'configs/stable-diffusion/v1-inference_six.yaml'
+        #config = 'configs/stable-diffusion/v1-inference_six.yaml'
+        config = 'configs/stable-diffusion/v2-inference-v.yaml'
         #config = 'optimizedSD/v1-inference.yaml'
-        ckpt = gs.system.sdPath
+        #ckpt = gs.system.sdPath
+        #ckpt = 'models/512-base-ema.ckpt'
+        ckpt = 'models/768-v-ema.ckpt'
         # checks for config.yaml with the name of the model
         config_yaml_name = os.path.splitext(gs.system.sdPath)[0] + '.yaml'
         if os.path.isfile(config_yaml_name):
@@ -117,7 +120,7 @@ class DeforumSix:
                 print(u)
             model.half()
             gs.models["sd"] = model
-
+            gs.models["sd"].cond_stage_model.device = 'cuda'
             for m in gs.models["sd"].modules():
                 if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
                     m._orig_padding_mode = m.padding_mode
@@ -137,10 +140,10 @@ class DeforumSix:
 
 
             #print("Loading Hypaaaa")
-            gs.model_hijack = backend.hypernetworks.modules.sd_hijack.StableDiffusionModelHijack()
+            #gs.model_hijack = backend.hypernetworks.modules.sd_hijack.StableDiffusionModelHijack()
 
             #print("hijacking??")
-            gs.model_hijack.hijack(gs.models["sd"])
+            #gs.model_hijack.hijack(gs.models["sd"])
             gs.models["sd"].eval()
             from  backend.aesthetics import modules
             gs.models["sd"].to("cuda")
@@ -378,7 +381,8 @@ class DeforumSix:
                         apply_circular=False,
                         lowmem=False
                         ):
-
+        #if gs.system.xformer == True:
+        #    backend.hypernetworks.modules.sd_hijack.apply_optimizations()
         gs.system.device = choose_torch_device()
         print('deforum six enabled')
         print(f'mode: {animation_mode}')
@@ -409,6 +413,7 @@ class DeforumSix:
 
 
         hijack_deforum.deforum_hijack()
+
 
         if use_hypernetwork is not None:
             hypernetwork.load_hypernetwork(use_hypernetwork)
@@ -479,7 +484,7 @@ class DeforumSix:
         # clean up unused memory
         torch_gc()
         anim_args.animation_mode = 'None'
-        args.prompt = 'corgi'
+        args.clip_prompt = ['test']
         # dispatch to appropriate renderer
         if anim_args.animation_mode == '2D' or anim_args.animation_mode == '3D':
             render_animation(args, anim_args, animation_prompts, root, image_callback=image_callback, step_callback=step_callback)

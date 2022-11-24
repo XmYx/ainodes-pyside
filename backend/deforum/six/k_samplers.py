@@ -1,14 +1,15 @@
 from typing import Any, Callable, Optional
-from k_diffusion.external import CompVisDenoiser
+from k_diffusion.external import CompVisVDenoiser
 from k_diffusion import sampling
 import torch
-
+from backend.singleton import singleton
+gs = singleton
 
 def sampler_fn(
     c: torch.Tensor,
     uc: torch.Tensor,
     args,
-    model_wrap: CompVisDenoiser,
+    model_wrap: CompVisVDenoiser,
     init_latent: Optional[torch.Tensor] = None,
     t_enc: Optional[torch.Tensor] = None,
     device=torch.device("cpu")
@@ -19,18 +20,25 @@ def sampler_fn(
 ) -> torch.Tensor:
     shape = [args.C, args.H // args.f, args.W // args.f]
     sigmas: torch.Tensor = model_wrap.get_sigmas(args.steps)
+    print(f"sigmas: {sigmas}")
     sigmas = sigmas[len(sigmas) - t_enc - 1 :]
+    print(f"sigmas: {sigmas}")
     if args.use_init:
         if len(sigmas) > 0:
             x = (
                 init_latent
                 + torch.randn([args.n_samples, *shape], device=device) * sigmas[0]
             )
+            #x = (
+            #    init_latent
+            #    + gs.x * sigmas[0]
+            #)
         else:
             x = init_latent
     else:
         if len(sigmas) > 0:
             x = torch.randn([args.n_samples, *shape], device=device) * sigmas[0]
+            #x = gs.x * sigmas[0]
         else:
             x = torch.zeros([args.n_samples, *shape], device=device)
     sampler_args = {
@@ -122,3 +130,98 @@ def make_inject_timing_fn(inject_timing, model, steps):
         raise Exception(f"Not a valid input: inject_timing={inject_timing}\n" +
                         f"Must be an int, list of all ints (between step 1 and {steps}), or list of all floats between 0.0 and 1.0")
     return timing_fn
+def create_random_tensors(shape, seeds, subseeds=None, subseed_strength=0.0, seed_resize_from_h=0, seed_resize_from_w=0, p=None):
+    xs = []
+
+    # if we have multiple seeds, this means we are working with batch size>1; this then
+    # enables the generation of additional tensors with noise that the sampler will use during its processing.
+    # Using those pre-generated tensors instead of simple torch.randn allows a batch with seeds [100, 101] to
+    # produce the same images as with two batches [100], [101].
+    if p is not None and p.sampler is not None and (len(seeds) > 1 and opts.enable_batch_seeds or opts.eta_noise_seed_delta > 0):
+        sampler_noises = [[] for _ in range(p.sampler.number_of_needed_noises(p))]
+    else:
+        sampler_noises = None
+
+    for i, seed in enumerate(seeds):
+        noise_shape = shape if seed_resize_from_h <= 0 or seed_resize_from_w <= 0 else (shape[0], seed_resize_from_h//8, seed_resize_from_w//8)
+
+        subnoise = None
+        if subseeds is not None:
+            subseed = 0 if i >= len(subseeds) else subseeds[i]
+
+            subnoise = randn(subseed, noise_shape)
+
+        # randn results depend on device; gpu and cpu get different results for same seed;
+        # the way I see it, it's better to do this on CPU, so that everyone gets same result;
+        # but the original script had it like this, so I do not dare change it for now because
+        # it will break everyone's seeds.
+        noise = randn(seed, noise_shape)
+
+        if subnoise is not None:
+            noise = slerp(subseed_strength, noise, subnoise)
+
+        if noise_shape != shape:
+            x = randn(seed, shape)
+            dx = (shape[2] - noise_shape[2]) // 2
+            dy = (shape[1] - noise_shape[1]) // 2
+            w = noise_shape[2] if dx >= 0 else noise_shape[2] + 2 * dx
+            h = noise_shape[1] if dy >= 0 else noise_shape[1] + 2 * dy
+            tx = 0 if dx < 0 else dx
+            ty = 0 if dy < 0 else dy
+            dx = max(-dx, 0)
+            dy = max(-dy, 0)
+
+            x[:, ty:ty+h, tx:tx+w] = noise[:, dy:dy+h, dx:dx+w]
+            noise = x
+
+        if sampler_noises is not None:
+            cnt = p.sampler.number_of_needed_noises(p)
+
+            if opts.eta_noise_seed_delta > 0:
+                torch.manual_seed(seed + opts.eta_noise_seed_delta)
+
+            for j in range(cnt):
+                sampler_noises[j].append(randn_without_seed(tuple(noise_shape)))
+
+        xs.append(noise)
+
+    if sampler_noises is not None:
+        p.sampler.sampler_noises = [torch.stack(n).to(gs.system.device) for n in sampler_noises]
+
+    x = torch.stack(xs).to(gs.system.device)
+    return x
+
+
+def slerp(val, low, high):
+    low_norm = low/torch.norm(low, dim=1, keepdim=True)
+    high_norm = high/torch.norm(high, dim=1, keepdim=True)
+    dot = (low_norm*high_norm).sum(1)
+
+    if dot.mean() > 0.9995:
+        return low * val + high * (1 - val)
+
+    omega = torch.acos(dot)
+    so = torch.sin(omega)
+    res = (torch.sin((1.0-val)*omega)/so).unsqueeze(1)*low + (torch.sin(val*omega)/so).unsqueeze(1) * high
+    return res
+
+def randn(seed, shape):
+    # Pytorch currently doesn't handle setting randomness correctly when the metal backend is used.
+    if gs.system.device == 'mps':
+        generator = torch.Generator(device=cpu)
+        generator.manual_seed(seed)
+        noise = torch.randn(shape, generator=generator, device=cpu).to(device)
+        return noise
+
+    torch.manual_seed(seed)
+    return torch.randn(shape, device=device)
+
+
+def randn_without_seed(shape):
+    # Pytorch currently doesn't handle setting randomness correctly when the metal backend is used.
+    if gs.system.device == 'mps':
+        generator = torch.Generator(device="cpu")
+        noise = torch.randn(shape, generator=generator, device="cpu").to(gs.system.device)
+        return noise
+
+    return torch.randn(shape, device=gs.system.device)

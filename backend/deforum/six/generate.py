@@ -16,7 +16,7 @@ from tqdm import tqdm, trange
 
 from ldm.models.diffusion.plms import PLMSSampler
 from ldm.models.diffusion.ddim import DDIMSampler
-from k_diffusion.external import CompVisDenoiser
+from k_diffusion.external import CompVisDenoiser, CompVisVDenoiser
 from torch import autocast
 from contextlib import nullcontext
 from einops import rearrange, repeat
@@ -225,7 +225,7 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
 
 
     sampler = PLMSSampler(gs.models["sd"]) if args.sampler == 'plms' else DDIMSampler(gs.models["sd"])
-    model_wrap = CompVisDenoiser(gs.models["sd"])
+    model_wrap = CompVisVDenoiser(gs.models["sd"])
     batch_size = args.n_samples
     prompt = args.prompt
     assert prompt is not None

@@ -5,10 +5,10 @@ import torch
 import torch.nn.functional as F
 from torch import nn, einsum
 from einops import rearrange, repeat
-import os
 from typing import Any, Optional
 import xformers
 import xformers.ops
+
 
 from ldm.modules.diffusionmodules.util import checkpoint
 
@@ -18,7 +18,7 @@ def exists(val):
 
 
 def uniq(arr):
-    return {el: True for el in arr}.keys()
+    return{el: True for el in arr}.keys()
 
 
 def default(val, d):
@@ -36,6 +36,7 @@ def init_(tensor):
     std = 1 / math.sqrt(dim)
     tensor.uniform_(-std, std)
     return tensor
+
 
 
 # feedforward
@@ -87,13 +88,13 @@ class LinearAttention(nn.Module):
         super().__init__()
         self.heads = heads
         hidden_dim = dim_head * heads
-        self.to_qkv = nn.Conv2d(dim, hidden_dim * 3, 1, bias=False)
+        self.to_qkv = nn.Conv2d(dim, hidden_dim * 3, 1, bias = False)
         self.to_out = nn.Conv2d(hidden_dim, dim, 1)
 
     def forward(self, x):
         b, c, h, w = x.shape
         qkv = self.to_qkv(x)
-        q, k, v = rearrange(qkv, 'b (qkv heads c) h w -> qkv b heads c (h w)', heads=self.heads, qkv=3)
+        q, k, v = rearrange(qkv, 'b (qkv heads c) h w -> qkv b heads c (h w)', heads = self.heads, qkv=3)
         k = k.softmax(dim=-1)
         context = torch.einsum('bhdn,bhen->bhde', k, v)
         out = torch.einsum('bhde,bhdn->bhen', context, q)
@@ -136,12 +137,12 @@ class SpatialSelfAttention(nn.Module):
         v = self.v(h_)
 
         # compute attention
-        b, c, h, w = q.shape
+        b,c,h,w = q.shape
         q = rearrange(q, 'b c h w -> b (h w) c')
         k = rearrange(k, 'b c h w -> b c (h w)')
         w_ = torch.einsum('bij,bjk->bik', q, k)
 
-        w_ = w_ * (int(c) ** (-0.5))
+        w_ = w_ * (int(c)**(-0.5))
         w_ = torch.nn.functional.softmax(w_, dim=2)
 
         # attend to values
@@ -151,7 +152,7 @@ class SpatialSelfAttention(nn.Module):
         h_ = rearrange(h_, 'b c (h w) -> b c h w', h=h)
         h_ = self.proj_out(h_)
 
-        return x + h_
+        return x+h_
 
 
 class CrossAttention(nn.Module):
@@ -198,15 +199,16 @@ class CrossAttention(nn.Module):
         mem_required = tensor_size * modifier
         steps = 1
 
+
         if mem_required > mem_free_total:
-            steps = 2 ** (math.ceil(math.log(mem_required / mem_free_total, 2)))
+            steps = 2**(math.ceil(math.log(mem_required / mem_free_total, 2)))
             # print(f"Expected tensor size:{tensor_size/gb:0.1f}GB, cuda free:{mem_free_cuda/gb:0.1f}GB "
             #      f"torch free:{mem_free_torch/gb:0.1f} total:{mem_free_total/gb:0.1f} steps:{steps}")
 
         if steps > 64:
             max_res = math.floor(math.sqrt(math.sqrt(mem_free_total / 2.5)) / 8) * 64
             raise RuntimeError(f'Not enough memory, use lower resolution (max approx. {max_res}x{max_res}). '
-                               f'Need: {mem_required / 64 / gb:0.1f}GB free, Have:{mem_free_total / gb:0.1f}GB free')
+                               f'Need: {mem_required/64/gb:0.1f}GB free, Have:{mem_free_total/gb:0.1f}GB free')
 
         slice_size = q.shape[1] // steps if (q.shape[1] % steps) == 0 else q.shape[1]
         for i in range(0, q.shape[1], slice_size):
@@ -230,18 +232,16 @@ class CrossAttention(nn.Module):
 class BasicTransformerBlock(nn.Module):
     def __init__(self, dim, n_heads, d_head, dropout=0., context_dim=None, gated_ff=True, checkpoint=True):
         super().__init__()
-        AttentionBuilder = MemoryEfficientCrossAttention
-        self.attn1 = AttentionBuilder(query_dim=dim, heads=n_heads, dim_head=d_head,
-                                      dropout=dropout)  # is a self-attention
+        AttentionBuilder = MemoryEfficientCrossAttention        
+        self.attn1 = AttentionBuilder(query_dim=dim, heads=n_heads, dim_head=d_head, dropout=dropout)  # is a self-attention
         self.ff = FeedForward(dim, dropout=dropout, glu=gated_ff)
         self.attn2 = AttentionBuilder(query_dim=dim, context_dim=context_dim,
-                                      heads=n_heads, dim_head=d_head,
-                                      dropout=dropout)  # is self-attn if context is none
+                                    heads=n_heads, dim_head=d_head, dropout=dropout)  # is self-attn if context is none
         self.norm1 = nn.LayerNorm(dim)
         self.norm2 = nn.LayerNorm(dim)
         self.norm3 = nn.LayerNorm(dim)
         self.checkpoint = checkpoint
-
+        
     def _set_attention_slice(self, slice_size):
         self.attn1._slice_size = slice_size
         self.attn2._slice_size = slice_size
@@ -251,17 +251,16 @@ class BasicTransformerBlock(nn.Module):
         hidden_states = self.attn1(self.norm1(hidden_states)) + hidden_states
         hidden_states = self.attn2(self.norm2(hidden_states), context=context) + hidden_states
         hidden_states = self.ff(self.norm3(hidden_states)) + hidden_states
-        return hidden_states
+        return hidden_states        
 
-        # def forward(self, x, context=None):
+    # def forward(self, x, context=None):
         # return checkpoint(self._forward, (x, context), self.parameters(), self.checkpoint)
 
     # def _forward(self, x, context=None):
-    # x = self.attn1(self.norm1(x)) + x
-    # x = self.attn2(self.norm2(x), context=context) + x
-    # x = self.ff(self.norm3(x)) + x
-    # return x
-
+        # x = self.attn1(self.norm1(x)) + x
+        # x = self.attn2(self.norm2(x), context=context) + x
+        # x = self.ff(self.norm3(x)) + x
+        # return x
 
 class MemoryEfficientCrossAttention(nn.Module):
     def __init__(self, query_dim, context_dim=None, heads=8, dim_head=64, dropout=0.0):
@@ -269,7 +268,7 @@ class MemoryEfficientCrossAttention(nn.Module):
         inner_dim = dim_head * heads
         context_dim = default(context_dim, query_dim)
 
-        self.scale = dim_head ** -0.5
+        self.scale = dim_head**-0.5
         self.heads = heads
         self.dim_head = dim_head
 
@@ -305,10 +304,13 @@ class MemoryEfficientCrossAttention(nn.Module):
 
     def forward(self, x, context=None, mask=None):
 
+
         q = self.to_q(x)
         context = default(context, x)
         k = self.to_k(context)
         v = self.to_v(context)
+        
+
 
         b, _, _ = q.shape
         q, k, v = map(
@@ -325,6 +327,7 @@ class MemoryEfficientCrossAttention(nn.Module):
 
         # actually compute the attention, what we cannot get enough of
         out = xformers.ops.memory_efficient_attention(q, k, v, attn_bias=None, op=self.attention_op)
+
         # TODO: Use this directly in the attention operation, as a bias
         if exists(mask):
             raise NotImplementedError
@@ -348,17 +351,27 @@ class MemoryEfficientCrossAttention(nn.Module):
         mem_required = tensor_size * modifier
         steps = 1
 
+
         if mem_required > mem_free_total:
-            steps = 2 ** (math.ceil(math.log(mem_required / mem_free_total, 2)))
+            steps = 2**(math.ceil(math.log(mem_required / mem_free_total, 2)))
             # print(f"Expected tensor size:{tensor_size/gb:0.1f}GB, cuda free:{mem_free_cuda/gb:0.1f}GB "
             #      f"torch free:{mem_free_torch/gb:0.1f} total:{mem_free_total/gb:0.1f} steps:{steps}")
 
         if steps > 64:
             max_res = math.floor(math.sqrt(math.sqrt(mem_free_total / 2.5)) / 8) * 64
             raise RuntimeError(f'Not enough memory, use lower resolution (max approx. {max_res}x{max_res}). '
-                               f'Need: {mem_required / 64 / gb:0.1f}GB free, Have:{mem_free_total / gb:0.1f}GB free')
+                               f'Need: {mem_required/64/gb:0.1f}GB free, Have:{mem_free_total/gb:0.1f}GB free')
+
+
+
+
 
         return self.to_out(out)
+
+
+
+
+
 
 
 class SpatialTransformer(nn.Module):
@@ -369,7 +382,6 @@ class SpatialTransformer(nn.Module):
     Then apply standard transformer action.
     Finally, reshape to image
     """
-
     def __init__(self, in_channels, n_heads, d_head,
                  depth=1, dropout=0., context_dim=None):
         super().__init__()
@@ -385,7 +397,7 @@ class SpatialTransformer(nn.Module):
 
         self.transformer_blocks = nn.ModuleList(
             [BasicTransformerBlock(inner_dim, n_heads, d_head, dropout=dropout, context_dim=context_dim)
-             for d in range(depth)]
+                for d in range(depth)]
         )
 
         self.proj_out = zero_module(nn.Conv2d(inner_dim,

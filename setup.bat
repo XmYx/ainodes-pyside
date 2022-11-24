@@ -1,8 +1,8 @@
 @echo off
 
 
-conda env create -f environment-installer.yaml
-conda activate ai-pixel
+rem conda env create -f environment-installer.yaml
+rem conda activate ai-pixel
 
 
 set PYTHON=

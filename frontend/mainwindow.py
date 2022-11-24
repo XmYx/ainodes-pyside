@@ -369,7 +369,7 @@ class MainWindow(QMainWindow):
                     else:
                         w = self.w
                     if x > 3000:
-                        self.y = self.y + i.h + 20
+                        self.y = self.y + self.unicontrol.w.H.value() + 20
                         x = 0
                         self.lastheight = self.lastheight + i.h + 20
                         self.height = self.lastheight

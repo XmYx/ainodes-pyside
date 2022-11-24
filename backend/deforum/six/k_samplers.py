@@ -1,5 +1,5 @@
 from typing import Any, Callable, Optional
-from k_diffusion.external import CompVisVDenoiser
+from k_diffusion.external import CompVisVDenoiser, CompVisDenoiser
 from k_diffusion import sampling
 import torch
 from backend.singleton import singleton

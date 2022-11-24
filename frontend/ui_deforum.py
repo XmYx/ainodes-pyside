@@ -48,7 +48,7 @@ class Deforum_UI(QObject):
 
     def run(self):
         params = self.parent.sessionparams.update_params()
-        print(f"updated parameters to: {params}")
+        #print(f"updated parameters to: {params}")
         self.deforum_six.run_deforum_six(W=int(params['W']),
                                          H=int(params['H']),
                                          seed=int(params['seed']) if params['seed'] != '' else seed,
@@ -115,7 +115,7 @@ class Deforum_UI(QObject):
 
         self.deforum_six = DeforumSix()
         params = self.parent.sessionparams.update_params()
-        print(f"updated parameters to: {params}")
+        #print(f"updated parameters to: {params}")
         if "inpaint" in gs.models:
             del gs.models["inpaint"]
         if params["with_inpaint"] == True:

@@ -23,14 +23,15 @@ from backend.toxicode_utils import metadata, get_mask_for_latent_blending
 from backend.utils import sampleToImage, encoded_to_torch_image, image_path_to_torch, \
     get_conditionings, torch_image_to_latent, get_prompts_data
 from backend.ddim_simplified import DDIMSampler_simple
-from backend.singleton import singleton
 from backend.torch_gc import torch_gc
 from ldm_v2.util import instantiate_from_config
-gs = singleton
 from backend.hypernetworks import hypernetwork
 import backend.hypernetworks.modules.sd_hijack
-
 from backend.deforum.six.hijack import hijack_deforum
+from backend.singleton import singleton
+
+gs = singleton
+
 def load_model_from_config_lm(ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
     pl_sd = torch.load(ckpt, map_location="cpu")
@@ -38,6 +39,7 @@ def load_model_from_config_lm(ckpt, verbose=False):
         print(f"Global Step: {pl_sd['global_step']}")
     sd = pl_sd["state_dict"]
     return sd
+
 class DeforumSix:
 
     def __init__(self):
@@ -88,6 +90,29 @@ class DeforumSix:
             gs.models["modelCS"].cond_stage_model.device = "cuda"
             del sd
 
+
+    def run_pre_load_model_generation_specifics(self, config):
+
+
+        if config.model_version in gs.system.gen_one_models and 2==1:
+            config.model.params.cond_stage_config.params.T = 10
+            config.model.params.cond_stage_config.params.lr = 0.0001
+            config.model.params.cond_stage_config.params.aesthetic_embedding_path = (
+                "models/embeddings/discostyle.pt"
+            )
+
+    def run_post_load_model_generation_specifics(self):
+        if gs.model_version in gs.system.gen_one_models:
+
+            #print("Loading Hypaaaa")
+            gs.model_hijack = backend.hypernetworks.modules.sd_hijack.StableDiffusionModelHijack()
+
+            #print("hijacking??")
+            gs.model_hijack.hijack(gs.models["sd"])
+
+    def get_autoencoder_version(self):
+        return "sd-v1" #TODO this will be different for different models
+
     def load_model_from_config(self, config, ckpt, verbose=False):
 
         ckpt = gs.system.sdPath
@@ -104,12 +129,19 @@ class DeforumSix:
         if os.path.isfile(config_yaml_name):
             config = config_yaml_name
 
-
-
         if "sd" not in gs.models:
             print(f"Loading model from {ckpt} with config {config}")
             config = OmegaConf.load(config)
-            print(config)
+            if not 'model_version' in config:
+                print('you must provide a model_version in the config yaml or we can not figure how to tread your model')
+                return -1
+
+            gs.model_version = config.model_version
+            print(gs.model_version)
+
+            self.run_pre_load_model_generation_specifics(config)
+
+
             pl_sd = torch.load(ckpt, map_location="cpu")
             if "global_step" in pl_sd:
                 print(f"Global Step: {pl_sd['global_step']}")
@@ -130,13 +162,9 @@ class DeforumSix:
                 if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
                     m._orig_padding_mode = m.padding_mode
 
-            autoencoder_version = "sd-v1" #TODO this will be different for different models
+            autoencoder_version = self.get_autoencoder_version()
+
             gs.models["sd"].linear_decode = make_linear_decode(autoencoder_version, self.device)
-            sd = None
-            pl_sd = []
-            m = None
-            u = None
-            model = None
             del pl_sd
             del sd
             del m, u
@@ -144,14 +172,14 @@ class DeforumSix:
             torch_gc()
 
 
-            #print("Loading Hypaaaa")
-            #gs.model_hijack = backend.hypernetworks.modules.sd_hijack.StableDiffusionModelHijack()
+            self.run_post_load_model_generation_specifics()
 
-            #print("hijacking??")
-            #gs.model_hijack.hijack(gs.models["sd"])
             gs.models["sd"].eval()
-            from  backend.aesthetics import modules
+
+            # todo make this 'cuda' a parameter
             gs.models["sd"].to("cuda")
+            # todo why we do this here?
+            from  backend.aesthetics import modules
             print('PersonalizedCLIPEmbedder', backend.aesthetics.modules.PersonalizedCLIPEmbedder)
 
 
@@ -170,15 +198,6 @@ class DeforumSix:
         """Load and initialize the model from configuration variables passed at object creation time"""
         seed_everything(random.randrange(0, np.iinfo(np.uint32).max))
         try:
-            config = OmegaConf.load(config)
-            config.model.params.cond_stage_config.params.T = 10
-            config.model.params.cond_stage_config.params.lr = 0.0001
-            config.model.params.cond_stage_config.params.aesthetic_embedding_path = (
-                "models/embeddings/discostyle.pt"
-            )
-
-
-
 
             self._load_model_from_config(config, weights)
             if embedding_path is not None:
@@ -226,6 +245,7 @@ class DeforumSix:
             gs.models["inpaint"] = model.half().to(device)
             del model
             return
+
     def run_deforum_six(self,
                         image_callback=None,
                         step_callback=None,
@@ -409,7 +429,9 @@ class DeforumSix:
                 del gs.models["modelCS"]
             if "modelFS" in gs.models:
                 del gs.models["modelFS"]
-            self.load_model_from_config(config=None, ckpt=None)
+            check = self.load_model_from_config(config=None, ckpt=None)
+            if check == -1:
+                return check
 
         if precision == 'autocast' and device != "cpu":
             precision_scope = autocast
@@ -429,7 +451,7 @@ class DeforumSix:
         W, H = map(lambda x: x - x % 64, (W, H))  # resize to integer multiple of 64
 
         [args, anim_args, root] = prepare_args(locals())
-        print(args, anim_args)
+        #print(args, anim_args)
 
         if hires:
             args.hiresstr = strength

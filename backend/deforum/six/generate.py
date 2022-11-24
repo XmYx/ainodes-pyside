@@ -225,7 +225,10 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
 
 
     sampler = PLMSSampler(gs.models["sd"]) if args.sampler == 'plms' else DDIMSampler(gs.models["sd"])
-    model_wrap = CompVisVDenoiser(gs.models["sd"])
+    if gs.model_version in gs.system.gen_one_models:
+        model_wrap = CompVisDenoiser(gs.models["sd"])
+    if gs.model_version in gs.system.gen_two_models:
+        model_wrap = CompVisVDenoiser(gs.models["sd"])
     batch_size = args.n_samples
     prompt = args.prompt
     assert prompt is not None

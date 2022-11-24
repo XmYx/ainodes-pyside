@@ -42,7 +42,9 @@
     "support_models": "data/models/support",
     "pathmode": "subfolders",
     "save_settings_default": true,
-    "run_setup": true
+    "run_setup": true,
+    "gen_one_models": ["1.4", "1.5"],
+    "gen_two_models": ["2.0"]
   },
   "diffusion": {
     "processType": 0,

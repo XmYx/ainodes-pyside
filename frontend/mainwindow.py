@@ -35,9 +35,6 @@ from frontend.session_params import SessionParams
 from backend.shared import save_last_prompt
 
 
-
-
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -50,7 +47,7 @@ class MainWindow(QMainWindow):
         self.resize(1280, 800)
         self.unicontrol = UniControl(self)
         self.sessionparams = SessionParams(self)
-        self.params = self.sessionparams.create_params()
+        self.sessionparams.create_params()
         self.thumbs = ThumbsUI()
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.unicontrol.w.dockWidget)
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
@@ -58,10 +55,8 @@ class MainWindow(QMainWindow):
 
         self.create_main_toolbar()
         self.create_secondary_toolbar()
-        self.history = []
-        self.history_index = 0
-        self.max_history = 100
-        self.add_state_to_history()
+
+        self.sessionparams.add_state_to_history()
         self.update_ui_from_params()
 
         self.currentFrames = []
@@ -98,6 +93,7 @@ class MainWindow(QMainWindow):
         self.init_plugin_loader()
         self.connections()
         self.list_files()
+
     def connections(self):
 
         self.canvas.canvas.signals.update_selected.connect(self.show_outpaint_details)
@@ -119,9 +115,6 @@ class MainWindow(QMainWindow):
         self.unicontrol.w.mask_offset.valueChanged.connect(self.outpaint_offset_signal)
         self.unicontrol.w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.unicontrol.w.mask_offset.value())))
         self.unicontrol.w.rect_overlap.valueChanged.connect(self.outpaint_rect_overlap)
-
-
-
 
     def taskswitcher(self):
         save_last_prompt(self.unicontrol.w.prompts.toHtml(), self.unicontrol.w.prompts.toPlainText())
@@ -160,37 +153,26 @@ class MainWindow(QMainWindow):
 
     def still_mode(self):
         pass
+
     def anim_mode(self):
         pass
+
     def node_mode(self):
         pass
+
     def gallery_mode(self):
         pass
+
     def settings_mode(self):
         pass
+
     def help_mode(self):
         pass
 
 
 
-    def add_state_to_history(self):
-        if len(self.history) == self.max_history:
-            self.history.pop(0)
-        self.history.append(self.params)
-        self.history_index = len(self.history)
-
-    def undo(self):
-        if self.history_index > 0:
-            self.params = self.history[self.history_index - 1]
-            self.history_index -= 1
-            self.update_ui_from_params()
-    def redo(self):
-        if self.history_index < len(self.history) - 1:
-            self.params = self.history[self.history_index + 1]
-            self.history_index += 1
-            self.update_ui_from_params()
     def update_ui_from_params(self):
-        for key, value in self.params.items():
+        for key, value in self.sessionparams.params.items():
             try:
                 #We have to add check for Animation Mode as thats a radio checkbox with values 'anim2d', 'anim3d', 'animVid'
                 #add colormatch_image (it will be with a fancy preview)
@@ -343,7 +325,7 @@ class MainWindow(QMainWindow):
         #for debug
         #self.deforum_ui.run_deforum_txt2img()
         self.params = self.sessionparams.update_params()
-        self.add_state_to_history()
+        self.sessionparams.add_state_to_history()
         #Prepare next rectangle, widen canvas:
         worker = Worker(self.deforum_ui.run_deforum_six_txt2img)
         self.threadpool.start(worker)
@@ -386,20 +368,20 @@ class MainWindow(QMainWindow):
                     if self.lastheight is not None:
                         if self.lastheight < self.height + i.h + 20:
                             self.lastheight = self.height + i.h + 20
-                            if self.params.advanced == False:
+                            if self.sessionparams.params.advanced == False:
                                 self.canvas.canvas.resize_canvas(w=self.w, h=self.lastheight + self.unicontrol.w.H.value())
                     y = self.y
 
 
 
             if x != 0 or y > 0:
-                if self.params.advanced == False:
+                if self.sessionparams.params.advanced == False:
                     self.canvas.canvas.w = self.unicontrol.w.W.value()
                     self.canvas.canvas.h = self.unicontrol.w.H.value()
-                    self.canvas.canvas.addrect_atpos(x=x, y=self.y, params=self.params)
+                    self.canvas.canvas.addrect_atpos(x=x, y=self.y, params=self.sessionparams.params)
                     print(f"resizing canvas to {self.height}")
                     self.canvas.canvas.resize_canvas(w=self.w, h=self.height)
-        elif self.params.advanced == False or self.canvas.canvas.selected_item == None:
+        elif self.sessionparams.params.advanced == False or self.canvas.canvas.selected_item == None:
             w = self.unicontrol.w.W.value()
             h = self.unicontrol.w.H.value()
             self.canvas.canvas.w = w
@@ -532,7 +514,7 @@ class MainWindow(QMainWindow):
                 #print(i.params)
 
     def get_params(self):
-        params = self.params()
+        params = self.sessionparams.params()
         print(f"Created Params")
         return params
 
@@ -605,7 +587,7 @@ class MainWindow(QMainWindow):
         self.create_outpaint_batch()
 
     def create_outpaint_batch(self, gobig_img_path=None):
-        self.params.advanced = True
+        self.sessionparams.params.advanced = True
         self.callbackbusy = True
         x = 0
         self.busy = False
@@ -667,7 +649,7 @@ class MainWindow(QMainWindow):
         self.callbackbusy = False
 
     def run_hires_batch(self, progress_callback=None):
-        self.params.advanced = True
+        self.sessionparams.params.advanced = True
         #multi = self.unicontrol.w.multiBatch.isChecked()
         #batch_n = self.unicontrol.w.multiBatchvalue.value()
         multi = False
@@ -742,7 +724,7 @@ class MainWindow(QMainWindow):
         self.callbackbusy = False
         self.sleepytime = 0.0
         self.choice = "Outpaint"
-        self.params.advanced = True
+        self.sessionparams.params.advanced = True
 
         #multi = self.unicontrol.w.multiBatch.isChecked()
         #batch_n = self.unicontrol.w.multiBatchvalue.value()

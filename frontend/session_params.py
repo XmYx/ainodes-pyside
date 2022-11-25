@@ -9,18 +9,43 @@ gs = singleton
 class SessionParams():
     def __init__(self, parent):
         self.parent = parent
+        self.max_history = None
+        self.history = None
+        self.params = None
+        self.history = []
+        self.history_index = 0
+        self.max_history = 100
         self.session_name = "Test Session"
         self.session_id = "Test Id"
         self.session_mode = "still"
 
+    def add_state_to_history(self):
+        if len(self.history) == self.max_history:
+            self.history.pop(0)
+        self.history.append(self.params)
+        self.history_index = len(self.history)
+
+    def undo(self):
+        if self.history_index > 0:
+            self.params = self.history[self.history_index - 1]
+            self.history_index -= 1
+            self.update_ui_from_params()
+
+    def redo(self):
+        if self.history_index < len(self.history) - 1:
+            self.params = self.history[self.history_index + 1]
+            self.history_index += 1
+            self.update_ui_from_params()
+
+
     def create_params(self):
-        params = {}
+        self.params = {}
 
         for key, value in gs.diffusion.__dict__.items():
-            params[key] = value
-        print(params)
+            self.params[key] = value
+        print(self.params)
 
-        return params
+        return self.params
 
     def update_params(self):
         mode = ""
@@ -172,7 +197,7 @@ class SessionParams():
         plotY = self.parent.unicontrol.w.plotY.currentText()
         plotXLine = self.parent.unicontrol.w.plotXLine.text()
         plotYLine = self.parent.unicontrol.w.plotYLine.text()
-        params = {
+        self.params = {
             # Basic Params
             'mode': mode,
             'sampler': sampler_name,
@@ -285,8 +310,9 @@ class SessionParams():
             "plotXLine": plotXLine,
             "plotYLine": plotYLine
         }
-        params = SimpleNamespace(**params)
-        return params
+
+        self.params = SimpleNamespace(**self.params)
+        return self.params
 
 
 def translate_sampler(sampler):

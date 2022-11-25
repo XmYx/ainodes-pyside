@@ -120,9 +120,9 @@ class Deforum_UI(QObject):
         #    del gs.models["inpaint"]
 
         if params.with_inpaint == True: # todo what is this for?
-            self.parent.params.advanced = True
+            self.parent.sessionparams.params.advanced = True
         else:
-            self.parent.params.advanced = False
+            self.parent.sessionparams.params.advanced = False
 
 
         seed = random.randint(0, 2 ** 32 - 1)
@@ -270,7 +270,7 @@ class Deforum_UI(QObject):
         gs.lr = self.parent.unicontrol.w.gradient_scale.value() / 1000000000
         gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.unicontrol.w.aesthetic_embedding.currentText())
         if params == None:
-            params = self.parent.params
+            params = self.parent.sessionparams.params
 
         if params is not None:
             #print(params)
@@ -286,7 +286,7 @@ class Deforum_UI(QObject):
             ddim_eta = float(params.ddim_eta)
             with_inpaint = bool(params.use_inpaint)
 
-        self.parent.params.advanced = True
+        self.parent.sessionparams.params.advanced = True
 
         self.deforum_six.outpaint_txt2img(init_image=init_image,
                                           steps=steps,
@@ -309,7 +309,7 @@ class Deforum_UI(QObject):
 
     def deforum_outpaint_thread(self):
 
-        self.parent.params = self.parent.sessionparams.update_params()
+        self.parent.sessionparams.params = self.parent.sessionparams.update_params()
         self.choice = "Outpaint"
         worker = Worker(self.run_deforum_outpaint)
         self.parent.threadpool.start(worker)

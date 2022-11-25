@@ -8,10 +8,14 @@ from fastapi.openapi.models import Response
 from pydantic import BaseModel
 
 from backend.singleton import singleton
+import backend.settings as settings
+
+gs = singleton
+settings.load_settings_json()
+
 from backend.deforum.deforum_adapter import DeforumSix
 from apis.v1.http.response import respond_500
 
-gs = singleton
 
 router = APIRouter()
 

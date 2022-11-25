@@ -25,6 +25,9 @@ from frontend.ui_classes import Thumbnails, PathSetup, ThumbsUI
 from frontend.unicontrol import UniControl
 import backend.settings as settings
 from backend.singleton import singleton
+from frontend.ui_krea import Krea
+from frontend.ui_lexica import LexicArt
+from frontend.ui_prompt_fetcher import PromptFetcher_UI, FetchPrompts
 from backend.devices import choose_torch_device
 from frontend.ui_timeline import Timeline, KeyFrame
 
@@ -85,6 +88,11 @@ class MainWindow(QMainWindow):
         self.lastheight = None
         self.height = gs.diffusion.H
 
+        self.lexicart = LexicArt()
+        self.krea = Krea()
+        self.prompt_fetcher = FetchPrompts()
+        self.prompt_fetcher_ui = PromptFetcher_UI(self)
+
         self.path_setup = PathSetup()
         self.image_lab = ImageLab()
         self.image_lab_ui = self.image_lab.imageLab
@@ -92,8 +100,19 @@ class MainWindow(QMainWindow):
         self.unicontrol.w.dockWidget.setWindowTitle("Parameters")
         self.path_setup.w.dockWidget.setWindowTitle("Model / Paths")
         self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
+        self.lexicart.w.dockWidget.setWindowTitle("Lexica Art")
+        self.krea.w.dockWidget.setWindowTitle("Krea")
+        self.prompt_fetcher.w.dockWidget.setWindowTitle("Prompt Fetcher")
+
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.image_lab_ui.w.dockWidget)
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.path_setup.w.dockWidget)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.lexicart.w.dockWidget)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.krea.w.dockWidget)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.prompt_fetcher.w.dockWidget)
+
+        self.tabifyDockWidget(self.lexicart.w.dockWidget, self.krea.w.dockWidget)
+        self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
+        self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.image_lab_ui.w.dockWidget)
         self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.path_setup.w.dockWidget)
         self.tabifyDockWidget(self.path_setup.w.dockWidget, self.unicontrol.w.dockWidget)
         self.hide_default()
@@ -202,6 +221,44 @@ class MainWindow(QMainWindow):
 
     def help_mode(self):
         pass
+
+    @Slot()
+    def run_interrogation_thread(self):
+        worker = Worker(self.image_lab.run_interrogation)
+        self.threadpool.start(worker)
+
+    @Slot()
+    def ai_prompt_thread(self):
+        self.aiPrompt = AiPrompt()
+        self.aiPrompt.signals.ai_prompt_ready.connect(self.prompt_fetcher_ui.set_ai_prompt)
+        self.aiPrompt.signals.status_update.connect(self.set_status_bar)
+        worker = Worker(self.aiPrompt.get_prompts, self.prompt_fetcher.w.input.toPlainText())
+        self.threadpool.start(worker)
+
+    @Slot()
+    def image_to_prompt_thread(self):
+        worker = Worker(self.prompt_fetcher_ui.get_img_to_prompt)
+        self.threadpool.start(worker)
+
+    @Slot()
+    def use_prompt(self):
+        prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
+        self.prompt.w.textEdit.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
+    @Slot()
+    def dream_prompt(self):
+        prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
+        self.prompt.w.textEdit.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
+        self.taskSwitcher()
+
+    @Slot()
+    def get_lexica_prompts_thread(self):
+        worker = Worker(self.prompt_fetcher_ui.get_lexica_prompts)
+        self.threadpool.start(worker)
+
+    @Slot()
+    def get_krea_prompts_thread(self):
+        worker = Worker(self.prompt_fetcher_ui.get_krea_prompts)
+        self.threadpool.start(worker)
 
     @Slot()
     def set_status_bar(self, txt):
@@ -354,6 +411,11 @@ class MainWindow(QMainWindow):
         self.unicontrol.w.scale_slider.setVisible(False)
         self.unicontrol.w.stepslabel.setVisible(False)
         self.path_setup.w.dockWidget.setVisible(False)
+        self.image_lab_ui.w.dockWidget.setVisible(False)
+        self.lexicart.w.dockWidget.setVisible(False)
+        self.krea.w.dockWidget.setVisible(False)
+        self.prompt_fetcher.w.dockWidget.setVisible(False)
+
         if self.unicontrol.advHidden == False:
             self.unicontrol.hideAdvanced_anim()
         if self.unicontrol.aesHidden == False:
@@ -391,6 +453,10 @@ class MainWindow(QMainWindow):
             self.unicontrol.w.scale_slider.setVisible(True)
             self.unicontrol.w.stepslabel.setVisible(True)
             self.path_setup.w.dockWidget.setVisible(True)
+            self.image_lab_ui.w.dockWidget.setVisible(True)
+            self.lexicart.w.dockWidget.setVisible(True)
+            self.krea.w.dockWidget.setVisible(True)
+            self.prompt_fetcher.w.dockWidget.setVisible(True)
             self.thumbs.w.dockWidget.setVisible(True)
             self.default_hidden = False
         else:

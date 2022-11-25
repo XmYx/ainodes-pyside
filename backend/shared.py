@@ -21,6 +21,7 @@ def save_last_prompt(prompt_html, prompt_txt):
 
 
 def model_killer(keep=''):
+    temp = None
     if keep in gs.models:
         temp = gs.models[keep]
         gs.models = {keep: temp}

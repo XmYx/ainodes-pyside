@@ -55,8 +55,12 @@ class aiNodesPlugin():
 
     def use_api_processing(self):
         #self.parent.ui_deforum = None
-        frontend.ui_deforum.Deforum_UI = Deforum_UI
-        self.parent.ui_deforum = Deforum_UI(self.parent)
+        try:
+            self.parent.unicontrol.w.dream.clicked.disconnect()
+        except:
+            pass
+        frontend.ui_deforum.Deforum_UI = DeforumAPI
+        self.parent.ui_deforum = DeforumAPI(self.parent)
         self.parent.unicontrol.w.dream.clicked.connect(self.parent.ui_deforum.run_deforum_six_txt2img)
         #self.parent.ui_deforum = Deforum_UI(self.parent)
 
@@ -74,7 +78,7 @@ class Callbacks(QObject):
     vid2vid_one_percent = Signal(int)
     prepare_hires_batch = Signal(str)
 
-class Deforum_UI(QObject):
+class DeforumAPI(QObject):
     def __init__(self, parent):
         # super(QObject, self).__init__()
         self.renderedFrames = None
@@ -162,10 +166,10 @@ class Deforum_UI(QObject):
         print(f"updated tyutya to: {params}")
         if "inpaint" in gs.models:
             del gs.models["inpaint"]
-        if params["with_inpaint"] == True:
-            self.parent.params['advanced'] = True
-        else:
-            self.parent.params['advanced'] = False
+        #if params.with_inpaint == True:
+        #    self.parent.params.advanced = True
+        #else:
+        #    self.parent.params.advanced = False
         seed = random.randint(0, 2 ** 32 - 1)
         # print('strength ui', float(params['strength']))
 
@@ -182,32 +186,33 @@ class Deforum_UI(QObject):
             plotY = plotx_list_string.split(', ')
             plotX = ploty_list_string.split(', ')
             self.onePercent = 100 / (
-                        len(plotX) * len(plotY) * params['n_batch'] * params['n_samples'] * params['steps'])
+                        len(plotX) * len(plotY) * params.n_batch * params.n_samples * params.steps)
             # print(self.onePercent)
 
         else:
             plotX = [1]
             plotY = [1]
-            self.onePercent = 100 / (params['n_batch'] * params['n_samples'] * params['steps'])
+            self.onePercent = 100 / (params.n_batch * params.n_samples * params.steps)
         # print(plotY, plotX)
         all_images = []
         # print(f"Grid Dimensions: {len(plotX)}, {len(plotY)}")
         # print(self.onePercent)
         # print(params)
-        self.parent.w = params['W']
+        self.parent.w = params.W
         for i in plotY:
             for j in plotX:
                 if plotting:
-                    params[attrib1] = i
-                    params[attrib2] = j
+                    params.__dict__[attrib1] = i
+                    params.__dict__[attrib2] = j
                     if attrib1 == 'T': gs.T = int(i)
                     if attrib1 == 'lr': gs.lr = float(i)
                     if attrib2 == 'T': gs.T = int(j)
                     if attrib2 == 'lr': gs.lr = float(j)
                 print("PARAMS BELOW")
-
-                self.url = QtCore.QUrl("http://6995-35-190-178-249.ngrok.io/api/v1/txttoimg/run")
+                params = params.__dict__
+                self.url = QtCore.QUrl("http://29d5-34-86-214-195.ngrok.io/api/v1/txttoimg/run")
                 # self.url = QtCore.QUrl("https://www.google.com/")
+                #params = {}
                 params['prompt'] = 'test'
                 params['iterations'] = 1
                 params['separate_prompts'] = False
@@ -352,8 +357,6 @@ class Deforum_UI(QObject):
         img.loadFromData(bytes_string)
         pixmap = QPixmap.fromImage(img)
         pixmap.save("test.png")
-
-
         del response
         return
     def run_deforum_outpaint(self, params=None, progress_callback=None):

@@ -533,7 +533,7 @@ class DeforumSix:
             render_interpolation(args, anim_args, animation_prompts, root, image_callback=image_callback)
         else:
             #print(prompts)
-            render_image_batch(args, prompts, root, image_callback=image_callback, step_callback=step_callback)
+            paths = render_image_batch(args, prompts, root, image_callback=image_callback, step_callback=step_callback)
 
         #skip_video_for_run_all = True  # @param {type: 'boolean'}
         fps = 12  # @param {type:"number"}
@@ -618,6 +618,7 @@ class DeforumSix:
             del gs.models["modelFS"]
 
         torch_gc()
+        return paths
 
     def render_animation_new(self):
 

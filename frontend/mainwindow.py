@@ -126,6 +126,7 @@ class MainWindow(QMainWindow):
         self.init_plugin_loader()
         self.connections()
         self.list_files()
+        self.resize(1280, 800)
 
 
     def connections(self):
@@ -355,7 +356,7 @@ class MainWindow(QMainWindow):
     def init_plugin_loader(self):
         self.unicontrol.w.loadbutton.clicked.connect(self.load_plugin)
         self.unicontrol.w.unloadbutton.clicked.connect(self.unload_plugin)
-        self.plugins = plugin_loader.PluginLoader(MainWindow)
+        self.plugins = plugin_loader.PluginLoader(self)
         list = self.plugins.list_plugins()
         for i in list:
             self.unicontrol.w.plugins.addItem(i)

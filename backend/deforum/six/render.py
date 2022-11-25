@@ -128,6 +128,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                             results = generate_lowmem(args, root, step_callback=step_callback)
                         else:
                             results = generate(args, root, step_callback=step_callback,)
+                    paths = []
                     for image in results:
                         if args.make_grid:
                             all_images.append(T.functional.pil_to_tensor(image))
@@ -142,7 +143,9 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                             else:
                                 outfolder = os.path.join(args.outdir, datetime.now().strftime("%Y%m%d"))
                             os.makedirs(outfolder, exist_ok=True)
-                            image.save(os.path.join(outfolder, filename))
+                            outpath = os.path.join(outfolder, filename)
+                            paths.append(outpath)
+                            image.save(outpath)
                             args.init_sample = None
                             if args.save_settings == True:
                                 save_settings(args, outfolder, prompt, index)
@@ -163,6 +166,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                 grid_image.save(os.path.join(args.outdir, filename))
                 display.clear_output(wait=True)
                 display.display(grid_image)
+        return paths
 
 
 def render_animation(args, anim_args, animation_prompts, root, image_callback=None, step_callback=None,

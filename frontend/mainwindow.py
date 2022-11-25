@@ -244,14 +244,29 @@ class MainWindow(QMainWindow):
         select_mode = QAction(QIcon_from_svg('frontend/icons/mouse-pointer.svg'), 'Still', self)
         drag_mode = QAction(QIcon_from_svg('frontend/icons/wind.svg'), 'Anim', self)
         add_mode = QAction(QIcon_from_svg('frontend/icons/plus.svg'), 'Nodes', self)
+        save_canvas = QAction(QIcon_from_svg('frontend/icons/save.svg'), 'Save as Json', self)
+        save_canvas_png = QAction(QIcon_from_svg('frontend/icons/save.svg'), 'Save as PNG', self)
+        clear_canvas = QAction(QIcon_from_svg('frontend/icons/frown.svg'), 'Clear Canvas', self)
+        load_canvas = QAction(QIcon_from_svg('frontend/icons/folder.svg'), 'Load from Json', self)
 
         self.secondary_toolbar.addAction(select_mode)
         self.secondary_toolbar.addAction(drag_mode)
         self.secondary_toolbar.addAction(add_mode)
+        self.secondary_toolbar.addAction(save_canvas)
+        self.secondary_toolbar.addAction(save_canvas_png)
+        self.secondary_toolbar.addAction(clear_canvas)
+        self.secondary_toolbar.addAction(load_canvas)
 
         select_mode.triggered.connect(self.canvas.canvas.select_mode)
         drag_mode.triggered.connect(self.canvas.canvas.drag_mode)
         add_mode.triggered.connect(self.canvas.canvas.add_mode)
+
+        save_canvas.triggered.connect(self.canvas.canvas.save_rects_as_json)
+        load_canvas.triggered.connect(self.canvas.canvas.load_rects_from_json)
+        clear_canvas.triggered.connect(self.canvas.canvas.reset)
+        save_canvas_png.triggered.connect(self.canvas.canvas.save_canvas)
+
+
 
     def hide_default(self):
         self.toolbar.setVisible(False)
@@ -275,6 +290,7 @@ class MainWindow(QMainWindow):
         self.unicontrol.w.scale_slider.setVisible(False)
         self.unicontrol.w.stepslabel.setVisible(False)
         self.path_setup.w.dockWidget.setVisible(False)
+        self.animKeyEditor.w.dockWidget.setVisible(False)
         if self.unicontrol.advHidden == False:
             self.unicontrol.hideAdvanced_anim()
         if self.unicontrol.aesHidden == False:
@@ -313,6 +329,8 @@ class MainWindow(QMainWindow):
             self.unicontrol.w.stepslabel.setVisible(True)
             self.path_setup.w.dockWidget.setVisible(True)
             self.thumbs.w.dockWidget.setVisible(True)
+            self.animKeyEditor.w.dockWidget.setVisible(True)
+
             self.default_hidden = False
         else:
             self.hide_default()

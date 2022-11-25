@@ -1,4 +1,8 @@
+import os
 from datetime import datetime
+
+import urllib3
+
 from backend.singleton import singleton
 from backend.torch_gc import torch_gc
 gs = singleton
@@ -24,3 +28,24 @@ def model_killer(keep=''):
         gs.models = {}
     del temp
     torch_gc()
+
+
+def check_support_model_exists(model_name, model_path, model_url):
+    out_path = os.path.join(model_path, model_name)
+    if os.path.isfile(out_path):
+        return out_path
+    else:
+        os.makedirs(gs.system.support_models, exist_ok=True)
+        print(f'Installing {model_name} Model to {model_path} from {model_url}')
+        http = urllib3.PoolManager()
+        r = http.request('GET', model_url, preload_content=False)
+        chunk_size = 1024
+        with open(out_path, 'wb') as out:
+            while True:
+                data = r.read(chunk_size)
+                if not data:
+                    break
+                out.write(data)
+        r.release_conn()
+
+        return out_path

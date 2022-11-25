@@ -7,7 +7,7 @@ import pandas as pd
 import torch
 from PIL import Image, ImageDraw
 from PIL.ImageQt import ImageQt
-from PySide6.QtCore import QFile, QIODevice, QEasingCurve, Slot, QRect, QThreadPool, QDir
+from PySide6.QtCore import QFile, QIODevice, QEasingCurve, Slot, QRect, QThreadPool, QDir, Signal, QObject
 from PySide6.QtWidgets import QMainWindow, QToolBar, QPushButton, QGraphicsColorizeEffect, QListWidgetItem, QFileDialog, \
     QLabel
 from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt
@@ -18,6 +18,8 @@ from einops import rearrange
 from backend.worker import Worker
 from frontend import plugin_loader
 from frontend.ui_model_chooser import ModelChooser_UI
+
+from backend.prompt_ai.prompt_gen import AiPrompt
 from frontend.ui_paint import PaintUI, spiralOrder, random_path
 from frontend.ui_classes import Thumbnails, PathSetup, ThumbsUI
 from frontend.unicontrol import UniControl
@@ -30,15 +32,29 @@ from frontend.ui_timeline import Timeline, KeyFrame
 gs = singleton
 settings.load_settings_json()
 # we had to load settings first before we can do this import
+from frontend.ui_image_lab import ImageLab
 from frontend.ui_deforum import Deforum_UI
 from frontend.session_params import SessionParams
 from backend.shared import save_last_prompt
+
+# please don't remove it totally, just remove what we know is not used
+class Callbacks(QObject):
+    txt2img_step = Signal()
+    reenable_runbutton = Signal()
+    txt2img_image_cb = Signal()
+    deforum_step = Signal()
+    deforum_image_cb = Signal()
+    compviscallback = Signal()
+    add_image_to_thumbnail_signal = Signal(str)
+    setStatusBar = Signal(str)
+    vid2vid_one_percent = Signal(int)
+
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-
+        self.signals = Callbacks()
         self.load_last_prompt()
         self.canvas = PaintUI(self)
         self.setCentralWidget(self.canvas)
@@ -70,10 +86,15 @@ class MainWindow(QMainWindow):
         self.height = gs.diffusion.H
 
         self.path_setup = PathSetup()
+        self.image_lab = ImageLab()
+        self.image_lab_ui = self.image_lab.imageLab
         self.model_chooser = ModelChooser_UI(self)
         self.unicontrol.w.dockWidget.setWindowTitle("Parameters")
         self.path_setup.w.dockWidget.setWindowTitle("Model / Paths")
+        self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.image_lab_ui.w.dockWidget)
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.path_setup.w.dockWidget)
+        self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.path_setup.w.dockWidget)
         self.tabifyDockWidget(self.path_setup.w.dockWidget, self.unicontrol.w.dockWidget)
         self.hide_default()
         self.mode = 'txt2img'
@@ -120,7 +141,15 @@ class MainWindow(QMainWindow):
         self.unicontrol.w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.unicontrol.w.mask_offset.value())))  # todo does this work?
         self.unicontrol.w.rect_overlap.valueChanged.connect(self.outpaint_rect_overlap)
 
-
+        self.image_lab.signals.upscale_start.connect(self.upscale_start)
+        self.image_lab.signals.upscale_stop.connect(self.upscale_stop)
+        self.image_lab.signals.upscale_counter.connect(self.upscale_count)
+        self.image_lab.signals.img_to_txt_start.connect(self.img_to_text_start)
+        self.image_lab.signals.watermark_start.connect(self.watermark_start)
+        self.image_lab.signals.model_merge_start.connect(self.model_merge_start)
+        self.image_lab.signals.ebl_model_merge_start.connect(self.ebl_model_merge_start)
+        self.image_lab.signals.run_aestetic_prediction.connect(self.run_aestetic_prediction_thread)
+        self.image_lab.signals.run_interrogation.connect(self.run_interrogation_thread)
 
     def taskswitcher(self):
         save_last_prompt(self.unicontrol.w.prompts.toHtml(), self.unicontrol.w.prompts.toPlainText())
@@ -173,6 +202,66 @@ class MainWindow(QMainWindow):
 
     def help_mode(self):
         pass
+
+    @Slot()
+    def set_status_bar(self, txt):
+        self.w.statusBar().showMessage(txt)
+
+    def upscale_start(self):
+        self.signals.setStatusBar.emit("Upscale started...")
+        self.upscale_thread()
+
+    def upscale_stop(self):
+        self.signals.setStatusBar.emit("Upscale finished...")
+
+    def upscale_count(self, num):
+        self.signals.setStatusBar.emit(f"Upscaled {str(num)} image(s)...")
+
+    @Slot()
+    def upscale_thread(self):
+        worker = Worker(self.image_lab.run_upscale)
+        self.threadpool.start(worker)
+    @Slot()
+    def img_to_text_start(self):
+        worker = Worker(self.image_lab.run_img2txt)
+        self.threadpool.start(worker)
+    @Slot()
+    def watermark_start(self):
+        worker = Worker(self.image_lab.run_watermark)
+        self.threadpool.start(worker)
+    @Slot()
+    def model_merge_start(self):
+        worker = Worker(self.image_lab.model_merge_start)
+        self.threadpool.start(worker)
+    @Slot()
+    def ebl_model_merge_start(self):
+        worker = Worker(self.image_lab.ebl_model_merge_start)
+        self.threadpool.start(worker)
+
+    @Slot()
+    def run_aestetic_prediction_thread(self):
+        worker = Worker(self.image_lab.run_aestetic_prediction)
+        self.threadpool.start(worker)
+
+    @Slot()
+    def run_interrogation_thread(self):
+        worker = Worker(self.image_lab.run_interrogation)
+        self.threadpool.start(worker)
+
+    @Slot()
+    def ai_prompt_thread(self):
+        self.aiPrompt = AiPrompt()
+        self.aiPrompt.signals.ai_prompt_ready.connect(self.prompt_fetcher_ui.set_ai_prompt)
+        self.aiPrompt.signals.status_update.connect(self.set_status_bar)
+        worker = Worker(self.aiPrompt.get_prompts, self.prompt_fetcher.w.input.toPlainText())
+        self.threadpool.start(worker)
+
+    @Slot()
+    def image_to_prompt_thread(self):
+        worker = Worker(self.prompt_fetcher_ui.get_img_to_prompt)
+        self.threadpool.start(worker)
+
+
 
     def update_ui_from_params(self):
         for key, value in self.sessionparams.params.items():

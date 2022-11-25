@@ -14,7 +14,7 @@ from torchvision.utils import make_grid
 from einops import rearrange
 from fonts.ttf import Roboto
 from backend.worker import Worker
-
+from backend.shared import model_killer
 gs = singleton
 
 
@@ -49,66 +49,65 @@ class Deforum_UI(QObject):
     def run(self):
         params = self.parent.sessionparams.update_params()
         #print(f"updated parameters to: {params}")
-        self.deforum_six.run_deforum_six(W=int(params['W']),
-                                         H=int(params['H']),
-                                         seed=int(params['seed']) if params['seed'] != '' else seed,
-                                         sampler=str(params['sampler']),
-                                         steps=int(params['steps']),
-                                         scale=float(params['scale']),
-                                         ddim_eta=float(params['ddim_eta']),
-                                         save_settings=bool(params['save_settings']),
-                                         save_samples=bool(params['save_samples']),
-                                         show_sample_per_step=bool(params['show_sample_per_step']),
-                                         n_batch=int(params['n_batch']),
-                                         seed_behavior=params['seed_behavior'],
-                                         make_grid=params['makegrid'],
-                                         grid_rows=params['grid_rows'],
-                                         use_init=params['use_init'],
-                                         init_image=params['init_image'],
-                                         strength=float(params['strength']),
-                                         strength_0_no_init=params['strength_0_no_init'],
-                                         device=params['device'],
-                                         animation_mode=params['animation_mode'],
-                                         prompts=params['prompts'],
-                                         max_frames=params['max_frames'],
-                                         outdir=params['outdir'],
-                                         n_samples=params['n_samples'],
-                                         mean_scale=params['mean_scale'],
-                                         var_scale=params['var_scale'],
-                                         exposure_scale=params['exposure_scale'],
-                                         exposure_target=params['exposure_target'],
-                                         colormatch_scale=float(params['colormatch_scale']),
-                                         colormatch_image=params['colormatch_image'],
-                                         colormatch_n_colors=params['colormatch_n_colors'],
-                                         ignore_sat_weight=params['ignore_sat_weight'],
-                                         clip_name=params['clip_name'],
+        self.deforum_six.run_deforum_six(W=int(params.W),
+                                         H=int(params.H),
+                                         seed=int(params.seed) if params.seed != '' else -1,
+                                         sampler=str(params.sampler),
+                                         steps=int(params.steps),
+                                         scale=float(params.scale),
+                                         ddim_eta=float(params.ddim_eta),
+                                         save_settings=bool(params.save_settings),
+                                         save_samples=bool(params.save_samples),
+                                         show_sample_per_step=bool(params.show_sample_per_step),
+                                         n_batch=int(params.n_batch),
+                                         seed_behavior=params.seed_behavior,
+                                         make_grid=params.makegrid,
+                                         grid_rows=params.grid_rows,
+                                         use_init=params.use_init,
+                                         init_image=params.init_image,
+                                         strength=float(params.strength),
+                                         strength_0_no_init=params.strength_0_no_init,
+                                         device=params.device,
+                                         animation_mode=params.animation_mode,
+                                         prompts=params.prompts,
+                                         max_frames=params.max_frames,
+                                         outdir=params.outdir,
+                                         n_samples=params.n_samples,
+                                         mean_scale=params.mean_scale,
+                                         var_scale=params.var_scale,
+                                         exposure_scale=params.exposure_scale,
+                                         exposure_target=params.exposure_target,
+                                         colormatch_scale=float(params.colormatch_scale),
+                                         colormatch_image=params.colormatch_image,
+                                         colormatch_n_colors=params.colormatch_n_colors,
+                                         ignore_sat_weight=params.ignore_sat_weight,
+                                         clip_name=params.clip_name,
                                          # @param ['ViT-L/14', 'ViT-L/14@336px', 'ViT-B/16', 'ViT-B/32']
-                                         clip_scale=params['clip_scale'],
-                                         aesthetics_scale=params['aesthetics_scale'],
-                                         cutn=params['cutn'],
-                                         cut_pow=params['cut_pow'],
-                                         init_mse_scale=params['init_mse_scale'],
-                                         init_mse_image=params['init_mse_image'],
-                                         blue_scale=params['blue_scale'],
-                                         gradient_wrt=params['gradient_wrt'],  # ["x", "x0_pred"]
-                                         gradient_add_to=params['gradient_add_to'],  # ["cond", "uncond", "both"]
-                                         decode_method=params['decode_method'],  # ["autoencoder","linear"]
-                                         grad_threshold_type=params['grad_threshold_type'],
+                                         clip_scale=params.clip_scale,
+                                         aesthetics_scale=params.aesthetics_scale,
+                                         cutn=params.cutn,
+                                         cut_pow=params.cut_pow,
+                                         init_mse_scale=params.init_mse_scale,
+                                         init_mse_image=params.init_mse_image,
+                                         blue_scale=params.blue_scale,
+                                         gradient_wrt=params.gradient_wrt,  # ["x", "x0_pred"]
+                                         gradient_add_to=params.gradient_add_to,  # ["cond", "uncond", "both"]
+                                         decode_method=params.decode_method,  # ["autoencoder","linear"]
+                                         grad_threshold_type=params.grad_threshold_type,
                                          # ["dynamic", "static", "mean", "schedule"]
-                                         clamp_grad_threshold=params['clamp_grad_threshold'],
-                                         clamp_start=params['clamp_start'],
-                                         clamp_stop=params['clamp_stop'],
+                                         clamp_grad_threshold=params.clamp_grad_threshold,
+                                         clamp_start=params.clamp_start,
+                                         clamp_stop=params.clamp_stop,
                                          grad_inject_timing=1,
                                          # if self.parent.unicontrol.w.grad_inject_timing.text() == '' else self.parent.unicontrol.w.grad_inject_timing.text(), #it is a float an int or a list of floats
-                                         cond_uncond_sync=params['cond_uncond_sync'],
-                                         step_callback=self.parent.tensor_preview_signal if self.parent.unicontrol.w.show_sample_per_step.isChecked() else None,
+                                         cond_uncond_sync=params.cond_uncond_sync,
+                                         step_callback=self.parent.tensor_preview_signal if params.show_sample_per_step else None,
                                          image_callback=self.parent.image_preview_signal,
-                                         negative_prompts=params['negative_prompts'] if params[
-                                                                                            'negative_prompts'] != False else None,
-                                         hires=params['hires'],
-                                         prompt_weighting=params['prompt_weighting'],
-                                         normalize_prompt_weights=params['normalize_prompt_weights'],
-                                         lowmem=params['lowmem'],
+                                         negative_prompts=params.negative_prompts if params.negative_prompts != False else None,
+                                         hires=params.hires,
+                                         prompt_weighting=params.prompt_weighting,
+                                         normalize_prompt_weights=params.normalize_prompt_weights,
+                                         lowmem=params.lowmem,
                                          )
 
     def run_deforum_six_txt2img(self, progress_callback=None, plotting=True):
@@ -116,108 +115,112 @@ class Deforum_UI(QObject):
         self.deforum_six = DeforumSix()
         params = self.parent.sessionparams.update_params()
         #print(f"updated parameters to: {params}")
-        if "inpaint" in gs.models:
-            del gs.models["inpaint"]
-        if params["with_inpaint"] == True:
-            self.parent.params['advanced'] = True
-        else:
-            self.parent.params['advanced'] = False
-        seed = random.randint(0, 2 ** 32 - 1)
-        #print('strength ui', float(params['strength']))
+        model_killer(keep='sd')
+        #if "inpaint" in gs.models:
+        #    del gs.models["inpaint"]
 
-        plotting = self.parent.unicontrol.w.plotting.isChecked()
+        if params.with_inpaint == True: # todo what is this for?
+            self.parent.sessionparams.params.advanced = True
+        else:
+            self.parent.sessionparams.params.advanced = False
+
+
+        seed = random.randint(0, 2 ** 32 - 1)
+        #print('strength ui', float(params.strength']))
+
+        plotting = params.plotting
         print('plotting', plotting)
-        #plotting = None
+
         if plotting:
 
-            attrib2 = self.parent.unicontrol.w.plotX.currentText()
-            attrib1 = self.parent.unicontrol.w.plotY.currentText()
+            attrib2 = params.plotX
+            attrib1 = params.plotY
 
-            ploty_list_string = self.parent.unicontrol.w.plotXLine.text()
-            plotx_list_string = self.parent.unicontrol.w.plotYLine.text()
+            ploty_list_string = params.plotXLine
+            plotx_list_string = params.plotYLine
             plotY = plotx_list_string.split(', ')
             plotX = ploty_list_string.split(', ')
-            self.onePercent = 100 / (len(plotX) * len(plotY) * params['n_batch'] * params['n_samples'] * params['steps'])
+            self.onePercent = 100 / (len(plotX) * len(plotY) * params.n_batch * params.n_samples * params.steps)
             # print(self.onePercent)
 
         else:
             plotX = [1]
             plotY = [1]
-            self.onePercent = 100 / (params['n_batch'] * params['n_samples'] * params['steps'])
+            self.onePercent = 100 / (params.n_batch * params.n_samples * params.steps)
         #print(plotY, plotX)
         all_images = []
         # print(f"Grid Dimensions: {len(plotX)}, {len(plotY)}")
         # print(self.onePercent)
         #print(params)
-        self.parent.w = params['W']
+        self.parent.w = params.W
         for i in plotY:
             for j in plotX:
                 if plotting:
-                    params[attrib1] = i
-                    params[attrib2] = j
+                    params.__dict__[attrib1] = i
+                    params.__dict__[attrib2] = j
                     if attrib1 == 'T': gs.T = int(i)
                     if attrib1 == 'lr': gs.lr = float(i)
                     if attrib2 == 'T': gs.T = int(j)
                     if attrib2 == 'lr': gs.lr = float(j)
-                self.deforum_six.run_deforum_six(W=int(params['W']),
-                                                 H=int(params['H']),
-                                                 seed=int(params['seed']) if params['seed'] != '' else seed,
-                                                 sampler=str(params['sampler']),
-                                                 steps=int(params['steps']),
-                                                 scale=float(params['scale']),
-                                                 ddim_eta=float(params['ddim_eta']),
-                                                 save_settings=bool(params['save_settings']),
-                                                 save_samples=bool(params['save_samples']),
-                                                 show_sample_per_step=bool(params['show_sample_per_step']),
-                                                 n_batch=int(params['n_batch']),
-                                                 seed_behavior=params['seed_behavior'],
-                                                 make_grid=params['makegrid'],
-                                                 grid_rows=params['grid_rows'],
-                                                 use_init=params['use_init'],
-                                                 init_image=params['init_image'],
-                                                 strength=float(params['strength']),
-                                                 strength_0_no_init=params['strength_0_no_init'],
-                                                 device=params['device'],
-                                                 animation_mode=params['animation_mode'],
-                                                 prompts=params['prompts'],
-                                                 max_frames=params['max_frames'],
-                                                 outdir=params['outdir'],
-                                                 n_samples=params['n_samples'],
-                                                 mean_scale=params['mean_scale'],
-                                                 var_scale=params['var_scale'],
-                                                 exposure_scale=params['exposure_scale'],
-                                                 exposure_target=params['exposure_target'],
-                                                 colormatch_scale=float(params['colormatch_scale']),
-                                                 colormatch_image=params['colormatch_image'],
-                                                 colormatch_n_colors=params['colormatch_n_colors'],
-                                                 ignore_sat_weight=params['ignore_sat_weight'],
-                                                 clip_name=params['clip_name'],
+                self.deforum_six.run_deforum_six(W=int(params.W),
+                                                 H=int(params.H),
+                                                 seed=int(params.seed) if params.seed != '' else seed,
+                                                 sampler=str(params.sampler),
+                                                 steps=int(params.steps),
+                                                 scale=float(params.scale),
+                                                 ddim_eta=float(params.ddim_eta),
+                                                 save_settings=bool(params.save_settings),
+                                                 save_samples=bool(params.save_samples),
+                                                 show_sample_per_step=bool(params.show_sample_per_step),
+                                                 n_batch=int(params.n_batch),
+                                                 seed_behavior=params.seed_behavior,
+                                                 make_grid=params.makegrid,
+                                                 grid_rows=params.grid_rows,
+                                                 use_init=params.use_init,
+                                                 init_image=params.init_image,
+                                                 strength=float(params.strength),
+                                                 strength_0_no_init=params.strength_0_no_init,
+                                                 device=params.device,
+                                                 animation_mode=params.animation_mode,
+                                                 prompts=params.prompts,
+                                                 max_frames=params.max_frames,
+                                                 outdir=params.outdir,
+                                                 n_samples=params.n_samples,
+                                                 mean_scale=params.mean_scale,
+                                                 var_scale=params.var_scale,
+                                                 exposure_scale=params.exposure_scale,
+                                                 exposure_target=params.exposure_target,
+                                                 colormatch_scale=float(params.colormatch_scale),
+                                                 colormatch_image=params.colormatch_image,
+                                                 colormatch_n_colors=params.colormatch_n_colors,
+                                                 ignore_sat_weight=params.ignore_sat_weight,
+                                                 clip_name=params.clip_name,
                                                  # @param ['ViT-L/14', 'ViT-L/14@336px', 'ViT-B/16', 'ViT-B/32']
-                                                 clip_scale=params['clip_scale'],
-                                                 aesthetics_scale=params['aesthetics_scale'],
-                                                 cutn=params['cutn'],
-                                                 cut_pow=params['cut_pow'],
-                                                 init_mse_scale=params['init_mse_scale'],
-                                                 init_mse_image=params['init_mse_image'],
-                                                 blue_scale=params['blue_scale'],
-                                                 gradient_wrt=params['gradient_wrt'],  # ["x", "x0_pred"]
-                                                 gradient_add_to=params['gradient_add_to'],  # ["cond", "uncond", "both"]
-                                                 decode_method=params['decode_method'],  # ["autoencoder","linear"]
-                                                 grad_threshold_type=params['grad_threshold_type'],
+                                                 clip_scale=params.clip_scale,
+                                                 aesthetics_scale=params.aesthetics_scale,
+                                                 cutn=params.cutn,
+                                                 cut_pow=params.cut_pow,
+                                                 init_mse_scale=params.init_mse_scale,
+                                                 init_mse_image=params.init_mse_image,
+                                                 blue_scale=params.blue_scale,
+                                                 gradient_wrt=params.gradient_wrt,  # ["x", "x0_pred"]
+                                                 gradient_add_to=params.gradient_add_to,  # ["cond", "uncond", "both"]
+                                                 decode_method=params.decode_method,  # ["autoencoder","linear"]
+                                                 grad_threshold_type=params.grad_threshold_type,
                                                  # ["dynamic", "static", "mean", "schedule"]
-                                                 clamp_grad_threshold=params['clamp_grad_threshold'],
-                                                 clamp_start=params['clamp_start'],
-                                                 clamp_stop=params['clamp_stop'],
+                                                 clamp_grad_threshold=params.clamp_grad_threshold,
+                                                 clamp_start=params.clamp_start,
+                                                 clamp_stop=params.clamp_stop,
                                                  grad_inject_timing=1,
                                                  # if self.parent.unicontrol.w.grad_inject_timing.text() == '' else self.parent.unicontrol.w.grad_inject_timing.text(), #it is a float an int or a list of floats
-                                                 cond_uncond_sync=params['cond_uncond_sync'],
-                                                 step_callback=self.parent.tensor_preview_signal if self.parent.unicontrol.w.show_sample_per_step.isChecked() else None,
+                                                 cond_uncond_sync=params.cond_uncond_sync,
+                                                 step_callback=self.parent.tensor_preview_signal if params.show_sample_per_step is not False else None,
                                                  image_callback=self.parent.image_preview_signal,
-                                                 negative_prompts=params['negative_prompts'] if params['negative_prompts'] != False else None,
-                                                 hires=params['hires'],
-                                                 prompt_weighting=params['prompt_weighting'],
-                                                 normalize_prompt_weights=params['normalize_prompt_weights'],
-                                                 lowmem=params['lowmem'],
+                                                 negative_prompts=params.negative_prompts if params.negative_prompts is not False else None,
+                                                 hires=params.hires,
+                                                 prompt_weighting=params.prompt_weighting,
+                                                 normalize_prompt_weights=params.normalize_prompt_weights,
+                                                 lowmem=params.lowmem,
                                                  )
                 if plotting:
                     all_images.append(T.functional.pil_to_tensor(self.parent.image))
@@ -231,14 +234,14 @@ class Deforum_UI(QObject):
             print(hor_texts)
             grid = make_grid(all_images, nrow=len(plotX))
             grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
-            filename = f"{time.strftime('%Y%m%d%H%M%S')}_{attrib1}_{attrib2}_grid_{params['seed']}.png"
+            filename = f"{time.strftime('%Y%m%d%H%M%S')}_{attrib1}_{attrib2}_grid_{params.seed}.png"
             grid_image = Image.fromarray(grid.astype(np.uint8))
 
-            grid_image = draw_grid_annotations(grid_image, grid_image.size[0], grid_image.size[1], hor_texts, ver_texts, params['W'],
-                                               params['H'], params)
+            grid_image = draw_grid_annotations(grid_image, grid_image.size[0], grid_image.size[1], hor_texts, ver_texts, params.W,
+                                               params.H, params)
             self.parent.image = grid_image
             self.parent.image_preview_signal(grid_image)
-            grid_image.save(os.path.join(params['outdir'], filename))
+            grid_image.save(os.path.join(params.outdir, filename))
         #self.signals.reenable_runbutton.emit()
         self.deforum_six = None
         return
@@ -250,13 +253,13 @@ class Deforum_UI(QObject):
         self.deforum_six = DeforumSix()
         self.progress = 0.0
         self.parent.update = 0
-        self.onePercent = 100 / self.parent.unicontrol.w.steps_slider.value()
+        self.onePercent = 100 / params.steps
         #self.updateRate = self.parent.sizer_count.w.previewSlider.value()
         self.updateRate = 1
         self.parent.currentFrames = []
         self.parent.renderedFrames = 0
         self.parent.sample_number = 1
-        if self.parent.unicontrol.w.n_samples.value() == 1:
+        if params.n_samples == 1:
             makegrid = False
         else:
             makegrid = self.parent.animKeys.w.makeGrid.isChecked()
@@ -267,23 +270,23 @@ class Deforum_UI(QObject):
         gs.lr = self.parent.unicontrol.w.gradient_scale.value() / 1000000000
         gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.unicontrol.w.aesthetic_embedding.currentText())
         if params == None:
-            params = self.parent.params
+            params = self.parent.sessionparams.params
 
         if params is not None:
             #print(params)
-            steps = int(params['steps'])
-            H = int(params['H'])
-            W = int(params['W'])
-            seed = int(params['seed']) if params['seed'] != "" else random.randint(0, 44444444)
-            prompt = str(params['prompts'])
-            strength = float(params['strength'])
-            mask_blur = float(params['mask_blur'])
-            reconstruction_blur = float(params['reconstruction_blur'])
-            scale = float(params['scale'])
-            ddim_eta = float(params['ddim_eta'])
-            with_inpaint = bool(params['use_inpaint'])
+            steps = int(params.steps)
+            H = int(params.H)
+            W = int(params.W)
+            seed = int(params.seed) if params.seed != "" else random.randint(0, 44444444)
+            prompt = str(params.prompts)
+            strength = float(params.strength)
+            mask_blur = float(params.mask_blur)
+            reconstruction_blur = float(params.reconstruction_blur)
+            scale = float(params.scale)
+            ddim_eta = float(params.ddim_eta)
+            with_inpaint = bool(params.use_inpaint)
 
-        self.parent.params['advanced'] = True
+        self.parent.sessionparams.params.advanced = True
 
         self.deforum_six.outpaint_txt2img(init_image=init_image,
                                           steps=steps,
@@ -306,7 +309,7 @@ class Deforum_UI(QObject):
 
     def deforum_outpaint_thread(self):
 
-        self.parent.params = self.parent.sessionparams.update_params()
+        self.parent.sessionparams.params = self.parent.sessionparams.update_params()
         self.choice = "Outpaint"
         worker = Worker(self.run_deforum_outpaint)
         self.parent.threadpool.start(worker)

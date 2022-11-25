@@ -229,14 +229,7 @@ def start_sdui():
     import frontend.startup
     frontend.startup.run_app()
 
-def check_run_setup():
-    settings.load_settings_json()
-    return gs.system.run_setup
-
-
-
 if __name__ == "__main__":
-
     prepare_enviroment()
     import backend.paths
     start_sdui()

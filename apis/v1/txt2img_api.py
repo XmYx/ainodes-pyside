@@ -158,13 +158,6 @@ async def post(t2i_json: Txt2Img, background_tasks: BackgroundTasks):
         respond_500(message)
 
 
-
-
-
-
-
-
-
 @router.get('/api/v1/txttoimg/get_results')
 async def get():
     try:

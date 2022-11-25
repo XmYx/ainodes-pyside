@@ -1,4 +1,6 @@
 import random
+from types import SimpleNamespace
+
 from backend.singleton import singleton
 
 gs = singleton
@@ -7,18 +9,43 @@ gs = singleton
 class SessionParams():
     def __init__(self, parent):
         self.parent = parent
+        self.max_history = None
+        self.history = None
+        self.params = None
+        self.history = []
+        self.history_index = 0
+        self.max_history = 100
         self.session_name = "Test Session"
         self.session_id = "Test Id"
         self.session_mode = "still"
 
+    def add_state_to_history(self):
+        if len(self.history) == self.max_history:
+            self.history.pop(0)
+        self.history.append(self.params)
+        self.history_index = len(self.history)
+
+    def undo(self):
+        if self.history_index > 0:
+            self.params = self.history[self.history_index - 1]
+            self.history_index -= 1
+            self.update_ui_from_params()
+
+    def redo(self):
+        if self.history_index < len(self.history) - 1:
+            self.params = self.history[self.history_index + 1]
+            self.history_index += 1
+            self.update_ui_from_params()
+
+
     def create_params(self):
-        params = {}
+        self.params = {}
 
         for key, value in gs.diffusion.__dict__.items():
-            params[key] = value
-        print(params)
+            self.params[key] = value
+        print(self.params)
 
-        return params
+        return self.params
 
     def update_params(self):
         mode = ""
@@ -37,11 +64,23 @@ class SessionParams():
         gs.T = 0
         gs.lr = 0
 
+
+        # todo find out why this is no used self.parent.unicontrol.w.aesthetic_embedding.currentText()
+        # gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.unicontrol.w.aesthetic_embedding.currentText())
         if gs.aesthetic_embedding_path != "None":
             gs.T = self.parent.unicontrol.w.gradient_steps.value()
             gs.lr = self.parent.unicontrol.w.gradient_scale.value()
         else:
             gs.aesthetic_embedding_path = None
+
+        if gs.aesthetic_embedding_path != "None": # todo whats the difference ?
+            gs.T = self.parent.unicontrol.w.gradient_steps.value()
+            gs.lr = self.parent.unicontrol.w.gradient_scale.value()
+            # print(f"Aesthetic Gradients: {gs.aesthetic_embedding_path} \nSteps: {gs.T} \nScale: {gs.lr}\n\nGL HF\n\n")
+            # print(f"Expected Tensor Value: {(gs.T * gs.lr) + -0.3}")
+        else:
+            gs.aesthetic_embedding_path = None
+
 
         if self.parent.unicontrol.w.n_samples.value() == 1:
             makegrid = False
@@ -63,14 +102,6 @@ class SessionParams():
 
         decode_method = None if self.parent.unicontrol.w.decode_method.currentText() == 'None' else self.parent.unicontrol.w.decode_method.currentText()
 
-        if gs.aesthetic_embedding_path != "None":
-            gs.T = self.parent.unicontrol.w.gradient_steps.value()
-            gs.lr = self.parent.unicontrol.w.gradient_scale.value()
-            # print(f"Aesthetic Gradients: {gs.aesthetic_embedding_path} \nSteps: {gs.T} \nScale: {gs.lr}\n\nGL HF\n\n")
-            # print(f"Expected Tensor Value: {(gs.T * gs.lr) + -0.3}")
-        else:
-            gs.aesthetic_embedding_path = None
-
         if self.parent.unicontrol.w.enableNegative.isChecked():
             negative_prompts = self.parent.unicontrol.w.negative_prompts.toPlainText()
             print(f"Using negative prompts {negative_prompts}")
@@ -91,10 +122,6 @@ class SessionParams():
         aesthetics_scale = self.parent.unicontrol.w.aesthetics_scale.value()
         cutn = int(self.parent.unicontrol.w.cutn.value())
         cut_pow = self.parent.unicontrol.w.cut_pow.value()
-
-        #init_mse_scale = self.parent.unicontrol.w.init_mse_scale.value()
-        #init_mse_image = None if self.parent.unicontrol.w.init_mse_image.text() == '' else self.parent.unicontrol.w.init_mse_image.text()
-        #blue_scale = self.parent.unicontrol.w.blue_scale.value()
 
         init_mse_scale = 0
         init_mse_image = None #if self.parent.unicontrol.w.init_mse_image.text() == '' else self.parent.unicontrol.w.init_mse_image.text()
@@ -158,7 +185,13 @@ class SessionParams():
         animation_mode = 'None'
         use_inpaint = self.parent.unicontrol.w.use_inpaint.isChecked()
         lowmem = self.parent.unicontrol.w.lowmem.isChecked()
-        params = {
+
+        plotting = self.parent.unicontrol.w.plotting.isChecked()
+        plotX = self.parent.unicontrol.w.plotX.currentText()
+        plotY = self.parent.unicontrol.w.plotY.currentText()
+        plotXLine = self.parent.unicontrol.w.plotXLine.text()
+        plotYLine = self.parent.unicontrol.w.plotYLine.text()
+        self.params = {
             # Basic Params
             'mode': mode,
             'sampler': sampler_name,
@@ -265,8 +298,15 @@ class SessionParams():
             "normalize_prompt_weights": normalize_prompt_weights,
             "use_inpaint": use_inpaint,
             "lowmem": lowmem,
+            "plotting": plotting,
+            "plotX": plotX,
+            "plotY": plotY,
+            "plotXLine": plotXLine,
+            "plotYLine": plotYLine
         }
-        return params
+
+        self.params = SimpleNamespace(**self.params)
+        return self.params
 
 
 def translate_sampler(sampler):

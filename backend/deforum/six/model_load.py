@@ -49,7 +49,7 @@ def load_model(root):
         path_extend = ""
 
     model_map = {
-        "v1-5-pruned.ckpt": {
+        "v1-5-pruned-emaonly.ckpt": {
             'sha256': 'e1441589a6f3c5a53f5f54d0975a18a7feb7cdf0b0dee276dfc3331ae376a053',
             'url': 'https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned.ckpt',
             'requires_login': True,

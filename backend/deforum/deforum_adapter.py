@@ -94,7 +94,7 @@ class DeforumSix:
     def run_pre_load_model_generation_specifics(self, config):
 
 
-        if config.model_version in gs.system.gen_one_models and 2==1:
+        if gs.model_version in gs.system.gen_one_models and 2==1:
             config.model.params.cond_stage_config.params.T = 10
             config.model.params.cond_stage_config.params.lr = 0.0001
             config.model.params.cond_stage_config.params.aesthetic_embedding_path = (
@@ -126,17 +126,29 @@ class DeforumSix:
         # if it is some custom model based on some version of SD we need to have the SD
         # version not the version of the custom model
         config_yaml_name = os.path.splitext(gs.system.sdPath)[0] + '.yaml'
+
+        print(config_yaml_name)
+
         if os.path.isfile(config_yaml_name):
             config = config_yaml_name
 
         if "sd" not in gs.models:
             print(f"Loading model from {ckpt} with config {config}")
             config = OmegaConf.load(config)
-            if not 'model_version' in config:
-                print('you must provide a model_version in the config yaml or we can not figure how to tread your model')
-                return -1
 
-            gs.model_version = config.model_version
+            print(config.model['params']['unet_config']['params'])
+
+            if 'num_heads' in config.model['params']['unet_config']['params']:
+                print('v 1.5 found')
+                gs.model_version = '1.5'
+            elif 'num_head_channels' in config.model['params']['unet_config']['params']:
+                print('v 2.0 found')
+                gs.model_version = '2.0'
+            #if not 'model_version' in config:
+            #    print('you must provide a model_version in the config yaml or we can not figure how to tread your model')
+            #    return -1
+
+            #gs.model_version = config.model_version
             print(gs.model_version)
 
             self.run_pre_load_model_generation_specifics(config)

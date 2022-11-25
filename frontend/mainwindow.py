@@ -26,11 +26,17 @@ from backend.singleton import singleton
 from backend.devices import choose_torch_device
 from frontend.ui_timeline import Timeline, KeyFrame
 
+
 gs = singleton
 settings.load_settings_json()
-
+# we had to load settings first before we can do this import
 from frontend.ui_deforum import Deforum_UI
 from frontend.session_params import SessionParams
+from backend.shared import save_last_prompt
+
+
+
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -114,13 +120,18 @@ class MainWindow(QMainWindow):
         self.unicontrol.w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.unicontrol.w.mask_offset.value())))
         self.unicontrol.w.rect_overlap.valueChanged.connect(self.outpaint_rect_overlap)
 
+
+
+
     def taskswitcher(self):
+        save_last_prompt(self.unicontrol.w.prompts.toHtml(), self.unicontrol.w.prompts.toPlainText())
         print(self.unicontrol.w.use_inpaint.isChecked())
         if self.unicontrol.w.use_inpaint.isChecked() == True:
             self.canvas.canvas.reusable_outpaint(self.canvas.canvas.selected_item)
             self.deforum_ui.deforum_outpaint_thread()
         else:
             self.deforum_six_txt2img_thread()
+
     def path_setup_temp(self):
         self.path_setup.w.galleryMainPath.setText(gs.system.galleryMainPath)
         self.path_setup.w.txt2imgOut.setText(gs.system.txt2imgOut)
@@ -326,10 +337,6 @@ class MainWindow(QMainWindow):
         gs.diffusion.prompt = data
         #self.prompt.w.textEdit.setHtml(data)
 
-
-    def run_with_params(self):
-        pass
-
     def deforum_six_txt2img_thread(self):
         self.update = 0
         height = self.height
@@ -379,20 +386,20 @@ class MainWindow(QMainWindow):
                     if self.lastheight is not None:
                         if self.lastheight < self.height + i.h + 20:
                             self.lastheight = self.height + i.h + 20
-                            if self.params['advanced'] == False:
+                            if self.params.advanced == False:
                                 self.canvas.canvas.resize_canvas(w=self.w, h=self.lastheight + self.unicontrol.w.H.value())
                     y = self.y
 
 
 
             if x != 0 or y > 0:
-                if self.params['advanced'] == False:
+                if self.params.advanced == False:
                     self.canvas.canvas.w = self.unicontrol.w.W.value()
                     self.canvas.canvas.h = self.unicontrol.w.H.value()
                     self.canvas.canvas.addrect_atpos(x=x, y=self.y, params=self.params)
                     print(f"resizing canvas to {self.height}")
                     self.canvas.canvas.resize_canvas(w=self.w, h=self.height)
-        elif self.params['advanced'] == False or self.canvas.canvas.selected_item == None:
+        elif self.params.advanced == False or self.canvas.canvas.selected_item == None:
             w = self.unicontrol.w.W.value()
             h = self.unicontrol.w.H.value()
             self.canvas.canvas.w = w
@@ -434,6 +441,7 @@ class MainWindow(QMainWindow):
         else:
             self.data2 = None
         self.deforum_ui.signals.deforum_step.emit()
+
     def tensor_preview_schedule(self):
         x_samples = torch.clamp((self.data + 1.0) / 2.0, min=0.0, max=1.0)
         if len(x_samples) != 1:
@@ -470,6 +478,7 @@ class MainWindow(QMainWindow):
 
         value = int(self.unicontrol.w.offset_slider.value())
         self.canvas.canvas.set_offset(value)
+
     @Slot()
     def update_outpaint_parameters(self):
         W = self.unicontrol.w.W.value()
@@ -480,6 +489,7 @@ class MainWindow(QMainWindow):
 
         self.canvas.canvas.w = W
         self.canvas.canvas.h = H
+
     def prep_rect_params(self, prompt=None):
         #prompt = str(prompt)
         #steps = self.unicontrol.w.stepsSlider.value()
@@ -498,6 +508,7 @@ class MainWindow(QMainWindow):
                   }
         #print(f"Created Params")
         return params
+
     @Slot(str)
     def update_params(self, uid=None, params=None):
         if self.canvas.canvas.selected_item is not None:
@@ -520,12 +531,11 @@ class MainWindow(QMainWindow):
                 i.params = params
                 #print(i.params)
 
-
-
     def get_params(self):
         params = self.params()
         print(f"Created Params")
         return params
+
     @Slot()
     def show_outpaint_details(self):
 
@@ -572,26 +582,30 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.update()
         self.canvas.canvas.pixmap.fill(Qt.transparent)
         self.canvas.canvas.newimage = True
+
     def test_save_outpaint(self):
 
         self.canvas.canvas.pixmap = self.canvas.canvas.pixmap.copy(QRect(64, 32, 512, 512))
 
         self.canvas.canvas.setPixmap(self.canvas.canvas.pixmap)
         self.canvas.canvas.update()
+
     @Slot()
     def stop_processing(self):
         self.stopprocessing = True
 
     def sort_rects(self, e):
         return e.order
+
     def run_batch_outpaint(self, progress_callback=False):
         self.stopprocessing = False
         self.callbackbusy = False
         self.sleepytime = 0.0
         self.choice = "Outpaint"
         self.create_outpaint_batch()
+
     def create_outpaint_batch(self, gobig_img_path=None):
-        self.params['advanced'] = True
+        self.params.advanced = True
         self.callbackbusy = True
         x = 0
         self.busy = False
@@ -651,8 +665,9 @@ class MainWindow(QMainWindow):
                 while self.busy == True:
                     time.sleep(0.25)
         self.callbackbusy = False
+
     def run_hires_batch(self, progress_callback=None):
-        self.params['advanced'] = True
+        self.params.advanced = True
         #multi = self.unicontrol.w.multiBatch.isChecked()
         #batch_n = self.unicontrol.w.multiBatchvalue.value()
         multi = False
@@ -703,6 +718,7 @@ class MainWindow(QMainWindow):
             print(f"All time wasted: {self.sleepytime} seconds.")
             self.hires_source = final_output
             self.deforum_ui.signals.prepare_hires_batch.emit('output/test_hires.png')
+
     def run_hires_step_x(self, x):
         self.choice = 'Outpaint'
         image = self.canvas.canvas.rectlist[x].image
@@ -721,15 +737,12 @@ class MainWindow(QMainWindow):
         self.busy = False
         return x
 
-
-
-
     def run_prepared_outpaint_batch(self, progress_callback=None):
         self.stopprocessing = False
         self.callbackbusy = False
         self.sleepytime = 0.0
         self.choice = "Outpaint"
-        self.params['advanced'] = True
+        self.params.advanced = True
 
         #multi = self.unicontrol.w.multiBatch.isChecked()
         #batch_n = self.unicontrol.w.multiBatchvalue.value()
@@ -739,8 +752,6 @@ class MainWindow(QMainWindow):
 
         tiles = len(self.canvas.canvas.rectlist)
         print(f"Tiles to Outpaint:{tiles}")
-
-
 
         if multi == True:
             for i in range(batch_n):
@@ -833,6 +844,7 @@ class MainWindow(QMainWindow):
         #    #self.create_outpaint_batch()
         worker = Worker(self.run_batch_outpaint)
         self.threadpool.start(worker)
+
     @Slot(str)
     def run_create_outpaint_img2img_batch(self, input=None):
         if input != False:
@@ -846,9 +858,11 @@ class MainWindow(QMainWindow):
             self.create_outpaint_batch()
         worker = Worker(self.run_prepared_outpaint_batch)
         self.threadpool.start(worker)
+
     def run_hires_batch_thread(self):
         worker = Worker(self.run_hires_batch)
         self.threadpool.start(worker)
+
     def getfile(self, file_ext='', text='', button_caption='', button_type=0, title='Load', save=False):
         filter = {
             '': '',
@@ -879,6 +893,7 @@ class MainWindow(QMainWindow):
             for file in files:
                 self.unicontrol.w.aesthetic_embedding.addItem(str(file))
         #self.set_txt2img.w.gradientList.setItemText(index)
+
     def select_gradient(self, gradient):
         if self.unicontrol.w.aesthetic_embedding.itemText(gradient) != "None":
             gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.unicontrol.w.aesthetic_embedding.itemText(gradient))

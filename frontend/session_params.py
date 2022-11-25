@@ -1,4 +1,6 @@
 import random
+from types import SimpleNamespace
+
 from backend.singleton import singleton
 
 gs = singleton
@@ -37,11 +39,23 @@ class SessionParams():
         gs.T = 0
         gs.lr = 0
 
+
+        # todo find out why this is no used self.parent.unicontrol.w.aesthetic_embedding.currentText()
+        # gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.unicontrol.w.aesthetic_embedding.currentText())
         if gs.aesthetic_embedding_path != "None":
             gs.T = self.parent.unicontrol.w.gradient_steps.value()
             gs.lr = self.parent.unicontrol.w.gradient_scale.value()
         else:
             gs.aesthetic_embedding_path = None
+
+        if gs.aesthetic_embedding_path != "None": # todo whats the difference ?
+            gs.T = self.parent.unicontrol.w.gradient_steps.value()
+            gs.lr = self.parent.unicontrol.w.gradient_scale.value()
+            # print(f"Aesthetic Gradients: {gs.aesthetic_embedding_path} \nSteps: {gs.T} \nScale: {gs.lr}\n\nGL HF\n\n")
+            # print(f"Expected Tensor Value: {(gs.T * gs.lr) + -0.3}")
+        else:
+            gs.aesthetic_embedding_path = None
+
 
         if self.parent.unicontrol.w.n_samples.value() == 1:
             makegrid = False
@@ -63,13 +77,7 @@ class SessionParams():
 
         decode_method = None if self.parent.unicontrol.w.decode_method.currentText() == 'None' else self.parent.unicontrol.w.decode_method.currentText()
 
-        if gs.aesthetic_embedding_path != "None":
-            gs.T = self.parent.unicontrol.w.gradient_steps.value()
-            gs.lr = self.parent.unicontrol.w.gradient_scale.value()
-            # print(f"Aesthetic Gradients: {gs.aesthetic_embedding_path} \nSteps: {gs.T} \nScale: {gs.lr}\n\nGL HF\n\n")
-            # print(f"Expected Tensor Value: {(gs.T * gs.lr) + -0.3}")
-        else:
-            gs.aesthetic_embedding_path = None
+
 
         if self.parent.unicontrol.w.enableNegative.isChecked():
             negative_prompts = self.parent.unicontrol.w.negative_prompts.toPlainText()
@@ -158,6 +166,12 @@ class SessionParams():
         animation_mode = 'None'
         use_inpaint = self.parent.unicontrol.w.use_inpaint.isChecked()
         lowmem = self.parent.unicontrol.w.lowmem.isChecked()
+
+        plotting = self.parent.unicontrol.w.plotting.isChecked()
+        plotX = self.parent.unicontrol.w.plotX.currentText()
+        plotY = self.parent.unicontrol.w.plotY.currentText()
+        plotXLine = self.parent.unicontrol.w.plotXLine.text()
+        plotYLine = self.parent.unicontrol.w.plotYLine.text()
         params = {
             # Basic Params
             'mode': mode,
@@ -265,7 +279,13 @@ class SessionParams():
             "normalize_prompt_weights": normalize_prompt_weights,
             "use_inpaint": use_inpaint,
             "lowmem": lowmem,
+            "plotting": plotting,
+            "plotX": plotX,
+            "plotY": plotY,
+            "plotXLine": plotXLine,
+            "plotYLine": plotYLine
         }
+        params = SimpleNamespace(**params)
         return params
 
 

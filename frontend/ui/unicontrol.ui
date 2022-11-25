@@ -78,7 +78,737 @@
            </size>
           </property>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="3" column="0">
+           <item row="0" column="0">
+            <widget class="QFrame" name="basic_values">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>400</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_2">
+              <property name="leftMargin">
+               <number>3</number>
+              </property>
+              <property name="topMargin">
+               <number>3</number>
+              </property>
+              <property name="rightMargin">
+               <number>3</number>
+              </property>
+              <property name="bottomMargin">
+               <number>3</number>
+              </property>
+              <item row="2" column="0">
+               <widget class="QLabel" name="widthlabel">
+                <property name="text">
+                 <string>Width</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1" colspan="4">
+               <widget class="QSlider" name="W_slider">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="minimum">
+                 <number>256</number>
+                </property>
+                <property name="maximum">
+                 <number>2048</number>
+                </property>
+                <property name="singleStep">
+                 <number>64</number>
+                </property>
+                <property name="pageStep">
+                 <number>64</number>
+                </property>
+                <property name="value">
+                 <number>512</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3" colspan="2">
+               <widget class="QPushButton" name="lucky">
+                <property name="text">
+                 <string>I Have a lucky day</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>8</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="1">
+               <widget class="QPushButton" name="hideAdvButton">
+                <property name="text">
+                 <string>Advanced</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>8</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="0">
+               <widget class="QPushButton" name="hidePlottingButton">
+                <property name="text">
+                 <string>Plotting</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>8</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1" colspan="2">
+               <widget class="QPushButton" name="dream">
+                <property name="text">
+                 <string>Dream</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>8</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QCheckBox" name="lowmem">
+                <property name="text">
+                 <string>Low Memory</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="5">
+               <widget class="QSpinBox" name="H">
+                <property name="minimum">
+                 <number>256</number>
+                </property>
+                <property name="maximum">
+                 <number>2048</number>
+                </property>
+                <property name="singleStep">
+                 <number>64</number>
+                </property>
+                <property name="value">
+                 <number>512</number>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="5">
+               <widget class="QDoubleSpinBox" name="scale">
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+                <property name="value">
+                 <double>7.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0" colspan="6">
+               <widget class="QTextEdit" name="prompts">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="heightlabel">
+                <property name="text">
+                 <string>Heigth</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1" colspan="4">
+               <widget class="QSlider" name="scale_slider">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="pageStep">
+                 <number>1</number>
+                </property>
+                <property name="value">
+                 <number>75</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0" colspan="6">
+               <widget class="QTextEdit" name="negative_prompts">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="5">
+               <widget class="QSpinBox" name="W">
+                <property name="minimum">
+                 <number>256</number>
+                </property>
+                <property name="maximum">
+                 <number>2048</number>
+                </property>
+                <property name="singleStep">
+                 <number>64</number>
+                </property>
+                <property name="value">
+                 <number>512</number>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="stepslabel">
+                <property name="text">
+                 <string>Steps</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1" colspan="4">
+               <widget class="QSlider" name="H_slider">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="minimum">
+                 <number>256</number>
+                </property>
+                <property name="maximum">
+                 <number>2048</number>
+                </property>
+                <property name="singleStep">
+                 <number>64</number>
+                </property>
+                <property name="pageStep">
+                 <number>64</number>
+                </property>
+                <property name="value">
+                 <number>512</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="cfglabel">
+                <property name="text">
+                 <string>CFG</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1" colspan="4">
+               <widget class="QSlider" name="steps_slider">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>3000</number>
+                </property>
+                <property name="pageStep">
+                 <number>1</number>
+                </property>
+                <property name="value">
+                 <number>20</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="5">
+               <widget class="QSpinBox" name="steps">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>3000</number>
+                </property>
+                <property name="value">
+                 <number>20</number>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="2">
+               <widget class="QPushButton" name="hideAesButton">
+                <property name="text">
+                 <string>Aesthetic</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>8</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="3">
+               <widget class="QPushButton" name="hideAnimButton">
+                <property name="text">
+                 <string>Animation</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>8</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="5">
+               <widget class="QPushButton" name="showHideAll">
+                <property name="text">
+                 <string>All</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>8</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QFrame" name="plotting_frame">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_12">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item row="0" column="3">
+               <widget class="QPushButton" name="loadbutton">
+                <property name="text">
+                 <string>Load</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="4">
+               <widget class="QPushButton" name="unloadbutton">
+                <property name="text">
+                 <string>Unload</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1" colspan="2">
+               <widget class="QComboBox" name="plugins"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QComboBox" name="plotX">
+                <item>
+                 <property name="text">
+                  <string>seed</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>sampler</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>steps</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>ddim_eta</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>strength</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>mean_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>var_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>exposure_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>exposure_target</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>colormatch_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>colormatch_image</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>colormatch_n_colors</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>ignore_sat_weight</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>clip_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>aesthetics_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>cutn</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>cut_pow</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>init_mse_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>init_mse_image</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>blue_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>gradient_wrt</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>gradient_add_to</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>decode_method</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>grad_threshold_type</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>clamp_grad_threshold</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>clamp_start</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>clamp_stop</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>grad_inject_timing</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>T</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>lr</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QComboBox" name="plotY">
+                <item>
+                 <property name="text">
+                  <string>seed</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>sampler</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>steps</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>ddim_eta</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>strength</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>mean_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>var_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>exposure_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>exposure_target</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>colormatch_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>colormatch_image</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>colormatch_n_colors</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>ignore_sat_weight</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>clip_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>aesthetics_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>cutn</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>cut_pow</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>init_mse_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>init_mse_image</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>blue_scale</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>gradient_wrt</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>gradient_add_to</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>decode_method</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>grad_threshold_type</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>clamp_grad_threshold</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>clamp_start</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>clamp_stop</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>grad_inject_timing</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>T</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>lr</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="1" colspan="4">
+               <widget class="QLineEdit" name="plotXLine"/>
+              </item>
+              <item row="2" column="1" colspan="4">
+               <widget class="QLineEdit" name="plotYLine"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Plugins</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="2" column="0">
             <widget class="QFrame" name="adv_values">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -809,7 +1539,7 @@
              </layout>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="3" column="0">
             <widget class="QFrame" name="aesthetic_values">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -1392,7 +2122,7 @@
              </layout>
             </widget>
            </item>
-           <item row="5" column="0">
+           <item row="4" column="0">
             <widget class="QFrame" name="anim_values">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -1437,7 +2167,7 @@
               <item>
                <widget class="QTabWidget" name="tabWidget">
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>1</number>
                 </property>
                 <widget class="QWidget" name="tab">
                  <property name="sizePolicy">
@@ -2371,379 +3101,7 @@
              </layout>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QFrame" name="plotting_frame">
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_12">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item row="0" column="3">
-               <widget class="QPushButton" name="loadbutton">
-                <property name="text">
-                 <string>Load</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="4">
-               <widget class="QPushButton" name="unloadbutton">
-                <property name="text">
-                 <string>Unload</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1" colspan="2">
-               <widget class="QComboBox" name="plugins"/>
-              </item>
-              <item row="1" column="0">
-               <widget class="QComboBox" name="plotX">
-                <item>
-                 <property name="text">
-                  <string>seed</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>sampler</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>steps</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>ddim_eta</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>strength</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>mean_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>var_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>exposure_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>exposure_target</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>colormatch_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>colormatch_image</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>colormatch_n_colors</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>ignore_sat_weight</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>clip_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>aesthetics_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>cutn</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>cut_pow</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>init_mse_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>init_mse_image</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>blue_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>gradient_wrt</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>gradient_add_to</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>decode_method</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>grad_threshold_type</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>clamp_grad_threshold</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>clamp_start</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>clamp_stop</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>grad_inject_timing</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>T</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>lr</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QComboBox" name="plotY">
-                <item>
-                 <property name="text">
-                  <string>seed</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>sampler</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>steps</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>ddim_eta</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>strength</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>mean_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>var_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>exposure_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>exposure_target</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>colormatch_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>colormatch_image</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>colormatch_n_colors</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>ignore_sat_weight</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>clip_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>aesthetics_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>cutn</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>cut_pow</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>init_mse_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>init_mse_image</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>blue_scale</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>gradient_wrt</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>gradient_add_to</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>decode_method</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>grad_threshold_type</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>clamp_grad_threshold</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>clamp_start</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>clamp_stop</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>grad_inject_timing</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>T</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>lr</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="1" column="1" colspan="4">
-               <widget class="QLineEdit" name="plotXLine"/>
-              </item>
-              <item row="2" column="1" colspan="4">
-               <widget class="QLineEdit" name="plotYLine"/>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label">
-                <property name="text">
-                 <string>Plugins</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="6" column="0">
+           <item row="5" column="0">
             <spacer name="verticalSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -2755,371 +3113,6 @@
               </size>
              </property>
             </spacer>
-           </item>
-           <item row="1" column="0">
-            <widget class="QFrame" name="basic_values">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>400</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_2">
-              <property name="leftMargin">
-               <number>3</number>
-              </property>
-              <property name="topMargin">
-               <number>3</number>
-              </property>
-              <property name="rightMargin">
-               <number>3</number>
-              </property>
-              <property name="bottomMargin">
-               <number>3</number>
-              </property>
-              <item row="2" column="0">
-               <widget class="QLabel" name="widthlabel">
-                <property name="text">
-                 <string>Width</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1" colspan="5">
-               <widget class="QSlider" name="W_slider">
-                <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
-                </property>
-                <property name="minimum">
-                 <number>256</number>
-                </property>
-                <property name="maximum">
-                 <number>2048</number>
-                </property>
-                <property name="singleStep">
-                 <number>64</number>
-                </property>
-                <property name="pageStep">
-                 <number>64</number>
-                </property>
-                <property name="value">
-                 <number>512</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="3" colspan="3">
-               <widget class="QPushButton" name="lucky">
-                <property name="text">
-                 <string>I Have a lucky day</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="1">
-               <widget class="QPushButton" name="hideAdvButton">
-                <property name="text">
-                 <string>Advanced</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="0">
-               <widget class="QPushButton" name="hidePlottingButton">
-                <property name="text">
-                 <string>Plotting</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1" colspan="2">
-               <widget class="QPushButton" name="dream">
-                <property name="text">
-                 <string>Dream</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QCheckBox" name="lowmem">
-                <property name="text">
-                 <string>Low Memory</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="6">
-               <widget class="QSpinBox" name="H">
-                <property name="minimum">
-                 <number>256</number>
-                </property>
-                <property name="maximum">
-                 <number>2048</number>
-                </property>
-                <property name="singleStep">
-                 <number>64</number>
-                </property>
-                <property name="value">
-                 <number>512</number>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="6">
-               <widget class="QDoubleSpinBox" name="scale">
-                <property name="singleStep">
-                 <double>0.010000000000000</double>
-                </property>
-                <property name="value">
-                 <double>7.500000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0" colspan="7">
-               <widget class="QTextEdit" name="prompts">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="heightlabel">
-                <property name="text">
-                 <string>Heigth</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1" colspan="5">
-               <widget class="QSlider" name="scale_slider">
-                <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
-                </property>
-                <property name="maximum">
-                 <number>1000</number>
-                </property>
-                <property name="pageStep">
-                 <number>1</number>
-                </property>
-                <property name="value">
-                 <number>75</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="0" colspan="7">
-               <widget class="QTextEdit" name="negative_prompts">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="6">
-               <widget class="QSpinBox" name="W">
-                <property name="minimum">
-                 <number>256</number>
-                </property>
-                <property name="maximum">
-                 <number>2048</number>
-                </property>
-                <property name="singleStep">
-                 <number>64</number>
-                </property>
-                <property name="value">
-                 <number>512</number>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="stepslabel">
-                <property name="text">
-                 <string>Steps</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1" colspan="5">
-               <widget class="QSlider" name="H_slider">
-                <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
-                </property>
-                <property name="minimum">
-                 <number>256</number>
-                </property>
-                <property name="maximum">
-                 <number>2048</number>
-                </property>
-                <property name="singleStep">
-                 <number>64</number>
-                </property>
-                <property name="pageStep">
-                 <number>64</number>
-                </property>
-                <property name="value">
-                 <number>512</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="cfglabel">
-                <property name="text">
-                 <string>CFG</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1" colspan="5">
-               <widget class="QSlider" name="steps_slider">
-                <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
-                </property>
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>3000</number>
-                </property>
-                <property name="pageStep">
-                 <number>1</number>
-                </property>
-                <property name="value">
-                 <number>20</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="6">
-               <widget class="QSpinBox" name="steps">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>3000</number>
-                </property>
-                <property name="value">
-                 <number>20</number>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="2">
-               <widget class="QPushButton" name="hideAesButton">
-                <property name="text">
-                 <string>Aesthetic</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="3">
-               <widget class="QPushButton" name="hideAnimButton">
-                <property name="text">
-                 <string>Animation</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="4">
-               <widget class="QPushButton" name="image_lab">
-                <property name="text">
-                 <string>Image Lab</string>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="6">
-               <widget class="QPushButton" name="showHideAll">
-                <property name="text">
-                 <string>All</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
            </item>
           </layout>
          </widget>

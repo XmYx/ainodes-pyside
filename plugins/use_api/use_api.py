@@ -31,7 +31,8 @@ import json
 import numpy as np
 from PIL import Image, ImageFont, ImageDraw
 from PySide6 import QtCore, QtNetwork
-from PySide6.QtCore import QObject, Signal, QJsonDocument, Slot
+from PySide6.QtCore import QObject, Signal, QJsonDocument, Slot, QFile, QIODevice
+from PySide6.QtGui import QPixmap, QImage
 from PySide6.QtWidgets import QMainWindow
 
 import frontend.ui_deforum
@@ -205,7 +206,7 @@ class Deforum_UI(QObject):
                     if attrib2 == 'lr': gs.lr = float(j)
                 print("PARAMS BELOW")
 
-                self.url = QtCore.QUrl("http://ad70-35-221-6-213.ngrok.io/api/v1/txttoimg/run")
+                self.url = QtCore.QUrl("http://6995-35-190-178-249.ngrok.io/api/v1/txttoimg/run")
                 # self.url = QtCore.QUrl("https://www.google.com/")
                 params['prompt'] = 'test'
                 params['iterations'] = 1
@@ -346,8 +347,15 @@ class Deforum_UI(QObject):
 
     @Slot()
     def handleResponse(self, response):
-        print(f"response {response.readAll()}")
+        bytes_string = response.readAll()
+        img = QImage()
+        img.loadFromData(bytes_string)
+        pixmap = QPixmap.fromImage(img)
+        pixmap.save("test.png")
 
+
+        del response
+        return
     def run_deforum_outpaint(self, params=None, progress_callback=None):
         # self.deforum = DeforumGenerator()
         # self.deforum.signals = Callbacks()

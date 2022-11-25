@@ -302,9 +302,9 @@ class OurTimeline(QWidget):
             x = self.pos
             self.checkKeyframeHover(x)
             self.checkKeyClicked()
-            print(self.hoverKey)
-            print(self.keyHover)
-            print(self.selectedKey)
+            #print(self.hoverKey)
+            #print(self.keyHover)
+            #print(self.selectedKey)
             self.popMenu.clear()
             #populate
             self.populateBtnContext()
@@ -331,7 +331,7 @@ class OurTimeline(QWidget):
     # Mouse release
     def add_action(self):
         #print(self.keyClicked)
-        self.pointerPos
+        #self.pointerPos
         self.pointerTimePos = self.pointerPos * self.getScale()
 
         matchFound = False
@@ -350,6 +350,7 @@ class OurTimeline(QWidget):
         if matchFound == False:
             self.keyFrameList.append(keyframe[position])
         self.update()
+        print(self.keyFrameList)
         #self.updateAnimKeys()
 
     def delete_action(self):

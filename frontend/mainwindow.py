@@ -1,7 +1,8 @@
 import os
 import time
 import random
-
+from datetime import datetime
+from uuid import uuid4
 import numpy as np
 import pandas as pd
 import torch
@@ -19,7 +20,7 @@ from backend.worker import Worker
 from frontend import plugin_loader
 from frontend.ui_model_chooser import ModelChooser_UI
 from frontend.ui_paint import PaintUI, spiralOrder, random_path
-from frontend.ui_classes import Thumbnails, PathSetup, ThumbsUI
+from frontend.ui_classes import Thumbnails, PathSetup, ThumbsUI, AnimKeyEditor
 from frontend.unicontrol import UniControl
 import backend.settings as settings
 from backend.singleton import singleton
@@ -43,6 +44,8 @@ class MainWindow(QMainWindow):
         self.canvas = PaintUI(self)
         self.setCentralWidget(self.canvas)
         self.setWindowTitle("aiNodes - Still Mode")
+        self.timeline = Timeline()
+        self.animKeyEditor = AnimKeyEditor()
 
         self.resize(1280, 800)
         self.unicontrol = UniControl(self)
@@ -50,7 +53,10 @@ class MainWindow(QMainWindow):
         self.sessionparams.create_params()
         self.thumbs = ThumbsUI()
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.unicontrol.w.dockWidget)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.animKeyEditor.w.dockWidget)
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.timeline)
+        self.tabifyDockWidget(self.timeline, self.thumbs.w.dockWidget)
 
         self.create_main_toolbar()
         self.create_secondary_toolbar()
@@ -119,6 +125,10 @@ class MainWindow(QMainWindow):
         self.unicontrol.w.mask_offset.valueChanged.connect(self.outpaint_offset_signal)
         self.unicontrol.w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.unicontrol.w.mask_offset.value())))  # todo does this work?
         self.unicontrol.w.rect_overlap.valueChanged.connect(self.outpaint_rect_overlap)
+
+        self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
+        self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
+        self.animKeyEditor.w.keyButton.clicked.connect(self.addCurrentFrame)
 
 
 
@@ -885,6 +895,77 @@ class MainWindow(QMainWindow):
         else:
             gs.aesthetic_embedding_path = None
 
+    #Timeline functions
+    def showTypeKeyframes(self):
+        valueType = self.animKeyEditor.w.comboBox.currentText()
+
+        self.timeline.timeline.selectedValueType = valueType
+        self.updateAnimKeys()
+        self.timeline.timeline.update()
+
+    def sort_keys(self, e):
+        return e.position
+
+    def updateAnimKeys(self):
+        tempString = ""
+        valueType = self.animKeyEditor.w.comboBox.currentText()
+        self.timeline.timeline.keyFrameList.sort(key=self.sort_keys)
+        for item in self.timeline.timeline.keyFrameList:
+            if item.valueType == valueType:
+                if tempString == "":
+                    tempString = f'{item.position}:({item.value})'
+                else:
+                    tempString = f'{tempString}, {item.position}:({item.value})'
+        selection = self.animKeyEditor.w.comboBox.currentText()
+        if tempString != "":
+            if "Contrast" in selection:
+                self.unicontrol.w.contrast_schedule.setText(tempString)
+            if "Noise" in selection:
+                self.unicontrol.w.noise_schedule.setText(tempString)
+            if "Strength" in selection:
+                self.unicontrol.w.strength_schedule.setText(tempString)
+            if "Rotation X" in selection:
+                self.unicontrol.w.rotation_3d_x.setText(tempString)
+            if "Rotation Y" in selection:
+                self.unicontrol.w.rotation_3d_y.setText(tempString)
+            if "Rotation Z" in selection:
+                self.unicontrol.w.rotation_3d_z.setText(tempString)
+            if "Translation X" in selection:
+                self.unicontrol.w.translation_x.setText(tempString)
+            if "Translation Y" in selection:
+                self.unicontrol.w.translation_y.setText(tempString)
+            if "Translation Z" in selection:
+                self.unicontrol.w.translation_z.setText(tempString)
+            if "Angle" in selection:
+                self.unicontrol.w.angle.setText(tempString)
+            if "Zoom" in selection:
+                self.unicontrol.w.zoom.setText(tempString)
+
+    @Slot()
+    def updateKeyFramesFromTemp(self):
+        self.updateAnimKeys()
+
+    def addCurrentFrame(self):
+        matchFound = False
+        value = self.animKeyEditor.w.valueText.value()
+        valueType = self.animKeyEditor.w.comboBox.currentText()
+        position = int(self.timeline.timeline.pointerTimePos)
+        keyframe = {}
+        uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
+        keyframe[position] = KeyFrame(uid, valueType, position, value)
+        for items in self.timeline.timeline.keyFrameList:
+            if items.valueType == valueType:
+                if items.position == position:
+                    items.value = value
+                    matchFound = True
+        if matchFound == False:
+            self.timeline.timeline.keyFrameList.append(keyframe[position])
+        self.timeline.timeline.update()
+        self.updateAnimKeys()
+
+    def update_timeline(self):
+        self.timeline.timeline.duration = self.animSliders.w.frames.value()
+        self.timeline.timeline.update()
 
 
 def QIcon_from_svg(svg_filepath, color='white'):

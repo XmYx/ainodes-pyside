@@ -66,9 +66,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-88</y>
-            <width>719</width>
-            <height>1802</height>
+            <y>0</y>
+            <width>715</width>
+            <height>2255</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -99,6 +99,18 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_3">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item row="1" column="0">
                <widget class="QFrame" name="frame_3">
                 <property name="frameShape">
@@ -217,48 +229,21 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="8" column="5">
-                  <widget class="QCheckBox" name="use_init">
-                   <property name="text">
-                    <string>Use as Init</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="9" column="6">
                   <widget class="QComboBox" name="seed_behavior">
                    <item>
                     <property name="text">
-                     <string>k_dpm_2_a</string>
+                     <string>iter</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>k_heun</string>
+                     <string>random</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>k_euler</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>k_euler_a</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>dpm_fast</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>dpm_adaptive</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>dpmpp_2s_a</string>
+                     <string>fixed</string>
                     </property>
                    </item>
                   </widget>
@@ -435,15 +420,42 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="8" column="1" colspan="4">
+                 <item row="9" column="1" colspan="4">
+                  <widget class="QLineEdit" name="seed"/>
+                 </item>
+                 <item row="13" column="0">
+                  <widget class="QLabel" name="label_15">
+                   <property name="text">
+                    <string>DDIM ETA</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="0">
+                  <widget class="QCheckBox" name="use_init">
+                   <property name="text">
+                    <string>Use as Init</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="1" colspan="5">
                   <widget class="QLineEdit" name="init_image">
                    <property name="text">
                     <string>https://cdn.pixabay.com/photo/2022/07/30/13/10/green-longhorn-beetle-7353749_1280.jpg</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="9" column="1" colspan="4">
-                  <widget class="QLineEdit" name="seed"/>
+                 <item row="8" column="6">
+                  <widget class="QPushButton" name="select_init_image">
+                   <property name="text">
+                    <string>Select Path</string>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>8</width>
+                     <height>8</height>
+                    </size>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -558,24 +570,10 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="2" colspan="2">
-                  <widget class="QLabel" name="label_17">
-                   <property name="text">
-                    <string>Reconstruction Blur</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="6" column="0">
                   <widget class="QCheckBox" name="save_settings">
                    <property name="text">
                     <string>Save Settings</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0" colspan="2">
-                  <widget class="QLabel" name="label_11">
-                   <property name="text">
-                    <string>Mask Blur</string>
                    </property>
                   </widget>
                  </item>
@@ -714,11 +712,25 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="0">
+                 <item row="1" column="1">
                   <widget class="QSpinBox" name="mask_blur"/>
                  </item>
-                 <item row="3" column="2">
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_11">
+                   <property name="text">
+                    <string>Mask Blur</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
                   <widget class="QSpinBox" name="reconstruction_blur"/>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QLabel" name="label_17">
+                   <property name="text">
+                    <string>Reconstruction Blur</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -771,9 +783,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="1" colspan="4">
-                  <widget class="QComboBox" name="aesthetic_embedding"/>
-                 </item>
                  <item row="1" column="4">
                   <widget class="QDoubleSpinBox" name="gradient_scale"/>
                  </item>
@@ -790,6 +799,9 @@
                     <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
+                 </item>
+                 <item row="0" column="1" colspan="2">
+                  <widget class="QComboBox" name="aesthetic_embedding"/>
                  </item>
                 </layout>
                </widget>
@@ -818,107 +830,26 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_7">
-              <item row="3" column="2" colspan="2">
-               <widget class="QSlider" name="mean_scale_slider">
-                <property name="maximum">
-                 <number>1000</number>
-                </property>
-                <property name="value">
-                 <number>0</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="18" column="2">
-               <widget class="QComboBox" name="gradient_add_to">
-                <item>
-                 <property name="text">
-                  <string>cond</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>uncond</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>both</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="9" column="0">
-               <widget class="QLabel" name="label_31">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item row="3" column="4">
+               <widget class="QPushButton" name="pushButton_2">
                 <property name="text">
-                 <string>Colormatch N Colors</string>
+                 <string>Edit Path / Url</string>
                 </property>
                </widget>
               </item>
-              <item row="17" column="3">
-               <widget class="QLabel" name="label_3">
-                <property name="text">
-                 <string>Decode Method</string>
-                </property>
-               </widget>
-              </item>
-              <item row="17" column="4">
-               <widget class="QComboBox" name="decode_method">
-                <item>
-                 <property name="text">
-                  <string>linear</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>None</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>autoencoder</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="17" column="2">
-               <widget class="QComboBox" name="gradient_wrt">
-                <item>
-                 <property name="text">
-                  <string>x0_pred</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>x</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_58">
-                <property name="text">
-                 <string>Clip Model</string>
-                </property>
-               </widget>
-              </item>
-              <item row="18" column="3">
-               <widget class="QLabel" name="label_61">
-                <property name="text">
-                 <string>Grad Threshold Type</string>
-                </property>
-               </widget>
-              </item>
-              <item row="18" column="0">
-               <widget class="QLabel" name="label_60">
-                <property name="text">
-                 <string>Gradient add to</string>
-                </property>
-               </widget>
-              </item>
-              <item row="18" column="4">
+              <item row="27" column="4">
                <widget class="QComboBox" name="grad_threshold_type">
                 <item>
                  <property name="text">
@@ -942,7 +873,138 @@
                 </item>
                </widget>
               </item>
-              <item row="0" column="2" colspan="2">
+              <item row="24" column="0">
+               <widget class="QLabel" name="Clamp_3">
+                <property name="text">
+                 <string>Clamp Stop</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_30">
+                <property name="text">
+                 <string>Colormatch Preview</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="label_68">
+                <property name="text">
+                 <string>Clip Scale</string>
+                </property>
+               </widget>
+              </item>
+              <item row="21" column="2" colspan="2">
+               <widget class="QSlider" name="cut_pow_slider">
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="23" column="2" colspan="2">
+               <widget class="QSlider" name="clamp_start_slider">
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="14" column="4">
+               <widget class="QDoubleSpinBox" name="colormatch_scale"/>
+              </item>
+              <item row="18" column="4">
+               <widget class="QSpinBox" name="colormatch_n_colors"/>
+              </item>
+              <item row="11" column="4">
+               <widget class="QDoubleSpinBox" name="var_scale"/>
+              </item>
+              <item row="23" column="4">
+               <widget class="QDoubleSpinBox" name="clamp_start"/>
+              </item>
+              <item row="24" column="4">
+               <widget class="QDoubleSpinBox" name="clamp_stop"/>
+              </item>
+              <item row="12" column="2" colspan="2">
+               <widget class="QSlider" name="exposure_scale_slider">
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="14" column="0">
+               <widget class="QLabel" name="label_28">
+                <property name="text">
+                 <string>Colormatch Scale</string>
+                </property>
+               </widget>
+              </item>
+              <item row="22" column="4">
+               <widget class="QDoubleSpinBox" name="clamp_grad_threshold"/>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_58">
+                <property name="text">
+                 <string>Clip Model</string>
+                </property>
+               </widget>
+              </item>
+              <item row="27" column="3">
+               <widget class="QLabel" name="label_61">
+                <property name="text">
+                 <string>Grad Threshold Type</string>
+                </property>
+               </widget>
+              </item>
+              <item row="22" column="2" colspan="2">
+               <widget class="QSlider" name="clamp_grad_threshold_slider">
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="4">
+               <widget class="QDoubleSpinBox" name="aesthetics_scale"/>
+              </item>
+              <item row="13" column="2" colspan="2">
+               <widget class="QSlider" name="exposure_target_slider">
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="4">
+               <widget class="QDoubleSpinBox" name="exposure_target"/>
+              </item>
+              <item row="5" column="2" colspan="2">
                <widget class="QComboBox" name="clip_name">
                 <item>
                  <property name="text">
@@ -966,204 +1028,27 @@
                 </item>
                </widget>
               </item>
-              <item row="8" column="4">
-               <widget class="QPushButton" name="pushButton">
+              <item row="2" column="2">
+               <widget class="QLineEdit" name="colormatch_image"/>
+              </item>
+              <item row="26" column="3">
+               <widget class="QLabel" name="label_3">
                 <property name="text">
-                 <string>Select</string>
+                 <string>Decode Method</string>
                 </property>
                </widget>
               </item>
-              <item row="17" column="0">
-               <widget class="QLabel" name="label_59">
+              <item row="25" column="0">
+               <widget class="QLabel" name="Clamp_4">
                 <property name="text">
-                 <string>Gradient WRT</string>
+                 <string>Grad Inject Timing</string>
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_68">
-                <property name="text">
-                 <string>Clip Scale</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="4">
-               <widget class="QDoubleSpinBox" name="clip_scale"/>
-              </item>
-              <item row="2" column="2" colspan="2">
-               <widget class="QSlider" name="aesthetics_scale_slider">
-                <property name="maximum">
-                 <number>1000</number>
-                </property>
-                <property name="value">
-                 <number>0</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_69">
-                <property name="text">
-                 <string>Aest. Scale</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2" colspan="2">
-               <widget class="QSlider" name="clip_scale_slider">
-                <property name="maximum">
-                 <number>1000</number>
-                </property>
-                <property name="value">
-                 <number>0</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="13" column="2" colspan="2">
-               <widget class="QSlider" name="clamp_grad_threshold_slider">
-                <property name="maximum">
-                 <number>1000</number>
-                </property>
-                <property name="value">
-                 <number>0</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="13" column="0">
-               <widget class="QLabel" name="Clamp">
-                <property name="text">
-                 <string>Clamp Grad Threshold</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="4">
-               <widget class="QDoubleSpinBox" name="aesthetics_scale"/>
-              </item>
-              <item row="13" column="4">
-               <widget class="QDoubleSpinBox" name="clamp_grad_threshold"/>
-              </item>
-              <item row="11" column="0">
-               <widget class="QLabel" name="label_33">
-                <property name="text">
-                 <string>Cut Number</string>
-                </property>
-               </widget>
-              </item>
-              <item row="10" column="0">
-               <widget class="QLabel" name="label_32">
-                <property name="text">
-                 <string>Ignore Sat Weight</string>
-                </property>
-               </widget>
-              </item>
-              <item row="11" column="4">
+              <item row="20" column="4">
                <widget class="QSpinBox" name="cutn"/>
               </item>
-              <item row="8" column="3">
-               <widget class="QPushButton" name="pushButton_2">
-                <property name="text">
-                 <string>Edit Path / Url</string>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="2" colspan="2">
-               <widget class="QSlider" name="exposure_target_slider">
-                <property name="maximum">
-                 <number>1000</number>
-                </property>
-                <property name="value">
-                 <number>0</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="0">
-               <widget class="QLabel" name="label_34">
-                <property name="text">
-                 <string>Cut POW</string>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="4">
-               <widget class="QDoubleSpinBox" name="cut_pow"/>
-              </item>
-              <item row="10" column="4">
-               <widget class="QDoubleSpinBox" name="ignore_sat_weight"/>
-              </item>
-              <item row="8" column="2">
-               <widget class="QLabel" name="label_30">
-                <property name="text">
-                 <string>Colormatch Preview</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_23">
-                <property name="text">
-                 <string>Mean Scale</string>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="4">
-               <widget class="QSpinBox" name="colormatch_n_colors"/>
-              </item>
-              <item row="9" column="2" colspan="2">
-               <widget class="QSlider" name="colormatch_n_colors_slider">
-                <property name="maximum">
-                 <number>25</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="label_26">
-                <property name="text">
-                 <string>Expo Scale</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="4">
-               <widget class="QDoubleSpinBox" name="var_scale"/>
-              </item>
-              <item row="12" column="2" colspan="2">
-               <widget class="QSlider" name="cut_pow_slider">
-                <property name="maximum">
-                 <number>1000</number>
-                </property>
-                <property name="value">
-                 <number>0</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="label_25">
-                <property name="text">
-                 <string>Var Scale</string>
-                </property>
-               </widget>
-              </item>
-              <item row="11" column="2" colspan="2">
-               <widget class="QSlider" name="cutn_slider">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="10" column="2" colspan="2">
+              <item row="19" column="2" colspan="2">
                <widget class="QSlider" name="ignore_sat_weight_slider">
                 <property name="maximum">
                  <number>1000</number>
@@ -1176,82 +1061,7 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="4">
-               <widget class="QDoubleSpinBox" name="mean_scale"/>
-              </item>
-              <item row="5" column="2" colspan="2">
-               <widget class="QSlider" name="exposure_scale_slider">
-                <property name="maximum">
-                 <number>1000</number>
-                </property>
-                <property name="value">
-                 <number>0</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="2" colspan="2">
-               <widget class="QSlider" name="colormatch_scale_slider">
-                <property name="maximum">
-                 <number>1000</number>
-                </property>
-                <property name="value">
-                 <number>0</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="4">
-               <widget class="QDoubleSpinBox" name="exposure_scale"/>
-              </item>
-              <item row="4" column="2" colspan="2">
-               <widget class="QSlider" name="var_scale_slider">
-                <property name="maximum">
-                 <number>1000</number>
-                </property>
-                <property name="value">
-                 <number>0</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="0">
-               <widget class="QLabel" name="label_27">
-                <property name="text">
-                 <string>Expo Target</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="0">
-               <widget class="QLabel" name="label_29">
-                <property name="text">
-                 <string>Colormatch Image</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="4">
-               <widget class="QDoubleSpinBox" name="colormatch_scale"/>
-              </item>
-              <item row="7" column="0">
-               <widget class="QLabel" name="label_28">
-                <property name="text">
-                 <string>Colormatch Scale</string>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="4">
-               <widget class="QDoubleSpinBox" name="exposure_target"/>
-              </item>
-              <item row="14" column="4">
-               <widget class="QDoubleSpinBox" name="clamp_start"/>
-              </item>
-              <item row="15" column="2" colspan="2">
+              <item row="24" column="2" colspan="2">
                <widget class="QSlider" name="clamp_stop_slider">
                 <property name="maximum">
                  <number>1000</number>
@@ -1264,8 +1074,53 @@
                 </property>
                </widget>
               </item>
-              <item row="14" column="2" colspan="2">
-               <widget class="QSlider" name="clamp_start_slider">
+              <item row="20" column="0">
+               <widget class="QLabel" name="label_33">
+                <property name="text">
+                 <string>Cut Number</string>
+                </property>
+               </widget>
+              </item>
+              <item row="26" column="4">
+               <widget class="QComboBox" name="decode_method">
+                <item>
+                 <property name="text">
+                  <string>linear</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>None</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>autoencoder</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="12" column="4">
+               <widget class="QDoubleSpinBox" name="exposure_scale"/>
+              </item>
+              <item row="21" column="4">
+               <widget class="QDoubleSpinBox" name="cut_pow"/>
+              </item>
+              <item row="3" column="2">
+               <widget class="QLineEdit" name="lineEdit_2"/>
+              </item>
+              <item row="4" column="4">
+               <widget class="QPushButton" name="select_mse_init">
+                <property name="text">
+                 <string>Select</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="4">
+               <widget class="QDoubleSpinBox" name="clip_scale"/>
+              </item>
+              <item row="10" column="2" colspan="2">
+               <widget class="QSlider" name="mean_scale_slider">
                 <property name="maximum">
                  <number>1000</number>
                 </property>
@@ -1277,36 +1132,262 @@
                 </property>
                </widget>
               </item>
-              <item row="15" column="4">
-               <widget class="QDoubleSpinBox" name="clamp_stop"/>
-              </item>
-              <item row="14" column="0">
-               <widget class="QLabel" name="Clamp_2">
-                <property name="text">
-                 <string>Clamp Start</string>
+              <item row="8" column="2" colspan="2">
+               <widget class="QSlider" name="clip_scale_slider">
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
                 </property>
                </widget>
               </item>
-              <item row="15" column="0">
-               <widget class="QLabel" name="Clamp_3">
+              <item row="10" column="4">
+               <widget class="QDoubleSpinBox" name="mean_scale"/>
+              </item>
+              <item row="10" column="0">
+               <widget class="QLabel" name="label_23">
                 <property name="text">
-                 <string>Clamp Stop</string>
+                 <string>Mean Scale</string>
                 </property>
                </widget>
               </item>
-              <item row="16" column="2" colspan="2">
+              <item row="18" column="2" colspan="2">
+               <widget class="QSlider" name="colormatch_n_colors_slider">
+                <property name="maximum">
+                 <number>25</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_29">
+                <property name="text">
+                 <string>Colormatch Image</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_57">
+                <property name="text">
+                 <string>Init MSE Scale</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_16">
+                <property name="text">
+                 <string>Init MSE Image</string>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="0">
+               <widget class="QLabel" name="label_25">
+                <property name="text">
+                 <string>Var Scale</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="4">
+               <widget class="QPushButton" name="select_color_match_image">
+                <property name="text">
+                 <string>Select</string>
+                </property>
+               </widget>
+              </item>
+              <item row="19" column="0">
+               <widget class="QLabel" name="label_32">
+                <property name="text">
+                 <string>Ignore Sat Weight</string>
+                </property>
+               </widget>
+              </item>
+              <item row="27" column="2">
+               <widget class="QComboBox" name="gradient_add_to">
+                <item>
+                 <property name="text">
+                  <string>cond</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>uncond</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>both</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="11" column="2" colspan="2">
+               <widget class="QSlider" name="var_scale_slider">
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="26" column="2">
+               <widget class="QComboBox" name="gradient_wrt">
+                <item>
+                 <property name="text">
+                  <string>x0_pred</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>x</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="27" column="0">
+               <widget class="QLabel" name="label_60">
+                <property name="text">
+                 <string>Gradient add to</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="2" colspan="2">
+               <widget class="QSlider" name="aesthetics_scale_slider">
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="19" column="4">
+               <widget class="QDoubleSpinBox" name="ignore_sat_weight"/>
+              </item>
+              <item row="22" column="0">
+               <widget class="QLabel" name="Clamp">
+                <property name="text">
+                 <string>Clamp Grad Threshold</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="0">
+               <widget class="QLabel" name="label_26">
+                <property name="text">
+                 <string>Expo Scale</string>
+                </property>
+               </widget>
+              </item>
+              <item row="20" column="2" colspan="2">
+               <widget class="QSlider" name="cutn_slider">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="0">
+               <widget class="QLabel" name="label_27">
+                <property name="text">
+                 <string>Expo Target</string>
+                </property>
+               </widget>
+              </item>
+              <item row="21" column="0">
+               <widget class="QLabel" name="label_34">
+                <property name="text">
+                 <string>Cut POW</string>
+                </property>
+               </widget>
+              </item>
+              <item row="18" column="0">
+               <widget class="QLabel" name="label_31">
+                <property name="text">
+                 <string>Colormatch N Colors</string>
+                </property>
+               </widget>
+              </item>
+              <item row="25" column="2">
                <widget class="QLineEdit" name="grad_inject_timing">
                 <property name="text">
                  <string>0.8</string>
                 </property>
                </widget>
               </item>
-              <item row="16" column="0">
-               <widget class="QLabel" name="Clamp_4">
+              <item row="26" column="0">
+               <widget class="QLabel" name="label_59">
                 <property name="text">
-                 <string>Grad Inject Timing</string>
+                 <string>Gradient WRT</string>
                 </property>
                </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="QLineEdit" name="init_mse_image"/>
+              </item>
+              <item row="9" column="0">
+               <widget class="QLabel" name="label_69">
+                <property name="text">
+                 <string>Aest. Scale</string>
+                </property>
+               </widget>
+              </item>
+              <item row="23" column="0">
+               <widget class="QLabel" name="Clamp_2">
+                <property name="text">
+                 <string>Clamp Start</string>
+                </property>
+               </widget>
+              </item>
+              <item row="14" column="2" colspan="2">
+               <widget class="QSlider" name="colormatch_scale_slider">
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_70">
+                <property name="text">
+                 <string>Blue Scale</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="2" colspan="2">
+               <widget class="QSlider" name="blue_scale_slider">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="2" colspan="2">
+               <widget class="QSlider" name="init_mse_scale_slider">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="4">
+               <widget class="QDoubleSpinBox" name="init_mse_scale"/>
+              </item>
+              <item row="7" column="4">
+               <widget class="QDoubleSpinBox" name="blue_scale"/>
               </item>
              </layout>
             </widget>
@@ -1356,9 +1437,9 @@
               <item>
                <widget class="QTabWidget" name="tabWidget">
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
-                <widget class="QWidget" name="anim_common">
+                <widget class="QWidget" name="tab">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -1366,12 +1447,9 @@
                   </sizepolicy>
                  </property>
                  <attribute name="title">
-                  <string>Common</string>
+                  <string>3d / Mask / Other</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="verticalLayout_4">
-                  <property name="spacing">
-                   <number>5</number>
-                  </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_5">
                   <property name="leftMargin">
                    <number>3</number>
                   </property>
@@ -1384,73 +1462,6 @@
                   <property name="bottomMargin">
                    <number>3</number>
                   </property>
-                  <item>
-                   <widget class="QLabel" name="label_24">
-                    <property name="text">
-                     <string>Strength Schedule</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QTextEdit" name="strength_schedule">
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>1000</height>
-                     </size>
-                    </property>
-                    <property name="acceptRichText">
-                     <bool>false</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_35">
-                    <property name="text">
-                     <string>Noise Schedule</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QTextEdit" name="noise_schedule">
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>1000</height>
-                     </size>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_36">
-                    <property name="text">
-                     <string>Contrast Schedule</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QTextEdit" name="contrast_schedule">
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>1000</height>
-                     </size>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-                <widget class="QWidget" name="tab">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <attribute name="title">
-                  <string>3d / Mask / Other</string>
-                 </attribute>
-                 <layout class="QVBoxLayout" name="verticalLayout_5">
                   <item>
                    <widget class="QFrame" name="frame_7">
                     <property name="sizePolicy">
@@ -1466,6 +1477,18 @@
                      <enum>QFrame::Raised</enum>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_11">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
                      <item row="0" column="0">
                       <widget class="QCheckBox" name="adabins">
                        <property name="text">
@@ -1513,7 +1536,7 @@
                         <number>5000</number>
                        </property>
                        <property name="value">
-                        <number>10</number>
+                        <number>1</number>
                        </property>
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
@@ -1526,7 +1549,7 @@
                         <number>3000</number>
                        </property>
                        <property name="value">
-                        <number>10</number>
+                        <number>1</number>
                        </property>
                       </widget>
                      </item>
@@ -1567,7 +1590,7 @@
                      <item row="8" column="1" colspan="3">
                       <widget class="QSlider" name="mask_contrast_slider">
                        <property name="maximum">
-                        <number>1000</number>
+                        <number>2000</number>
                        </property>
                        <property name="value">
                         <number>1000</number>
@@ -1694,7 +1717,7 @@
                      <item row="9" column="1" colspan="3">
                       <widget class="QSlider" name="mask_brightness_slider">
                        <property name="maximum">
-                        <number>1000</number>
+                        <number>2000</number>
                        </property>
                        <property name="value">
                         <number>1000</number>
@@ -1748,13 +1771,31 @@
                       </widget>
                      </item>
                      <item row="21" column="4">
-                      <widget class="QSpinBox" name="diffusion_cadence"/>
+                      <widget class="QSpinBox" name="diffusion_cadence">
+                       <property name="maximum">
+                        <number>50</number>
+                       </property>
+                      </widget>
                      </item>
                      <item row="17" column="4">
-                      <widget class="QSpinBox" name="near_plane"/>
+                      <widget class="QSpinBox" name="near_plane">
+                       <property name="maximum">
+                        <number>2000</number>
+                       </property>
+                       <property name="value">
+                        <number>200</number>
+                       </property>
+                      </widget>
                      </item>
                      <item row="19" column="4">
-                      <widget class="QSpinBox" name="far_plane"/>
+                      <widget class="QSpinBox" name="far_plane">
+                       <property name="maximum">
+                        <number>10000</number>
+                       </property>
+                       <property name="value">
+                        <number>2000</number>
+                       </property>
+                      </widget>
                      </item>
                      <item row="9" column="4">
                       <widget class="QDoubleSpinBox" name="mask_brightness"/>
@@ -1922,6 +1963,88 @@
                   </item>
                  </layout>
                 </widget>
+                <widget class="QWidget" name="anim_common">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <attribute name="title">
+                  <string>Common</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_4">
+                  <property name="spacing">
+                   <number>5</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>3</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_24">
+                    <property name="text">
+                     <string>Strength Schedule</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QTextEdit" name="strength_schedule">
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>1000</height>
+                     </size>
+                    </property>
+                    <property name="acceptRichText">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_35">
+                    <property name="text">
+                     <string>Noise Schedule</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QTextEdit" name="noise_schedule">
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>1000</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_36">
+                    <property name="text">
+                     <string>Contrast Schedule</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QTextEdit" name="contrast_schedule">
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>1000</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
                 <widget class="QWidget" name="anim_2d">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -1933,6 +2056,18 @@
                   <string>2D</string>
                  </attribute>
                  <layout class="QHBoxLayout" name="horizontalLayout">
+                  <property name="leftMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>3</number>
+                  </property>
                   <item>
                    <widget class="QFrame" name="frame_2">
                     <property name="sizePolicy">
@@ -1948,6 +2083,18 @@
                      <enum>QFrame::Raised</enum>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_8">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
                      <item row="4" column="1">
                       <widget class="QTextEdit" name="perspective_flip_phi">
                        <property name="maximumSize">
@@ -2073,6 +2220,18 @@
                   <string>3D</string>
                  </attribute>
                  <layout class="QVBoxLayout" name="verticalLayout">
+                  <property name="leftMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>3</number>
+                  </property>
                   <item>
                    <widget class="QFrame" name="frame_6">
                     <property name="sizePolicy">
@@ -2088,6 +2247,18 @@
                      <enum>QFrame::Raised</enum>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_10">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
                      <item row="0" column="0">
                       <widget class="QLabel" name="label_2">
                        <property name="text">
@@ -2209,6 +2380,18 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_12">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item row="0" column="3">
                <widget class="QPushButton" name="loadbutton">
                 <property name="text">
@@ -2600,24 +2783,60 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_2">
-              <item row="3" column="0">
-               <widget class="QLabel" name="heightlabel">
+              <property name="leftMargin">
+               <number>3</number>
+              </property>
+              <property name="topMargin">
+               <number>3</number>
+              </property>
+              <property name="rightMargin">
+               <number>3</number>
+              </property>
+              <property name="bottomMargin">
+               <number>3</number>
+              </property>
+              <item row="2" column="0">
+               <widget class="QLabel" name="widthlabel">
                 <property name="text">
-                 <string>Heigth</string>
+                 <string>Width</string>
                 </property>
                </widget>
               </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="cfglabel">
-                <property name="text">
-                 <string>CFG</string>
+              <item row="2" column="1" colspan="5">
+               <widget class="QSlider" name="W_slider">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="minimum">
+                 <number>256</number>
+                </property>
+                <property name="maximum">
+                 <number>2048</number>
+                </property>
+                <property name="singleStep">
+                 <number>64</number>
+                </property>
+                <property name="pageStep">
+                 <number>64</number>
+                </property>
+                <property name="value">
+                 <number>512</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
                 </property>
                </widget>
               </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="stepslabel">
+              <item row="1" column="3" colspan="3">
+               <widget class="QPushButton" name="lucky">
                 <property name="text">
-                 <string>Steps</string>
+                 <string>I Have a lucky day</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>8</width>
+                  <height>8</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -2647,18 +2866,28 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="widthlabel">
+              <item row="1" column="1" colspan="2">
+               <widget class="QPushButton" name="dream">
                 <property name="text">
-                 <string>Width</string>
+                 <string>Dream</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>8</width>
+                  <height>8</height>
+                 </size>
                 </property>
                </widget>
               </item>
-              <item row="2" column="1" colspan="4">
-               <widget class="QSlider" name="W_slider">
-                <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
+              <item row="1" column="0">
+               <widget class="QCheckBox" name="lowmem">
+                <property name="text">
+                 <string>Low Memory</string>
                 </property>
+               </widget>
+              </item>
+              <item row="3" column="6">
+               <widget class="QSpinBox" name="H">
                 <property name="minimum">
                  <number>256</number>
                 </property>
@@ -2668,18 +2897,115 @@
                 <property name="singleStep">
                  <number>64</number>
                 </property>
-                <property name="pageStep">
-                 <number>64</number>
-                </property>
                 <property name="value">
                  <number>512</number>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="6">
+               <widget class="QDoubleSpinBox" name="scale">
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+                <property name="value">
+                 <double>7.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0" colspan="7">
+               <widget class="QTextEdit" name="prompts">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="heightlabel">
+                <property name="text">
+                 <string>Heigth</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1" colspan="5">
+               <widget class="QSlider" name="scale_slider">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="pageStep">
+                 <number>1</number>
+                </property>
+                <property name="value">
+                 <number>75</number>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
                </widget>
               </item>
-              <item row="3" column="1" colspan="4">
+              <item row="8" column="0" colspan="7">
+               <widget class="QTextEdit" name="negative_prompts">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="6">
+               <widget class="QSpinBox" name="W">
+                <property name="minimum">
+                 <number>256</number>
+                </property>
+                <property name="maximum">
+                 <number>2048</number>
+                </property>
+                <property name="singleStep">
+                 <number>64</number>
+                </property>
+                <property name="value">
+                 <number>512</number>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="stepslabel">
+                <property name="text">
+                 <string>Steps</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1" colspan="5">
                <widget class="QSlider" name="H_slider">
                 <property name="focusPolicy">
                  <enum>Qt::NoFocus</enum>
@@ -2704,7 +3030,14 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="1" colspan="4">
+              <item row="5" column="0">
+               <widget class="QLabel" name="cfglabel">
+                <property name="text">
+                 <string>CFG</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1" colspan="5">
                <widget class="QSlider" name="steps_slider">
                 <property name="focusPolicy">
                  <enum>Qt::NoFocus</enum>
@@ -2726,74 +3059,7 @@
                 </property>
                </widget>
               </item>
-              <item row="5" column="1" colspan="4">
-               <widget class="QSlider" name="scale_slider">
-                <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
-                </property>
-                <property name="maximum">
-                 <number>1000</number>
-                </property>
-                <property name="pageStep">
-                 <number>1</number>
-                </property>
-                <property name="value">
-                 <number>75</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="0" colspan="6">
-               <widget class="QTextEdit" name="negative_prompts">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="5">
-               <widget class="QSpinBox" name="H">
-                <property name="minimum">
-                 <number>256</number>
-                </property>
-                <property name="maximum">
-                 <number>2048</number>
-                </property>
-                <property name="singleStep">
-                 <number>64</number>
-                </property>
-                <property name="value">
-                 <number>512</number>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="5">
-               <widget class="QDoubleSpinBox" name="scale">
-                <property name="singleStep">
-                 <double>0.010000000000000</double>
-                </property>
-                <property name="value">
-                 <double>7.500000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="5">
+              <item row="4" column="6">
                <widget class="QSpinBox" name="steps">
                 <property name="minimum">
                  <number>1</number>
@@ -2806,19 +3072,16 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="5">
-               <widget class="QSpinBox" name="W">
-                <property name="minimum">
-                 <number>256</number>
+              <item row="9" column="2">
+               <widget class="QPushButton" name="hideAesButton">
+                <property name="text">
+                 <string>Aesthetic</string>
                 </property>
-                <property name="maximum">
-                 <number>2048</number>
-                </property>
-                <property name="singleStep">
-                 <number>64</number>
-                </property>
-                <property name="value">
-                 <number>512</number>
+                <property name="iconSize">
+                 <size>
+                  <width>8</width>
+                  <height>8</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -2836,6 +3099,13 @@
                </widget>
               </item>
               <item row="9" column="4">
+               <widget class="QPushButton" name="image_lab">
+                <property name="text">
+                 <string>Image Lab</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="6">
                <widget class="QPushButton" name="showHideAll">
                 <property name="text">
                  <string>All</string>
@@ -2845,74 +3115,6 @@
                   <width>8</width>
                   <height>8</height>
                  </size>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="2">
-               <widget class="QPushButton" name="hideAesButton">
-                <property name="text">
-                 <string>Aesthetic</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0" colspan="6">
-               <widget class="QTextEdit" name="prompts">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1" colspan="2">
-               <widget class="QPushButton" name="dream">
-                <property name="text">
-                 <string>Dream</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="3" colspan="2">
-               <widget class="QPushButton" name="lucky">
-                <property name="text">
-                 <string>I Have a lucky day</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QCheckBox" name="lowmem">
-                <property name="text">
-                 <string>Low Memory</string>
                 </property>
                </widget>
               </item>

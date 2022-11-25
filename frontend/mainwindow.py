@@ -52,7 +52,6 @@ class MainWindow(QMainWindow):
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.unicontrol.w.dockWidget)
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
 
-
         self.create_main_toolbar()
         self.create_secondary_toolbar()
 
@@ -64,20 +63,8 @@ class MainWindow(QMainWindow):
 
         self.threadpool = QThreadPool()
         self.deforum_ui = Deforum_UI(self)
-        self.deforum_ui.signals.txt2img_image_cb.connect(self.image_preview_func)
-        self.deforum_ui.signals.deforum_step.connect(self.tensor_preview_schedule)
 
-        self.unicontrol.w.dream.clicked.connect(self.taskswitcher)
-        self.canvas.W.valueChanged.connect(self.canvas.canvas.change_resolution)
-        self.canvas.H.valueChanged.connect(self.canvas.canvas.change_resolution)
-        #self.canvas.canvas.signals.update_selected.connect(self.show_outpaint_details)
-        #self.canvas.canvas.signals.update_params.connect(self.create_params)
-        #self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
-        self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_six_txt2img_thread)
-        self.unicontrol.w.H.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
-        self.unicontrol.w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
-        self.unicontrol.w.lucky.clicked.connect(self.show_default)
-        self.unicontrol.w.negative_prompts.setVisible(False)
+
         self.y = 0
         self.lastheight = None
         self.height = gs.diffusion.H
@@ -94,12 +81,29 @@ class MainWindow(QMainWindow):
         self.connections()
         self.list_files()
 
+
     def connections(self):
+        self.deforum_ui.signals.txt2img_image_cb.connect(self.image_preview_func)
+        self.deforum_ui.signals.deforum_step.connect(self.tensor_preview_schedule)
+
+        self.canvas.W.valueChanged.connect(self.canvas.canvas.change_resolution)
+        self.canvas.H.valueChanged.connect(self.canvas.canvas.change_resolution)
 
         self.canvas.canvas.signals.update_selected.connect(self.show_outpaint_details)
         self.canvas.canvas.signals.update_params.connect(self.create_params)
         self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
         self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_six_txt2img_thread)
+
+        #self.canvas.canvas.signals.update_selected.connect(self.show_outpaint_details)
+        #self.canvas.canvas.signals.update_params.connect(self.create_params)
+        #self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
+        self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_six_txt2img_thread)
+
+        self.unicontrol.w.dream.clicked.connect(self.taskswitcher)
+        self.unicontrol.w.H.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
+        self.unicontrol.w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
+        self.unicontrol.w.lucky.clicked.connect(self.show_default)
+
 
         self.unicontrol.w.redo.clicked.connect(self.redo_current_outpaint)
         self.unicontrol.w.delete_2.clicked.connect(self.delete_outpaint_frame)
@@ -113,12 +117,13 @@ class MainWindow(QMainWindow):
         self.unicontrol.w.W.valueChanged.connect(self.update_outpaint_parameters)
         self.unicontrol.w.H.valueChanged.connect(self.update_outpaint_parameters)
         self.unicontrol.w.mask_offset.valueChanged.connect(self.outpaint_offset_signal)
-        self.unicontrol.w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.unicontrol.w.mask_offset.value())))
+        self.unicontrol.w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.unicontrol.w.mask_offset.value())))  # todo does this work?
         self.unicontrol.w.rect_overlap.valueChanged.connect(self.outpaint_rect_overlap)
+
+
 
     def taskswitcher(self):
         save_last_prompt(self.unicontrol.w.prompts.toHtml(), self.unicontrol.w.prompts.toPlainText())
-        print(self.unicontrol.w.use_inpaint.isChecked())
         if self.unicontrol.w.use_inpaint.isChecked() == True:
             self.canvas.canvas.reusable_outpaint(self.canvas.canvas.selected_item)
             self.deforum_ui.deforum_outpaint_thread()
@@ -169,15 +174,13 @@ class MainWindow(QMainWindow):
     def help_mode(self):
         pass
 
-
-
     def update_ui_from_params(self):
         for key, value in self.sessionparams.params.items():
             try:
                 #We have to add check for Animation Mode as thats a radio checkbox with values 'anim2d', 'anim3d', 'animVid'
                 #add colormatch_image (it will be with a fancy preview)
                 type = str(getattr(self.unicontrol.w, key))
-                #print(type, value)
+
                 if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
                     getattr(self.unicontrol.w, key).setValue(value)
                 elif  'QTextEdit' in type or 'QLineEdit' in type:
@@ -190,7 +193,6 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 print(e)
                 continue
-    #Main Toolbar, Secondary toolbar to be added
 
 
     def init_plugin_loader(self):
@@ -200,6 +202,7 @@ class MainWindow(QMainWindow):
         list = self.plugins.list_plugins()
         for i in list:
             self.unicontrol.w.plugins.addItem(i)
+
     def load_plugin(self):
         plugin_name = self.unicontrol.w.plugins.currentText()
         self.plugins.load_plugin(f"plugins.{plugin_name}.{plugin_name}")
@@ -224,6 +227,7 @@ class MainWindow(QMainWindow):
         self.toolbar.addAction(gallery_mode)
         self.toolbar.addAction(settings_mode)
         self.toolbar.addAction(help_mode)
+
     def create_secondary_toolbar(self):
         self.secondary_toolbar = QToolBar('Outpaint Tools')
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.secondary_toolbar)
@@ -238,6 +242,7 @@ class MainWindow(QMainWindow):
         select_mode.triggered.connect(self.canvas.canvas.select_mode)
         drag_mode.triggered.connect(self.canvas.canvas.drag_mode)
         add_mode.triggered.connect(self.canvas.canvas.add_mode)
+
     def hide_default(self):
         self.toolbar.setVisible(False)
         self.secondary_toolbar.setVisible(False)
@@ -270,10 +275,10 @@ class MainWindow(QMainWindow):
         if self.unicontrol.ploHidden == False:
             self.unicontrol.hidePlotting_anim()
 
-
         self.thumbs.w.dockWidget.setVisible(False)
 
         self.default_hidden = True
+
     def show_default(self):
         if self.default_hidden == True:
             self.toolbar.setVisible(True)
@@ -410,14 +415,13 @@ class MainWindow(QMainWindow):
                 items.image = items.images[items.index]
                 self.canvas.canvas.newimage = True
                 items.timestring = time.time()
-                #if self.deforum_ui.deforum.temppath is not None:
-                #    items.img_path = self.deforum_ui.deforum.temppath
+
                 self.canvas.canvas.update()
 
 
     def tensor_preview_signal(self, data, data2):
         self.data = data
-        #print(data)
+
         if data2 is not None:
             self.data2 = data2
         else:
@@ -488,7 +492,7 @@ class MainWindow(QMainWindow):
                   "W":self.unicontrol.w.W.value(),
                   "ddim_eta":self.unicontrol.w.ddim_eta.value()
                   }
-        #print(f"Created Params")
+
         return params
 
     @Slot(str)
@@ -504,14 +508,14 @@ class MainWindow(QMainWindow):
                     if i.id == self.canvas.canvas.selected_item:
                         params = self.get_params()
                         i.params = params
-                        #print(f"Parameters saved for rect at {i.x}, {i.y}, {i.params['strength']}")
+
     @Slot(str)
     def create_params(self, uid=None):
         for i in self.canvas.canvas.rectlist:
             if i.id == uid:
                 params = self.prep_rect_params()
                 i.params = params
-                #print(i.params)
+
 
     def get_params(self):
         params = self.sessionparams.params()
@@ -525,7 +529,7 @@ class MainWindow(QMainWindow):
             self.thumbs.w.thumbnails.clear()
             for items in self.canvas.canvas.rectlist:
                 if items.id == self.canvas.canvas.selected_item:
-                    print(items.params)
+
                     if items.params != {}:
                         #print(f"showing strength of {items.params['strength'] * 100}")
                         self.unicontrol.w.steps.setValue(items.params['steps'])
@@ -616,7 +620,7 @@ class MainWindow(QMainWindow):
                         self.hires_source = None
                     offset = offset + 512
                     params = self.prep_rect_params(item["prompt"])
-                    print(params)
+
                     self.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image, index=index, order=item["order"], params=params)
 
                     #x = self.iterate_further(x)
@@ -638,9 +642,8 @@ class MainWindow(QMainWindow):
                 offset = offset + 512
 
                 params = self.prep_rect_params(items["prompt"])
-                print(params)
-                self.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image, index=index, order=items["order"], params=params)
 
+                self.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image, index=index, order=items["order"], params=params)
 
                 #x = self.iterate_further(x)
                 x += 1
@@ -770,7 +773,7 @@ class MainWindow(QMainWindow):
             time.sleep(0.25)
             self.sleepytime += 0.25
         params = self.canvas.canvas.rectlist[x].params
-        print(params['prompts'])
+
         self.deforum_ui.run_deforum_outpaint(params)
         while self.callbackbusy == True:
             time.sleep(0.25)
@@ -881,9 +884,8 @@ class MainWindow(QMainWindow):
             gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.unicontrol.w.aesthetic_embedding.itemText(gradient))
         else:
             gs.aesthetic_embedding_path = None
-        print(f"Aesthetic Gradient set to: {gs.aesthetic_embedding_path}")
-        #print(f"debug {self.set_txt2img.w.gradientList.itemText(gradient)}")
-        #self.list_files(gradient)
+
+
 
 def QIcon_from_svg(svg_filepath, color='white'):
     img = QPixmap(svg_filepath)

@@ -102,8 +102,6 @@ class SessionParams():
 
         decode_method = None if self.parent.unicontrol.w.decode_method.currentText() == 'None' else self.parent.unicontrol.w.decode_method.currentText()
 
-
-
         if self.parent.unicontrol.w.enableNegative.isChecked():
             negative_prompts = self.parent.unicontrol.w.negative_prompts.toPlainText()
             print(f"Using negative prompts {negative_prompts}")
@@ -124,10 +122,6 @@ class SessionParams():
         aesthetics_scale = self.parent.unicontrol.w.aesthetics_scale.value()
         cutn = int(self.parent.unicontrol.w.cutn.value())
         cut_pow = self.parent.unicontrol.w.cut_pow.value()
-
-        #init_mse_scale = self.parent.unicontrol.w.init_mse_scale.value()
-        #init_mse_image = None if self.parent.unicontrol.w.init_mse_image.text() == '' else self.parent.unicontrol.w.init_mse_image.text()
-        #blue_scale = self.parent.unicontrol.w.blue_scale.value()
 
         init_mse_scale = 0
         init_mse_image = None #if self.parent.unicontrol.w.init_mse_image.text() == '' else self.parent.unicontrol.w.init_mse_image.text()

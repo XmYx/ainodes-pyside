@@ -1,5 +1,4 @@
 import sys
-print(sys.path)
 
 from PySide6 import QtCore, QtQuick
 from PySide6.QtGui import QIcon, QAction, QPixmap

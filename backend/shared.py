@@ -1,6 +1,6 @@
 from datetime import datetime
 from backend.singleton import singleton
-
+from backend.torch_gc import torch_gc
 gs = singleton
 
 def save_last_prompt(prompt_html, prompt_txt):
@@ -17,9 +17,10 @@ def save_last_prompt(prompt_html, prompt_txt):
 
 
 def model_killer(keep=''):
-    if gs.models:
-        if len(gs.models.keys()) > 0:
-            models = gs.models.keys()
-            for model in models:
-                if model != keep:
-                    del gs.models[model]
+    if keep in gs.models:
+        temp = gs.models[keep]
+        gs.models = {keep: temp}
+    else:
+        gs.models = {}
+    del temp
+    torch_gc()

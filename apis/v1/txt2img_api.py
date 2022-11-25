@@ -126,7 +126,7 @@ def txt2img_json(t2i_json):
 
 
 @router.post('/api/v1/txttoimg/run', status_code=201)
-async def post(t2i_json: Txt2Img, background_tasks: BackgroundTasks):
+async def post(t2i_json: Txt2Img):
     try:
         gs.current_images = []
         gs.rendering = True

@@ -4,7 +4,7 @@ from torch import nn
 
 import sys
 
-from ldm.data.personalized import per_img_token_list
+from ldm_deforum.data.personalized import per_img_token_list
 from transformers import CLIPTokenizer
 from functools import partial
 

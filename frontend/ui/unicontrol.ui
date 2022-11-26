@@ -66,9 +66,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-136</y>
-            <width>715</width>
-            <height>2255</height>
+            <y>0</y>
+            <width>719</width>
+            <height>1821</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -910,7 +910,7 @@
                  <item row="12" column="1" colspan="5">
                   <widget class="QSlider" name="strength_slider">
                    <property name="maximum">
-                    <number>10</number>
+                    <number>100</number>
                    </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>

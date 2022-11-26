@@ -111,6 +111,7 @@ class Txt2Img(BaseModel):
     cond_uncond_sync: bool = True
     prompt_weighting: bool = False
     normalize_prompt_weights: bool = False
+    karras: bool = False
 
 
 class image_response(Response):
@@ -125,6 +126,8 @@ def txt2img_json(t2i_json):
         t2i_json.seed = random.randint(0, 2 ** 32 - 1)
     params = t2i_json.__dict__
     print(t2i_json)
+    if t2i_json.karras == True:
+        gs.karras = True
     paths = def_six_render.run_deforum_six(W=int(t2i_json.W),
                                            H=int(t2i_json.H),
                                            seed=int(t2i_json.seed),

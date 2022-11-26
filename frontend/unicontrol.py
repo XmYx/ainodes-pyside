@@ -7,7 +7,7 @@ class UniControl(QObject):
     def __init__(self, parent, *args, **kwargs):
         self.parent = parent
         loader = QtUiTools.QUiLoader()
-        file = QFile("frontend/ui/unicontrol_dock.ui")
+        file = QFile("frontend/ui/unicontrol.ui")
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()

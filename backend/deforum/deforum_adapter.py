@@ -469,19 +469,25 @@ class DeforumSix:
         #if gs.system.xformer == True:
         #    backend.hypernetworks.modules.sd_hijack.apply_optimizations()
         gs.system.device = choose_torch_device()
-        print('deforum six enabled')
-        print(f'mode: {animation_mode}')
+        print(f'----------------------------------------------------------------')
+        print(f'-       Deforum  0.6  Art Generator                            -')
+        print(f'-            animation mode: {animation_mode}                  -')
+        print(f'-            steps: {steps}                                    -')
+        print(f'-            width: {W}                                        -')
+        print(f'-            height: {H}                                       -')
+        print(f'-            hires: {hires}                                    -')
+        print(f'-                                                              -')
+        print(f'----------------------------------------------------------------')
         if lowmem == True:
-            print('Low Memory Mode enabled')
+            print(f'-                 Low Memory Mode                             -')
             if "sd" in gs.models:
                 del gs.models["sd"]
             if "inpaint" in gs.models:
                 del gs.models["inpaint"]
             if "custom_model_name" in gs.models:
                 del gs.models["custom_model_name"]
-
-            gs.models["sd"] = None
-            self.load_low_memory()
+                gs.models["sd"] = None
+                self.load_low_memory()
         else:
             if "model" in gs.models:
                 del gs.models["model"]
@@ -492,6 +498,9 @@ class DeforumSix:
             check = self.load_model_from_config(config=None, ckpt=None)
             if check == -1:
                 return check
+
+
+        #print(f'animation mode: {animation_mode}')
 
         if precision == 'autocast' and device != "cpu":
             precision_scope = autocast

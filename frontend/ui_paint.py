@@ -99,7 +99,7 @@ class Canvas(QGraphicsView):
         self.newimage = True
         self.currentWidth = w
         self.currentHeight = h
-        print(f"resized to {w, h}")
+        #print(f"resized to {w, h}")
 
 
     def change_resolution(self):
@@ -176,7 +176,7 @@ class Canvas(QGraphicsView):
         self.soft_reset()
 
         self.rendermode = 1
-        #print(self.rendermode)
+        ##print(self.rendermode)
         self.painter.begin(self.pixmap)
         self.painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform | QPainter.LosslessImageRendering)
         self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
@@ -210,7 +210,7 @@ class Canvas(QGraphicsView):
             self.rectlist.remove(rect[uid])
 
     def tensor_preview(self):
-        #print(self.tensor_preview_item)
+        ##print(self.tensor_preview_item)
         if self.tensor_preview_item is not None:
             w = self.tensor_preview_item.size().width() * 8
             h = self.tensor_preview_item.size().height() * 8
@@ -223,8 +223,8 @@ class Canvas(QGraphicsView):
 
 
     def drawRect(self, x=None, y=None, width=256, height=256):
-        #print(f"selected:{self.selected_item}")
-        #print(f"we are putting that thing to:{x}, {y}, and our width is {self.width()}")
+        ##print(f"selected:{self.selected_item}")
+        ##print(f"we are putting that thing to:{x}, {y}, and our width is {self.width()}")
         if x != None:
             Xscale = self.getXScale()
             Yscale = self.getYScale()
@@ -242,7 +242,7 @@ class Canvas(QGraphicsView):
             if self.selected_item is not None:
                 for i in self.rectlist:
                     if i.id == self.selected_item:
-                        #print(i)
+                        ##print(i)
                         pen = QPen(Qt.green, 3, Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
                         self.rectItem.setPen(pen)
                         self.rectItem.setRect(i.x, i.y, self.w, self.h)
@@ -254,14 +254,14 @@ class Canvas(QGraphicsView):
     def hoverCheck(self):
         #self.gridenabled = False
         #self.gridenabled = True
-        #print(self.rectlist)
+        ##print(self.rectlist)
         self.hover_item = None
         self.sub_hover_item = None
         matchFound = False
         for i in self.rectlist:
-            #print(i.id)
+            ##print(i.id)
             if i.x <= self.scene.scenePos.x() <= i.x + i.w and i.y <= self.scene.scenePos.y() <= i.y + i.h:
-                #print(f"found{id}")
+                ##print(f"found{id}")
                 #i.color = __selColor__
                 #self.update()
                 if self.hover_item is not None:
@@ -291,14 +291,14 @@ class Canvas(QGraphicsView):
     @Slot(int)
     def set_offset(self, offset):
         self.maskoffset = offset
-        #print(f"offset is now: {self.maskoffset}")
+        ##print(f"offset is now: {self.maskoffset}")
 
     def save_rects_as_json(self, filename=None):
-        #print(filename)
+        ##print(filename)
         # Save json to file (data.json)
         templist = []
         for items in self.rectlist:
-            #print(items.x)
+            ##print(items.x)
             item = {}
             item[items.order] = {
                 "x": items.x,
@@ -356,10 +356,10 @@ class Canvas(QGraphicsView):
             x = 0
             for key in json_object:
                 for x in key.values():
-                    #print(x['x'])
+                    ##print(x['x'])
                     rect = {}
                     #uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
-                    #print(f"adding rectangles at:{x} {y}")
+                    ##print(f"adding rectangles at:{x} {y}")
                     try:
                         prompt = x['prompt']
                     except:
@@ -468,8 +468,8 @@ class Canvas(QGraphicsView):
             self.pen = QPen(Qt.red, int(3 / self.zoom), Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
             x = 0
             for i in self.rectlist:
-                #print(self.rectlist[x].order)
-                #print(i.order, x)
+                ##print(self.rectlist[x].order)
+                ##print(i.order, x)
                 self.draw_tempRects(i.x, i.y, i.w, i.h, i.order, x)
                 self.rectsdrawn = True
                 x += 1
@@ -513,7 +513,7 @@ class Canvas(QGraphicsView):
     def addrect_atpos(self, prompt='', x=0, y=0, image=None, index=None, order=None, params=None):
         rect = {}
         uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
-        #print(f"adding rectangles at:{x} {y}")
+        ##print(f"adding rectangles at:{x} {y}")
         matchfound = False
         for i in self.rectlist:
             if i.x == x and i.y == y:
@@ -602,7 +602,7 @@ class Canvas(QGraphicsView):
                                 #i.color = __selColor__
                                 #self.update()
                                 if i.image is not None:
-                                    #print("Found an image to outpaint")
+                                    ##print("Found an image to outpaint")
                                     overlap = True
                                     rect = QRect(x.x - i.x, x.y - i.y, self.w, self.h)
                                     maskrect = QRect(x.x - i.x + Xmaskoffset, x.y - i.y + Ymaskoffset, self.w, self.h)
@@ -651,7 +651,7 @@ class Canvas(QGraphicsView):
                                 #i.color = __selColor__
                                 #self.update()
                                 if i.image is not None:
-                                    #print("Found an image to outpaint")
+                                    ##print("Found an image to outpaint")
                                     rect = QRect(x.x - i.x, x.y - i.y, self.w, self.h)
                                     maskrect = QRect(x.x - i.x + Xmaskoffset, x.y - i.y + Ymaskoffset, self.w, self.h)
                                     newimage = i.image.copy(rect)
@@ -843,7 +843,7 @@ class Canvas(QGraphicsView):
         except:
             pass
         #self.scene.addItem(self.rectItem)
-        #print("Button pressed")
+        ##print("Button pressed")
         self.redraw()
         self.update()
     def drag_mode(self):
@@ -856,7 +856,7 @@ class Canvas(QGraphicsView):
         self.redraw()
         self.setUpdatesEnabled(True)
     def enterEvent(self, event):
-        print("Enter Event")
+        #print("Enter Event")
         is_in = True
         self.bgitem.update()
         self.rectItem.update()
@@ -871,10 +871,10 @@ class Canvas(QGraphicsView):
         #self.redraw()
         self.setUpdatesEnabled(True)
 
-        print("Add Mode")
+        #print("Add Mode")
     def keyPressEvent(self, e):
         super(Canvas, self).keyPressEvent(e)
-        print(f"key pressed: {e.key()}")
+        #print(f"key pressed: {e.key()}")
         if e.key() == 67:
             self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
             self.mode = "drag"
@@ -902,7 +902,7 @@ class Canvas(QGraphicsView):
         super(Canvas, self).keyReleaseEvent(e)
 
     def select_mousePressEvent(self, e):
-        print("select mode active")
+        #print("select mode active")
         if self.hover_item == self.selected_item:
             #if self.sub_hover_item is not None:
             self.selected_item = None
@@ -1124,7 +1124,7 @@ def spiralOrder(matrix):
         matrix[x][y]['order'] = c
         ans.append(matrix[x][y])
         c += 1
-        #print(matrix[x][y])
+        ##print(matrix[x][y])
         seen[x][y] = True
         cr = x + dr[di]
         cc = y + dc[di]
@@ -1143,22 +1143,22 @@ def random_path(order, columns):
     newlist = []
     for i in order:
         for x in i:
-            #print(x['order'])
+            ##print(x['order'])
             templist.append(x["order"])
-    #print(templist)
+    ##print(templist)
     x = 0
     c = 0
     steps = len(templist) - 1
     newlist.append(templist[x])
     while templist != []:
-        #print(len(templist))
-        #print(templist[x])
+        ##print(len(templist))
+        ##print(templist[x])
         match = False
         while match == False:
 
             newpair = random.choice(templist)
 
-            #print(f"we are loooking for a match between:\n{templist[x]} and {newpair}")
+            ##print(f"we are loooking for a match between:\n{templist[x]} and {newpair}")
 
             if newpair - 1 == templist[x] or newpair + 1 == templist[x]:
                 match = True
@@ -1190,7 +1190,7 @@ def random_path(order, columns):
         #if x == len(templist) - 1:
             #break
 
-    print(f"this is the new list {newlist}")
+    #print(f"this is the new list {newlist}")
     for i in order:
         for x in i:
             x["order"] = newlist[i]

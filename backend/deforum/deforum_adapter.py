@@ -102,13 +102,12 @@ class DeforumSix:
             )
 
     def run_post_load_model_generation_specifics(self):
-        if gs.model_version in gs.system.gen_one_models:
 
-            #print("Loading Hypaaaa")
-            gs.model_hijack = backend.hypernetworks.modules.sd_hijack.StableDiffusionModelHijack()
+        #print("Loading Hypaaaa")
+        gs.model_hijack = backend.hypernetworks.modules.sd_hijack.StableDiffusionModelHijack()
 
-            #print("hijacking??")
-            gs.model_hijack.hijack(gs.models["sd"])
+        #print("hijacking??")
+        gs.model_hijack.hijack(gs.models["sd"])
 
     def get_autoencoder_version(self):
         return "sd-v1" #TODO this will be different for different models
@@ -184,7 +183,8 @@ class DeforumSix:
             torch_gc()
 
 
-            self.run_post_load_model_generation_specifics()
+            if gs.model_version == '1.5':
+              self.run_post_load_model_generation_specifics()
 
             gs.models["sd"].eval()
 

@@ -92,7 +92,7 @@ class StableDiffusionModelHijack:
 
         #self.clip = gs.models["sd"].cond_stage_model
 
-        #apply_optimizations()
+        apply_optimizations()
 
         def flatten(el):
             flattened = [flatten(children) for children in el.children()]

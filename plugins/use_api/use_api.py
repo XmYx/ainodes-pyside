@@ -25,6 +25,7 @@ the image_preview_func from the main thread.
 """
 
 import os
+import zipfile
 import time
 import random
 import json
@@ -42,6 +43,7 @@ from torchvision.utils import make_grid
 from einops import rearrange
 from fonts.ttf import Roboto
 from backend.worker import Worker
+from frontend.session_params import translate_sampler
 
 gs = singleton
 
@@ -210,10 +212,15 @@ class DeforumAPI(QObject):
                     if attrib2 == 'lr': gs.lr = float(j)
                 print("PARAMS BELOW")
                 params = params.__dict__
-                self.url = QtCore.QUrl("http://29d5-34-86-214-195.ngrok.io/api/v1/txttoimg/run")
+                self.url = QtCore.QUrl("http://dc26-34-86-214-195.ngrok.io/api/v1/txttoimg/run")
                 # self.url = QtCore.QUrl("https://www.google.com/")
                 #params = {}
-                params['prompt'] = 'test'
+                print(params['prompts'])
+                #params['prompts'] = "corgi"
+                params['prompt'] = params['prompts']
+
+                #params['prompts'] = list(params['prompts'])
+                params['makegrid'] = False
                 params['iterations'] = 1
                 params['separate_prompts'] = False
                 params['save_individual_images'] = True
@@ -226,6 +233,9 @@ class DeforumAPI(QObject):
                 params['realesrgan_model_name'] = ""
                 params['variant_amount'] = 0
                 params['write_info_files'] = False
+                params['sampler'] = translate_sampler(params['sampler'])
+                print(params['sampler'])
+
                 self.manager = QtNetwork.QNetworkAccessManager()
                 self.manager.finished.connect(self.handleResponse)
                 self.request = QtNetwork.QNetworkRequest()
@@ -353,10 +363,29 @@ class DeforumAPI(QObject):
     @Slot()
     def handleResponse(self, response):
         bytes_string = response.readAll()
-        img = QImage()
-        img.loadFromData(bytes_string)
-        pixmap = QPixmap.fromImage(img)
-        pixmap.save("test.png")
+        print(type(bytes_string))
+        file = QFile("response.zip")
+        file.open(QIODevice.WriteOnly)
+        file.write(bytes_string)
+        file.close()
+        outdir = os.path.join(gs.system.outdir, f'response_{time.strftime("%Y%m%d%H%M%S")}')
+        os.makedirs(outdir, exist_ok=True)
+        with zipfile.ZipFile('response.zip', 'r') as zip_ref:
+            zip_ref.extractall(outdir)
+        for root, dirs, files in os.walk(outdir):
+            for filename in files:
+                filename = os.path.join(root, filename)
+                if os.path.isfile(filename):
+                    image = Image.open(filename)
+                    self.parent.image_preview_signal(image)
+
+
+        #img = QImage()
+        #img.loadFromData(bytes_string)
+        #pixmap = QPixmap.fromImage(img)
+        #pixmap.save("test.png")
+        #image = Image.open("test.png")
+        #self.parent.image_preview_signal(image)
         del response
         return
     def run_deforum_outpaint(self, params=None, progress_callback=None):

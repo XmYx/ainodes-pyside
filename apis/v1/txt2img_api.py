@@ -108,6 +108,7 @@ class Txt2Img(BaseModel):
     generation_mode: Union[str, None] = None
     n_batch: Union[int, None] = None
     hires: bool = False
+    cond_uncond_sync: bool = True
 
 
 class image_response(Response):
@@ -173,7 +174,7 @@ def txt2img_json(t2i_json):
                                            # clamp_stop=t2i_json.clamp_stop,
                                            # grad_inject_timing=1,
                                            # if self.parent.unicontrol.w.grad_inject_timing.text() == '' else self.parent.unicontrol.w.grad_inject_timing.text(), #it is a float an int or a list of floats
-                                           # cond_uncond_sync=t2i_json.cond_uncond_sync,
+                                           cond_uncond_sync=t2i_json.cond_uncond_sync,
                                            # step_callback=None,
                                            # image_callback=None,
                                            # negative_prompts=t2i_json.negative_prompts if t2i_json.negative_prompts != False else None,

@@ -67,8 +67,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>715</width>
-            <height>2255</height>
+            <width>719</width>
+            <height>1806</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -900,7 +900,7 @@
                     <number>1</number>
                    </property>
                    <property name="maximum">
-                    <number>50</number>
+                    <number>250</number>
                    </property>
                    <property name="value">
                     <number>1</number>
@@ -954,6 +954,12 @@
                  </item>
                  <item row="10" column="1" colspan="5">
                   <widget class="QSlider" name="n_samples_slider">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>250</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>

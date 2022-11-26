@@ -215,7 +215,7 @@ class DeforumSix:
         global first_load, vae_dict, vae_list, loaded_vae_file
         # save_settings = False
 
-        if vae_file:
+        if os.path.isfile(vae_file):
             assert os.path.isfile(vae_file), f"VAE file doesn't exist: {vae_file}"
             print(f"Loading VAE weights from: {vae_file}")
             vae_ckpt = torch.load(vae_file, map_location='cpu')
@@ -229,6 +229,8 @@ class DeforumSix:
             #if vae_opt not in vae_dict:
             #    vae_dict[vae_opt] = vae_file
             #    vae_list.append(vae_opt)
+        else:
+            print(f"VAE file doesn't exist: {vae_file}")
 
         loaded_vae_file = vae_file
 

@@ -109,6 +109,8 @@ class Txt2Img(BaseModel):
     n_batch: Union[int, None] = None
     hires: bool = False
     cond_uncond_sync: bool = True
+    prompt_weighting: bool = False
+    normalize_prompt_weights: bool = False
 
 
 class image_response(Response):
@@ -175,13 +177,13 @@ def txt2img_json(t2i_json):
                                            # grad_inject_timing=1,
                                            # if self.parent.unicontrol.w.grad_inject_timing.text() == '' else self.parent.unicontrol.w.grad_inject_timing.text(), #it is a float an int or a list of floats
                                            cond_uncond_sync=t2i_json.cond_uncond_sync,
-                                           # step_callback=None,
-                                           # image_callback=None,
+                                           step_callback=None,
+                                           image_callback=None,
                                            # negative_prompts=t2i_json.negative_prompts if t2i_json.negative_prompts != False else None,
                                            hires=t2i_json.hires,
-                                           # prompt_weighting=t2i_json.prompt_weighting,
-                                           # normalize_prompt_weights=t2i_json.normalize_prompt_weights,
-                                           # lowmem=False,
+                                           prompt_weighting=t2i_json.prompt_weighting,
+                                           normalize_prompt_weights=t2i_json.normalize_prompt_weights,
+                                           lowmem=False,
                                            )  # here all the args, or find an entry point where you just push the incoming json
     # you may use a callback here which will send back the image to here
     # so that you can send it back to the remote ui

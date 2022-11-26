@@ -136,10 +136,10 @@
                  <number>2048</number>
                 </property>
                 <property name="singleStep">
-                 <number>64</number>
+                 <number>1</number>
                 </property>
                 <property name="pageStep">
-                 <number>64</number>
+                 <number>1</number>
                 </property>
                 <property name="value">
                  <number>512</number>
@@ -217,7 +217,7 @@
                  <number>2048</number>
                 </property>
                 <property name="singleStep">
-                 <number>64</number>
+                 <number>1</number>
                 </property>
                 <property name="value">
                  <number>512</number>
@@ -319,7 +319,7 @@
                  <number>2048</number>
                 </property>
                 <property name="singleStep">
-                 <number>64</number>
+                 <number>1</number>
                 </property>
                 <property name="value">
                  <number>512</number>
@@ -345,10 +345,10 @@
                  <number>2048</number>
                 </property>
                 <property name="singleStep">
-                 <number>64</number>
+                 <number>1</number>
                 </property>
                 <property name="pageStep">
-                 <number>64</number>
+                 <number>1</number>
                 </property>
                 <property name="value">
                  <number>512</number>

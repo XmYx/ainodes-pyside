@@ -662,7 +662,7 @@ class MainWindow(QMainWindow):
     def update_outpaint_parameters(self):
         W = self.unicontrol.w.W.value()
         H = self.unicontrol.w.H.value()
-        W, H = map(lambda x: x - x % 64, (W, H))
+        #W, H = map(lambda x: x - x % 64, (W, H))
         self.unicontrol.w.W.setValue(W)
         self.unicontrol.w.H.setValue(H)
 

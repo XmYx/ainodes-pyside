@@ -111,7 +111,7 @@ class Deforum_UI(QObject):
                                          )
 
     def run_deforum_six_txt2img(self, progress_callback=None, plotting=True):
-
+        gs.karras = self.parent.unicontrol.w.karras.isChecked()
         self.deforum_six = DeforumSix()
         params = self.parent.sessionparams.update_params()
         #print(f"updated parameters to: {params}")

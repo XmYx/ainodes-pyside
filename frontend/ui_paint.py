@@ -129,7 +129,7 @@ class Canvas(QGraphicsView):
         self.pixmap = QPixmap(w, h)
         self.currentWidth = w
         self.currentHeight = h
-
+        self.temprects = None
         self.pixmap.fill(__backgroudColor__)
         self.bgitem = QGraphicsPixmapItem()
         self.rectItem = QGraphicsRectItem(0, 0, 512, 512)
@@ -155,7 +155,7 @@ class Canvas(QGraphicsView):
         self.h = 512
 
         self.rectlist = []
-
+        self.rectlist.clear()
         self.scene = Scene()
 
 

@@ -466,7 +466,7 @@ class DeforumSix:
         #print(args, anim_args)
 
         if hires:
-            args.hiresstr = strength
+            args.hiresstr = args.strength
 
         if not use_init:
             init_image = None

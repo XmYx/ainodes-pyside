@@ -96,7 +96,7 @@ class Txt2Img(BaseModel):
     make_grid: Union[bool, None] = None
     grid_rows: Union[int, None] = None
     use_init: Union[bool, None] = None
-    strength: Union[int, None] = None
+    strength: float = 0.5
     strength_0_no_init: Union[bool, None] = None
     init_image: Union[str, None] = None
     use_mask: Union[bool, None] = None
@@ -139,7 +139,7 @@ def txt2img_json(t2i_json):
                                            # grid_rows=t2i_json.grid_rows,
                                            # use_init=t2i_json.use_init,
                                            # init_image=t2i_json.init_image,
-                                           # strength=float(t2i_json.strength),
+                                          strength=float(t2i_json.strength),
                                            # strength_0_no_init=t2i_json.strength_0_no_init,
                                            # device=t2i_json.device,
                                            # animation_mode=t2i_json.animation_mode,

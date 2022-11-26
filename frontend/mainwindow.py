@@ -182,6 +182,14 @@ class MainWindow(QMainWindow):
         self.image_lab.signals.run_aestetic_prediction.connect(self.run_aestetic_prediction_thread)
         self.image_lab.signals.run_interrogation.connect(self.run_interrogation_thread)
 
+        self.prompt_fetcher_ui.signals.run_ai_prompt.connect(self.ai_prompt_thread)
+        self.prompt_fetcher_ui.signals.run_img_to_prompt.connect(self.image_to_prompt_thread)
+        self.prompt_fetcher_ui.signals.get_lexica_prompts.connect(self.get_lexica_prompts_thread)
+        self.prompt_fetcher_ui.signals.got_image_to_prompt.connect(self.prompt_fetcher_ui.set_img_to_prompt_text)
+        self.prompt_fetcher_ui.signals.got_lexica_prompts.connect(self.prompt_fetcher_ui.set_lexica_prompts)
+        self.prompt_fetcher_ui.signals.get_krea_prompts.connect(self.get_krea_prompts_thread)
+        self.prompt_fetcher_ui.signals.got_krea_prompts.connect(self.prompt_fetcher_ui.set_krea_prompts)
+
     def taskswitcher(self):
         save_last_prompt(self.unicontrol.w.prompts.toHtml(), self.unicontrol.w.prompts.toPlainText())
         if self.unicontrol.w.use_inpaint.isChecked() == True:

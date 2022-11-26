@@ -21,6 +21,8 @@ router = APIRouter()
 
 def_six_render = DeforumSix()
 
+class CustomModel(BaseModel):
+  ckpt: str = ''
 
 class Txt2Img(BaseModel):
     prompt: str
@@ -231,6 +233,18 @@ async def post(t2i_json: Txt2Img, background_tasks: BackgroundTasks):
         print(exc_type, fname, exc_tb.tb_lineno)
         message = 'txt2img error' + str(e)
         respond_500(message)
+
+@router.post('/api/v1/txttoimg/change_model')
+async def post(ckpt: CustomModel):
+    try:
+      print(ckpt)
+    except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
+            message = 'txt2img error' + str(e)
+            respond_500(message)
+
 
 
 @router.get('/api/v1/txttoimg/get_results')

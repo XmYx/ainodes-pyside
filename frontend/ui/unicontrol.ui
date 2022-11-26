@@ -66,9 +66,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
-            <width>719</width>
-            <height>1806</height>
+            <y>-136</y>
+            <width>715</width>
+            <height>2255</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -226,8 +226,14 @@
               </item>
               <item row="5" column="5">
                <widget class="QDoubleSpinBox" name="scale">
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <double>30.000000000000000</double>
+                </property>
                 <property name="singleStep">
-                 <double>0.010000000000000</double>
+                 <double>0.100000000000000</double>
                 </property>
                 <property name="value">
                  <double>7.500000000000000</double>
@@ -368,7 +374,7 @@
                  <number>1</number>
                 </property>
                 <property name="maximum">
-                 <number>3000</number>
+                 <number>300</number>
                 </property>
                 <property name="pageStep">
                  <number>1</number>
@@ -387,7 +393,7 @@
                  <number>1</number>
                 </property>
                 <property name="maximum">
-                 <number>3000</number>
+                 <number>300</number>
                 </property>
                 <property name="value">
                  <number>20</number>
@@ -865,36 +871,17 @@
                  <property name="spacing">
                   <number>5</number>
                  </property>
+                 <item row="14" column="6">
+                  <widget class="QDoubleSpinBox" name="ddim_eta">
+                   <property name="maximum">
+                    <double>100.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.100000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="11" column="6">
-                  <widget class="QDoubleSpinBox" name="strength"/>
-                 </item>
-                 <item row="13" column="6">
-                  <widget class="QDoubleSpinBox" name="ddim_eta"/>
-                 </item>
-                 <item row="12" column="1" colspan="5">
-                  <widget class="QSlider" name="n_batch_slider">
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>2000</number>
-                   </property>
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="13" column="1" colspan="5">
-                  <widget class="QSlider" name="ddim_eta_slider">
-                   <property name="maximum">
-                    <number>1000</number>
-                   </property>
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="10" column="6">
                   <widget class="QSpinBox" name="n_samples">
                    <property name="minimum">
                     <number>1</number>
@@ -907,92 +894,8 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="9" column="5">
-                  <widget class="QLabel" name="label_14">
-                   <property name="text">
-                    <string>Mode</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="9" column="0">
-                  <widget class="QLabel" name="label_13">
-                   <property name="text">
-                    <string>Seed</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="11" column="1" colspan="5">
-                  <widget class="QSlider" name="strength_slider">
-                   <property name="maximum">
-                    <number>1000</number>
-                   </property>
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="11" column="0">
-                  <widget class="QLabel" name="label_21">
-                   <property name="text">
-                    <string>Strength</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="12" column="0">
-                  <widget class="QLabel" name="label_20">
-                   <property name="text">
-                    <string>Batch</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="10" column="0">
-                  <widget class="QLabel" name="label_19">
-                   <property name="text">
-                    <string>Samples</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="10" column="1" colspan="5">
-                  <widget class="QSlider" name="n_samples_slider">
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>250</number>
-                   </property>
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="9" column="6">
-                  <widget class="QComboBox" name="seed_behavior">
-                   <item>
-                    <property name="text">
-                     <string>iter</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>random</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>fixed</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="7" column="0">
-                  <widget class="QLabel" name="label_67">
-                   <property name="text">
-                    <string>Output Path</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="6">
-                  <widget class="QPushButton" name="select_outdir">
+                 <item row="8" column="6">
+                  <widget class="QPushButton" name="select_init_image">
                    <property name="text">
                     <string>Select Path</string>
                    </property>
@@ -1004,27 +907,23 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="7" column="1" colspan="5">
-                  <widget class="QLineEdit" name="outdir">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="12" column="6">
-                  <widget class="QSpinBox" name="n_batch">
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
+                 <item row="12" column="1" colspan="5">
+                  <widget class="QSlider" name="strength_slider">
                    <property name="maximum">
-                    <number>2000</number>
+                    <number>10</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="6">
-                  <widget class="QCheckBox" name="karras">
-                   <property name="text">
-                    <string>Karras</string>
+                 <item row="14" column="1" colspan="5">
+                  <widget class="QSlider" name="ddim_eta_slider">
+                   <property name="maximum">
+                    <number>100</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
@@ -1097,6 +996,152 @@
                    </item>
                   </widget>
                  </item>
+                 <item row="9" column="5">
+                  <widget class="QLabel" name="label_14">
+                   <property name="text">
+                    <string>Mode</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QCheckBox" name="prompt_weighting">
+                   <property name="text">
+                    <string>Weighted</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="3">
+                  <widget class="QCheckBox" name="show_sample_per_step">
+                   <property name="text">
+                    <string>Live</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="12" column="0">
+                  <widget class="QLabel" name="label_21">
+                   <property name="text">
+                    <string>Strength</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="6">
+                  <widget class="QCheckBox" name="karras">
+                   <property name="text">
+                    <string>Karras</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="4">
+                  <widget class="QCheckBox" name="hires">
+                   <property name="text">
+                    <string>HiRes Mode</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="11" column="1" colspan="5">
+                  <widget class="QSlider" name="n_samples_slider">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>250</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="14" column="0">
+                  <widget class="QLabel" name="label_15">
+                   <property name="text">
+                    <string>DDIM ETA</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="2">
+                  <widget class="QCheckBox" name="cond_uncond_sync">
+                   <property name="text">
+                    <string>Speed/Ram</string>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="0">
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>Seed</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="6">
+                  <widget class="QComboBox" name="seed_behavior">
+                   <item>
+                    <property name="text">
+                     <string>iter</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>random</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>fixed</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="8" column="0">
+                  <widget class="QCheckBox" name="use_init">
+                   <property name="text">
+                    <string>Use as Init</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="11" column="0">
+                  <widget class="QLabel" name="label_19">
+                   <property name="text">
+                    <string>Samples</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="0">
+                  <widget class="QLabel" name="label_67">
+                   <property name="text">
+                    <string>Output Path</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QCheckBox" name="enableNegative">
+                   <property name="text">
+                    <string>Negative</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="1" colspan="5">
+                  <widget class="QLineEdit" name="init_image">
+                   <property name="text">
+                    <string>https://cdn.pixabay.com/photo/2022/07/30/13/10/green-longhorn-beetle-7353749_1280.jpg</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="6">
+                  <widget class="QPushButton" name="select_outdir">
+                   <property name="text">
+                    <string>Select Path</string>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>8</width>
+                     <height>8</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="6" column="0">
                   <widget class="QLabel" name="label_10">
                    <property name="text">
@@ -1111,10 +1156,13 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="1">
-                  <widget class="QCheckBox" name="enableNegative">
-                   <property name="text">
-                    <string>Negative</string>
+                 <item row="12" column="6">
+                  <widget class="QDoubleSpinBox" name="strength">
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
                    </property>
                   </widget>
                  </item>
@@ -1125,71 +1173,43 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="3">
-                  <widget class="QCheckBox" name="show_sample_per_step">
+                 <item row="7" column="1" colspan="5">
+                  <widget class="QLineEdit" name="outdir">
                    <property name="text">
-                    <string>Live</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="4">
-                  <widget class="QCheckBox" name="hires">
-                   <property name="text">
-                    <string>HiRes Mode</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QCheckBox" name="prompt_weighting">
-                   <property name="text">
-                    <string>Weighted</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="2">
-                  <widget class="QCheckBox" name="cond_uncond_sync">
-                   <property name="text">
-                    <string>Speed/Ram</string>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
+                    <string/>
                    </property>
                   </widget>
                  </item>
                  <item row="9" column="1" colspan="4">
                   <widget class="QLineEdit" name="seed"/>
                  </item>
-                 <item row="13" column="0">
-                  <widget class="QLabel" name="label_15">
+                 <item row="10" column="0">
+                  <widget class="QLabel" name="label_20">
                    <property name="text">
-                    <string>DDIM ETA</string>
+                    <string>Batch</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="8" column="0">
-                  <widget class="QCheckBox" name="use_init">
-                   <property name="text">
-                    <string>Use as Init</string>
+                 <item row="10" column="6">
+                  <widget class="QSpinBox" name="n_batch">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>2000</number>
                    </property>
                   </widget>
                  </item>
-                 <item row="8" column="1" colspan="5">
-                  <widget class="QLineEdit" name="init_image">
-                   <property name="text">
-                    <string>https://cdn.pixabay.com/photo/2022/07/30/13/10/green-longhorn-beetle-7353749_1280.jpg</string>
+                 <item row="10" column="1" colspan="5">
+                  <widget class="QSlider" name="n_batch_slider">
+                   <property name="minimum">
+                    <number>1</number>
                    </property>
-                  </widget>
-                 </item>
-                 <item row="8" column="6">
-                  <widget class="QPushButton" name="select_init_image">
-                   <property name="text">
-                    <string>Select Path</string>
+                   <property name="maximum">
+                    <number>2000</number>
                    </property>
-                   <property name="iconSize">
-                    <size>
-                     <width>8</width>
-                     <height>8</height>
-                    </size>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
@@ -1228,10 +1248,24 @@
                   </widget>
                  </item>
                  <item row="11" column="3">
-                  <widget class="QSpinBox" name="batch_columns"/>
+                  <widget class="QSpinBox" name="batch_columns">
+                   <property name="maximum">
+                    <number>32</number>
+                   </property>
+                   <property name="value">
+                    <number>3</number>
+                   </property>
+                  </widget>
                  </item>
                  <item row="10" column="3">
-                  <widget class="QSpinBox" name="batch_rows"/>
+                  <widget class="QSpinBox" name="batch_rows">
+                   <property name="maximum">
+                    <number>32</number>
+                   </property>
+                   <property name="value">
+                    <number>3</number>
+                   </property>
+                  </widget>
                  </item>
                  <item row="9" column="0">
                   <widget class="QLabel" name="label_5">
@@ -1241,10 +1275,23 @@
                   </widget>
                  </item>
                  <item row="8" column="3">
-                  <widget class="QSpinBox" name="mask_offset"/>
+                  <widget class="QSpinBox" name="mask_offset">
+                   <property name="minimum">
+                    <number>-128</number>
+                   </property>
+                   <property name="maximum">
+                    <number>128</number>
+                   </property>
+                  </widget>
                  </item>
                  <item row="10" column="1" colspan="2">
                   <widget class="QSlider" name="batch_rows_slider">
+                   <property name="maximum">
+                    <number>32</number>
+                   </property>
+                   <property name="value">
+                    <number>3</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -1252,6 +1299,12 @@
                  </item>
                  <item row="11" column="1" colspan="2">
                   <widget class="QSlider" name="batch_columns_slider">
+                   <property name="maximum">
+                    <number>32</number>
+                   </property>
+                   <property name="value">
+                    <number>3</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -1357,16 +1410,35 @@
                  </item>
                  <item row="8" column="1" colspan="2">
                   <widget class="QSlider" name="mask_offset_slider">
+                   <property name="minimum">
+                    <number>-128</number>
+                   </property>
+                   <property name="maximum">
+                    <number>128</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
                  <item row="9" column="3">
-                  <widget class="QSpinBox" name="rect_overlap"/>
+                  <widget class="QSpinBox" name="rect_overlap">
+                   <property name="maximum">
+                    <number>1024</number>
+                   </property>
+                   <property name="value">
+                    <number>128</number>
+                   </property>
+                  </widget>
                  </item>
                  <item row="9" column="1" colspan="2">
                   <widget class="QSlider" name="rect_overlap_slider">
+                   <property name="maximum">
+                    <number>1024</number>
+                   </property>
+                   <property name="value">
+                    <number>128</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -1374,6 +1446,9 @@
                  </item>
                  <item row="2" column="2" colspan="2">
                   <widget class="QSlider" name="reconstruction_blur_slider">
+                   <property name="maximum">
+                    <number>200</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -1395,6 +1470,9 @@
                  </item>
                  <item row="13" column="1" colspan="2">
                   <widget class="QSlider" name="start_offset_y_slider">
+                   <property name="maximum">
+                    <number>8192</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -1402,6 +1480,9 @@
                  </item>
                  <item row="12" column="1" colspan="2">
                   <widget class="QSlider" name="start_offset_x_slider">
+                   <property name="maximum">
+                    <number>8192</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -1415,7 +1496,11 @@
                   </widget>
                  </item>
                  <item row="12" column="3">
-                  <widget class="QSpinBox" name="start_offset_x"/>
+                  <widget class="QSpinBox" name="start_offset_x">
+                   <property name="maximum">
+                    <number>8192</number>
+                   </property>
+                  </widget>
                  </item>
                  <item row="4" column="0">
                   <widget class="QCheckBox" name="randomize">
@@ -1425,7 +1510,11 @@
                   </widget>
                  </item>
                  <item row="13" column="3">
-                  <widget class="QSpinBox" name="start_offset_y"/>
+                  <widget class="QSpinBox" name="start_offset_y">
+                   <property name="maximum">
+                    <number>8192</number>
+                   </property>
+                  </widget>
                  </item>
                  <item row="4" column="3">
                   <widget class="QCheckBox" name="enable_overlap">
@@ -1443,13 +1532,20 @@
                  </item>
                  <item row="2" column="0" colspan="2">
                   <widget class="QSlider" name="mask_blur_slider">
+                   <property name="maximum">
+                    <number>20</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QSpinBox" name="mask_blur"/>
+                  <widget class="QSpinBox" name="mask_blur">
+                   <property name="maximum">
+                    <number>20</number>
+                   </property>
+                  </widget>
                  </item>
                  <item row="1" column="0">
                   <widget class="QLabel" name="label_11">
@@ -1459,7 +1555,11 @@
                   </widget>
                  </item>
                  <item row="1" column="3">
-                  <widget class="QSpinBox" name="reconstruction_blur"/>
+                  <widget class="QSpinBox" name="reconstruction_blur">
+                   <property name="maximum">
+                    <number>200</number>
+                   </property>
+                  </widget>
                  </item>
                  <item row="1" column="2">
                   <widget class="QLabel" name="label_17">
@@ -1510,7 +1610,11 @@
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QSpinBox" name="gradient_steps"/>
+                  <widget class="QSpinBox" name="gradient_steps">
+                   <property name="maximum">
+                    <number>100</number>
+                   </property>
+                  </widget>
                  </item>
                  <item row="1" column="0">
                   <widget class="QLabel" name="label_22">
@@ -1520,10 +1624,23 @@
                   </widget>
                  </item>
                  <item row="1" column="4">
-                  <widget class="QDoubleSpinBox" name="gradient_scale"/>
+                  <widget class="QDoubleSpinBox" name="gradient_scale">
+                   <property name="decimals">
+                    <number>5</number>
+                   </property>
+                   <property name="maximum">
+                    <double>0.000050000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.000001000000000</double>
+                   </property>
+                  </widget>
                  </item>
                  <item row="2" column="0" colspan="2">
                   <widget class="QSlider" name="gradient_steps_slider">
+                   <property name="maximum">
+                    <number>100</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -1531,6 +1648,9 @@
                  </item>
                  <item row="2" column="2" colspan="3">
                   <widget class="QSlider" name="gradient_scale_slider">
+                   <property name="maximum">
+                    <number>500000</number>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -1646,7 +1766,7 @@
               <item row="23" column="2" colspan="2">
                <widget class="QSlider" name="clamp_start_slider">
                 <property name="maximum">
-                 <number>1000</number>
+                 <number>10</number>
                 </property>
                 <property name="value">
                  <number>0</number>
@@ -1657,24 +1777,62 @@
                </widget>
               </item>
               <item row="14" column="4">
-               <widget class="QDoubleSpinBox" name="colormatch_scale"/>
+               <widget class="QDoubleSpinBox" name="colormatch_scale">
+                <property name="decimals">
+                 <number>0</number>
+                </property>
+                <property name="maximum">
+                 <double>1000.000000000000000</double>
+                </property>
+               </widget>
               </item>
               <item row="18" column="4">
-               <widget class="QSpinBox" name="colormatch_n_colors"/>
+               <widget class="QSpinBox" name="colormatch_n_colors">
+                <property name="maximum">
+                 <number>20</number>
+                </property>
+               </widget>
               </item>
               <item row="11" column="4">
-               <widget class="QDoubleSpinBox" name="var_scale"/>
+               <widget class="QDoubleSpinBox" name="var_scale">
+                <property name="decimals">
+                 <number>0</number>
+                </property>
+                <property name="minimum">
+                 <double>-300.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>300.000000000000000</double>
+                </property>
+               </widget>
               </item>
               <item row="23" column="4">
-               <widget class="QDoubleSpinBox" name="clamp_start"/>
+               <widget class="QDoubleSpinBox" name="clamp_start">
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
               </item>
               <item row="24" column="4">
-               <widget class="QDoubleSpinBox" name="clamp_stop"/>
+               <widget class="QDoubleSpinBox" name="clamp_stop">
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+               </widget>
               </item>
               <item row="12" column="2" colspan="2">
                <widget class="QSlider" name="exposure_scale_slider">
                 <property name="maximum">
-                 <number>1000</number>
+                 <number>500</number>
                 </property>
                 <property name="value">
                  <number>0</number>
@@ -1692,7 +1850,17 @@
                </widget>
               </item>
               <item row="22" column="4">
-               <widget class="QDoubleSpinBox" name="clamp_grad_threshold"/>
+               <widget class="QDoubleSpinBox" name="clamp_grad_threshold">
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
               </item>
               <item row="5" column="0">
                <widget class="QLabel" name="label_58">
@@ -1711,7 +1879,7 @@
               <item row="22" column="2" colspan="2">
                <widget class="QSlider" name="clamp_grad_threshold_slider">
                 <property name="maximum">
-                 <number>1000</number>
+                 <number>10</number>
                 </property>
                 <property name="value">
                  <number>0</number>
@@ -1726,8 +1894,11 @@
               </item>
               <item row="13" column="2" colspan="2">
                <widget class="QSlider" name="exposure_target_slider">
+                <property name="minimum">
+                 <number>-10</number>
+                </property>
                 <property name="maximum">
-                 <number>1000</number>
+                 <number>10</number>
                 </property>
                 <property name="value">
                  <number>0</number>
@@ -1738,7 +1909,14 @@
                </widget>
               </item>
               <item row="13" column="4">
-               <widget class="QDoubleSpinBox" name="exposure_target"/>
+               <widget class="QDoubleSpinBox" name="exposure_target">
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+               </widget>
               </item>
               <item row="5" column="2" colspan="2">
                <widget class="QComboBox" name="clip_name">
@@ -1782,12 +1960,16 @@
                </widget>
               </item>
               <item row="20" column="4">
-               <widget class="QSpinBox" name="cutn"/>
+               <widget class="QSpinBox" name="cutn">
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+               </widget>
               </item>
               <item row="19" column="2" colspan="2">
                <widget class="QSlider" name="ignore_sat_weight_slider">
                 <property name="maximum">
-                 <number>1000</number>
+                 <number>100</number>
                 </property>
                 <property name="value">
                  <number>0</number>
@@ -1800,7 +1982,7 @@
               <item row="24" column="2" colspan="2">
                <widget class="QSlider" name="clamp_stop_slider">
                 <property name="maximum">
-                 <number>1000</number>
+                 <number>100</number>
                 </property>
                 <property name="value">
                  <number>0</number>
@@ -1837,10 +2019,27 @@
                </widget>
               </item>
               <item row="12" column="4">
-               <widget class="QDoubleSpinBox" name="exposure_scale"/>
+               <widget class="QDoubleSpinBox" name="exposure_scale">
+                <property name="maximum">
+                 <double>50.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+               </widget>
               </item>
               <item row="21" column="4">
-               <widget class="QDoubleSpinBox" name="cut_pow"/>
+               <widget class="QDoubleSpinBox" name="cut_pow">
+                <property name="decimals">
+                 <number>3</number>
+                </property>
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.001000000000000</double>
+                </property>
+               </widget>
               </item>
               <item row="3" column="2">
                <widget class="QLineEdit" name="lineEdit_2"/>
@@ -1858,7 +2057,7 @@
               <item row="10" column="2" colspan="2">
                <widget class="QSlider" name="mean_scale_slider">
                 <property name="maximum">
-                 <number>1000</number>
+                 <number>500</number>
                 </property>
                 <property name="value">
                  <number>0</number>
@@ -1882,7 +2081,14 @@
                </widget>
               </item>
               <item row="10" column="4">
-               <widget class="QDoubleSpinBox" name="mean_scale"/>
+               <widget class="QDoubleSpinBox" name="mean_scale">
+                <property name="maximum">
+                 <double>50.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+               </widget>
               </item>
               <item row="10" column="0">
                <widget class="QLabel" name="label_23">
@@ -1894,7 +2100,7 @@
               <item row="18" column="2" colspan="2">
                <widget class="QSlider" name="colormatch_n_colors_slider">
                 <property name="maximum">
-                 <number>25</number>
+                 <number>20</number>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -1964,8 +2170,11 @@
               </item>
               <item row="11" column="2" colspan="2">
                <widget class="QSlider" name="var_scale_slider">
+                <property name="minimum">
+                 <number>-300</number>
+                </property>
                 <property name="maximum">
-                 <number>1000</number>
+                 <number>300</number>
                 </property>
                 <property name="value">
                  <number>0</number>
@@ -2010,7 +2219,17 @@
                </widget>
               </item>
               <item row="19" column="4">
-               <widget class="QDoubleSpinBox" name="ignore_sat_weight"/>
+               <widget class="QDoubleSpinBox" name="ignore_sat_weight">
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <double>10.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
               </item>
               <item row="22" column="0">
                <widget class="QLabel" name="Clamp">
@@ -2028,6 +2247,9 @@
               </item>
               <item row="20" column="2" colspan="2">
                <widget class="QSlider" name="cutn_slider">
+                <property name="maximum">
+                 <number>100</number>
+                </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>

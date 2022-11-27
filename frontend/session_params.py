@@ -102,7 +102,7 @@ class SessionParams():
 
         decode_method = None if self.parent.unicontrol.w.decode_method.currentText() == 'None' else self.parent.unicontrol.w.decode_method.currentText()
 
-        if self.parent.unicontrol.w.enableNegative.isChecked():
+        if self.parent.unicontrol.w.toggle_negative_prompt.isChecked():
             negative_prompts = self.parent.unicontrol.w.negative_prompts.toPlainText()
             print(f"Using negative prompts {negative_prompts}")
         else:
@@ -333,6 +333,3 @@ def translate_sampler(sampler):
     else:
         sampler = sampler
     return sampler
-
-
-

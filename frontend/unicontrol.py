@@ -13,12 +13,6 @@ class UniControl(QObject):
         file.close()
         self.initAnimation()
 
-        #self.w.hideAdvButton.clicked.connect(self.hideAdvanced_anim)
-        #self.w.hideAesButton.clicked.connect(self.hideAesthetic_anim)
-        #self.w.hideAnimButton.clicked.connect(self.hideAnimation_anim)
-        #self.w.hidePlottingButton.clicked.connect(self.hidePlotting_anim)
-        #self.w.showHideAll.clicked.connect(self.show_hide_all_anim)
-
 
         self.w.toggle_sampler.stateChanged.connect(self.hideSampler_anim)
         self.w.show_output_setup.stateChanged.connect(self.hideOutput_anim)
@@ -32,6 +26,8 @@ class UniControl(QObject):
         self.w.toggle_plugins.stateChanged.connect(self.hidePlugins_anim)
         self.w.toggle_colors.stateChanged.connect(self.hideColors_anim)
         self.w.toggle_grad.stateChanged.connect(self.hideGrad_anim)
+        self.w.toggle_negative_prompt.stateChanged.connect(self.toggle_n_prompt)
+
 
         self.w.negative_prompts.setVisible(False)
 
@@ -44,12 +40,8 @@ class UniControl(QObject):
         self.ui_unicontrol = UniControl_UI(self)
 
 
-        x = "W"
-
-        getattr(self.w, x).setValue(15)
-        print("QSlider" in str(getattr(self.w, x)))
-        print("QCombobox" in str(getattr(self.w, x)))
-        print("QTextEdit" in str(getattr(self.w, x)))
+    def toggle_n_prompt(self):
+        self.w.negative_prompts.setVisible(self.w.toggle_negative_prompt.isChecked())
 
     def hide_all(self):
         self.showAll = False

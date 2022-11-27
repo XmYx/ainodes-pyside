@@ -1066,8 +1066,8 @@ class PaintUI(QDockWidget):
         self.W.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.W.setMinimumSize(QSize(100, 15))
         self.W.setMaximumSize(QSize(1000, 15))
-        self.W.setMinimum(256)
-        self.W.setMaximum(16000)
+        self.W.setMinimum(512)
+        self.W.setMaximum(4096)
         self.W.setValue(512)
         self.W.setPageStep(64)
         self.W.setSingleStep(64)
@@ -1078,8 +1078,8 @@ class PaintUI(QDockWidget):
         self.H.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.H.setMinimumSize(QSize(100, 15))
         self.H.setMaximumSize(QSize(1000, 15))
-        self.H.setMinimum(256)
-        self.H.setMaximum(16000)
+        self.H.setMinimum(512)
+        self.H.setMaximum(4096)
         self.H.setValue(512)
         self.H.setPageStep(64)
         self.H.setSingleStep(64)
@@ -1099,7 +1099,19 @@ class PaintUI(QDockWidget):
         self.canvas.hoverCheck()
         self.canvas.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
 
+        self.H.valueChanged.connect(self.update_spinners)
+        self.W.valueChanged.connect(self.update_spinners)
+        self.H_spinbox.valueChanged.connect(self.update_sliders)
+        self.W_spinbox.valueChanged.connect(self.update_sliders)
 
+
+    def update_spinners(self):
+        self.H_spinbox.setValue(self.H.value())
+        self.W_spinbox.setValue(self.W.value())
+
+    def update_sliders(self):
+        self.H.setValue(int(self.H_spinbox.value()))
+        self.W.setValue(int(self.W_spinbox.value()))
 
     def rectangleDraw(self):
         self.canvas.rectangle = QRect(self.pos.x(), self.pos.y(), 400, 400)

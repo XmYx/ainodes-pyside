@@ -19,10 +19,15 @@ def sampler_fn(
     verbose: Optional[bool] = False,
 ) -> torch.Tensor:
     shape = [args.C, args.H // args.f, args.W // args.f]
-    sigmas: torch.Tensor = model_wrap.get_sigmas(args.steps)
-    print(f"sigmas: {sigmas}")
+    #gs.karras = True
+    if gs.karras == True:
+        print("Using Karras Scheduler")
+        sigmas = sampling.get_sigmas_karras(n=args.steps, sigma_min=0.1, sigma_max=10, device="cuda")
+    else:
+        sigmas: torch.Tensor = model_wrap.get_sigmas(args.steps)
+    #print(f"sigmas: {sigmas}")
     sigmas = sigmas[len(sigmas) - t_enc - 1 :]
-    print(f"sigmas: {sigmas}")
+    #print(f"sigmas: {sigmas}")
     if args.use_init:
         if len(sigmas) > 0:
             x = (

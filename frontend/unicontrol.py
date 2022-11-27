@@ -428,7 +428,7 @@ class UniControl_UI:
     def update_float_values(self):
 
         self.unicontrol.w.scale.setValue(self.unicontrol.w.scale_slider.value()/10)
-        self.unicontrol.w.strength.setValue(self.unicontrol.w.strength_slider.value()/10)
+        self.unicontrol.w.strength.setValue(self.unicontrol.w.strength_slider.value()/100)
         self.unicontrol.w.ddim_eta.setValue(self.unicontrol.w.ddim_eta_slider.value()/10)
         #self.unicontrol.w.mask_blur.setValue(self.unicontrol.w.mask_blur_slider.value())
         #self.unicontrol.w.reconstruction_blur.setValue(self.unicontrol.w.reconstruction_blur_slider.value())
@@ -453,7 +453,7 @@ class UniControl_UI:
 
     def update_float_scale_values(self):
         self.unicontrol.w.scale_slider.setValue(int(self.unicontrol.w.scale.value()*10))
-        self.unicontrol.w.strength_slider.setValue(int(self.unicontrol.w.strength.value()*10))
+        self.unicontrol.w.strength_slider.setValue(int(self.unicontrol.w.strength.value()*100))
         self.unicontrol.w.ddim_eta_slider.setValue(int(self.unicontrol.w.ddim_eta.value()*10))
         #self.unicontrol.w.mask_blur_slider.setValue(int(self.unicontrol.w.mask_blur_slider.value()))
         #self.unicontrol.w.reconstruction_blur_slider.setValue(int(self.unicontrol.w.reconstruction_blur_slider.value()))

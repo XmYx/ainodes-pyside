@@ -146,11 +146,11 @@ class OurTimeline(QWidget):
                         if self.oldY is not None:
                             qp.setPen(QPen(Qt.darkMagenta, 2, Qt.SolidLine))
                             #line = QLine(self.oldX, self.oldY, kfStartPoint, kfYPos)
-                            #print(self.oldX, self.oldY, kfStartPoint, kfYPos)
+                            ##print(self.oldX, self.oldY, kfStartPoint, kfYPos)
                             qp.drawLine(self.oldX, self.oldY, kfStartPoint, kfYPos)
                         kfbrush = QBrush(Qt.darkRed)
 
-                        #print(kfYPos)
+                        ##print(kfYPos)
                         scaleMod = 5
                         kfPoly = QPolygon([QPoint(int(kfStartPoint - scaleMod), kfYPos), QPoint(kfStartPoint, kfYPos - scaleMod), QPoint(kfStartPoint + scaleMod, kfYPos), QPoint(kfStartPoint, kfYPos + scaleMod)])
                         qp.setPen(Qt.darkRed)
@@ -242,9 +242,9 @@ class OurTimeline(QWidget):
                         value = (self.pointerValue - self.yMiddlePoint) / self.verticalScale
                         item.value = -value
                         self.keyFramesUpdated.emit()
-                        print(item.value)
-                        print(self.posy)
-                        print(self.yMiddlePoint)
+                        #print(item.value)
+                        #print(self.posy)
+                        #print(self.yMiddlePoint)
             if self.edgeGrabActive == True:
                 for sample in self.videoSamples:
                     sample.duration = sample.duration + ((self.pointerPos - self.oldPos) * self.scale)
@@ -253,7 +253,7 @@ class OurTimeline(QWidget):
                 for sample in self.videoSamples:
                     change = (x - self.oldPos)
                     change = (change * self.scale)
-                    #print(change)
+                    ##print(change)
                     sample.startPos = sample.startPos + change
                     sample.endPos = sample.endPos + change
         self.update()
@@ -267,7 +267,7 @@ class OurTimeline(QWidget):
 
             if kfStartPoint - 5 < x < kfStartPoint + 5 and kfYPos + 5 > self.posy > kfYPos - 5:
                 self.keyHover = True
-                #print(item.uid)
+                ##print(item.uid)
                 self.hoverKey = item.uid
         self.update()
     def checkKeyClicked(self):
@@ -283,7 +283,7 @@ class OurTimeline(QWidget):
             x = e.pos().x()
             self.checkKeyClicked()
 
-            #print(self.keyClicked)
+            ##print(self.keyClicked)
             self.pointerPos = x
             self.pointerTimePos = self.pointerPos * self.getScale()
 
@@ -302,9 +302,9 @@ class OurTimeline(QWidget):
             x = self.pos
             self.checkKeyframeHover(x)
             self.checkKeyClicked()
-            #print(self.hoverKey)
-            #print(self.keyHover)
-            #print(self.selectedKey)
+            ##print(self.hoverKey)
+            ##print(self.keyHover)
+            ##print(self.selectedKey)
             self.popMenu.clear()
             #populate
             self.populateBtnContext()
@@ -330,7 +330,7 @@ class OurTimeline(QWidget):
 
     # Mouse release
     def add_action(self):
-        #print(self.keyClicked)
+        ##print(self.keyClicked)
         #self.pointerPos
         self.pointerTimePos = self.pointerPos * self.getScale()
 
@@ -350,13 +350,13 @@ class OurTimeline(QWidget):
         if matchFound == False:
             self.keyFrameList.append(keyframe[position])
         self.update()
-        print(self.keyFrameList)
+        #print(self.keyFrameList)
         #self.updateAnimKeys()
 
     def delete_action(self):
         for idx, item in enumerate(self.keyFrameList):
-            print(idx)
-            print(item)
+            #print(idx)
+            #print(item)
             if self.hoverKey is item.uid:
                 self.keyFrameList.pop(idx)
         self.update()

@@ -111,7 +111,7 @@ class Deforum_UI(QObject):
                                          )
 
     def run_deforum_six_txt2img(self, progress_callback=None, plotting=True):
-
+        gs.karras = self.parent.unicontrol.w.karras.isChecked()
         self.deforum_six = DeforumSix()
         params = self.parent.sessionparams.update_params()
         #print(f"updated parameters to: {params}")
@@ -129,7 +129,7 @@ class Deforum_UI(QObject):
         #print('strength ui', float(params.strength']))
 
         plotting = params.plotting
-        print('plotting', plotting)
+        #print('plotting', plotting)
 
         if plotting:
 
@@ -231,7 +231,7 @@ class Deforum_UI(QObject):
                 ver_texts.append([GridAnnotation(f"{attrib1}: {i}")])
             for j in plotX:
                 hor_texts.append([GridAnnotation(f"{attrib2}: {j}")])
-            print(hor_texts)
+            #print(hor_texts)
             grid = make_grid(all_images, nrow=len(plotX))
             grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
             filename = f"{time.strftime('%Y%m%d%H%M%S')}_{attrib1}_{attrib2}_grid_{params.seed}.png"
@@ -355,7 +355,7 @@ def draw_grid_annotations(im, width, height, hor_texts, ver_texts, W, H, params)
     cols = im.width // W
     rows = im.height // H
 
-    print(f"DEBUG: {cols}, {rows}, of which at least one should be more then 1...")
+    #print(f"DEBUG: {cols}, {rows}, of which at least one should be more then 1...")
 
     assert cols == len(hor_texts), f'bad number of horizontal texts: {len(hor_texts)}; must be {cols}'
     assert rows == len(ver_texts), f'bad number of vertical texts: {len(ver_texts)}; must be {rows}'

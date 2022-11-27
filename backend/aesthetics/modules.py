@@ -14,7 +14,7 @@ from backend.singleton import singleton
 gs = singleton
 from backend.devices import choose_torch_device
 
-from ldm.modules.x_transformer import (
+from ldm_deforum.modules.x_transformer import (
     Encoder,
     TransformerWrapper,
 )  # TODO: can we directly rely on lucidrains code and simply add this as a reuirement? --> test
@@ -255,6 +255,9 @@ class PersonalizedCLIPEmbedder(AbstractEncoder):
 
             tokens = batch_encoding["input_ids"].to(self.device)
             if text[0] != "" and self.T != 0 and gs.aesthetic_embedding_path is not None:
+
+                z = self.transformer(input_ids=tokens).last_hidden_state
+
                 print(f"Loaded Gradients: {self.aesthetic_embedding_path}")
                 # This is the model to be personalized
                 full_clip_model = CLIPModel.from_pretrained(

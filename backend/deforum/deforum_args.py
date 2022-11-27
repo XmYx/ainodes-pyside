@@ -65,7 +65,7 @@ def DeforumArgs(attr):
     #@markdown **Image Settings**
     W = attr.W #@param
     H = attr.H #@param
-    W, H = map(lambda x: x - x % 64, (W, H))  # resize to integer multiple of 64
+    #W, H = map(lambda x: x - x % 64, (W, H))  # resize to integer multiple of 64
 
     #@markdown **Sampling Settings**
     seed = attr.seed #@param

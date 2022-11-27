@@ -8,7 +8,7 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ldm.modules.diffusionmodules.util import (
+from ldm_deforum.modules.diffusionmodules.util import (
     checkpoint,
     conv_nd,
     linear,
@@ -17,7 +17,7 @@ from ldm.modules.diffusionmodules.util import (
     normalization,
     timestep_embedding,
 )
-from ldm.modules.attention import SpatialTransformer
+from ldm_deforum.modules.attention import SpatialTransformer
 
 
 # dummy replace
@@ -733,6 +733,8 @@ class UNetModel(nn.Module):
             hs.append(h)
         h = self.middle_block(h, emb, context)
         for module in self.output_blocks:
+            if h.shape[-2:] != hs[-1].shape[-2:]:
+                h = F.interpolate(h, hs[-1].shape[-2:], mode="nearest")
             h = th.cat([h, hs.pop()], dim=1)
             h = module(h, emb, context)
         h = h.type(x.dtype)

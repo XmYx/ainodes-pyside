@@ -598,7 +598,7 @@ class MainWindow(QMainWindow):
             self.canvas.canvas.h = h
             self.canvas.canvas.addrect_atpos(x=0, y=0)
             self.height = self.unicontrol.w.H.value()
-            print(f"this should only haappen once {self.height}")
+            #print(f"this should only haappen once {self.height}")
             self.canvas.canvas.resize_canvas(w=self.w, h=self.height)
 
         self.lastheight = self.height
@@ -674,7 +674,7 @@ class MainWindow(QMainWindow):
     def update_outpaint_parameters(self):
         W = self.unicontrol.w.W.value()
         H = self.unicontrol.w.H.value()
-        W, H = map(lambda x: x - x % 64, (W, H))
+        #W, H = map(lambda x: x - x % 64, (W, H))
         self.unicontrol.w.W.setValue(W)
         self.unicontrol.w.H.setValue(H)
 
@@ -724,7 +724,7 @@ class MainWindow(QMainWindow):
 
     def get_params(self):
         params = self.sessionparams.params()
-        print(f"Created Params")
+        #print(f"Created Params")
         return params
 
     @Slot()
@@ -970,7 +970,7 @@ class MainWindow(QMainWindow):
 
     def run_outpaint_step_x(self, x):
 
-        print("it should not do anything....")
+        #print("it should not do anything....")
 
         self.busy = True
         self.canvas.canvas.reusable_outpaint(self.canvas.canvas.rectlist[x].id)

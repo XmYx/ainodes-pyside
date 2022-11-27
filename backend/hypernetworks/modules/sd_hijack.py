@@ -7,16 +7,16 @@ from torch.nn.functional import silu
 from transformers import CLIPModel, CLIPTokenizer, CLIPTextModel, CLIPProcessor
 
 import backend.hypernetworks.modules.textual_inversion.textual_inversion
-import ldm.modules.attention
-import ldm.modules.diffusionmodules.model
-import ldm.modules.diffusionmodules.util
+import ldm_deforum.modules.attention
+import ldm_deforum.modules.diffusionmodules.model
+import ldm_deforum.modules.diffusionmodules.util
 from backend.devices import torch_gc
 from backend.hypernetworks.modules import prompt_parser, sd_hijack_optimizations
 
-ddim_timesteps = ldm.modules.diffusionmodules.util.make_ddim_timesteps
-attention_CrossAttention_forward = ldm.modules.attention.CrossAttention.forward
-diffusionmodules_model_nonlinearity = ldm.modules.diffusionmodules.model.nonlinearity
-diffusionmodules_model_AttnBlock_forward = ldm.modules.diffusionmodules.model.AttnBlock.forward
+ddim_timesteps = ldm_deforum.modules.diffusionmodules.util.make_ddim_timesteps
+attention_CrossAttention_forward = ldm_deforum.modules.attention.CrossAttention.forward
+diffusionmodules_model_nonlinearity = ldm_deforum.modules.diffusionmodules.model.nonlinearity
+diffusionmodules_model_AttnBlock_forward = ldm_deforum.modules.diffusionmodules.model.AttnBlock.forward
 from backend.singleton import singleton
 gs = singleton
 gs.embeddings_path = ""
@@ -29,45 +29,45 @@ gs.embeddings_path = ""
 def apply_optimizations():
     undo_optimizations()
 
-    ldm.modules.diffusionmodules.model.nonlinearity = silu
+    ldm_deforum.modules.diffusionmodules.model.nonlinearity = silu
 
     """if cmd_opts.force_enable_xformers or (cmd_opts.xformers and shared.xformers_available and torch.version.cuda and (6, 0) <= torch.cuda.get_device_capability(shared.device) <= (9, 0)):
         print("Applying xformers cross attention optimization.")
-        ldm.modules.attention.CrossAttention.forward = sd_hijack_optimizations.xformers_attention_forward
-        ldm.modules.diffusionmodules.model.AttnBlock.forward = sd_hijack_optimizations.xformers_attnblock_forward
+        ldm_deforum.modules.attention.CrossAttention.forward = sd_hijack_optimizations.xformers_attention_forward
+        ldm_deforum.modules.diffusionmodules.model.AttnBlock.forward = sd_hijack_optimizations.xformers_attnblock_forward
     elif cmd_opts.opt_split_attention_v1:
         print("Applying v1 cross attention optimization.")
-        ldm.modules.attention.CrossAttention.forward = sd_hijack_optimizations.split_cross_attention_forward_v1
+        ldm_deforum.modules.attention.CrossAttention.forward = sd_hijack_optimizations.split_cross_attention_forward_v1
     elif not cmd_opts.disable_opt_split_attention and (cmd_opts.opt_split_attention_invokeai or not torch.cuda.is_available()):
         if not invokeAI_mps_available and shared.device.type == 'mps':
             print("The InvokeAI cross attention optimization for MPS requires the psutil package which is not installed.")
             print("Applying v1 cross attention optimization.")
-            ldm.modules.attention.CrossAttention.forward = sd_hijack_optimizations.split_cross_attention_forward_v1
+            ldm_deforum.modules.attention.CrossAttention.forward = sd_hijack_optimizations.split_cross_attention_forward_v1
         else:
             print("Applying cross attention optimization (InvokeAI).")
-            ldm.modules.attention.CrossAttention.forward = sd_hijack_optimizations.split_cross_attention_forward_invokeAI
+            ldm_deforum.modules.attention.CrossAttention.forward = sd_hijack_optimizations.split_cross_attention_forward_invokeAI
     elif not cmd_opts.disable_opt_split_attention and (cmd_opts.opt_split_attention or torch.cuda.is_available()):
         print("Applying cross attention optimization (Doggettx).")
-        ldm.modules.attention.CrossAttention.forward = sd_hijack_optimizations.split_cross_attention_forward
-        ldm.modules.diffusionmodules.model.AttnBlock.forward = sd_hijack_optimizations.cross_attention_attnblock_forward"""
+        ldm_deforum.modules.attention.CrossAttention.forward = sd_hijack_optimizations.split_cross_attention_forward
+        ldm_deforum.modules.diffusionmodules.model.AttnBlock.forward = sd_hijack_optimizations.cross_attention_attnblock_forward"""
     print("Applying xformers cross attention optimization.")
-    ldm.modules.attention.CrossAttention.forward = sd_hijack_optimizations.xformers_attention_forward
-    ldm.modules.diffusionmodules.model.AttnBlock.forward = sd_hijack_optimizations.xformers_attnblock_forward
+    ldm_deforum.modules.attention.CrossAttention.forward = sd_hijack_optimizations.xformers_attention_forward
+    ldm_deforum.modules.diffusionmodules.model.AttnBlock.forward = sd_hijack_optimizations.xformers_attnblock_forward
 
     #print('hijack util')
-    #ldm.modules.diffusionmodules.util.make_ddim_timesteps = hijack_util.make_ddim_timesteps
+    #ldm_deforum.modules.diffusionmodules.util.make_ddim_timesteps = hijack_util.make_ddim_timesteps
     #print(hijack_util.make_ddim_timesteps)
-    #print(ldm.modules.diffusionmodules.util.make_ddim_timesteps)
+    #print(ldm_deforum.modules.diffusionmodules.util.make_ddim_timesteps)
 
 
 def undo_optimizations():
     from backend.hypernetworks import hypernetwork
 
-    ldm.modules.attention.CrossAttention.forward = hypernetwork.attention_CrossAttention_forward
-    ldm.modules.diffusionmodules.model.nonlinearity = diffusionmodules_model_nonlinearity
-    ldm.modules.diffusionmodules.model.AttnBlock.forward = diffusionmodules_model_AttnBlock_forward
+    ldm_deforum.modules.attention.CrossAttention.forward = hypernetwork.attention_CrossAttention_forward
+    ldm_deforum.modules.diffusionmodules.model.nonlinearity = diffusionmodules_model_nonlinearity
+    ldm_deforum.modules.diffusionmodules.model.AttnBlock.forward = diffusionmodules_model_AttnBlock_forward
 
-    #ldm.modules.diffusionmodules.util.make_ddim_timesteps = ddim_timesteps
+    #ldm_deforum.modules.diffusionmodules.util.make_ddim_timesteps = ddim_timesteps
 
 
 def get_target_prompt_token_count(token_count):

@@ -14,8 +14,7 @@ import os
 from torchvision.utils import make_grid
 from tqdm import tqdm, trange
 
-from ldm.models.diffusion.plms import PLMSSampler
-from ldm.models.diffusion.ddim import DDIMSampler
+
 from k_diffusion.external import CompVisDenoiser, CompVisVDenoiser
 from torch import autocast
 from contextlib import nullcontext
@@ -222,8 +221,12 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
         args.oldW = args.W
         args.H = new_H
         args.W = new_W
-
-
+    if gs.model_version == '1.5':
+        from ldm.models.diffusion.plms import PLMSSampler
+        from ldm.models.diffusion.ddim import DDIMSampler
+    elif gs.model_version == '2.0':
+        from ldm_v2.models.diffusion.plms import PLMSSampler
+        from ldm_v2.models.diffusion.ddim import DDIMSampler
     sampler = PLMSSampler(gs.models["sd"]) if args.sampler == 'plms' else DDIMSampler(gs.models["sd"])
     if gs.model_version in gs.system.gen_one_models:
         print("using old denoiser")
@@ -301,8 +304,10 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
     args.clamp_schedule = dict(zip(k_sigmas.tolist(), np.linspace(args.clamp_start,args.clamp_stop,args.steps+1)))
     k_sigmas = k_sigmas[len(k_sigmas)-t_enc-1:]
 
-    if args.sampler in ['plms','ddim']:
+    if args.sampler in ['plms','ddim'] and gs.model_version == '1.5':
         sampler.make_schedule(ddim_num_steps=args.steps, ddim_eta=args.ddim_eta, ddim_discretize='fill', verbose=False)
+    elif args.sampler in ['plms','ddim'] and gs.model_version == '2.0':
+        sampler.make_schedule(ddim_num_steps=args.steps, ddim_eta=args.ddim_eta, ddim_discretize='quad', verbose=False)
 
     if args.colormatch_scale != 0:
         assert args.colormatch_image is not None, "If using color match loss, colormatch_image is needed"

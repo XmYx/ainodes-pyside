@@ -66,9 +66,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
-            <width>715</width>
-            <height>2705</height>
+            <y>-509</y>
+            <width>719</width>
+            <height>2140</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -1380,7 +1380,7 @@
                  <item row="14" column="2" colspan="6">
                   <widget class="QSlider" name="strength_slider">
                    <property name="maximum">
-                    <number>10</number>
+                    <number>100</number>
                    </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
@@ -1825,7 +1825,7 @@
                  <item row="3" column="2" colspan="4">
                   <widget class="QSlider" name="gradient_scale_slider">
                    <property name="maximum">
-                    <number>500000</number>
+                    <number>1000000</number>
                    </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
@@ -1858,10 +1858,10 @@
                     <number>5</number>
                    </property>
                    <property name="maximum">
-                    <double>0.000050000000000</double>
+                    <double>0.100000000000000</double>
                    </property>
                    <property name="singleStep">
-                    <double>0.000001000000000</double>
+                    <double>0.000010000000000</double>
                    </property>
                   </widget>
                  </item>

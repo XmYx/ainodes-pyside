@@ -155,17 +155,18 @@ class DeforumSix:
                 print(f"Loading model from {ckpt} with config {config}")
             config = OmegaConf.load(config)
 
-            print(config.model['params']['unet_config']['params'])
+            print(config.model['params']['conditioning_key'])
 
             if 'num_heads' in config.model['params']['unet_config']['params']:
-                print('v 1.5 found')
                 gs.model_version = '1.5'
             elif 'num_head_channels' in config.model['params']['unet_config']['params']:
-                print('v 2.0 found')
+                gs.model_version = '2.0'
+            if config.model['params']['conditioning_key'] == 'hybrid-adm':
                 gs.model_version = '2.0'
             #if not 'model_version' in config:
             #    print('you must provide a model_version in the config yaml or we can not figure how to tread your model')
             #    return -1
+            print(f'v {gs.model_version} found')
 
             #gs.model_version = config.model_version
             if verbose:

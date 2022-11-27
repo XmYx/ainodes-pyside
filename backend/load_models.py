@@ -23,7 +23,10 @@ def torch_gc():
 def kill_model(model, device):
     print('kill:', model)
     if device != 'cpu':
-        gs.models[model].to('cpu')
+        try:
+            gs.models[model].to('cpu')
+        except:
+            pass
     del gs.models[model]
     torch_gc()
 

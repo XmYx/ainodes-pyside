@@ -76,8 +76,11 @@
           </property>
           <item>
            <widget class="QTabWidget" name="imageLab">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>6</number>
             </property>
             <widget class="QWidget" name="Upscale">
              <attribute name="title">
@@ -726,6 +729,66 @@
                <widget class="QCheckBox" name="keep_folder_structure">
                 <property name="text">
                  <string>Keep Folder Structure</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab_3">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <attribute name="title">
+              <string>VoltaML</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout">
+              <item row="2" column="0">
+               <widget class="QSpinBox" name="max_gpu_memory">
+                <property name="minimum">
+                 <number>4</number>
+                </property>
+                <property name="maximum">
+                 <number>80</number>
+                </property>
+                <property name="value">
+                 <number>12</number>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <spacer name="verticalSpacer_7">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="2" column="1" colspan="2">
+               <widget class="QPushButton" name="run_volta_accel">
+                <property name="text">
+                 <string>Accelerate Model</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0" colspan="2">
+               <widget class="QLineEdit" name="accel_path"/>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="select_model">
+                <property name="text">
+                 <string>Select Model</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_14">
+                <property name="text">
+                 <string>Max GPU Mem</string>
                 </property>
                </widget>
               </item>

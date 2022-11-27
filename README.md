@@ -12,7 +12,7 @@ Colab API Server added with limited functionality
 
 Please join our Discord for further information: https://discord.gg/XDQm9pk5pd
 
-Welcome to our first alpha release, please expect many improvements in a very short amount of time.
+Welcome to aiNodes, a desktop GUI with Deforum Art, Outpaint, Upscalers, and many more.
 
 
 ```\n

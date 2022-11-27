@@ -8,6 +8,8 @@
     <a href="https://github.com/XmYx/ainodes-pyside/blob/main/aiNodes_webAPI_colab_v0_0_2_public.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a>  
 </p>
 
+Colab API Server added with limited functionality
+
 Please join our Discord for further information: https://discord.gg/XDQm9pk5pd
 
 Welcome to our first alpha release, please expect many improvements in a very short amount of time.

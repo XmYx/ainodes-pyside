@@ -213,8 +213,8 @@ class DeforumSix:
             from backend.aesthetics import modules
             print('PersonalizedCLIPEmbedder', backend.aesthetics.modules.PersonalizedCLIPEmbedder)
             # todo make this vae thing a setting
-            #vae_name = os.path.splitext(gs.system.sdPath)[0] + '.pt'
-            #self.load_vae(vae_name)
+            vae_name = os.path.splitext(gs.system.sdPath)[0] + '.pt'
+            self.load_vae(vae_name)
 
     def load_vae(self, vae_file=None):
         global first_load, vae_dict, vae_list, loaded_vae_file

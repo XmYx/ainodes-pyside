@@ -548,7 +548,7 @@ def generate_lowmem(args, root, frame = 0, return_latent=False, return_sample=Fa
         full_precision=True,
         sampler='euler_a',
     )
-    return [results[0]]
+    return results
 
     """
     seed_everything(args.seed)
@@ -929,7 +929,7 @@ def generate_lm(
         precision_scope = autocast
     else:
         precision_scope = nullcontext
-
+    all_images = []
     all_samples = []
     seeds = ""
     with torch.no_grad():
@@ -981,14 +981,17 @@ def generate_lm(
 
                     gs.models["modelFS"].to(device)
                     print("saving images")
+
                     for i in range(batch_size):
                         x_samples_ddim = gs.models["modelFS"].decode_first_stage(samples_ddim[i].unsqueeze(0))
                         x_sample = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
                         all_samples.append(x_sample.to("cpu"))
                         x_sample = 255.0 * rearrange(x_sample[0].cpu().numpy(), "c h w -> h w c")
-                        Image.fromarray(x_sample.astype(np.uint8)).save(
+                        image = Image.fromarray(x_sample.astype(np.uint8))
+                        image.save(
                             os.path.join(sample_path, "seed_" + str(seed) + "_" + f"{base_count:05}.{img_format}")
                         )
+                        all_images.append(image)
                         seeds += str(seed) + ","
                         seed += 1
                         base_count += 1
@@ -1006,17 +1009,17 @@ def generate_lm(
 
     toc = time.time()
 
-    time_taken = (toc - tic) / 60.0
-    grid = torch.cat(all_samples, 0)
-    grid = make_grid(grid, nrow=n_iter)
-    grid = 255.0 * rearrange(grid, "c h w -> h w c").cpu().numpy()
+    #time_taken = (toc - tic) / 60.0
+    #grid = torch.cat(all_samples, 0)
+    #grid = make_grid(grid, nrow=n_iter)
+    #grid = 255.0 * rearrange(grid, "c h w -> h w c").cpu().numpy()
 
-    txt = (
-            "Samples finished in "
-            + str(round(time_taken, 3))
-            + " minutes and exported to "
-            + sample_path
-            + "\nSeeds used = "
-            + seeds[:-1]
-    )
-    return [Image.fromarray(grid.astype(np.uint8)), txt]
+    #txt = (
+    #        "Samples finished in "
+    #        + str(round(time_taken, 3))
+    #        + " minutes and exported to "
+    #        + sample_path
+    #        + "\nSeeds used = "
+    #        + seeds[:-1]
+    #)
+    return all_images

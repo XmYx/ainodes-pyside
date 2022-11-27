@@ -103,6 +103,8 @@ class DeforumSix:
             gs.models["model"].turbo = False
             gs.models["model"].cdevice = "cuda"
             gs.models["modelCS"].cond_stage_model.device = "cuda"
+            del li
+            del lo
             del sd
 
 
@@ -474,6 +476,7 @@ class DeforumSix:
         #if gs.system.xformer == True:
         #    backend.hypernetworks.modules.sd_hijack.apply_optimizations()
         gs.system.device = choose_torch_device()
+
         print(f'----------------------------------------------------------------')
         print(f'-       Deforum  0.6  Art Generator                            -')
         print(f'-            animation mode: {animation_mode}                  -')
@@ -492,7 +495,8 @@ class DeforumSix:
             if "custom_model_name" in gs.models:
                 del gs.models["custom_model_name"]
                 gs.models["sd"] = None
-            self.load_low_memory()
+            if 'model' not in gs.models:
+                self.load_low_memory()
         else:
             if "model" in gs.models:
                 del gs.models["model"]

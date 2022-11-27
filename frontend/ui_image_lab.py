@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import codecs
+from types import SimpleNamespace
 
 from PIL import Image
 from PySide6 import QtUiTools, QtCore, QtWidgets, QtGui
@@ -18,6 +19,7 @@ from backend.aestetics_score import get_aestetics_score
 import backend.interrogate
 from backend.guess_prompt import get_prompt_guess_img
 from backend.hypernetworks.modules import images
+#from volta_accelerate import convert_to_onnx, convert_to_trt
 gs = singleton
 
 interrogator = backend.interrogate.InterrogateModels("interrogate")
@@ -75,6 +77,7 @@ class Callbacks(QObject):
     ebl_model_merge_start = Signal()
     run_aestetic_prediction = Signal()
     run_interrogation = Signal()
+    run_volta_accel = Signal()
 
 class ImageLab():  # for signaling, could be a QWidget  too
 
@@ -99,6 +102,27 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.imageLab.w.alphaNew.valueChanged.connect(self.update_alpha)
         self.imageLab.w.select_interrogation_output_folder.clicked.connect(self.set_interrogation_output_folder)
         self.imageLab.w.run_interrogation.clicked.connect(self.signal_run_interrogation)
+        self.imageLab.w.select_model.clicked.connect(self.select_accel_model)
+        self.imageLab.w.run_volta_accel.clicked.connect(self.signal_run_volta_accel)
+
+
+    def run_volta_accel(self):
+        args = {}
+        args['model_path'] = self.imageLab.w.accel_path.text()
+        args = SimpleNamespace(**args)
+        args.image_size = (512, 512)
+        args.max_seq_length = 77
+        args.max_gpu_memory = self.imageLab.w.max_gpu_memory.value()
+
+        convert_to_onnx(args)
+        convert_to_trt(args)
+
+    def signal_run_volta_accel(self):
+        self.signals.run_volta_accel.emit()
+
+    def select_accel_model(self):
+        accel_model_filename = QFileDialog.getOpenFileName()[0]
+        self.imageLab.w.accel_path.setText(accel_model_filename)
 
 
     def signal_run_interrogation(self):

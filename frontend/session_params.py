@@ -204,7 +204,7 @@ class SessionParams():
             'advanced': advanced,
 
             # Advanced Params
-            'animation_mode':'None',
+            'animation_mode': animation_mode,
             'ddim_eta': ddim_eta,
             'save_settings': save_settings,
             'save_samples': True,

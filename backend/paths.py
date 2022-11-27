@@ -22,6 +22,7 @@ path_dirs = [
     (os.path.join(sd_path, 'pytorch3d-lite'), 'py3d_tools.py', 'pytorch-lite', []),
     (os.path.join(sd_path, 'realesrgan'), 'inference_realesrgan.py', 'realesrgan', []),
     (os.path.join(sd_path, 'improved-aesthetic-predictor'), 'train_predictor.py', 'improved-aesthetic-predictor', []),
+    (os.path.join(sd_path, 'volta-ml'), 'volta_accelerate.py', 'volta-accelerate', []),
 ]
 paths = {}
 

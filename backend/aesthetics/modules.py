@@ -251,27 +251,42 @@ class PersonalizedCLIPEmbedder(AbstractEncoder):
             self.T = gs.T
             self.lr = gs.lr
             self.aesthetic_embedding_path = gs.aesthetic_embedding_path
-
-
+            self.aesthetic_weight = 0.65
+            self.slerp = True
+            self.aesthetic_imgs_text = ""
+            self.aesthetic_text_negative = None
+            self.aesthetic_slerp_angle = 0.4
+            print(self.aesthetic_embedding_path)
             tokens = batch_encoding["input_ids"].to(self.device)
             if text[0] != "" and self.T != 0 and gs.aesthetic_embedding_path is not None:
 
-                #z = self.transformer(input_ids=tokens).last_hidden_state
+                z = self.transformer(input_ids=tokens).last_hidden_state
 
                 print(f"Loaded Gradients: {self.aesthetic_embedding_path}")
                 # This is the model to be personalized
                 full_clip_model = CLIPModel.from_pretrained(
                     "openai/clip-vit-large-patch14",
                 ).to(self.device)
+                image_embs = torch.load(self.aesthetic_embedding_path).to(self.device)
+                if self.aesthetic_imgs_text is not None and len(self.aesthetic_imgs_text) > 0:
+                    text_embs_2 = model.get_text_features(
+                        **self.tokenizer([self.aesthetic_imgs_text], padding=True, return_tensors="pt").to('cuda'))
+                    if self.aesthetic_text_negative:
+                        text_embs_2 = image_embs - text_embs_2
+                        text_embs_2 /= text_embs_2.norm(dim=-1, keepdim=True)
+                    img_embs = slerp(image_embs, text_embs_2, self.aesthetic_slerp_angle)
+                else:
+                    img_embs = image_embs
+
 
                 # We load the aesthetic embeddings
-                image_embs = torch.load(self.aesthetic_embedding_path).to(self.device)
+
 
                 # We compute the loss (similarity between the prompt embedding and the aesthetic embedding)
-                image_embs /= image_embs.norm(dim=-1, keepdim=True)
+                img_embs /= img_embs.norm(dim=-1, keepdim=True)
                 text_embs = full_clip_model.get_text_features(tokens)
                 text_embs /= text_embs.norm(dim=-1, keepdim=True)
-                sim = text_embs @ image_embs.T
+                sim = text_embs @ img_embs.T
                 loss = -sim
                 print(loss)
 
@@ -293,13 +308,16 @@ class PersonalizedCLIPEmbedder(AbstractEncoder):
                     loss = -sim
                     print(loss)
 
-                z = full_clip_model.text_model(input_ids=tokens).last_hidden_state
+                zn = full_clip_model.text_model(input_ids=tokens).last_hidden_state
                 del full_clip_model
                 del text_embs
                 del image_embs
                 del sim
                 torch_gc()
-
+                #zn = zn.last_hidden_state
+                #zn = torch.concat([zn[77 * i:77 * (i + 1)] for i in range(max(z.shape[1] // 77, 1))], 1)
+                #z = slerp(z, zn, self.aesthetic_weight)
+                z = zn
             else:
                 z = self.transformer(input_ids=tokens).last_hidden_state
 
@@ -561,7 +579,18 @@ class FrozenClipImageEmbedder(nn.Module):
     def forward(self, x):
         # x is assumed to be in range [-1,1]
         return self.model.encode_image(self.preprocess(x))
+def slerp(val, low, high):
+    low_norm = low/torch.norm(low, dim=1, keepdim=True)
+    high_norm = high/torch.norm(high, dim=1, keepdim=True)
+    dot = (low_norm*high_norm).sum(1)
 
+    if dot.mean() > 0.9995:
+        return low * val + high * (1 - val)
+
+    omega = torch.acos(dot)
+    so = torch.sin(omega)
+    res = (torch.sin((1.0-val)*omega)/so).unsqueeze(1)*low + (torch.sin(val*omega)/so).unsqueeze(1) * high
+    return res
 
 if __name__ == "__main__":
     from ldm.util import count_params

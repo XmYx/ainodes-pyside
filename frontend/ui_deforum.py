@@ -123,8 +123,11 @@ class Deforum_UI(QObject):
             self.parent.sessionparams.params.advanced = True
         else:
             self.parent.sessionparams.params.advanced = False
-
-
+        gs.T = self.parent.unicontrol.w.gradient_steps.value()
+        gs.lr = self.parent.unicontrol.w.gradient_scale.value() / 1000000000
+        gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.unicontrol.w.aesthetic_embedding.currentText())
+        if gs.aesthetic_embedding_path == 'None':
+            gs.aesthetic_embedding_path = None
         seed = random.randint(0, 2 ** 32 - 1)
         #print('strength ui', float(params.strength']))
 

@@ -492,7 +492,7 @@ class DeforumSix:
             if "custom_model_name" in gs.models:
                 del gs.models["custom_model_name"]
                 gs.models["sd"] = None
-                self.load_low_memory()
+            self.load_low_memory()
         else:
             if "model" in gs.models:
                 del gs.models["model"]

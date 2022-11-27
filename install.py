@@ -225,7 +225,7 @@ def prepare_enviroment():
 
 
 def start_sdui():
-    print(f"Launching SD UI with arguments: {' '.join(sys.argv[1:])}")
+    print(f"Launching SD UI")
     import frontend.startup
     frontend.startup.run_app()
 

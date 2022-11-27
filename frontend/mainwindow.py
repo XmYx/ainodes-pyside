@@ -282,7 +282,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def set_status_bar(self, txt):
-        self.w.statusBar().showMessage(txt)
+        self.statusBar().showMessage(txt)
 
     def upscale_start(self):
         self.signals.setStatusBar.emit("Upscale started...")
@@ -428,11 +428,18 @@ class MainWindow(QMainWindow):
         self.toolbar.setVisible(False)
         self.secondary_toolbar.setVisible(False)
 
-        self.unicontrol.w.hidePlottingButton.setVisible(False)
-        self.unicontrol.w.hideAdvButton.setVisible(False)
-        self.unicontrol.w.hideAesButton.setVisible(False)
-        self.unicontrol.w.hideAnimButton.setVisible(False)
-        self.unicontrol.w.showHideAll.setVisible(False)
+        self.unicontrol.w.enable_negative_prompt.setVisible(False)
+        self.unicontrol.w.negative_prompts.setVisible(False)
+        self.unicontrol.w.prompt_weighting.setVisible(False)
+        self.unicontrol.w.toggle_sampler.setVisible(False)
+        self.unicontrol.w.toggle_outpaint.setVisible(False)
+        self.unicontrol.w.toggle_animations.setVisible(False)
+        self.unicontrol.w.toggle_plotting.setVisible(False)
+        self.unicontrol.w.toggle_aesthetics.setVisible(False)
+        self.unicontrol.w.toggle_embeddings.setVisible(False)
+        self.unicontrol.w.toggle_plugins.setVisible(False)
+
+        #self.unicontrol.w.showHideAll.setVisible(False)
         self.unicontrol.w.H.setVisible(False)
         self.unicontrol.w.H_slider.setVisible(False)
         self.unicontrol.w.W.setVisible(False)
@@ -452,8 +459,8 @@ class MainWindow(QMainWindow):
         self.krea.w.dockWidget.setVisible(False)
         self.prompt_fetcher.w.dockWidget.setVisible(False)
 
-        if self.unicontrol.advHidden == False:
-            self.unicontrol.hideAdvanced_anim()
+        if self.unicontrol.samHidden == False:
+            self.unicontrol.hideSampler_anim()
         if self.unicontrol.aesHidden == False:
             self.unicontrol.hideAesthetic_anim()
         if self.unicontrol.aniHidden == False:
@@ -471,11 +478,15 @@ class MainWindow(QMainWindow):
             self.toolbar.setVisible(True)
             self.secondary_toolbar.setVisible(True)
 
-            self.unicontrol.w.hidePlottingButton.setVisible(True)
-            self.unicontrol.w.hideAdvButton.setVisible(True)
-            self.unicontrol.w.hideAesButton.setVisible(True)
-            self.unicontrol.w.hideAnimButton.setVisible(True)
-            self.unicontrol.w.showHideAll.setVisible(True)
+            self.unicontrol.w.enable_negative_prompt.setVisible(True)
+            self.unicontrol.w.prompt_weighting.setVisible(True)
+            self.unicontrol.w.toggle_sampler.setVisible(True)
+            self.unicontrol.w.toggle_outpaint.setVisible(True)
+            self.unicontrol.w.toggle_animations.setVisible(True)
+            self.unicontrol.w.toggle_plotting.setVisible(True)
+            self.unicontrol.w.toggle_aesthetics.setVisible(True)
+            self.unicontrol.w.toggle_embeddings.setVisible(True)
+            self.unicontrol.w.toggle_plugins.setVisible(True)
             self.unicontrol.w.H.setVisible(True)
             self.unicontrol.w.H_slider.setVisible(True)
             self.unicontrol.w.W.setVisible(True)
@@ -499,6 +510,7 @@ class MainWindow(QMainWindow):
             self.default_hidden = False
         else:
             self.hide_default()
+
     def thumbnails_Animation(self):
         self.thumbsShow = QtCore.QPropertyAnimation(self.thumbnails, b"maximumHeight")
         self.thumbsShow.setDuration(2000)

@@ -13,24 +13,33 @@ class UniControl(QObject):
         file.close()
         self.initAnimation()
 
-        self.w.hideAdvButton.clicked.connect(self.hideAdvanced_anim)
-        self.w.hideAesButton.clicked.connect(self.hideAesthetic_anim)
-        self.w.hideAnimButton.clicked.connect(self.hideAnimation_anim)
-        self.w.hidePlottingButton.clicked.connect(self.hidePlotting_anim)
-        self.w.showHideAll.clicked.connect(self.show_hide_all_anim)
+        #self.w.hideAdvButton.clicked.connect(self.hideAdvanced_anim)
+        #self.w.hideAesButton.clicked.connect(self.hideAesthetic_anim)
+        #self.w.hideAnimButton.clicked.connect(self.hideAnimation_anim)
+        #self.w.hidePlottingButton.clicked.connect(self.hidePlotting_anim)
+        #self.w.showHideAll.clicked.connect(self.show_hide_all_anim)
+
+
+        self.w.toggle_sampler.stateChanged.connect(self.hideSampler_anim)
+        self.w.show_output_setup.stateChanged.connect(self.hideOutput_anim)
+        self.w.show_init_setup.stateChanged.connect(self.hideInitImage_anim)
+        self.w.show_mask_setup.stateChanged.connect(self.hideMaskImage_anim)
+        self.w.toggle_outpaint.stateChanged.connect(self.hideOutpaint_anim)
+        self.w.toggle_animations.stateChanged.connect(self.hideAnimation_anim)
+        self.w.toggle_plotting.stateChanged.connect(self.hidePlotting_anim)
+        self.w.toggle_aesthetics.stateChanged.connect(self.hideAesthetic_anim)
+        self.w.toggle_embeddings.stateChanged.connect(self.hideEmbedding_anim)
+        self.w.toggle_plugins.stateChanged.connect(self.hidePlugins_anim)
+        self.w.toggle_colors.stateChanged.connect(self.hideColors_anim)
+        self.w.toggle_grad.stateChanged.connect(self.hideGrad_anim)
+
         self.w.negative_prompts.setVisible(False)
 
-        self.advHidden = False
-        self.aesHidden = False
-        self.aniHidden = False
-        self.ploHidden = False
-        self.showAll = False
 
+        self.init_anims()
         self.initAnim.start()
-        self.hideAdvanced_anim()
-        self.hideAesthetic_anim()
-        self.hideAnimation_anim()
-        self.hidePlotting_anim()
+        self.hide_all()
+
 
         self.ui_unicontrol = UniControl_UI(self)
 
@@ -42,45 +51,102 @@ class UniControl(QObject):
         print("QCombobox" in str(getattr(self.w, x)))
         print("QTextEdit" in str(getattr(self.w, x)))
 
-    def hideAdvanced_anim(self):
-        if self.advHidden == False:
-            self.setupAnimations(hideAdv=True)
-            self.hideAdvAnim.start()
-            self.advHidden = True
-        elif self.advHidden == True:
-            self.setupAnimations(showAdv=True)
-            self.showAdvAnim.start()
-            self.advHidden = False
-        return
+    def hide_all(self):
+        self.showAll = False
+        self.show_hide_all_anim()
+
+    def hideColors_anim(self):
+        if self.colHidden is True:
+            self.showColAnim.start()
+        else:
+            self.hideColAnim.start()
+        self.colHidden = not self.colHidden
+
+    def hideGrad_anim(self):
+        if self.graHidden is True:
+            self.showGraAnim.start()
+        else:
+            self.hideGraAnim.start()
+        self.graHidden = not self.graHidden
+
+    def hideSampler_anim(self):
+        if self.samHidden is True:
+            self.showSamAnim.start()
+        else:
+            self.hideSamAnim.start()
+        self.samHidden = not self.samHidden
 
     def hideAesthetic_anim(self):
-        if self.aesHidden == False:
-            self.setupAnimations(hideAes=True)
-            self.hideAesAnim.start()
-            self.aesHidden = True
-        elif self.aesHidden == True:
-            self.setupAnimations(showAes=True)
+        if self.aesHidden is True:
             self.showAesAnim.start()
-            self.aesHidden = False
-        return
+        else:
+            self.hideAesAnim.start()
+        self.aesHidden = not self.aesHidden
 
     def hideAnimation_anim(self):
-        if self.aniHidden == False:
-            self.setupAnimations(hideAni=True)
-            self.hideAniAnim.start()
-            self.aniHidden = True
-        elif self.aniHidden == True:
-            self.setupAnimations(showAni=True)
+        if self.aniHidden is True:
             self.showAniAnim.start()
-            self.aniHidden = False
-        return
+        else:
+            self.hideAniAnim.start()
+        self.aniHidden = not self.aniHidden
+
+
+    def hidePlotting_anim(self):
+        if self.ploHidden is True:
+            self.showPloAnim.start()
+        else:
+            self.hidePloAnim.start()
+        self.ploHidden = not self.ploHidden
+
+
+    def hideOutput_anim(self):
+        if self.opuHidden is True:
+            self.showOpuAnim.start()
+        else:
+            self.hideOpuAnim.start()
+        self.opuHidden = not self.opuHidden
+
+    def hideInitImage_anim(self):
+        if self.iniHidden is True:
+            self.showIniAnim.start()
+        else:
+            self.hideIniAnim.start()
+        self.iniHidden = not self.iniHidden
+
+    def hideMaskImage_anim(self):
+        if self.masHidden is True:
+            self.showMasAnim.start()
+        else:
+            self.hideMasAnim.start()
+        self.masHidden = not self.masHidden
+
+    def hideOutpaint_anim(self):
+        if self.outHidden is True:
+            self.showOutAnim.start()
+        else:
+            self.hideOutAnim.start()
+        self.outHidden = not self.outHidden
+
+    def hideEmbedding_anim(self):
+        if self.enbHidden is True:
+            self.showEmbAnim.start()
+        else:
+            self.hideEmbAnim.start()
+        self.enbHidden = not self.enbHidden
+
+    def hidePlugins_anim(self):
+        if self.pinHidden is True:
+            self.showPinAnim.start()
+        else:
+            self.hidePinAnim.start()
+        self.pinHidden = not self.pinHidden
+
 
     def show_hide_all_anim(self):
         print(self.showAll)
         if self.showAll == False:
-            self.setupAnimations(hideAdv=True, hideAes=True, hideAni=True, hidePlo=True)
-            self.hideAdvAnim.start()
-            self.advHidden = True
+            self.hideSamAnim.start()
+            self.samHidden = True
             self.hideAesAnim.start()
             self.aesHidden = True
             self.hideAniAnim.start()
@@ -88,11 +154,29 @@ class UniControl(QObject):
             self.hidePloAnim.start()
             self.ploHidden = True
 
+            self.hideColAnim.start()
+            self.colHidden = True
+            self.hideEmbAnim.start()
+            self.enbHidden = True
+            self.hideGraAnim.start()
+            self.graHidden = True
+            self.hideIniAnim.start()
+            self.iniHidden = True
+            self.hideMasAnim.start()
+            self.masHidden = True
+            self.hideOutAnim.start()
+            self.outHidden = True
+            self.hideOpuAnim.start()
+            self.opuHidden = True
+            self.hidePinAnim.start()
+            self.pinHidden = True
+
+
+
             self.showAll = True
         elif self.showAll == True:
-            self.setupAnimations(showAdv=True, showAes=True, showAni=True, showPlo=True)
-            self.showAdvAnim.start()
-            self.advHidden = False
+            self.showSamAnim.start()
+            self.samHidden = False
             self.showAesAnim.start()
             self.aesHidden = False
             self.showAniAnim.start()
@@ -100,77 +184,175 @@ class UniControl(QObject):
             self.showPloAnim.start()
             self.ploHidden = False
 
+            self.showColAnim.start()
+            self.colHidden = False
+            self.showEmbAnim.start()
+            self.enbHidden = False
+            self.showGraAnim.start()
+            self.graHidden = False
+            self.showIniAnim.start()
+            self.intHidden = False
+            self.showMasAnim.start()
+            self.masHidden = False
+            self.showOutAnim.start()
+            self.outHidden = False
+            self.showOpuAnim.start()
+            self.opuHidden = False
+            self.showPinAnim.start()
+            self.pinHidden = False
             self.showAll = False
-    def hidePlotting_anim(self):
-        if self.ploHidden == False:
-            self.setupAnimations(hidePlo=True)
-            self.hidePloAnim.start()
-            self.ploHidden = True
-        elif self.ploHidden == True:
-            self.setupAnimations(showPlo=True)
-            self.showPloAnim.start()
-            self.ploHidden = False
-        return
 
-    def setupAnimations(self, hideAdv=False, showAdv=False, showAes=False, hideAes=False, showAni=False, hideAni=False, showPlo=False, hidePlo=False):
-        if showAdv == True:
-            self.showAdvAnim = QtCore.QPropertyAnimation(self.w.adv_values, b"maximumHeight")
-            self.showAdvAnim.setDuration(1500)
-            self.showAdvAnim.setStartValue(self.w.adv_values.height())
-            self.showAdvAnim.setEndValue(self.w.height())
-            self.showAdvAnim.setEasingCurve(QEasingCurve.Linear)
-        if hideAdv == True:
-            self.hideAdvAnim = QtCore.QPropertyAnimation(self.w.adv_values, b"maximumHeight")
-            self.hideAdvAnim.setDuration(500)
-            self.hideAdvAnim.setStartValue(self.w.adv_values.height())
-            self.hideAdvAnim.setEndValue(0)
-            self.hideAdvAnim.setEasingCurve(QEasingCurve.Linear)
-        if showAes == True:
-            self.showAesAnim = QtCore.QPropertyAnimation(self.w.aesthetic_values, b"maximumHeight")
-            self.showAesAnim.setDuration(1500)
-            self.showAesAnim.setStartValue(self.w.aesthetic_values.height())
-            self.showAesAnim.setEndValue(self.w.height())
-            self.showAesAnim.setEasingCurve(QEasingCurve.Linear)
-        if hideAes == True:
-            self.hideAesAnim = QtCore.QPropertyAnimation(self.w.aesthetic_values, b"maximumHeight")
-            self.hideAesAnim.setDuration(500)
-            self.hideAesAnim.setStartValue(self.w.aesthetic_values.height())
-            self.hideAesAnim.setEndValue(0)
-            self.hideAesAnim.setEasingCurve(QEasingCurve.Linear)
-        if showAni == True:
-            self.showAniAnim = QtCore.QPropertyAnimation(self.w.anim_values, b"maximumHeight")
-            self.showAniAnim.setDuration(1500)
-            self.showAniAnim.setStartValue(self.w.anim_values.height())
-            self.showAniAnim.setEndValue(self.w.height())
-            self.showAniAnim.setEasingCurve(QEasingCurve.Linear)
-        if hideAni == True:
-            self.hideAniAnim = QtCore.QPropertyAnimation(self.w.anim_values, b"maximumHeight")
-            self.hideAniAnim.setDuration(500)
-            self.hideAniAnim.setStartValue(self.w.anim_values.height())
-            self.hideAniAnim.setEndValue(0)
-            self.hideAniAnim.setEasingCurve(QEasingCurve.Linear)
-        if showPlo == True:
-            self.showPloAnim = QtCore.QPropertyAnimation(self.w.plotting_frame, b"maximumHeight")
-            self.showPloAnim.setDuration(1500)
-            self.showPloAnim.setStartValue(self.w.plotting_frame.height())
-            self.showPloAnim.setEndValue(self.w.height())
-            self.showPloAnim.setEasingCurve(QEasingCurve.Linear)
-        if hidePlo == True:
-            self.hidePloAnim = QtCore.QPropertyAnimation(self.w.plotting_frame, b"maximumHeight")
-            self.hidePloAnim.setDuration(500)
-            self.hidePloAnim.setStartValue(self.w.plotting_frame.height())
-            self.hidePloAnim.setEndValue(0)
-            self.hidePloAnim.setEasingCurve(QEasingCurve.Linear)
-        return
+    def init_anims(self):
+        self.showSamAnim = QtCore.QPropertyAnimation(self.w.sampler_values, b"maximumHeight")
+        self.showSamAnim.setDuration(1500)
+        self.showSamAnim.setStartValue(self.w.sampler_values.height())
+        self.showSamAnim.setEndValue(self.w.height())
+        self.showSamAnim.setEasingCurve(QEasingCurve.Linear)
+        self.hideSamAnim = QtCore.QPropertyAnimation(self.w.sampler_values, b"maximumHeight")
+        self.hideSamAnim.setDuration(500)
+        self.hideSamAnim.setStartValue(self.w.sampler_values.height())
+        self.hideSamAnim.setEndValue(0)
+        self.hideSamAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.showAesAnim = QtCore.QPropertyAnimation(self.w.aesthetic_values, b"maximumHeight")
+        self.showAesAnim.setDuration(1500)
+        self.showAesAnim.setStartValue(self.w.aesthetic_values.height())
+        self.showAesAnim.setEndValue(self.w.height())
+        self.showAesAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hideAesAnim = QtCore.QPropertyAnimation(self.w.aesthetic_values, b"maximumHeight")
+        self.hideAesAnim.setDuration(500)
+        self.hideAesAnim.setStartValue(self.w.aesthetic_values.height())
+        self.hideAesAnim.setEndValue(0)
+        self.hideAesAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.showAniAnim = QtCore.QPropertyAnimation(self.w.anim_values, b"maximumHeight")
+        self.showAniAnim.setDuration(1500)
+        self.showAniAnim.setStartValue(self.w.anim_values.height())
+        self.showAniAnim.setEndValue(self.w.height())
+        self.showAniAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hideAniAnim = QtCore.QPropertyAnimation(self.w.anim_values, b"maximumHeight")
+        self.hideAniAnim.setDuration(500)
+        self.hideAniAnim.setStartValue(self.w.anim_values.height())
+        self.hideAniAnim.setEndValue(0)
+        self.hideAniAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.showPloAnim = QtCore.QPropertyAnimation(self.w.plotting_frame, b"maximumHeight")
+        self.showPloAnim.setDuration(1500)
+        self.showPloAnim.setStartValue(self.w.plotting_frame.height())
+        self.showPloAnim.setEndValue(self.w.height())
+        self.showPloAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hidePloAnim = QtCore.QPropertyAnimation(self.w.plotting_frame, b"maximumHeight")
+        self.hidePloAnim.setDuration(500)
+        self.hidePloAnim.setStartValue(self.w.plotting_frame.height())
+        self.hidePloAnim.setEndValue(0)
+        self.hidePloAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.showColAnim = QtCore.QPropertyAnimation(self.w.color_expo_values, b"maximumHeight")
+        self.showColAnim.setDuration(1500)
+        self.showColAnim.setStartValue(self.w.color_expo_values.height())
+        self.showColAnim.setEndValue(self.w.height())
+        self.showColAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hideColAnim = QtCore.QPropertyAnimation(self.w.color_expo_values, b"maximumHeight")
+        self.hideColAnim.setDuration(500)
+        self.hideColAnim.setStartValue(self.w.color_expo_values.height())
+        self.hideColAnim.setEndValue(0)
+        self.hideColAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.showEmbAnim = QtCore.QPropertyAnimation(self.w.embedding_values, b"maximumHeight")
+        self.showEmbAnim.setDuration(1500)
+        self.showEmbAnim.setStartValue(self.w.embedding_values.height())
+        self.showEmbAnim.setEndValue(self.w.height())
+        self.showEmbAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hideEmbAnim = QtCore.QPropertyAnimation(self.w.embedding_values, b"maximumHeight")
+        self.hideEmbAnim.setDuration(500)
+        self.hideEmbAnim.setStartValue(self.w.embedding_values.height())
+        self.hideEmbAnim.setEndValue(0)
+        self.hideEmbAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.showGraAnim = QtCore.QPropertyAnimation(self.w.grad_values, b"maximumHeight")
+        self.showGraAnim.setDuration(1500)
+        self.showGraAnim.setStartValue(self.w.grad_values.height())
+        self.showGraAnim.setEndValue(self.w.height())
+        self.showGraAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hideGraAnim = QtCore.QPropertyAnimation(self.w.grad_values, b"maximumHeight")
+        self.hideGraAnim.setDuration(500)
+        self.hideGraAnim.setStartValue(self.w.grad_values.height())
+        self.hideGraAnim.setEndValue(0)
+        self.hideGraAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.showIniAnim = QtCore.QPropertyAnimation(self.w.init_values, b"maximumHeight")
+        self.showIniAnim.setDuration(1500)
+        self.showIniAnim.setStartValue(self.w.init_values.height())
+        self.showIniAnim.setEndValue(self.w.height())
+        self.showIniAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hideIniAnim = QtCore.QPropertyAnimation(self.w.init_values, b"maximumHeight")
+        self.hideIniAnim.setDuration(500)
+        self.hideIniAnim.setStartValue(self.w.init_values.height())
+        self.hideIniAnim.setEndValue(0)
+        self.hideIniAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.showMasAnim = QtCore.QPropertyAnimation(self.w.mask_values, b"maximumHeight")
+        self.showMasAnim.setDuration(1500)
+        self.showMasAnim.setStartValue(self.w.mask_values.height())
+        self.showMasAnim.setEndValue(self.w.height())
+        self.showMasAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hideMasAnim = QtCore.QPropertyAnimation(self.w.mask_values, b"maximumHeight")
+        self.hideMasAnim.setDuration(500)
+        self.hideMasAnim.setStartValue(self.w.mask_values.height())
+        self.hideMasAnim.setEndValue(0)
+        self.hideMasAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.showOutAnim = QtCore.QPropertyAnimation(self.w.outpaint_values, b"maximumHeight")
+        self.showOutAnim.setDuration(1500)
+        self.showOutAnim.setStartValue(self.w.outpaint_values.height())
+        self.showOutAnim.setEndValue(self.w.height())
+        self.showOutAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hideOutAnim = QtCore.QPropertyAnimation(self.w.outpaint_values, b"maximumHeight")
+        self.hideOutAnim.setDuration(500)
+        self.hideOutAnim.setStartValue(self.w.outpaint_values.height())
+        self.hideOutAnim.setEndValue(0)
+        self.hideOutAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.showOpuAnim = QtCore.QPropertyAnimation(self.w.output_values, b"maximumHeight")
+        self.showOpuAnim.setDuration(1500)
+        self.showOpuAnim.setStartValue(self.w.output_values.height())
+        self.showOpuAnim.setEndValue(self.w.height())
+        self.showOpuAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hideOpuAnim = QtCore.QPropertyAnimation(self.w.output_values, b"maximumHeight")
+        self.hideOpuAnim.setDuration(500)
+        self.hideOpuAnim.setStartValue(self.w.output_values.height())
+        self.hideOpuAnim.setEndValue(0)
+        self.hideOpuAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.showPinAnim = QtCore.QPropertyAnimation(self.w.plugin_values, b"maximumHeight")
+        self.showPinAnim.setDuration(1500)
+        self.showPinAnim.setStartValue(self.w.plugin_values.height())
+        self.showPinAnim.setEndValue(self.w.height())
+        self.showPinAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hidePinAnim = QtCore.QPropertyAnimation(self.w.plugin_values, b"maximumHeight")
+        self.hidePinAnim.setDuration(500)
+        self.hidePinAnim.setStartValue(self.w.plugin_values.height())
+        self.hidePinAnim.setEndValue(0)
+        self.hidePinAnim.setEasingCurve(QEasingCurve.Linear)
+
+
     def initAnimation(self):
-
         self.initAnim = QtCore.QPropertyAnimation(self.w.dockWidget, b"maximumWidth")
         self.initAnim.setDuration(1500)
         self.initAnim.setStartValue(0)
         self.initAnim.setEndValue(self.parent.width())
         self.initAnim.setEasingCurve(QEasingCurve.Linear)
-
-
 
 
 class UniControl_UI:

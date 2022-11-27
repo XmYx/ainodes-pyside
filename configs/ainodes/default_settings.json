@@ -16,7 +16,7 @@
     "sdClipPath": "data/models/support/sd-clip-vit-l14-img-embed_ema_only.ckpt",
     "sdPath": "data/models/v1-5-pruned-emaonly.ckpt",
     "sdInpaintPath": "data/models/sd-v1-5-inpaint.ckpt",
-    "customModels": "data/models/alternate",
+    "customModels": "data/models/custom",
     "sdInference": "configs/stable-diffusion/v1-inference.yaml",
     "gfpganModelPath": "data/models/support/upscale/GFPGANv1.3.pth",
     "gfpganPath": "src/gfpgan",

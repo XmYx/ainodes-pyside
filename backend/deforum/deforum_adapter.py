@@ -127,9 +127,10 @@ class DeforumSix:
     def get_autoencoder_version(self):
         return "sd-v1" #TODO this will be different for different models
 
-    def load_model_from_config(self, config, ckpt, verbose=False):
+    def load_model_from_config(self, config=None, ckpt=None, verbose=True):
 
-        ckpt = gs.system.sdPath
+        if ckpt is None:
+            ckpt = gs.system.sdPath
 
         # loads config.yaml with the name of the model
         # the config yaml has to be provided with pöropper naming,
@@ -139,15 +140,17 @@ class DeforumSix:
         # it is important that you give the right version hint based on the SD model version
         # if it is some custom model based on some version of SD we need to have the SD
         # version not the version of the custom model
-        config_yaml_name = os.path.splitext(gs.system.sdPath)[0] + '.yaml'
-
-        print(config_yaml_name)
+        if config is None:
+            config_yaml_name = os.path.splitext(gs.system.sdPath)[0] + '.yaml'
+        else:
+            config_yaml_name = config
 
         if os.path.isfile(config_yaml_name):
             config = config_yaml_name
 
         if "sd" not in gs.models:
-            print(f"Loading model from {ckpt} with config {config}")
+            if verbose:
+                print(f"Loading model from {ckpt} with config {config}")
             config = OmegaConf.load(config)
 
             print(config.model['params']['unet_config']['params'])
@@ -163,7 +166,8 @@ class DeforumSix:
             #    return -1
 
             #gs.model_version = config.model_version
-            print(gs.model_version)
+            if verbose:
+                print(gs.model_version)
 
             self.run_pre_load_model_generation_specifics(config)
 
@@ -206,10 +210,11 @@ class DeforumSix:
             # todo make this 'cuda' a parameter
             gs.models["sd"].to("cuda")
             # todo why we do this here?
-            from  backend.aesthetics import modules
+            from backend.aesthetics import modules
             print('PersonalizedCLIPEmbedder', backend.aesthetics.modules.PersonalizedCLIPEmbedder)
-            vae_name = os.path.splitext(gs.system.sdPath)[0] + '.pt'
-            self.load_vae(vae_name)
+            # todo make this vae thing a setting
+            #vae_name = os.path.splitext(gs.system.sdPath)[0] + '.pt'
+            #self.load_vae(vae_name)
 
     def load_vae(self, vae_file=None):
         global first_load, vae_dict, vae_list, loaded_vae_file

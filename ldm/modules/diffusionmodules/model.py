@@ -3,7 +3,6 @@ import math
 import torch
 import torch.nn as nn
 import numpy as np
-import xformers
 from einops import rearrange
 
 from ldm.util import instantiate_from_config
@@ -176,7 +175,7 @@ class AttnBlock(nn.Module):
                                         padding=0)
 
 
-    def forward_0(self, x):
+    def forward(self, x):
         h_ = x
         h_ = self.norm(h_)
         q = self.q(h_)
@@ -201,21 +200,7 @@ class AttnBlock(nn.Module):
         h_ = self.proj_out(h_)
 
         return x+h_
-    def forward(self, x):
-        h_ = x
-        h_ = self.norm(h_)
-        q = self.q(h_)
-        k = self.k(h_)
-        v = self.v(h_)
-        b, c, h, w = q.shape
-        q, k, v = map(lambda t: rearrange(t, 'b c h w -> b (h w) c'), (q, k, v))
-        q = q.contiguous()
-        k = k.contiguous()
-        v = v.contiguous()
-        out = xformers.ops.memory_efficient_attention(q, k, v)
-        out = rearrange(out, 'b (h w) c -> b c h w', h=h)
-        out = self.proj_out(out)
-        return x + out
+
 
 def make_attn(in_channels, attn_type="vanilla"):
     assert attn_type in ["vanilla", "linear", "none"], f'attn_type {attn_type} unknown'

@@ -34,6 +34,7 @@ from backend.torch_gc import torch_gc
 
 from backend.singleton import singleton
 from backend.resizeRight import resizeright, interp_methods
+import k_diffusion
 
 gs = singleton
 def randn(seed, shape):
@@ -230,11 +231,11 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
     sampler = PLMSSampler(gs.models["sd"]) if args.sampler == 'plms' else DDIMSampler(gs.models["sd"])
     if gs.model_version in gs.system.gen_one_models:
         print("using old denoiser")
-        import k_diffusion
         k_diffusion.external.CompVisVDenoiser = CompVisDenoiser
         model_wrap = CompVisDenoiser(gs.models["sd"])
 
     if gs.model_version in gs.system.gen_two_models:
+        gs.denoiser = 2
         model_wrap = CompVisVDenoiser(gs.models["sd"])
     batch_size = args.n_samples
     prompt = args.prompt

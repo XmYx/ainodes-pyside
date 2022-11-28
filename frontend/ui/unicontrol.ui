@@ -41,10 +41,7 @@
         <height>16777215</height>
        </size>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="spacing">
-        <number>2</number>
-       </property>
+      <layout class="QGridLayout" name="gridLayout_3">
        <property name="leftMargin">
         <number>2</number>
        </property>
@@ -57,7 +54,40 @@
        <property name="bottomMargin">
         <number>2</number>
        </property>
-       <item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="lucky">
+         <property name="text">
+          <string>I Have a lucky day</string>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>8</width>
+           <height>8</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="lowmem">
+         <property name="text">
+          <string>Low Memory</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="dream">
+         <property name="text">
+          <string>Dream</string>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>8</width>
+           <height>8</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="3">
         <widget class="QScrollArea" name="scrollArea">
          <property name="widgetResizable">
           <bool>true</bool>
@@ -68,7 +98,7 @@
             <x>0</x>
             <y>0</y>
             <width>715</width>
-            <height>2734</height>
+            <height>2704</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -3475,13 +3505,6 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0" colspan="2">
-               <widget class="QCheckBox" name="lowmem">
-                <property name="text">
-                 <string>Low Memory</string>
-                </property>
-               </widget>
-              </item>
               <item row="7" column="0" colspan="2">
                <widget class="QCheckBox" name="toggle_negative_prompt">
                 <property name="minimumSize">
@@ -3499,32 +3522,6 @@
                <widget class="QCheckBox" name="prompt_weighting">
                 <property name="text">
                  <string>Weighted</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="7" colspan="3">
-               <widget class="QPushButton" name="lucky">
-                <property name="text">
-                 <string>I Have a lucky day</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="2" colspan="5">
-               <widget class="QPushButton" name="dream">
-                <property name="text">
-                 <string>Dream</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
                 </property>
                </widget>
               </item>

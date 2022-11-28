@@ -86,7 +86,8 @@ class MainWindow(QMainWindow):
 
         self.threadpool = QThreadPool()
         self.deforum_ui = Deforum_UI(self)
-
+        self.w = 512
+        self.cheight = 512
 
         self.y = 0
         self.lastheight = None

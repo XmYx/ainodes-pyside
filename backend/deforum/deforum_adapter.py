@@ -773,12 +773,15 @@ class DeforumSix:
         os.makedirs(sample_path, exist_ok=True)
         base_count = len(os.listdir(sample_path))
         base_name = f"{random.randint(10000000, 99999999)}_{seed}_"
+
+        print(F"WITH INPAINT : {with_inpaint}")
+
         if with_inpaint == False:
-            self.load_model()
+            self.load_model_from_config()
             print(f"txt2img seed: {seed}   steps: {steps}  prompt: {prompt}")
             print(f"size:  {W}x{H}")
 
-            self.torch_gc()
+            torch_gc()
 
             # seeds = torch.randint(-2 ** 63, 2 ** 63 - 1, [accelerator.num_processes])
             # torch.manual_seed(seeds[accelerator.process_index].item())

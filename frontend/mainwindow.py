@@ -132,7 +132,20 @@ class MainWindow(QMainWindow):
         self.list_files()
         self.resize(1280, 800)
         self.unicontrol.update_model_list()
+        self.create_out_folders()
 
+
+    def create_out_folders(self):
+        os.makedirs(gs.system.galleryMainPath, exist_ok=True)
+        os.makedirs(gs.system.txt2imgOut, exist_ok=True)
+        os.makedirs(gs.system.img2imgTmp, exist_ok=True)
+        os.makedirs(gs.system.img2imgOut, exist_ok=True)
+        os.makedirs(gs.system.txt2vidSingleFrame, exist_ok=True)
+        os.makedirs(gs.system.txt2vidOut, exist_ok=True)
+        os.makedirs(gs.system.vid2vidTmp, exist_ok=True)
+        os.makedirs(gs.system.vid2vidSingleFrame, exist_ok=True)
+        os.makedirs(gs.system.vid2vidOut, exist_ok=True)
+        os.makedirs(gs.system.customModels, exist_ok=True)
 
     def connections(self):
         self.deforum_ui.signals.txt2img_image_cb.connect(self.image_preview_func)

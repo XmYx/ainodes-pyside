@@ -589,11 +589,12 @@ class DeforumSix:
 
         # clean up unused memory
         torch_gc()
-        #anim_args.animation_mode = 'None'
+
         args.clip_prompt = ['test']
 
         print('anim_args.animation_mode', anim_args.animation_mode)
         print('anim_args.max_frames', anim_args.max_frames)
+
         # dispatch to appropriate renderer
         if anim_args.animation_mode == '2D' or anim_args.animation_mode == '3D':
             render_animation(args, anim_args, animation_prompts, root, image_callback=image_callback, step_callback=step_callback)

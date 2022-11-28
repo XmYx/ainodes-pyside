@@ -119,8 +119,14 @@ class Deforum_UI(QObject):
         #if "inpaint" in gs.models:
         #    del gs.models["inpaint"]
 
-        if params.with_inpaint == True: # todo what is this for?
+        if params.with_inpaint == True or params.max_frames > 1: # todo what is this for?
+            self.parent.w = params.W
+            self.parent.cheight = params.H
+            self.parent.image = None
+            self.parent.image_preview_func()
             self.parent.sessionparams.params.advanced = True
+
+
         else:
             self.parent.sessionparams.params.advanced = False
         gs.T = self.parent.unicontrol.w.gradient_steps.value()

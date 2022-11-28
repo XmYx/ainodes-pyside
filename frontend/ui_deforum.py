@@ -259,7 +259,8 @@ class Deforum_UI(QObject):
     def run_deforum_outpaint(self, params=None, progress_callback=None):
         # self.deforum = DeforumGenerator()
         # self.deforum.signals = Callbacks()
-
+        self.parent.params = self.parent.sessionparams.update_params()
+        params = self.parent.params
         self.deforum_six = DeforumSix()
         self.progress = 0.0
         self.parent.update = 0
@@ -279,22 +280,22 @@ class Deforum_UI(QObject):
         gs.T = self.parent.unicontrol.w.gradient_steps.value()
         gs.lr = self.parent.unicontrol.w.gradient_scale.value() / 1000000000
         gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.unicontrol.w.aesthetic_embedding.currentText())
-        if params == None:
-            params = self.parent.sessionparams.params
+        #if params == None:
+        params = self.parent.sessionparams.update_params()
 
-        if params is not None:
-            #print(params)
-            steps = int(params.steps)
-            H = int(params.H)
-            W = int(params.W)
-            seed = int(params.seed) if params.seed != "" else random.randint(0, 44444444)
-            prompt = str(params.prompts)
-            strength = float(params.strength)
-            mask_blur = float(params.mask_blur)
-            reconstruction_blur = float(params.reconstruction_blur)
-            scale = float(params.scale)
-            ddim_eta = float(params.ddim_eta)
-            with_inpaint = bool(params.use_inpaint)
+        #if params is not None:
+        #print(params)
+        steps = int(params.steps)
+        H = int(params.H)
+        W = int(params.W)
+        seed = int(params.seed) if params.seed != "" else random.randint(0, 44444444)
+        prompt = str(params.prompts)
+        strength = float(params.strength)
+        mask_blur = float(params.mask_blur)
+        reconstruction_blur = float(params.recons_blur)
+        scale = float(params.scale)
+        ddim_eta = float(params.ddim_eta)
+        with_inpaint = bool(params.with_inpaint)
 
         self.parent.sessionparams.params.advanced = True
 

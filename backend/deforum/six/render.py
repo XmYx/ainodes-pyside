@@ -86,6 +86,8 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
     fpH = args.H
     for iprompt, prompt in enumerate(prompts):
         #prevent empty prompts from gernerating images
+        if gs.stop_all:
+            break
         if prompt != '':
             args.prompt = prompt
             args.clip_prompt = prompt
@@ -267,6 +269,8 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
     args.n_samples = 1
     frame_idx = start_frame
     while frame_idx < anim_args.max_frames:
+        if gs.stop_all:
+            break
         print(f"Rendering animation frame {frame_idx} of {anim_args.max_frames}")
         noise = keys.noise_schedule_series[frame_idx]
         strength = keys.strength_schedule_series[frame_idx]
@@ -433,6 +437,8 @@ def render_interpolation(args, anim_args, animation_prompts, root, image_callbac
     print(f"Preparing for interpolation of the following...")
 
     for i, prompt in animation_prompts.items():
+        if gs.stop_all:
+            break
         args.prompt = prompt
         args.clip_prompt = args.prompt
 

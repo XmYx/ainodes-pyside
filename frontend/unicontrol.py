@@ -33,6 +33,7 @@ class UniControl(QObject):
         self.w.toggle_grad.stateChanged.connect(self.hideGrad_anim)
         self.w.toggle_negative_prompt.stateChanged.connect(self.toggle_n_prompt)
         self.w.update_model_list.clicked.connect(self.update_model_list)
+        self.w.stop_dream.clicked.connect(self.stop_all)
         self.w.model_list.currentIndexChanged.connect(self.select_new_model)
         self.w.negative_prompts.setVisible(False)
 
@@ -43,6 +44,10 @@ class UniControl(QObject):
 
 
         self.ui_unicontrol = UniControl_UI(self)
+
+
+    def stop_all(self):
+        gs.stop_all = True
 
 
     def add_to_model_list(self, models):

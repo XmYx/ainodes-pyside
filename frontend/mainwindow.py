@@ -630,26 +630,26 @@ class MainWindow(QMainWindow):
             self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
 
         self.lastheight = self.cheight
+        if self.image is not None:
+            qimage = ImageQt(self.image.convert("RGBA"))
+            for items in self.canvas.canvas.rectlist:
+                if items.id == self.canvas.canvas.selected_item:
+                    if items.images is not None:
+                        templist = items.images
+                    else:
+                        templist = []
+                    items.PILImage = self.image
+                    templist.append(qimage)
+                    items.images = templist
+                    if items.index == None:
+                        items.index = 0
+                    else:
+                        items.index = items.index + 1
+                    items.image = items.images[items.index]
+                    self.canvas.canvas.newimage = True
+                    items.timestring = time.time()
 
-        qimage = ImageQt(self.image.convert("RGBA"))
-        for items in self.canvas.canvas.rectlist:
-            if items.id == self.canvas.canvas.selected_item:
-                if items.images is not None:
-                    templist = items.images
-                else:
-                    templist = []
-                items.PILImage = self.image
-                templist.append(qimage)
-                items.images = templist
-                if items.index == None:
-                    items.index = 0
-                else:
-                    items.index = items.index + 1
-                items.image = items.images[items.index]
-                self.canvas.canvas.newimage = True
-                items.timestring = time.time()
-
-                self.canvas.canvas.update()
+                    self.canvas.canvas.update()
 
 
     def tensor_preview_signal(self, data, data2):

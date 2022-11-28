@@ -1,3 +1,5 @@
+from frontend.main_app import opts
+
 import os
 import time
 import random
@@ -13,12 +15,10 @@ from PySide6.QtWidgets import QMainWindow, QToolBar, QPushButton, QGraphicsColor
     QLabel, QSlider, QFrame, QDockWidget, QWidget
 from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt
 from PySide6 import QtCore, QtWidgets, QtGui
-from backend.deforum.six.animation import check_is_number
 from einops import rearrange
 
 from backend.worker import Worker
 from frontend import plugin_loader
-from frontend.ui_model_chooser import ModelChooser_UI
 
 from backend.prompt_ai.prompt_gen import AiPrompt
 from frontend.ui_paint import PaintUI, spiralOrder, random_path
@@ -28,18 +28,25 @@ import backend.settings as settings
 from backend.singleton import singleton
 from frontend.ui_krea import Krea
 from frontend.ui_lexica import LexicArt
-from frontend.ui_prompt_fetcher import PromptFetcher_UI, FetchPrompts
 from backend.devices import choose_torch_device
 from frontend.ui_timeline import Timeline, KeyFrame
 
 
 gs = singleton
 settings.load_settings_json()
-# we had to load settings first before we can do this import
-from frontend.ui_image_lab import ImageLab
-from frontend.ui_deforum import Deforum_UI
 from frontend.session_params import SessionParams
-from backend.shared import save_last_prompt
+
+# we had to load settings first before we can do this import
+if opts.api_version == False:
+    from frontend.ui_prompt_fetcher import PromptFetcher_UI, FetchPrompts
+    from frontend.ui_model_chooser import ModelChooser_UI
+    from backend.deforum.six.animation import check_is_number
+    from frontend.ui_image_lab import ImageLab
+    from frontend.ui_deforum import Deforum_UI
+    from backend.shared import save_last_prompt
+elif opts.api_version == True:
+    from plugins.use_api.use_api import DeforumAPI
+    Deforum_UI = DeforumAPI
 
 # please don't remove it totally, just remove what we know is not used
 class Callbacks(QObject):
@@ -74,7 +81,7 @@ class MainWindow(QMainWindow):
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.timeline)
         self.tabifyDockWidget(self.timeline, self.thumbs.w.dockWidget)
-
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.unicontrol.w.dockWidget)
         self.create_main_toolbar()
         self.create_secondary_toolbar()
 
@@ -85,58 +92,58 @@ class MainWindow(QMainWindow):
         self.renderedFrames = 0
 
         self.threadpool = QThreadPool()
-        self.deforum_ui = Deforum_UI(self)
 
 
         self.y = 0
         self.lastheight = None
         self.cheight = gs.diffusion.H
-
+        self.deforum_ui = Deforum_UI(self)
         self.lexicart = LexicArt()
         self.krea = Krea()
-        self.prompt_fetcher = FetchPrompts()
-        self.prompt_fetcher_ui = PromptFetcher_UI(self)
-
         self.path_setup = PathSetup()
-        self.image_lab = ImageLab()
-        self.image_lab_ui = self.image_lab.imageLab
-        self.model_chooser = ModelChooser_UI(self)
         self.unicontrol.w.dockWidget.setWindowTitle("Parameters")
         self.path_setup.w.dockWidget.setWindowTitle("Model / Paths")
-        self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
-        self.lexicart.w.dockWidget.setWindowTitle("Lexica Art")
-        self.krea.w.dockWidget.setWindowTitle("Krea")
-        self.prompt_fetcher.w.dockWidget.setWindowTitle("Prompt Fetcher")
+        if opts.api_version == False:
+            self.prompt_fetcher = FetchPrompts()
+            self.prompt_fetcher_ui = PromptFetcher_UI(self)
 
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.image_lab_ui.w.dockWidget)
-        self.image_lab_ui.w.dockWidget.setMaximumHeight(self.height())
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.path_setup.w.dockWidget)
-        self.path_setup.w.dockWidget.setMaximumHeight(self.height())
-        self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.path_setup.w.dockWidget)
+            self.image_lab = ImageLab()
+            self.image_lab_ui = self.image_lab.imageLab
+            self.model_chooser = ModelChooser_UI(self)
+            self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
+            self.lexicart.w.dockWidget.setWindowTitle("Lexica Art")
+            self.krea.w.dockWidget.setWindowTitle("Krea")
+            self.prompt_fetcher.w.dockWidget.setWindowTitle("Prompt Fetcher")
 
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.lexicart.w.dockWidget)
-        self.lexicart.w.dockWidget.setMaximumHeight(self.height())
-        self.tabifyDockWidget(self.path_setup.w.dockWidget, self.lexicart.w.dockWidget)
+            self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.image_lab_ui.w.dockWidget)
+            self.image_lab_ui.w.dockWidget.setMaximumHeight(self.height())
+            self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.path_setup.w.dockWidget)
+            self.path_setup.w.dockWidget.setMaximumHeight(self.height())
+            self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.path_setup.w.dockWidget)
 
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.krea.w.dockWidget)
-        self.krea.w.dockWidget.setMaximumHeight(self.height())
-        self.tabifyDockWidget(self.lexicart.w.dockWidget, self.krea.w.dockWidget)
+            self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.lexicart.w.dockWidget)
+            self.lexicart.w.dockWidget.setMaximumHeight(self.height())
+            self.tabifyDockWidget(self.path_setup.w.dockWidget, self.lexicart.w.dockWidget)
 
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.prompt_fetcher.w.dockWidget)
+            self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.krea.w.dockWidget)
+            self.krea.w.dockWidget.setMaximumHeight(self.height())
+            self.tabifyDockWidget(self.lexicart.w.dockWidget, self.krea.w.dockWidget)
+
+            self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.prompt_fetcher.w.dockWidget)
 
 
-        self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
+            self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
 
 
 
-        #self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
-        #self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.image_lab_ui.w.dockWidget)
-        self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.unicontrol.w.dockWidget)
-        self.hide_default()
+            #self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
+            #self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.image_lab_ui.w.dockWidget)
+            self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.unicontrol.w.dockWidget)
+            self.hide_default()
+            self.connections()
+            self.list_files()
         self.mode = 'txt2img'
         self.init_plugin_loader()
-        self.connections()
-        self.list_files()
         self.resize(1280, 800)
 
 

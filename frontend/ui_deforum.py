@@ -5,16 +5,20 @@ import random
 import numpy as np
 from PIL import Image, ImageFont, ImageDraw
 from PySide6.QtCore import QObject, Signal
-
-from backend.deforum.deforum_adapter import DeforumSix
-from backend.hypernetworks.modules.images import GridAnnotation
 from backend.singleton import singleton
-import torchvision.transforms as T
-from torchvision.utils import make_grid
-from einops import rearrange
-from fonts.ttf import Roboto
 from backend.worker import Worker
 from backend.shared import model_killer
+try:
+    from backend.deforum.deforum_adapter import DeforumSix
+    from backend.hypernetworks.modules.images import GridAnnotation
+    import torchvision.transforms as T
+    from torchvision.utils import make_grid
+    from einops import rearrange
+    from fonts.ttf import Roboto
+except:
+    DeforumSix = None
+    GridAnnotation = None
+
 gs = singleton
 
 

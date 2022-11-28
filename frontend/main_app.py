@@ -1,4 +1,4 @@
-import platform
+import platform, argparse
 from PySide6 import QtCore, QtQuick
 from PySide6.QtGui import QIcon, QAction, QPixmap
 import sys
@@ -6,6 +6,16 @@ from PySide6.QtQuick import QSGRendererInterface
 from PySide6.QtWidgets import QApplication, QSplashScreen
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--api_version",
+    dest='api_version',
+    action='store_true',
+    help="Diffusion model path.",
+)
+opts = parser.parse_args()
+print(opts.api_version)
 
 defaultdirs = [
     "data",

@@ -5,7 +5,7 @@ import torch
 from omegaconf import OmegaConf
 from torch import nn
 
-from backend.deforum.six.model_load import make_linear_decode
+#from backend.deforum.six.model_load import make_linear_decode
 from backend.singleton import singleton
 from backend.devices import choose_torch_device
 from ldm.util import instantiate_from_config
@@ -14,7 +14,26 @@ gs = singleton
 
 model_types = ['sd','inpaint', 'custom']
 
+def make_linear_decode(model_version, device='cuda:0'):
+    v1_4_rgb_latent_factors = [
+        #   R       G       B
+        [ 0.298,  0.207,  0.208],  # L1
+        [ 0.187,  0.286,  0.173],  # L2
+        [-0.158,  0.189,  0.264],  # L3
+        [-0.184, -0.271, -0.473],  # L4
+    ]
 
+    if model_version[:5] == "sd-v1":
+        rgb_latent_factors = torch.Tensor(v1_4_rgb_latent_factors).to(device)
+    else:
+        raise Exception(f"Model name {model_version} not recognized.")
+
+    def linear_decode(latent):
+        latent_image = latent.permute(0, 2, 3, 1) @ rgb_latent_factors
+        latent_image = latent_image.permute(0, 3, 1, 2)
+        return latent_image
+
+    return linear_decode
 def torch_gc():
     gc.collect()
     torch.cuda.empty_cache()

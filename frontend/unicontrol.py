@@ -33,7 +33,7 @@ class UniControl(QObject):
         self.w.toggle_grad.stateChanged.connect(self.hideGrad_anim)
         self.w.toggle_negative_prompt.stateChanged.connect(self.toggle_n_prompt)
         self.w.update_model_list.clicked.connect(self.update_model_list)
-        self.w.model_list.currentTextChanged.connect(self.select_new_model)
+        self.w.model_list.currentIndexChanged.connect(self.select_new_model)
         self.w.negative_prompts.setVisible(False)
 
 
@@ -52,6 +52,8 @@ class UniControl(QObject):
 
 
     def update_model_list(self):
+        target_model = os.path.basename(gs.system.sdPath) # to work around the signal which triggers once we start changing the dropdowns items
+
         self.w.model_list.clear()
         files = os.listdir(gs.system.models_path)
         files = [f for f in files if os.path.isfile(gs.system.models_path+'/'+f)] #Filtering only the files.
@@ -65,13 +67,11 @@ class UniControl(QObject):
         for model in files:
             if '.ckpt' in model:
                 self.w.model_list.addItem('custom/' + model)
-        print(self.w.model_list.count())
         item_count = self.w.model_list.count()
         model_items = []
         for i in range(0, item_count-1):
-            print(i, self.w.model_list.itemText(i))
             model_items.append(self.w.model_list.itemText(i))
-        self.w.model_list.setCurrentIndex(model_items.index(os.path.basename(gs.system.sdPath)))
+        self.w.model_list.setCurrentIndex(model_items.index(target_model))
 
     def select_new_model(self):
         new_model = os.path.join(gs.system.models_path,self.w.model_list.currentText())

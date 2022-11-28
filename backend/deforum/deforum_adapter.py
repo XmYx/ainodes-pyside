@@ -589,8 +589,11 @@ class DeforumSix:
 
         # clean up unused memory
         torch_gc()
-        anim_args.animation_mode = 'None'
+        #anim_args.animation_mode = 'None'
         args.clip_prompt = ['test']
+
+        print('anim_args.animation_mode', anim_args.animation_mode)
+        print('anim_args.max_frames', anim_args.max_frames)
         # dispatch to appropriate renderer
         if anim_args.animation_mode == '2D' or anim_args.animation_mode == '3D':
             render_animation(args, anim_args, animation_prompts, root, image_callback=image_callback, step_callback=step_callback)
@@ -610,6 +613,9 @@ class DeforumSix:
         mp4_path = gs.system.txt2vidOut  # @param {type:"string"}
         render_steps = False  # @param {type: 'boolean'}
         path_name_modifier = "x0_pred"  # @param ["x0_pred","x"]
+
+
+        skip_video_for_run_all = True if anim_args.max_frames < 2 else False
 
         if skip_video_for_run_all == True:
             print('Skipping video creation, uncheck skip_video_for_run_all if you want to run it')
@@ -685,7 +691,7 @@ class DeforumSix:
             del gs.models["modelFS"]
 
         torch_gc()
-        return paths
+        # return paths # todo produces an error, what does it do?
 
     def render_animation_new(self):
 

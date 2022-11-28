@@ -124,13 +124,14 @@ class MainWindow(QMainWindow):
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.prompt_fetcher.w.dockWidget)
         self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
         self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.unicontrol.w.dockWidget)
-        self.unicontrol.update_model_list()
+
         self.hide_default()
         self.mode = 'txt2img'
         self.init_plugin_loader()
         self.connections()
         self.list_files()
         self.resize(1280, 800)
+        self.unicontrol.update_model_list()
 
 
     def connections(self):

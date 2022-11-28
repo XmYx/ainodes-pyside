@@ -55,7 +55,6 @@ class SessionParams():
         seed = random.randint(0, 2 ** 32 - 1) if self.parent.unicontrol.w.seed.text() == '' else int(
             self.parent.unicontrol.w.seed.text())
         prompt = self.parent.unicontrol.w.prompts.toPlainText()
-        strength = self.parent.unicontrol.w.strength.value()
         mask_blur = int(self.parent.unicontrol.w.mask_blur.value())
         recons_blur = int(self.parent.unicontrol.w.reconstruction_blur.value())
         scale = self.parent.unicontrol.w.scale.value()
@@ -123,9 +122,9 @@ class SessionParams():
         cutn = int(self.parent.unicontrol.w.cutn.value())
         cut_pow = self.parent.unicontrol.w.cut_pow.value()
 
-        init_mse_scale = 0
+        init_mse_scale = self.parent.unicontrol.w.init_mse_scale.value()
         init_mse_image = None #if self.parent.unicontrol.w.init_mse_image.text() == '' else self.parent.unicontrol.w.init_mse_image.text()
-        blue_scale = 0
+        blue_scale = self.parent.unicontrol.w.blue_scale.value()
 
         gradient_wrt = self.parent.unicontrol.w.gradient_wrt.currentText()  # ["x" "x0_pred"]
         gradient_add_to = self.parent.unicontrol.w.gradient_add_to.currentText()  # ["cond" "uncond" "both"]
@@ -182,7 +181,17 @@ class SessionParams():
         init_image = self.parent.unicontrol.w.init_image.text()
         prompt_weighting = self.parent.unicontrol.w.prompt_weighting.isChecked()
         normalize_prompt_weights = self.parent.unicontrol.w.normalized_prompts.isChecked()
-        animation_mode = 'None'
+
+        if self.parent.unicontrol.w.anim2D.isChecked():
+            anim_mode = '2D'
+        if self.parent.unicontrol.w.anim3D.isChecked():
+            anim_mode = '3D'
+        if self.parent.unicontrol.w.animVid.isChecked():
+            anim_mode = 'Video Input'
+
+        animation_mode = 'None' if self.parent.unicontrol.w.max_frames_slider.value() < 2 else anim_mode
+
+        max_frame = self.parent.unicontrol.w.max_frames_slider.value() if animation_mode != 'None' else 1
         use_inpaint = self.parent.unicontrol.w.use_inpaint.isChecked()
         lowmem = self.parent.unicontrol.w.lowmem.isChecked()
 
@@ -218,7 +227,7 @@ class SessionParams():
             'strength': strength,
             'strength_0_no_init': strength_0_no_init,
             'device': 'cuda',
-            'max_frames': 1,
+            'max_frames': max_frame,
             'outdir': outdir,
             'n_samples': n_samples,
             'mean_scale': mean_scale,

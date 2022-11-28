@@ -19,6 +19,15 @@ def save_last_prompt(prompt_html, prompt_txt):
     f.write(f'{dt}: {prompt_txt}\n')
     f.close()
 
+def load_last_prompt():
+    data = ''
+    try:
+        with open('configs/ainodes/last_prompt.txt', 'r') as file:
+            data = file.read().replace('\n', '')
+    except:
+        pass
+    return data
+
 
 def model_killer(keep=''):
     temp = None

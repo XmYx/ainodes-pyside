@@ -176,7 +176,7 @@ class DeforumAPI(QObject):
                                          )
 
     def run_deforum_six_txt2img(self, progress_callback=None, plotting=True):
-
+        gs.stop_all = False
         params = self.parent.sessionparams.update_params()
         print(f"updated tyutya to: {params}")
         if "inpaint" in gs.models:
@@ -582,5 +582,3 @@ def draw_grid_annotations(im, width, height, hor_texts, ver_texts, W, H, params)
         draw_texts(d, x, y, ver_texts[row])
 
     return result
-
-

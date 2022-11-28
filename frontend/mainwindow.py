@@ -210,6 +210,7 @@ class MainWindow(QMainWindow):
         self.prompt_fetcher_ui.signals.got_krea_prompts.connect(self.prompt_fetcher_ui.set_krea_prompts)
 
     def taskswitcher(self):
+        gs.stop_all = False
         save_last_prompt(self.unicontrol.w.prompts.toHtml(), self.unicontrol.w.prompts.toPlainText())
         if self.unicontrol.w.use_inpaint.isChecked() == True:
             self.canvas.canvas.reusable_outpaint(self.canvas.canvas.selected_item)

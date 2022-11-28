@@ -121,17 +121,10 @@ class MainWindow(QMainWindow):
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.krea.w.dockWidget)
         self.krea.w.dockWidget.setMaximumHeight(self.height())
         self.tabifyDockWidget(self.lexicart.w.dockWidget, self.krea.w.dockWidget)
-
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.prompt_fetcher.w.dockWidget)
-
-
         self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
-
-
-
-        #self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
-        #self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.image_lab_ui.w.dockWidget)
         self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.unicontrol.w.dockWidget)
+        self.unicontrol.update_model_list()
         self.hide_default()
         self.mode = 'txt2img'
         self.init_plugin_loader()

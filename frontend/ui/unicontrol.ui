@@ -66,9 +66,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-509</y>
-            <width>719</width>
-            <height>2140</height>
+            <y>0</y>
+            <width>715</width>
+            <height>2734</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -1712,6 +1712,23 @@
                    </property>
                    <property name="checked">
                     <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="2" colspan="6">
+                  <widget class="QComboBox" name="model_list"/>
+                 </item>
+                 <item row="7" column="0">
+                  <widget class="QLabel" name="label_72">
+                   <property name="text">
+                    <string>Model</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="8">
+                  <widget class="QPushButton" name="update_model_list">
+                   <property name="text">
+                    <string>Update</string>
                    </property>
                   </widget>
                  </item>

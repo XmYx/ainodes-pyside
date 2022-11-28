@@ -11,6 +11,7 @@
     "vid2vidSingleFrame": "data/output/vid2vid/single_frame",
     "vid2vidOut": "data/output/vid2vid/output",
     "outpaintOut": "data/output/outpaint",
+    "models_path": "data/models",
     "adabinsPath": "data/models/support/AdaBins_nyu.pt",
     "midasPath": "data/models/support/dpt_large-midas-2f21e586.pt",
     "sdClipPath": "data/models/support/sd-clip-vit-l14-img-embed_ema_only.ckpt",

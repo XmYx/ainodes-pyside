@@ -1,6 +1,10 @@
+import os
+
 from PySide6 import QtUiTools, QtCore
 from PySide6.QtCore import QFile, QObject, QEasingCurve, QRect
+from backend.singleton import singleton
 
+gs = singleton
 
 class UniControl(QObject):
 
@@ -27,8 +31,8 @@ class UniControl(QObject):
         self.w.toggle_colors.stateChanged.connect(self.hideColors_anim)
         self.w.toggle_grad.stateChanged.connect(self.hideGrad_anim)
         self.w.toggle_negative_prompt.stateChanged.connect(self.toggle_n_prompt)
-
-
+        self.w.update_model_list.clicked.connect(self.update_model_list)
+        self.w.model_list.currentTextChanged.connect(self.select_new_model)
         self.w.negative_prompts.setVisible(False)
 
 
@@ -39,6 +43,40 @@ class UniControl(QObject):
 
         self.ui_unicontrol = UniControl_UI(self)
 
+
+    def add_to_model_list(self, models):
+        for model in models:
+            if '.ckpt' in model:
+                self.w.model_list.addItem(model)
+
+
+    def update_model_list(self):
+        self.w.model_list.clear()
+        files = os.listdir(gs.system.models_path)
+        files = [f for f in files if os.path.isfile(gs.system.models_path+'/'+f)] #Filtering only the files.
+        model_items = files
+        for model in files:
+            if '.ckpt' in model:
+                self.w.model_list.addItem(model)
+        files = os.listdir(gs.system.customModels)
+        files = [f for f in files if os.path.isfile(gs.system.customModels+'/'+f)] #Filtering only the files.
+        model_items.append(files)
+        for model in files:
+            if '.ckpt' in model:
+                self.w.model_list.addItem('custom/' + model)
+        print(self.w.model_list.count())
+        item_count = self.w.model_list.count()
+        model_items = []
+        for i in range(0, item_count-1):
+            print(i, self.w.model_list.itemText(i))
+            model_items.append(self.w.model_list.itemText(i))
+        self.w.model_list.setCurrentIndex(model_items.index(os.path.basename(gs.system.sdPath)))
+
+    def select_new_model(self):
+        new_model = os.path.join(gs.system.models_path,self.w.model_list.currentText())
+        gs.system.sdPath = new_model
+        if 'sd' in gs.models:
+            del gs.models['sd']
 
     def toggle_n_prompt(self):
         self.w.negative_prompts.setVisible(self.w.toggle_negative_prompt.isChecked())

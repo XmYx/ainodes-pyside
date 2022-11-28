@@ -123,6 +123,7 @@ class Deforum_UI(QObject):
             self.parent.w = params.W
             self.parent.cheight = params.H
             self.parent.image = None
+            self.parent.sessionparams.params.advanced = False
             self.parent.image_preview_func()
             self.parent.sessionparams.params.advanced = True
 

@@ -44,10 +44,12 @@ class UniControl(QObject):
         self.w.negative_prompts.setVisible(self.w.toggle_negative_prompt.isChecked())
 
     def hide_all(self):
+        self.init_anims()
         self.showAll = False
         self.show_hide_all_anim()
 
     def hideColors_anim(self):
+        self.init_anims()
         if self.colHidden is True:
             self.showColAnim.start()
         else:
@@ -55,6 +57,7 @@ class UniControl(QObject):
         self.colHidden = not self.colHidden
 
     def hideGrad_anim(self):
+        self.init_anims()
         if self.graHidden is True:
             self.showGraAnim.start()
         else:
@@ -62,6 +65,7 @@ class UniControl(QObject):
         self.graHidden = not self.graHidden
 
     def hideSampler_anim(self):
+        self.init_anims()
         if self.samHidden is True:
             self.showSamAnim.start()
         else:
@@ -69,6 +73,7 @@ class UniControl(QObject):
         self.samHidden = not self.samHidden
 
     def hideAesthetic_anim(self):
+        self.init_anims()
         if self.aesHidden is True:
             self.showAesAnim.start()
         else:
@@ -76,14 +81,18 @@ class UniControl(QObject):
         self.aesHidden = not self.aesHidden
 
     def hideAnimation_anim(self):
+        self.init_anims()
         if self.aniHidden is True:
             self.showAniAnim.start()
+            self.parent.timeline.show_anim_action()
         else:
             self.hideAniAnim.start()
+            self.parent.timeline.hide_anim_action()
         self.aniHidden = not self.aniHidden
 
 
     def hidePlotting_anim(self):
+        self.init_anims()
         if self.ploHidden is True:
             self.showPloAnim.start()
         else:
@@ -92,6 +101,7 @@ class UniControl(QObject):
 
 
     def hideOutput_anim(self):
+        self.init_anims()
         if self.opuHidden is True:
             self.showOpuAnim.start()
         else:
@@ -99,6 +109,7 @@ class UniControl(QObject):
         self.opuHidden = not self.opuHidden
 
     def hideInitImage_anim(self):
+        self.init_anims()
         if self.iniHidden is True:
             self.showIniAnim.start()
         else:
@@ -106,6 +117,7 @@ class UniControl(QObject):
         self.iniHidden = not self.iniHidden
 
     def hideMaskImage_anim(self):
+        self.init_anims()
         if self.masHidden is True:
             self.showMasAnim.start()
         else:
@@ -113,6 +125,7 @@ class UniControl(QObject):
         self.masHidden = not self.masHidden
 
     def hideOutpaint_anim(self):
+        self.init_anims()
         if self.outHidden is True:
             self.showOutAnim.start()
         else:
@@ -120,6 +133,7 @@ class UniControl(QObject):
         self.outHidden = not self.outHidden
 
     def hideEmbedding_anim(self):
+        self.init_anims()
         if self.enbHidden is True:
             self.showEmbAnim.start()
         else:
@@ -127,6 +141,7 @@ class UniControl(QObject):
         self.enbHidden = not self.enbHidden
 
     def hidePlugins_anim(self):
+        self.init_anims()
         if self.pinHidden is True:
             self.showPinAnim.start()
         else:
@@ -162,9 +177,6 @@ class UniControl(QObject):
             self.opuHidden = True
             self.hidePinAnim.start()
             self.pinHidden = True
-
-
-
             self.showAll = True
         elif self.showAll == True:
             self.showSamAnim.start()
@@ -200,6 +212,7 @@ class UniControl(QObject):
         self.showSamAnim.setStartValue(self.w.sampler_values.height())
         self.showSamAnim.setEndValue(self.w.height())
         self.showSamAnim.setEasingCurve(QEasingCurve.Linear)
+
         self.hideSamAnim = QtCore.QPropertyAnimation(self.w.sampler_values, b"maximumHeight")
         self.hideSamAnim.setDuration(500)
         self.hideSamAnim.setStartValue(self.w.sampler_values.height())
@@ -425,7 +438,7 @@ class UniControl_UI:
         #self.unicontrol.w.mask_blur.setValue(self.unicontrol.w.mask_blur_slider.value())
         #self.unicontrol.w.reconstruction_blur.setValue(self.unicontrol.w.reconstruction_blur_slider.value())
         self.unicontrol.w.gradient_steps.setValue(self.unicontrol.w.gradient_steps_slider.value())
-        self.unicontrol.w.gradient_scale.setValue(self.unicontrol.w.gradient_scale_slider.value()/ 1000000000)
+        self.unicontrol.w.gradient_scale.setValue(self.unicontrol.w.gradient_scale_slider.value() / 10000000)
         self.unicontrol.w.clip_scale.setValue(self.unicontrol.w.clip_scale_slider.value()/10)
         self.unicontrol.w.aesthetics_scale.setValue( self.unicontrol.w.aesthetics_scale_slider.value())
         self.unicontrol.w.mean_scale.setValue(self.unicontrol.w.mean_scale_slider.value()/10)
@@ -450,7 +463,7 @@ class UniControl_UI:
         #self.unicontrol.w.mask_blur_slider.setValue(int(self.unicontrol.w.mask_blur_slider.value()))
         #self.unicontrol.w.reconstruction_blur_slider.setValue(int(self.unicontrol.w.reconstruction_blur_slider.value()))
         self.unicontrol.w.gradient_steps_slider.setValue(int(self.unicontrol.w.gradient_steps.value()))
-        self.unicontrol.w.gradient_scale_slider.setValue(int(self.unicontrol.w.gradient_scale.value()* 1000000000))
+        self.unicontrol.w.gradient_scale_slider.setValue(int(self.unicontrol.w.gradient_scale.value() * 10000000))
         self.unicontrol.w.clip_scale_slider.setValue(int(self.unicontrol.w.clip_scale.value()*10))
         self.unicontrol.w.aesthetics_scale_slider.setValue( int(self.unicontrol.w.aesthetics_scale.value()))
         self.unicontrol.w.mean_scale_slider.setValue(int(self.unicontrol.w.mean_scale.value()*10))

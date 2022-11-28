@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
         self.canvas = PaintUI(self)
         self.setCentralWidget(self.canvas)
         self.setWindowTitle("aiNodes - Still Mode")
-        self.timeline = Timeline()
+        self.timeline = Timeline(self)
         self.animKeyEditor = AnimKeyEditor()
 
         self.resize(1280, 800)
@@ -71,11 +71,9 @@ class MainWindow(QMainWindow):
         self.sessionparams = SessionParams(self)
         self.sessionparams.create_params()
         self.thumbs = ThumbsUI()
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.unicontrol.w.dockWidget)
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.animKeyEditor.w.dockWidget)
-        #self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
-        #self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.timeline)
-        #self.tabifyDockWidget(self.timeline, self.thumbs.w.dockWidget)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.timeline)
+        self.tabifyDockWidget(self.timeline, self.thumbs.w.dockWidget)
 
         self.create_main_toolbar()
         self.create_secondary_toolbar()
@@ -92,7 +90,7 @@ class MainWindow(QMainWindow):
 
         self.y = 0
         self.lastheight = None
-        self.height = gs.diffusion.H
+        self.cheight = gs.diffusion.H
 
         self.lexicart = LexicArt()
         self.krea = Krea()
@@ -111,16 +109,29 @@ class MainWindow(QMainWindow):
         self.prompt_fetcher.w.dockWidget.setWindowTitle("Prompt Fetcher")
 
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.image_lab_ui.w.dockWidget)
+        self.image_lab_ui.w.dockWidget.setMaximumHeight(self.height())
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.path_setup.w.dockWidget)
+        self.path_setup.w.dockWidget.setMaximumHeight(self.height())
+        self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.path_setup.w.dockWidget)
+
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.lexicart.w.dockWidget)
+        self.lexicart.w.dockWidget.setMaximumHeight(self.height())
+        self.tabifyDockWidget(self.path_setup.w.dockWidget, self.lexicart.w.dockWidget)
+
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.krea.w.dockWidget)
+        self.krea.w.dockWidget.setMaximumHeight(self.height())
+        self.tabifyDockWidget(self.lexicart.w.dockWidget, self.krea.w.dockWidget)
+
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.prompt_fetcher.w.dockWidget)
 
-        self.tabifyDockWidget(self.lexicart.w.dockWidget, self.krea.w.dockWidget)
+
         self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
-        self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.image_lab_ui.w.dockWidget)
-        self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.path_setup.w.dockWidget)
-        self.tabifyDockWidget(self.path_setup.w.dockWidget, self.unicontrol.w.dockWidget)
+
+
+
+        #self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
+        #self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.image_lab_ui.w.dockWidget)
+        self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.unicontrol.w.dockWidget)
         self.hide_default()
         self.mode = 'txt2img'
         self.init_plugin_loader()
@@ -525,7 +536,7 @@ class MainWindow(QMainWindow):
         self.thumbsShow = QtCore.QPropertyAnimation(self.thumbnails, b"maximumHeight")
         self.thumbsShow.setDuration(2000)
         self.thumbsShow.setStartValue(0)
-        self.thumbsShow.setEndValue(self.height() / 4)
+        self.thumbsShow.setEndValue(self.cheight() / 4)
         self.thumbsShow.setEasingCurve(QEasingCurve.Linear)
         self.thumbsShow.start()
 
@@ -541,7 +552,7 @@ class MainWindow(QMainWindow):
 
     def deforum_six_txt2img_thread(self):
         self.update = 0
-        height = self.height
+        height = self.cheight
         #for debug
         #self.deforum_ui.run_deforum_txt2img()
         self.params = self.sessionparams.update_params()
@@ -565,12 +576,12 @@ class MainWindow(QMainWindow):
         if self.canvas.canvas.rectlist != []:
             for i in self.canvas.canvas.rectlist:
                 if i.id == self.canvas.canvas.selected_item:
-                    self.lastheight = self.height
+                    self.lastheight = self.cheight
                     #Calculate next image's X coordinate
                     x = i.x + i.w + 20
-                    if i.h > self.height:
-                        self.height = i.h
-                        self.lastheight = self.height
+                    if i.h > self.cheight:
+                        self.cheight = i.h
+                        self.lastheight = self.cheight
                     if self.canvas.canvas.pixmap.width() < 3000:
                         w = x  + self.unicontrol.w.W.value() + 25
                         if w > self.w:
@@ -581,13 +592,13 @@ class MainWindow(QMainWindow):
                         self.y = self.y + self.unicontrol.w.H.value() + 20
                         x = 0
                         self.lastheight = self.lastheight + i.h + 20
-                        self.height = self.lastheight
+                        self.cheight = self.lastheight
                         w = w
                         if w > self.w:
                             self.w = w
                     if self.lastheight is not None:
-                        if self.lastheight < self.height + i.h + 20:
-                            self.lastheight = self.height + i.h + 20
+                        if self.lastheight < self.cheight + i.h + 20:
+                            self.lastheight = self.cheight + i.h + 20
                             if self.sessionparams.params.advanced == False:
                                 self.canvas.canvas.resize_canvas(w=self.w, h=self.lastheight + self.unicontrol.w.H.value())
                     y = self.y
@@ -599,19 +610,19 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.w = self.unicontrol.w.W.value()
                     self.canvas.canvas.h = self.unicontrol.w.H.value()
                     self.canvas.canvas.addrect_atpos(x=x, y=self.y, params=self.sessionparams.params)
-                    print(f"resizing canvas to {self.height}")
-                    self.canvas.canvas.resize_canvas(w=self.w, h=self.height)
+                    print(f"resizing canvas to {self.cheight}")
+                    self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
         elif self.sessionparams.params.advanced == False or self.canvas.canvas.selected_item == None:
             w = self.unicontrol.w.W.value()
             h = self.unicontrol.w.H.value()
             self.canvas.canvas.w = w
             self.canvas.canvas.h = h
             self.canvas.canvas.addrect_atpos(x=0, y=0)
-            self.height = self.unicontrol.w.H.value()
-            #print(f"this should only haappen once {self.height}")
-            self.canvas.canvas.resize_canvas(w=self.w, h=self.height)
+            self.cheight = self.unicontrol.w.H.value()
+            #print(f"this should only haappen once {self.cheight}")
+            self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
 
-        self.lastheight = self.height
+        self.lastheight = self.cheight
 
         qimage = ImageQt(self.image.convert("RGBA"))
         for items in self.canvas.canvas.rectlist:

@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 
-from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect
+from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect, QPropertyAnimation, QEasingCurve
 from PySide6.QtGui import Qt, QColor, QFont, QPalette, QPainter, QPen, QPolygon, QBrush, QPainterPath, QAction, QCursor
 from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockWidget, QMenu
 
@@ -20,7 +20,7 @@ class VideoSample:
         self.duration = duration
         self.color = color  # Floating color
         self.defColor = color  # DefaultColor
-        #self.position = 0
+        # self.position = 0
         if picture is not None:
             self.picture = picture.scaledToHeight(45)
         else:
@@ -28,12 +28,13 @@ class VideoSample:
         self.startPos = 0  # Inicial position
         self.endPos = self.duration  # End position
 
+
 __textColor__ = QColor(187, 187, 187)
 __backgroudColor__ = QColor(60, 63, 65)
 __font__ = QFont('Decorative', 10)
 
-class OurTimeline(QWidget):
 
+class OurTimeline(QWidget):
     keyFramesUpdated = Signal()
     selectionChanged = Signal(VideoSample)
 
@@ -55,7 +56,7 @@ class OurTimeline(QWidget):
         self.clicking = False  # Check if mouse left button is being pressed
         self.is_in = False  # check if user is in the widget
         self.videoSamples = []  # List of videos samples
-        self.middleHover  = False
+        self.middleHover = False
         self.setMouseTracking(True)  # Mouse events
         self.setAutoFillBackground(True)  # background
         self.edgeGrab = False
@@ -82,17 +83,16 @@ class OurTimeline(QWidget):
         pal = QPalette()
         pal.setColor(QPalette.Base, self.backgroundColor)
         self.setPalette(pal)
-    def mixed_order(self, a):
-        return ( a.valueType, a.position )
 
+    def mixed_order(self, a):
+        return (a.valueType, a.position)
 
     def paintEvent(self, event):
-        self.keyFrameList.sort( key=self.mixed_order )
+        self.keyFrameList.sort(key=self.mixed_order)
         self.yMiddlePoint = self.height() / 2
 
-
         qp = QPainter()
-        #qp.device()
+        # qp.device()
         qp.begin(self)
         qp.setPen(self.textColor)
         qp.setFont(self.font)
@@ -107,7 +107,7 @@ class OurTimeline(QWidget):
         qp.setPen(QPen(Qt.darkCyan, 5, Qt.SolidLine))
         qp.drawLine(0, 40, self.width(), 40)
 
-        #Draw Middle Line for 0 Value of Keyframes
+        # Draw Middle Line for 0 Value of Keyframes
         qp.setPen(QPen(Qt.darkGreen, 2, Qt.SolidLine))
         qp.drawLine(0, self.yMiddlePoint, self.width(), self.yMiddlePoint)
         # Draw dash lines
@@ -126,11 +126,11 @@ class OurTimeline(QWidget):
 
         if self.pointerPos is not None:
             self.pointerTimePos = int(self.pointerTimePos)
-            line = QLine(QPoint(int(self.pointerTimePos/self.getScale()), 40),
-                         QPoint(int(self.pointerTimePos/self.getScale()), self.height()))
-            poly = QPolygon([QPoint(int(self.pointerTimePos/self.getScale() - 10), 20),
-                             QPoint(int(self.pointerTimePos/self.getScale() + 10), 20),
-                             QPoint(int(self.pointerTimePos/self.getScale()), 40)])
+            line = QLine(QPoint(int(self.pointerTimePos / self.getScale()), 40),
+                         QPoint(int(self.pointerTimePos / self.getScale()), self.height()))
+            poly = QPolygon([QPoint(int(self.pointerTimePos / self.getScale() - 10), 20),
+                             QPoint(int(self.pointerTimePos / self.getScale() + 10), 20),
+                             QPoint(int(self.pointerTimePos / self.getScale()), 40)])
         else:
             line = QLine(QPoint(0, 0), QPoint(0, self.height()))
             poly = QPolygon([QPoint(-10, 20), QPoint(10, 20), QPoint(0, 40)])
@@ -145,14 +145,16 @@ class OurTimeline(QWidget):
                         kfYPos = int(self.yMiddlePoint - i.value * self.verticalScale)
                         if self.oldY is not None:
                             qp.setPen(QPen(Qt.darkMagenta, 2, Qt.SolidLine))
-                            #line = QLine(self.oldX, self.oldY, kfStartPoint, kfYPos)
+                            # line = QLine(self.oldX, self.oldY, kfStartPoint, kfYPos)
                             ##print(self.oldX, self.oldY, kfStartPoint, kfYPos)
                             qp.drawLine(self.oldX, self.oldY, kfStartPoint, kfYPos)
                         kfbrush = QBrush(Qt.darkRed)
 
                         ##print(kfYPos)
                         scaleMod = 5
-                        kfPoly = QPolygon([QPoint(int(kfStartPoint - scaleMod), kfYPos), QPoint(kfStartPoint, kfYPos - scaleMod), QPoint(kfStartPoint + scaleMod, kfYPos), QPoint(kfStartPoint, kfYPos + scaleMod)])
+                        kfPoly = QPolygon(
+                            [QPoint(int(kfStartPoint - scaleMod), kfYPos), QPoint(kfStartPoint, kfYPos - scaleMod),
+                             QPoint(kfStartPoint + scaleMod, kfYPos), QPoint(kfStartPoint, kfYPos + scaleMod)])
                         qp.setPen(Qt.darkRed)
                         qp.setBrush(kfbrush)
                         qp.drawPolygon(kfPoly)
@@ -166,7 +168,7 @@ class OurTimeline(QWidget):
             # Clear clip path
             path = QPainterPath()
 
-            path.addRoundedRect(QRectF((t + sample.startPos)/scale, 50, sample.duration / scale, 200), 10, 10)
+            path.addRoundedRect(QRectF((t + sample.startPos) / scale, 50, sample.duration / scale, 200), 10, 10)
 
             qp.setClipPath(path)
 
@@ -175,29 +177,26 @@ class OurTimeline(QWidget):
             qp.setPen(sample.color)
             qp.setBrush(sample.color)
 
-
-
-            #path.addRoundedRect(QRectF(((t + sample.startPos)/scale), 50, (sample.duration / scale), 50), 10, 10)
-            path.addRect((t + sample.startPos)/scale, 50, (sample.duration / scale), 50)
-            #sample.startPos = (t + sample.startPos)*scale
-            sample.endPos = (t + sample.startPos)/scale + sample.duration/scale
+            # path.addRoundedRect(QRectF(((t + sample.startPos)/scale), 50, (sample.duration / scale), 50), 10, 10)
+            path.addRect((t + sample.startPos) / scale, 50, (sample.duration / scale), 50)
+            # sample.startPos = (t + sample.startPos)*scale
+            sample.endPos = (t + sample.startPos) / scale + sample.duration / scale
             qp.fillPath(path, sample.color)
             qp.drawPath(path)
 
-
             # Draw preview pictures
             if sample.picture is not None:
-                if sample.picture.size().width() < sample.duration/scale:
+                if sample.picture.size().width() < sample.duration / scale:
                     path = QPainterPath()
-                    path.addRoundedRect(QRectF(t/scale, 52.5, sample.picture.size().width(), 45), 10, 10)
+                    path.addRoundedRect(QRectF(t / scale, 52.5, sample.picture.size().width(), 45), 10, 10)
                     qp.setClipPath(path)
-                    qp.drawPixmap(QRect(int(t/scale), 52.5, sample.picture.size().width(), 45), sample.picture)
+                    qp.drawPixmap(QRect(int(t / scale), 52.5, sample.picture.size().width(), 45), sample.picture)
                 else:
                     path = QPainterPath()
-                    path.addRoundedRect(QRectF(t / scale, 52.5, sample.duration/scale, 45), 10, 10)
+                    path.addRoundedRect(QRectF(t / scale, 52.5, sample.duration / scale, 45), 10, 10)
                     qp.setClipPath(path)
-                    pic = sample.picture.copy(0, 0, sample.duration/scale, 45)
-                    qp.drawPixmap(QRect(int(t / scale), 52.5, sample.duration/scale, 45), pic)
+                    pic = sample.picture.copy(0, 0, sample.duration / scale, 45)
+                    qp.drawPixmap(QRect(int(t / scale), 52.5, sample.duration / scale, 45), pic)
             t += sample.duration
 
         # Clear clip path
@@ -213,13 +212,12 @@ class OurTimeline(QWidget):
         qp.drawLine(line)
         qp.end()
 
-
     # Mouse movement
     def mouseMoveEvent(self, e):
 
         self.pos = e.position().x()
         self.posy = e.position().y()
-        self.pointerValue = self.posy        # if mouse is being pressed, update pointer
+        self.pointerValue = self.posy  # if mouse is being pressed, update pointer
 
         self.checkKeyframeHover(self.pos)
 
@@ -231,20 +229,20 @@ class OurTimeline(QWidget):
             y = self.posy
             self.pointerPos = x
 
-            self.pointerTimePos = self.pointerPos*self.getScale()
+            self.pointerTimePos = self.pointerPos * self.getScale()
 
             if self.keyHover == True:
                 for item in self.keyFrameList:
                     if self.selectedKey is item.uid:
-                        item.position = int(self.pointerPos*self.scale)
+                        item.position = int(self.pointerPos * self.scale)
                         if item.position <= 0:
                             item.position = 0
                         value = (self.pointerValue - self.yMiddlePoint) / self.verticalScale
                         item.value = -value
                         self.keyFramesUpdated.emit()
-                        #print(item.value)
-                        #print(self.posy)
-                        #print(self.yMiddlePoint)
+                        # print(item.value)
+                        # print(self.posy)
+                        # print(self.yMiddlePoint)
             if self.edgeGrabActive == True:
                 for sample in self.videoSamples:
                     sample.duration = sample.duration + ((self.pointerPos - self.oldPos) * self.scale)
@@ -264,12 +262,12 @@ class OurTimeline(QWidget):
             kfStartPoint = int(int(item.position) / self.getScale())
             kfYPos = int(self.yMiddlePoint - item.value * self.verticalScale)
 
-
             if kfStartPoint - 5 < x < kfStartPoint + 5 and kfYPos + 5 > self.posy > kfYPos - 5:
                 self.keyHover = True
                 ##print(item.uid)
                 self.hoverKey = item.uid
         self.update()
+
     def checkKeyClicked(self):
         for item in self.keyFrameList:
             if self.hoverKey is item.uid:
@@ -306,13 +304,13 @@ class OurTimeline(QWidget):
             ##print(self.keyHover)
             ##print(self.selectedKey)
             self.popMenu.clear()
-            #populate
+            # populate
             self.populateBtnContext()
 
             if self.selectedKey is None:
                 self.popMenu.delete_action.setEnabled(False)
 
-            #show
+            # show
             self.popMenu.move(menuPosition)
             self.popMenu.show()
             self.pointerPos = e.pos().x()
@@ -331,7 +329,7 @@ class OurTimeline(QWidget):
     # Mouse release
     def add_action(self):
         ##print(self.keyClicked)
-        #self.pointerPos
+        # self.pointerPos
         self.pointerTimePos = self.pointerPos * self.getScale()
 
         matchFound = False
@@ -350,18 +348,19 @@ class OurTimeline(QWidget):
         if matchFound == False:
             self.keyFrameList.append(keyframe[position])
         self.update()
-        #print(self.keyFrameList)
-        #self.updateAnimKeys()
+        # print(self.keyFrameList)
+        # self.updateAnimKeys()
 
     def delete_action(self):
         for idx, item in enumerate(self.keyFrameList):
-            #print(idx)
-            #print(item)
+            # print(idx)
+            # print(item)
             if self.hoverKey is item.uid:
                 self.keyFrameList.pop(idx)
         self.update()
-                #item.remove()
-                #return
+        # item.remove()
+        # return
+
     def mouseReleaseEvent(self, e):
         self.scale = self.getScale()
         if e.button() == Qt.LeftButton:
@@ -391,7 +390,7 @@ class OurTimeline(QWidget):
                 self.middleHover = True
                 if self.selectedSample is not sample:
                     self.selectedSample = sample
-                    #self.selectionChanged.emit(sample)
+                    # self.selectionChanged.emit(sample)
             else:
                 sample.color = sample.defColor
                 self.middleHover = False
@@ -404,13 +403,13 @@ class OurTimeline(QWidget):
                 sample.color = Qt.darkMagenta
                 if self.selectedSample is not sample:
                     self.selectedSample = sample
-                    #self.selectionChanged.emit(sample)
+                    # self.selectionChanged.emit(sample)
             elif sample.endPos - 24 < x < sample.endPos:
                 sample.color = Qt.darkGreen
                 self.edgeGrab = True
                 if self.selectedSample is not sample:
                     self.selectedSample = sample
-                    #self.selectionChanged.emit(sample)
+                    # self.selectionChanged.emit(sample)
             else:
                 sample.color = sample.defColor
                 self.edgeGrab = False
@@ -420,13 +419,12 @@ class OurTimeline(QWidget):
     def get_time_string(self, seconds):
         m, s = divmod(seconds, 60)
         h, m = divmod(m, 60)
-        #return "%02d:%02d:%02d" % (h, m, s)
+        # return "%02d:%02d:%02d" % (h, m, s)
         return "%05d" % (seconds)
-
 
     # Get scale from length
     def getScale(self):
-        return float(self.duration)/float(self.width())
+        return float(self.duration) / float(self.width())
 
     # Get duration
     def getDuration(self):
@@ -451,13 +449,13 @@ class OurTimeline(QWidget):
 
 class Timeline(QDockWidget):
 
-
-    def __init__(self, *args, **kwargs):
+    def __init__(self, parent, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.parent = parent
         if not self.objectName():
             self.setObjectName(u"thumbnails")
-        #self.setWindowModality(Qt.WindowModal)
-        #self.resize(759, 544)
+        # self.setWindowModality(Qt.WindowModal)
+        # self.resize(759, 544)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -465,11 +463,11 @@ class Timeline(QDockWidget):
         self.setSizePolicy(sizePolicy)
         self.setBaseSize(QSize(800, 680))
         self.setLayout(QVBoxLayout())
-        #self.verticalLayout = QVBoxLayout(self)
-        #self.dockWidget = QDockWidget(self)
-        #self.dockWidget.setObjectName(u"dockWidget")
+        # self.verticalLayout = QVBoxLayout(self)
+        # self.dockWidget = QDockWidget(self)
+        # self.dockWidget.setObjectName(u"dockWidget")
         sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
-        #self.dockWidget.setSizePolicy(sizePolicy)
+        # self.dockWidget.setSizePolicy(sizePolicy)
         self.dockWidgetContents = QWidget()
         self.dockWidgetContents.setObjectName(u"dockWidgetContents")
         sizePolicy.setHeightForWidth(self.dockWidgetContents.sizePolicy().hasHeightForWidth())
@@ -479,9 +477,8 @@ class Timeline(QDockWidget):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(5, 0, 5, 0)
         self.timeline = OurTimeline(1000, 1000)
-
-        #self.sample_1 = VideoSample(20)
-        #self.timeline.videoSamples.append(self.sample_1)
+        # self.sample_1 = VideoSample(20)
+        # self.timeline.videoSamples.append(self.sample_1)
         self.tZoom = QSlider()
         self.tZoom.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.tZoom.setMinimumSize(QSize(100, 15))
@@ -494,12 +491,32 @@ class Timeline(QDockWidget):
         self.dockWidgetContents.setFocusPolicy(Qt.NoFocus)
         self.verticalLayout_2.addWidget(self.timeline)
         self.verticalLayout_2.addWidget(self.tZoom)
-
         self.setWidget(self.dockWidgetContents)
         self.tZoom.valueChanged.connect(self.update_timelineZoom)
-        #self.timeline.scale = 1
+        # self.timeline.scale = 1
+        # self.timeline.timeline.start()
 
-        #self.timeline.timeline.start()
     def update_timelineZoom(self):
         self.timeline.verticalScale = self.tZoom.value()
         self.timeline.update()
+
+    def init_anims(self):
+        self.hide_anim = QPropertyAnimation(self, b"maximumHeight")
+        self.hide_anim.setDuration(500)
+        self.hide_anim.setStartValue(self.height())
+        self.hide_anim.setEndValue(0)
+        self.hide_anim.setEasingCurve(QEasingCurve.Linear)
+
+        self.show_anim = QPropertyAnimation(self, b"maximumHeight")
+        self.show_anim.setDuration(500)
+        self.show_anim.setStartValue(0)
+        self.show_anim.setEndValue(self.parent.height())
+        self.show_anim.setEasingCurve(QEasingCurve.Linear)
+
+    def show_anim_action(self):
+        self.init_anims()
+        self.show_anim.start()
+
+    def hide_anim_action(self):
+        self.init_anims()
+        self.hide_anim.start()

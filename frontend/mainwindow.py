@@ -128,6 +128,7 @@ class MainWindow(QMainWindow):
 
         self.hide_default()
         self.mode = 'txt2img'
+        self.stopwidth = False
         self.init_plugin_loader()
         self.connections()
         self.list_files()
@@ -433,6 +434,8 @@ class MainWindow(QMainWindow):
         save_canvas_png = QAction(QIcon_from_svg('frontend/icons/save.svg'), 'Save as PNG', self)
         clear_canvas = QAction(QIcon_from_svg('frontend/icons/frown.svg'), 'Clear Canvas', self)
         load_canvas = QAction(QIcon_from_svg('frontend/icons/folder.svg'), 'Load from Json', self)
+        play = QAction(QIcon_from_svg('frontend/icons/play.svg'), 'Play Selected', self)
+        stop = QAction(QIcon_from_svg('frontend/icons/square.svg'), 'Stop Selected', self)
 
         self.secondary_toolbar.addAction(select_mode)
         self.secondary_toolbar.addAction(drag_mode)
@@ -441,15 +444,18 @@ class MainWindow(QMainWindow):
         self.secondary_toolbar.addAction(save_canvas_png)
         self.secondary_toolbar.addAction(clear_canvas)
         self.secondary_toolbar.addAction(load_canvas)
+        self.secondary_toolbar.addAction(play)
+        self.secondary_toolbar.addAction(stop)
 
         select_mode.triggered.connect(self.canvas.canvas.select_mode)
         drag_mode.triggered.connect(self.canvas.canvas.drag_mode)
         add_mode.triggered.connect(self.canvas.canvas.add_mode)
-
         save_canvas.triggered.connect(self.canvas.canvas.save_rects_as_json)
         load_canvas.triggered.connect(self.canvas.canvas.load_rects_from_json)
         clear_canvas.triggered.connect(self.canvas.canvas.reset)
         save_canvas_png.triggered.connect(self.canvas.canvas.save_canvas)
+        play.triggered.connect(self.canvas.canvas.play_selected)
+        stop.triggered.connect(self.canvas.canvas.stop_selected)
 
 
 
@@ -581,77 +587,87 @@ class MainWindow(QMainWindow):
     def image_preview_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
         x = 0
         y = 0
-        if self.canvas.canvas.rectlist != []:
-            for i in self.canvas.canvas.rectlist:
-                if i.id == self.canvas.canvas.selected_item:
-                    self.lastheight = self.cheight
-                    #Calculate next image's X coordinate
-                    x = i.x + i.w + 20
-                    if i.h > self.cheight:
-                        self.cheight = i.h
-                        self.lastheight = self.cheight
-                    if self.canvas.canvas.pixmap.width() < 3000:
-                        w = x  + self.unicontrol.w.W.value() + 25
-                        if w > self.w:
-                            self.w = w
-                    else:
-                        w = self.w
-                    if x > 3000:
-                        self.y = self.y + self.unicontrol.w.H.value() + 20
-                        x = 0
-                        self.lastheight = self.lastheight + i.h + 20
-                        self.cheight = self.lastheight
-                        w = w
-                        if w > self.w:
-                            self.w = w
-                    if self.lastheight is not None:
-                        if self.lastheight < self.cheight + i.h + 20:
-                            self.lastheight = self.cheight + i.h + 20
-                            if self.sessionparams.params.advanced == False:
-                                self.canvas.canvas.resize_canvas(w=self.w, h=self.lastheight + self.unicontrol.w.H.value())
-                    y = self.y
-
-
-
-            if x != 0 or y > 0:
-                if self.sessionparams.params.advanced == False:
-                    self.canvas.canvas.w = self.unicontrol.w.W.value()
-                    self.canvas.canvas.h = self.unicontrol.w.H.value()
-                    self.canvas.canvas.addrect_atpos(x=x, y=self.y, params=self.sessionparams.params)
-                    print(f"resizing canvas to {self.cheight}")
-                    self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
-        elif self.sessionparams.params.advanced == False or self.canvas.canvas.selected_item == None:
+        print(self.params.advanced)
+        if self.params.advanced == True:
+            if self.canvas.canvas.rectlist != []:
+                for items in self.canvas.canvas.rectlist:
+                    if items.id == self.canvas.canvas.selected_item:
+                        if items.id == self.canvas.canvas.selected_item:
+                            if items.images is not None:
+                                templist = items.images
+                            else:
+                                templist = []
+                            items.PILImage = self.image
+                            qimage = ImageQt(self.image.convert("RGBA"))
+                            templist.append(qimage)
+                            items.images = templist
+                            if items.index == None:
+                                items.index = 0
+                            else:
+                                items.index = items.index + 1
+                            items.image = items.images[items.index]
+                            items.timestring = time.time()
+                            self.canvas.canvas.newimage = True
+                            #self.canvas.canvas.update()
+                            self.canvas.canvas.redraw()
+        elif self.params.advanced == False:
             w = self.unicontrol.w.W.value()
             h = self.unicontrol.w.H.value()
-            self.canvas.canvas.w = w
-            self.canvas.canvas.h = h
-            self.canvas.canvas.addrect_atpos(x=0, y=0)
-            self.cheight = self.unicontrol.w.H.value()
-            #print(f"this should only haappen once {self.cheight}")
-            self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
+            resize = False
+            if self.canvas.canvas.rectlist == []:
+                self.canvas.canvas.w = w
+                self.canvas.canvas.h = h
+                self.canvas.canvas.addrect_atpos(x=0, y=0)
+                self.cheight = self.unicontrol.w.H.value()
+                self.w = self.unicontrol.w.W.value()
+                #print(f"this should only haappen once {self.cheight}")
+                self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
+            elif self.canvas.canvas.rectlist != []:
+                for i in self.canvas.canvas.rectlist:
+                    if i.id == self.canvas.canvas.selected_item:
+                        if i.id == self.canvas.canvas.selected_item:
+                            x = i.x + w + 20
+                            y = i.y
+                            if x > 3000:
+                                x = 0
+                                y = i.y + h + 25
+                                if self.stopwidth == False:
+                                    self.stopwidth = True
+                            if self.stopwidth == False:
+                                self.w = x + w
+                                resize = True
+                            if self.cheight < y + i.h:
+                                self.cheight = y + i.h
+                                resize = True
+                            #self.canvas.canvas.selected_item = None
+            self.canvas.canvas.addrect_atpos(x=x, y=y, params=self.sessionparams.params)
+            if resize == True:
+                self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
+            if self.image is not None:
+                image = self.image
+                for items in self.canvas.canvas.rectlist:
+                    if items.id == self.canvas.canvas.selected_item:
+                        if items.images is not None:
+                            templist = items.images
+                        else:
+                            templist = []
+                        items.PILImage = image
+                        qimage = ImageQt(image.convert("RGBA"))
+                        templist.append(qimage)
+                        items.images = templist
+                        if items.index == None:
+                            items.index = 0
+                        else:
+                            items.index = items.index + 1
+                        items.image = items.images[items.index]
+                        items.timestring = time.time()
+        #self.canvas.canvas.newimage = True
 
-        self.lastheight = self.cheight
-        if self.image is not None:
-            qimage = ImageQt(self.image.convert("RGBA"))
-            for items in self.canvas.canvas.rectlist:
-                if items.id == self.canvas.canvas.selected_item:
-                    if items.images is not None:
-                        templist = items.images
-                    else:
-                        templist = []
-                    items.PILImage = self.image
-                    templist.append(qimage)
-                    items.images = templist
-                    if items.index == None:
-                        items.index = 0
-                    else:
-                        items.index = items.index + 1
-                    items.image = items.images[items.index]
-                    self.canvas.canvas.newimage = True
-                    items.timestring = time.time()
-
-                    self.canvas.canvas.update()
-
+        #if self.image is not None:
+        self.canvas.canvas.newimage = True
+        self.canvas.canvas.redraw()
+        self.canvas.canvas.update()
+        #self.canvas.canvas.redraw()
 
     def tensor_preview_signal(self, data, data2):
         self.data = data
@@ -765,18 +781,19 @@ class MainWindow(QMainWindow):
                 if items.id == self.canvas.canvas.selected_item:
 
                     if items.params != {}:
+                        pass
                         #print(f"showing strength of {items.params['strength'] * 100}")
-                        self.unicontrol.w.steps.setValue(items.params['steps'])
-                        self.unicontrol.w.steps_slider.setValue(items.params['steps'])
-                        self.unicontrol.w.scale.setValue(items.params['scale'] * 10)
-                        self.unicontrol.w.scale_slider.setValue(items.params['scale'] * 10)
-                        self.unicontrol.w.strength.setValue(int(items.params['strength'] * 100))
-                        self.unicontrol.w.strength_slider.setValue(int(items.params['strength'] * 100))
-                        self.unicontrol.w.reconstruction_blur.setValue(items.params['reconstruction_blur'])
-                        self.unicontrol.w.mask_blur.setValue(items.params['mask_blur'])
-                        self.unicontrol.w.prompts.setText(items.params['prompts'])
-                        self.unicontrol.w.seed.setText(str(items.params['seed']))
-                        self.unicontrol.w.mask_offset.setValue(items.params['mask_offset'])
+                        #self.unicontrol.w.steps.setValue(items.params.steps)
+                        #self.unicontrol.w.steps_slider.setValue(items.params.steps)
+                        #self.unicontrol.w.scale.setValue(items.params['scale'] * 10)
+                        #self.unicontrol.w.scale_slider.setValue(items.params['scale'] * 10)
+                        #self.unicontrol.w.strength.setValue(int(items.params['strength'] * 100))
+                        #self.unicontrol.w.strength_slider.setValue(int(items.params['strength'] * 100))
+                        #self.unicontrol.w.reconstruction_blur.setValue(items.params['reconstruction_blur'])
+                        #self.unicontrol.w.mask_blur.setValue(items.params['mask_blur'])
+                        #self.unicontrol.w.prompts.setText(items.params['prompts'])
+                        #self.unicontrol.w.seed.setText(str(items.params['seed']))
+                        #self.unicontrol.w.mask_offset.setValue(items.params['mask_offset'])
 
                     if items.images is not []:
                         for i in items.images:

@@ -54,6 +54,19 @@
        <property name="bottomMargin">
         <number>2</number>
        </property>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="dream">
+         <property name="text">
+          <string>Dream</string>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>8</width>
+           <height>8</height>
+          </size>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="2">
         <widget class="QPushButton" name="lucky">
          <property name="text">
@@ -74,38 +87,6 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="dream">
-         <property name="text">
-          <string>Dream</string>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>8</width>
-           <height>8</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QPushButton" name="stop_dream">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Stop</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0" colspan="4">
         <widget class="QScrollArea" name="scrollArea">
          <property name="widgetResizable">
@@ -117,7 +98,7 @@
             <x>0</x>
             <y>0</y>
             <width>715</width>
-            <height>2704</height>
+            <height>2602</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -526,7 +507,7 @@
                         <item row="21" column="1" colspan="3">
                          <widget class="QSlider" name="diffusion_cadence_slider">
                           <property name="maximum">
-                           <number>50</number>
+                           <number>1000</number>
                           </property>
                           <property name="pageStep">
                            <number>0</number>
@@ -546,7 +527,7 @@
                         <item row="21" column="4">
                          <widget class="QSpinBox" name="diffusion_cadence">
                           <property name="maximum">
-                           <number>50</number>
+                           <number>1000</number>
                           </property>
                          </widget>
                         </item>
@@ -3549,6 +3530,13 @@
            </item>
           </layout>
          </widget>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QPushButton" name="stop_dream">
+         <property name="text">
+          <string>Stop</string>
+         </property>
         </widget>
        </item>
       </layout>

@@ -41,9 +41,9 @@ def sampler_fn(
 ) -> torch.Tensor:
     shape = [C, H // f, W // f]
     sigmas: torch.Tensor = model_wrap.get_sigmas(steps)
-    print(f"sigmas: {sigmas}")
+    #print(f"sigmas: {sigmas}")
     sigmas = sigmas[len(sigmas) - t_enc - 1 :]
-    print(f"sigmas: {sigmas}")
+    #print(f"sigmas: {sigmas}")
     #resized = create_random_tensors(shape, seeds, subseeds=None, subseed_strength=0.0, seed_resize_from_h=H, seed_resize_from_w=W, p=None)
     if use_init:
         if len(sigmas) > 0:

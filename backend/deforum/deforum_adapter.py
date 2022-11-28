@@ -57,7 +57,8 @@ def load_model_from_config_lm(ckpt, verbose=False):
 
 class DeforumSix:
 
-    def __init__(self):
+    def __init__(self, parent):
+        self.parent = parent
         self.root = None
         self.args = None
         self.anim_args = None
@@ -142,13 +143,14 @@ class DeforumSix:
         # it is important that you give the right version hint based on the SD model version
         # if it is some custom model based on some version of SD we need to have the SD
         # version not the version of the custom model
-        if config is None:
-            config_yaml_name = os.path.splitext(gs.system.sdPath)[0] + '.yaml'
-        else:
-            config_yaml_name = config
-
-        if os.path.isfile(config_yaml_name):
-            config = config_yaml_name
+        #if config is None:
+        config_yaml_name = os.path.splitext(ckpt)[0] + '.yaml'
+        print(config_yaml_name)
+        #else:
+        #    config_yaml_name = config
+        print(os.path.isfile(config_yaml_name))
+        #if os.path.isfile(config_yaml_name):
+        config = config_yaml_name
 
         if "sd" not in gs.models:
             if verbose:
@@ -532,6 +534,26 @@ class DeforumSix:
         [args, anim_args, root] = prepare_args(locals())
 
 
+        for key, value in anim_args.__dict__.items():
+            try:
+                anim_args.__dict__[key] = self.parent.params.__dict__[key]
+                print(f"settings {key} from {value} to {self.parent.params.__dict__[key]}")
+            except:
+                pass
+
+        """for key, value in args.__dict__.items():
+            try:
+                args.__dict__[key] = self.parent.params.__dict__[key]
+            except:
+                pass
+        for key, value in root.__dict__.items():
+            try:
+                root.__dict__[key] = self.parent.params.__dict__[key]
+            except:
+                pass"""
+
+
+
         if hires:
             args.hiresstr = args.strength
 
@@ -592,8 +614,8 @@ class DeforumSix:
 
         args.clip_prompt = ['test']
 
-        print('anim_args.animation_mode', anim_args.animation_mode)
-        print('anim_args.max_frames', anim_args.max_frames)
+        #print('anim_args.animation_mode', anim_args.animation_mode)
+        #print('anim_args.translation_x', anim_args.translation_x)
 
         # dispatch to appropriate renderer
         if anim_args.animation_mode == '2D' or anim_args.animation_mode == '3D':

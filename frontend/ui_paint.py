@@ -53,14 +53,35 @@ class Rectangle(object):
         self.active = True
         self.PILImage = None
         self.img_path = img_path
+        self.signals = RectangleCallbacks()
+        self.timer = QtCore.QTimer()
+    def play(self):
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.iterate)
+        self.timer.start(80)
+        self.signals.start_main.emit()
 
 
+    def iterate(self):
+        self.image = self.images[self.index]
+        self.index = (self.index + 1) % len(self.images)
+        if self.index == len(self.images):
+            self.index = 0
+        #print(self.index)
+
+
+    def stop(self):
+        try:
+            self.timer.stop()
+        except:
+            pass
 class Callbacks(QObject):
     outpaint_signal = Signal()
     txt2img_signal = Signal()
     update_selected = Signal()
     update_params = Signal(str)
-
+class RectangleCallbacks(QObject):
+    start_main = Signal()
 
 
 class Scene(QGraphicsScene):
@@ -91,8 +112,35 @@ class Canvas(QGraphicsView):
         self.selected_item = None
         self.tempbatch = None
         self.undoitems = []
+        self.maintimer = QtCore.QTimer()
+        self.maintimer.timeout.connect(self.set_new)
+        self.running = False
+        self.start_main_clock()
+    @Slot()
 
+    def start_main_clock(self):
+        if self.running == False:
+            self.maintimer.start(80)
+            self.running = True
+    def stop_main_clock(self):
+        if self.running == True:
+            self.maintimer.stop()
+            self.running = False
+    def set_new(self):
+        #print("triggered")
+        self.newimage = True
+        self.update()
 
+    def play_selected(self):
+        if self.selected_item is not None:
+            for i in self.rectlist:
+                if i.id == self.selected_item:
+                    i.play()
+    def stop_selected(self):
+        if self.selected_item is not None:
+            for i in self.rectlist:
+                if i.id == self.selected_item:
+                    i.stop()
     def resize_canvas(self, w, h):
         self.pixmap = QPixmap(w, h)
         self.bgitem.setPixmap(self.pixmap)
@@ -133,15 +181,15 @@ class Canvas(QGraphicsView):
         self.pixmap.fill(__backgroudColor__)
         self.bgitem = QGraphicsPixmapItem()
         self.rectItem = QGraphicsRectItem(0, 0, 512, 512)
-
-
+        self.parent.w = 512
+        self.parent.cheight = 512
+        self.parent.stopwidth = False
         #self.debugtext = QGraphicsTextItem("0, 0\n")
         #self.helpText = QGraphicsTextItem("C - Hand Drag\nV - Place Rectangles")
         self.bgitem.setPixmap(self.pixmap)
         #self.setPixmap(self.pixmap)
         self.scene.addItem(self.bgitem)
         #self.scene.addItem(self.rectItem)
-
         self.tensor_preview_item = None
         self.rectlist.clear()
         self.selected_item = None
@@ -157,7 +205,9 @@ class Canvas(QGraphicsView):
         self.rectlist = []
         self.rectlist.clear()
         self.scene = Scene()
-
+        self.parent.w = 512
+        self.parent.cheight = 512
+        self.parent.stopwidth = False
 
         self.last_x, self.last_y = None, None
         self.pen_color = QColor('#000000')
@@ -204,6 +254,7 @@ class Canvas(QGraphicsView):
         uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
         prompt = ""
         rect[uid] = Rectangle(prompt, self.scene.scenePos.x() - self.w / 2, self.scene.scenePos.y() - self.h / 2, self.w, self.h, uid)
+        #rect[uid].signals.set_new_signal.connect(self.set_new)
         self.selected_item = uid
         self.rectlist.append(rect[uid])
         if dummy == True:
@@ -271,7 +322,7 @@ class Canvas(QGraphicsView):
                 matchFound = True
             else:
                 i.color = __idleColor__
-                self.update()
+                #self.update()
             if not matchFound:
                 self.hover_item = None
         #self.update()
@@ -537,11 +588,13 @@ class Canvas(QGraphicsView):
                 self.txt2img = True
             self.rectlist.append(rect[uid])
             if params == {}:
-
-                self.signals.update_params.emit(uid)
+                pass
+                #self.signals.update_params.emit(uid)
             self.counter += 1
 
-        self.newimage = True
+        #self.newimage = True
+        #self.update()
+        #self.redraw()
         return uid
 
     def reusable_inpaint(self, id):

@@ -84,10 +84,11 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
     clear_between_batches = args.n_batch >= 32
     fpW = args.W
     fpH = args.H
+    paths = []
     for iprompt, prompt in enumerate(prompts):
         #prevent empty prompts from gernerating images
-        if gs.stop_all:
-            break
+        #if gs.stop_all:
+        #    return paths
         if prompt != '':
             args.prompt = prompt
             args.clip_prompt = prompt
@@ -101,75 +102,76 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                 print(f"Batch {batch_index+1} of {args.n_batch}")
 
                 for image in init_array: # iterates the init images
-                    args.init_image = image
-                    if args.hires == True:
-                        args.use_init = False
-                        args.init_sample = None
-                        args.init_latent = None
-                        args.init_c = None
-                        if args.lowmem == True:
-                            sample = generate_lowmem(args, root, return_sample=True, step_callback=step_callback,
-                                                     hires=True)
-                        else:
-                            sample = generate(args, root, return_sample=True, step_callback=step_callback,
-                                                     hires=True)
-
-                        args.init_sample = sample[0]
-                        args.use_init = True
-                        args.strength = args.hiresstr
-                        args.W = fpW
-                        args.H = fpH
-                        if args.lowmem == True:
-                            results = generate_lowmem(args, root, step_callback=step_callback)
-                        else:
-                            results = generate(args, root, step_callback=step_callback,)
-                        args.init_latent = None
-                        args.init_sample = None
-                        args.strength = 0
-                        args.use_init = gs.diffusion.use_init
-                    else:
-                        if args.lowmem == True:
-                            results = generate_lowmem(args, root, step_callback=step_callback)
-                        else:
-                            results = generate(args, root, step_callback=step_callback,)
-                    paths = []
-                    for image in results:
-                        if args.make_grid:
-                            all_images.append(T.functional.pil_to_tensor(image))
-                        if args.save_samples:
-                            if args.filename_format == "{timestring}_{index}_{prompt}.png":
-                                filename = f"{args.timestring}_{index:05}_{sanitize(prompt)[:160]}.png"
-                            else:
-                                filename = f"{args.timestring}_{index:05}_{args.seed}.png"
-                            #added prompt to output folder name
-                            if gs.system.pathmode == "subfolders":
-                                outfolder = os.path.join(args.outdir, f'{args.timestring}_{sanitize(prompt)[:120]}')
-                            else:
-                                outfolder = os.path.join(args.outdir, datetime.now().strftime("%Y%m%d"))
-                            os.makedirs(outfolder, exist_ok=True)
-                            outpath = os.path.join(outfolder, filename)
-                            paths.append(outpath)
-                            image.save(outpath)
+                    if not gs.stop_all:
+                        args.init_image = image
+                        if args.hires == True:
+                            args.use_init = False
                             args.init_sample = None
-                            if args.save_settings == True:
-                                save_settings(args, outfolder, prompt, index)
-                            #Callback Mod
-                            if image_callback is not None:
-                                image_callback(image)
-                        if args.display_samples:
-                            display.display(image)
-                        index += 1
-                    args.seed = next_seed(args)
+                            args.init_latent = None
+                            args.init_c = None
+                            if args.lowmem == True:
+                                sample = generate_lowmem(args, root, return_sample=True, step_callback=step_callback,
+                                                         hires=True)
+                            else:
+                                sample = generate(args, root, return_sample=True, step_callback=step_callback,
+                                                         hires=True)
 
-            #print(len(all_images))
-            if args.make_grid:
-                grid = make_grid(all_images, nrow=int(len(all_images)/args.grid_rows))
-                grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
-                filename = f"{args.timestring}_{iprompt:05d}_grid_{args.seed}.png"
-                grid_image = Image.fromarray(grid.astype(np.uint8))
-                grid_image.save(os.path.join(args.outdir, filename))
-                display.clear_output(wait=True)
-                display.display(grid_image)
+                            args.init_sample = sample[0]
+                            args.use_init = True
+                            args.strength = args.hiresstr
+                            args.W = fpW
+                            args.H = fpH
+                            if args.lowmem == True:
+                                results = generate_lowmem(args, root, step_callback=step_callback)
+                            else:
+                                results = generate(args, root, step_callback=step_callback,)
+                            args.init_latent = None
+                            args.init_sample = None
+                            args.strength = 0
+                            args.use_init = gs.diffusion.use_init
+                        else:
+                            if args.lowmem == True:
+                                results = generate_lowmem(args, root, step_callback=step_callback)
+                            else:
+                                results = generate(args, root, step_callback=step_callback,)
+                    if results is not None:
+                        for image in results:
+                            if args.make_grid:
+                                all_images.append(T.functional.pil_to_tensor(image))
+                            if args.save_samples:
+                                if args.filename_format == "{timestring}_{index}_{prompt}.png":
+                                    filename = f"{args.timestring}_{index:05}_{sanitize(prompt)[:160]}.png"
+                                else:
+                                    filename = f"{args.timestring}_{index:05}_{args.seed}.png"
+                                #added prompt to output folder name
+                                if gs.system.pathmode == "subfolders":
+                                    outfolder = os.path.join(args.outdir, f'{args.timestring}_{sanitize(prompt)[:120]}')
+                                else:
+                                    outfolder = os.path.join(args.outdir, datetime.now().strftime("%Y%m%d"))
+                                os.makedirs(outfolder, exist_ok=True)
+                                outpath = os.path.join(outfolder, filename)
+                                paths.append(outpath)
+                                image.save(outpath)
+                                args.init_sample = None
+                                if args.save_settings == True:
+                                    save_settings(args, outfolder, prompt, index)
+                                #Callback Mod
+                                if image_callback is not None:
+                                    image_callback(image)
+                            if args.display_samples:
+                                display.display(image)
+                            index += 1
+                        args.seed = next_seed(args)
+
+                #print(len(all_images))
+                if args.make_grid:
+                    grid = make_grid(all_images, nrow=int(len(all_images)/args.grid_rows))
+                    grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
+                    filename = f"{args.timestring}_{iprompt:05d}_grid_{args.seed}.png"
+                    grid_image = Image.fromarray(grid.astype(np.uint8))
+                    grid_image.save(os.path.join(args.outdir, filename))
+                    display.clear_output(wait=True)
+                    display.display(grid_image)
         return paths
 
 
@@ -180,8 +182,6 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
 
     # expand key frame strings to values
     keys = DeformAnimKeys(anim_args)
-
-    print('keys', keys)
 
     # resume anima![](../../../output/txt2img/20221113/20221113191718_00000_terrifying_sea_creature_big_teeth_ominous_scary_horror_realistic_digital_art_photorealism_trending_on_artstation_.png)tion
     start_frame = 0
@@ -270,6 +270,8 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
 
     args.n_samples = 1
     frame_idx = start_frame
+    #print(f"frame idx = {frame_idx}")
+    #print(f"frame idx = {anim_args.max_frames}")
     while frame_idx < anim_args.max_frames:
         if gs.stop_all:
             break
@@ -309,10 +311,13 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
                     img = turbo_prev_image*(1.0-tween) + turbo_next_image*tween
                 else:
                     img = turbo_next_image
-                if image_callback is not None:
-                    image_callback(image)
+                #if image_callback is not None:
+                #    image_callback(image)
                 filename = f"{args.timestring}_{tween_frame_idx:05}.png"
+                filepath = os.path.join(args.outdir, filename)
                 cv2.imwrite(os.path.join(args.outdir, filename), cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGB2BGR))
+                if image_callback is not None:
+                    image_callback(Image.open(filepath))
                 if anim_args.save_depth_maps:
                     depth_model.save(os.path.join(args.outdir, f"{args.timestring}_depth_{tween_frame_idx:05}.png"), depth)
             if turbo_next_image is not None:
@@ -365,6 +370,7 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
                 args.mask_file = mask_frame
 
         # sample the diffusion model
+        #print(f"{args.init_sample}")
         sample, image = generate(args, root, frame_idx, return_latent=False, return_sample=True, step_callback=step_callback)
         if not using_vid_init:
             prev_sample = sample
@@ -375,7 +381,7 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
             frame_idx += turbo_steps
         else:    
             filename = f"{args.timestring}_{frame_idx:05}.png"
-            if image_callback is not None:
+            if image_callback is not None and anim_args.diffusion_cadence < 2:
                 image_callback(image)
             image.save(os.path.join(args.outdir, filename))
             if anim_args.save_depth_maps:
@@ -386,8 +392,8 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
 
         #display.clear_output(wait=True)
         #display.display(image)
-        if image_callback is not None:
-            image_callback(image)
+        #if image_callback is not None:
+        #    image_callback(image)
         args.seed = next_seed(args)
 
 def render_input_video(args, anim_args, animation_prompts, root, image_callback=None):
@@ -440,18 +446,18 @@ def render_interpolation(args, anim_args, animation_prompts, root, image_callbac
 
     for i, prompt in animation_prompts.items():
         if gs.stop_all:
-            break
+            return
         args.prompt = prompt
         args.clip_prompt = args.prompt
 
         # sample the diffusion model
         results = generate(args, root, return_c=True)
         c, image = results[0], results[1]
-        prompts_c_s.append(c) 
-      
+        prompts_c_s.append(c)
+
         # display.clear_output(wait=True)
         display.display(image)
-      
+
         args.seed = next_seed(args)
 
     display.clear_output(wait=True)

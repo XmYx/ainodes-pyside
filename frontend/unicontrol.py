@@ -3,6 +3,7 @@ import os
 from PySide6 import QtUiTools, QtCore
 from PySide6.QtCore import QFile, QObject, QEasingCurve, QRect
 from backend.singleton import singleton
+from backend.torch_gc import torch_gc
 
 gs = singleton
 
@@ -77,6 +78,7 @@ class UniControl(QObject):
         gs.system.sdPath = new_model
         if 'sd' in gs.models:
             del gs.models['sd']
+        torch_gc()
 
     def toggle_n_prompt(self):
         self.w.negative_prompts.setVisible(self.w.toggle_negative_prompt.isChecked())

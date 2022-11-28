@@ -1102,19 +1102,6 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="1" colspan="2">
-               <widget class="QPushButton" name="dream">
-                <property name="text">
-                 <string>Dream</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
               <item row="21" column="0" colspan="10">
                <widget class="QFrame" name="plugin_values">
                 <property name="frameShape">
@@ -1185,19 +1172,6 @@
                 </property>
                 <property name="tickPosition">
                  <enum>QSlider::NoTicks</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="3" colspan="3">
-               <widget class="QPushButton" name="lucky">
-                <property name="text">
-                 <string>I Have a lucky day</string>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>8</width>
-                  <height>8</height>
-                 </size>
                 </property>
                </widget>
               </item>
@@ -1354,13 +1328,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="6">
-                  <widget class="QCheckBox" name="hires">
-                   <property name="text">
-                    <string>HiRes Mode</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="13" column="2" colspan="6">
                   <widget class="QSlider" name="n_samples_slider">
                    <property name="minimum">
@@ -1433,24 +1400,10 @@
                    </item>
                   </widget>
                  </item>
-                 <item row="19" column="0">
-                  <widget class="QCheckBox" name="show_init_setup">
-                   <property name="text">
-                    <string>Init image setup</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="13" column="0">
                   <widget class="QLabel" name="label_19">
                    <property name="text">
                     <string>Samples</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="21" column="0">
-                  <widget class="QCheckBox" name="show_mask_setup">
-                   <property name="text">
-                    <string>Mask image setup</string>
                    </property>
                   </widget>
                  </item>
@@ -1463,13 +1416,6 @@
                  </item>
                  <item row="11" column="2" colspan="5">
                   <widget class="QLineEdit" name="seed"/>
-                 </item>
-                 <item row="17" column="0">
-                  <widget class="QCheckBox" name="show_output_setup">
-                   <property name="text">
-                    <string>Output Options</string>
-                   </property>
-                  </widget>
                  </item>
                  <item row="18" column="0" colspan="9">
                   <widget class="QFrame" name="output_values">
@@ -1553,13 +1499,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="7">
-                  <widget class="QCheckBox" name="plotting">
-                   <property name="text">
-                    <string>Plotting</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="14" column="8">
                   <widget class="QDoubleSpinBox" name="strength">
                    <property name="maximum">
@@ -1593,13 +1532,6 @@
                   <widget class="QCheckBox" name="normalized_prompts">
                    <property name="text">
                     <string>Norm</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="4" colspan="2">
-                  <widget class="QCheckBox" name="show_sample_per_step">
-                   <property name="text">
-                    <string>Live</string>
                    </property>
                   </widget>
                  </item>
@@ -1705,16 +1637,6 @@
                    </layout>
                   </widget>
                  </item>
-                 <item row="4" column="0">
-                  <widget class="QCheckBox" name="cond_uncond_sync">
-                   <property name="text">
-                    <string>Speed/Ram</string>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="7" column="2" colspan="6">
                   <widget class="QComboBox" name="model_list"/>
                  </item>
@@ -1729,6 +1651,58 @@
                   <widget class="QPushButton" name="update_model_list">
                    <property name="text">
                     <string>Update</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0" colspan="2">
+                  <widget class="QCheckBox" name="cond_uncond_sync">
+                   <property name="text">
+                    <string>Speed/Ram</string>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="17" column="0" colspan="2">
+                  <widget class="QCheckBox" name="show_output_setup">
+                   <property name="text">
+                    <string>Output Options</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="19" column="0" colspan="2">
+                  <widget class="QCheckBox" name="show_init_setup">
+                   <property name="text">
+                    <string>Init image setup</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="21" column="0" colspan="2">
+                  <widget class="QCheckBox" name="show_mask_setup">
+                   <property name="text">
+                    <string>Mask image setup</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="4">
+                  <widget class="QCheckBox" name="show_sample_per_step">
+                   <property name="text">
+                    <string>Live</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="5">
+                  <widget class="QCheckBox" name="hires">
+                   <property name="text">
+                    <string>HiRes Mode</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="6">
+                  <widget class="QCheckBox" name="plotting">
+                   <property name="text">
+                    <string>Plotting</string>
                    </property>
                   </widget>
                  </item>
@@ -1777,13 +1751,6 @@
                 </property>
                 <property name="value">
                  <number>512</number>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="1">
-               <widget class="QCheckBox" name="prompt_weighting">
-                <property name="text">
-                 <string>Weighted</string>
                 </property>
                </widget>
               </item>
@@ -1922,20 +1889,6 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="0">
-               <widget class="QCheckBox" name="toggle_negative_prompt">
-                <property name="text">
-                 <string>Negative prompt</string>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="0">
-               <widget class="QCheckBox" name="toggle_sampler">
-                <property name="text">
-                 <string>Sampler</string>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="0" colspan="10">
                <widget class="QTextEdit" name="prompts">
                 <property name="sizePolicy">
@@ -1962,13 +1915,6 @@
                <widget class="QCheckBox" name="toggle_animations">
                 <property name="text">
                  <string>Animation</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QCheckBox" name="lowmem">
-                <property name="text">
-                 <string>Low Memory</string>
                 </property>
                </widget>
               </item>
@@ -3518,6 +3464,66 @@
                  <size>
                   <width>16777215</width>
                   <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="0" colspan="2">
+               <widget class="QCheckBox" name="toggle_sampler">
+                <property name="text">
+                 <string>Sampler</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0" colspan="2">
+               <widget class="QCheckBox" name="lowmem">
+                <property name="text">
+                 <string>Low Memory</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0" colspan="2">
+               <widget class="QCheckBox" name="toggle_negative_prompt">
+                <property name="minimumSize">
+                 <size>
+                  <width>155</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Negative prompt</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="2" colspan="3">
+               <widget class="QCheckBox" name="prompt_weighting">
+                <property name="text">
+                 <string>Weighted</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="7" colspan="3">
+               <widget class="QPushButton" name="lucky">
+                <property name="text">
+                 <string>I Have a lucky day</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>8</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2" colspan="5">
+               <widget class="QPushButton" name="dream">
+                <property name="text">
+                 <string>Dream</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>8</width>
+                  <height>8</height>
                  </size>
                 </property>
                </widget>

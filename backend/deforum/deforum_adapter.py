@@ -478,17 +478,17 @@ class DeforumSix:
         #    backend.hypernetworks.modules.sd_hijack.apply_optimizations()
         gs.system.device = choose_torch_device()
 
-        print(f'----------------------------------------------------------------')
-        print(f'-       Deforum  0.6  Art Generator                            -')
-        print(f'-            animation mode: {animation_mode}                  -')
-        print(f'-            steps: {steps}                                    -')
-        print(f'-            width: {W}                                        -')
-        print(f'-            height: {H}                                       -')
-        print(f'-            hires: {hires}                                    -')
-        print(f'-                                                              -')
-        print(f'----------------------------------------------------------------')
+
+        print(f'-       Deforum  0.6  Art Generator                            ')
+        print(f'-            animation mode: {animation_mode}                  ')
+        print(f'-            steps: {steps}                                    ')
+        print(f'-            width: {W}                                        ')
+        print(f'-            height: {H}                                       ')
+        print(f'-            hires: {hires}                                    ')
+        print(f'-                                                              ')
+
         if lowmem == True:
-            print(f'-                 Low Memory Mode                             -')
+            print(f'-                 Low Memory Mode                             ')
             if "sd" in gs.models:
                 del gs.models["sd"]
             if "inpaint" in gs.models:
@@ -530,7 +530,7 @@ class DeforumSix:
         W, H = map(lambda x: x - x % 64, (W, H))  # resize to integer multiple of 64
 
         [args, anim_args, root] = prepare_args(locals())
-        #print(args, anim_args)
+
 
         if hires:
             args.hiresstr = args.strength

@@ -181,6 +181,8 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
     # expand key frame strings to values
     keys = DeformAnimKeys(anim_args)
 
+    print('keys', keys)
+
     # resume anima![](../../../output/txt2img/20221113/20221113191718_00000_terrifying_sea_creature_big_teeth_ominous_scary_horror_realistic_digital_art_photorealism_trending_on_artstation_.png)tion
     start_frame = 0
     if anim_args.resume_from_timestring:

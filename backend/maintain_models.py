@@ -20,6 +20,7 @@ def check_models_exist():
     for key in model_path.keys():
         path = model_path[key]['path']
         if 'url' in model_path[key]:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
             if not os.path.isfile(model_path[key]['path']):
                 url = model_path[key]['url']
                 print(f"model {path} gets downloaded from {url}")

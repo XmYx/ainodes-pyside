@@ -231,7 +231,7 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
     sampler = PLMSSampler(gs.models["sd"]) if args.sampler == 'plms' else DDIMSampler(gs.models["sd"])
     if gs.model_version in gs.system.gen_one_models or gs.model_resolution == 512:
         print("using old denoiser")
-        k_diffusion.external.CompVisVDenoiser = CompVisDenoiser
+        #k_diffusion.external.CompVisVDenoiser = CompVisDenoiser
         model_wrap = CompVisDenoiser(gs.models["sd"])
     print(gs.model_version, gs.model_resolution)
     if gs.model_version in gs.system.gen_two_models and gs.model_resolution == 768:

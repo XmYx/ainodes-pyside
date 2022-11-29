@@ -139,7 +139,13 @@ class MainWindow(QMainWindow):
         self.unicontrol.update_model_list()
         self.create_out_folders()
         check_models_exist()
-
+        self.latent_rgb_factors = torch.tensor([
+            #   R        G        B
+            [0.298, 0.207, 0.208],  # L1
+            [0.187, 0.286, 0.173],  # L2
+            [-0.158, 0.189, 0.264],  # L3
+            [-0.184, -0.271, -0.473],  # L4
+        ], dtype=torch.float, device='cuda')
 
     def create_out_folders(self):
         os.makedirs(gs.system.galleryMainPath, exist_ok=True)
@@ -696,70 +702,28 @@ class MainWindow(QMainWindow):
             self.data2 = None
         self.deforum_ui.signals.deforum_step.emit()
 
-    def tensor_preview_schedule(self):
-        self.latent_rgb_factors = torch.tensor([
-            #   R        G        B
-            [0.298, 0.207, 0.208],  # L1
-            [0.187, 0.286, 0.173],  # L2
-            [-0.158, 0.189, 0.264],  # L3
-            [-0.184, -0.271, -0.473],  # L4
-        ], dtype=torch.float, device='cuda')
-        #x_samples = torch.clamp((self.data + 1.0) / 2.0, min=0.0, max=1.0)
-        x_samples = self.data
-        if len(x_samples) != 1:
+    def tensor_preview_schedule(self): #TODO: Rename this function to tensor_draw_function
+        if len(self.data) != 1:
             print(
-                f'we got {len(x_samples)} Tensors but Tensor Preview will show only one')
-        #x_sample = 255.0 * rearrange(
-        #    x_samples[0].cpu().numpy(), 'c h w -> h w c'
-        #)
-        print(x_samples[0].type())
-        #data = self.data.half().to('cpu')
-        data = torch.einsum('...lhw,lr -> ...rhw', x_samples[0], self.latent_rgb_factors)
-        data = (((data + 1) / 2)
+                f'we got {len(self.data)} Tensors but Tensor Preview will show only one')
+
+        #Applying RGB fix on incoming tensor found at: https://github.com/keturn/sd-progress-demo/
+        self.data = torch.einsum('...lhw,lr -> ...rhw', self.data[0], self.latent_rgb_factors)
+        self.data = (((self.data + 1) / 2)
                   .clamp(0, 1)  # change scale from -1..1 to 0..1
                   .mul(0xFF)  # to 0..255
                   .byte())
-        data = rearrange(data, 'c h w -> h w c').cpu().numpy()
-
-
-
-
-
-        data = data.astype(np.uint8)
-        dPILimg = Image.fromarray(data)
+        #Copying to cpu as numpy array
+        self.data = rearrange(self.data, 'c h w -> h w c').cpu().numpy()
+        dPILimg = Image.fromarray(self.data)
         dqimg = ImageQt(dPILimg)
+        #Setting Canvas's Tensor Preview item, then calling function to draw it.
         self.canvas.canvas.tensor_preview_item = dqimg
         self.canvas.canvas.tensor_preview()
+        dPILimg = None
+        dqimg = None
+        x_samples = None
 
-    def tensor_draw_function(self, data1, data2):
-        #tpixmap = QPixmap(self.sizer_count.w.widthSlider.value(), self.sizer_count.w.heightSlider.value())
-        #self.livePainter.begin(tpixmap)
-        self.latent_rgb_factors = torch.tensor([
-            #   R        G        B
-            [0.298, 0.207, 0.208],  # L1
-            [0.187, 0.286, 0.173],  # L2
-            [-0.158, 0.189, 0.264],  # L3
-            [-0.184, -0.271, -0.473],  # L4
-        ], dtype=torch.float16, device='cpu')
-        data = torch.einsum('...lhw,lr -> ...rhw', self.data, self.latent_rgb_factors)
-        data = (((data + 1) / 2)
-                  .clamp(0, 1)  # change scale from -1..1 to 0..1
-                  .mul(0xFF)  # to 0..255
-                  .byte())
-        data = rearrange(data, 'c h w -> h w c')
-        #x_samples = torch.clamp((self.data + 1.0) / 2.0, min=0.0, max=1.0)
-        #if len(x_samples) != 1:
-        #    print(
-        #        f'we got {len(x_samples)} Tensors but Tensor Preview will show only one')
-        #x_sample = 255.0 * rearrange(
-        #    x_samples[0].cpu().numpy(), 'c h w -> h w c'
-        #)
-
-        #x_sample = x_sample.astype(np.uint8)
-        dPILimg = Image.fromarray(data)
-        dqimg = ImageQt(dPILimg)
-        self.canvas.canvas.tensor_preview_item = dqimg
-        self.canvas.canvas.tensor_preview()
 
     def outpaint_offset_signal(self):
 

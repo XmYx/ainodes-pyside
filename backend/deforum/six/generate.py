@@ -522,8 +522,12 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
                         x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
                         image = Image.fromarray(x_sample.astype(np.uint8))
                         results.append(image)
-    #del args
-    #del root
+
+    k_sigmas = None
+    mask_fullres = None
+    cfg_model.to('cpu')
+    model_wrap.to('cpu')
+    x_sample = None
     x_samples = None
     c = None
     uc = None

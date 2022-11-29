@@ -620,7 +620,7 @@ class DeforumSix:
 
         #print('anim_args.animation_mode', anim_args.animation_mode)
         #print('anim_args.translation_x', anim_args.translation_x)
-
+        paths = []
         # dispatch to appropriate renderer
         if anim_args.animation_mode == '2D' or anim_args.animation_mode == '3D':
             render_animation(args, anim_args, animation_prompts, root, image_callback=image_callback, step_callback=step_callback)
@@ -700,6 +700,7 @@ class DeforumSix:
         hijack_deforum.undo_hijack()
         del args
         del anim_args
+        del root
 
         if lowmem == True:
             print('Low Memory Mode enabled')
@@ -708,8 +709,8 @@ class DeforumSix:
             gs.models["modelFS"].to("cpu")
             gs.models["sd"] = None
         else:
-            gs.models["sd"].cond_stage_model.to("cpu")
-            gs.models["sd"].to("cpu")
+            #gs.models["sd"].cond_stage_model.to("cpu")
+            #gs.models["sd"].to("cpu")
             gs.models["model"] = None
             gs.models["modelCS"] = None
             gs.models["modelFS"] = None
@@ -718,7 +719,7 @@ class DeforumSix:
             del gs.models["modelFS"]
 
         torch_gc()
-        # return paths # todo produces an error, what does it do?
+        return paths # this gets images via colab api
 
     def render_animation_new(self):
 

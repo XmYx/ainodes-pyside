@@ -162,6 +162,7 @@ class FrozenCLIPEmbedder(AbstractEncoder):
         self.transformer = CLIPTextModel.from_pretrained(version)
         self.device = device
         self.max_length = max_length
+        self.freeze()
 
         def embedding_forward(
                 self,
@@ -306,6 +307,105 @@ class FrozenCLIPEmbedder(AbstractEncoder):
 
         self.transformer.forward = transformer_forward.__get__(self.transformer)
 
+
+    # def update_embedding_func(self, embedding_manager):
+    #     text_model = self.transformer.text_model
+    #     # text_model.old_embeddings = text_model.embeddings
+
+    #     # def new_embeddings(
+    #     #         input_ids = None,
+    #     #         position_ids = None,
+    #     #         inputs_embeds = None,
+    #     #     ) -> torch.Tensor:
+
+    #     #         seq_length = input_ids.shape[-1] if input_ids is not None else inputs_embeds.shape[-2]
+
+    #     #         if position_ids is None:
+    #     #             position_ids = text_model.old_embeddings.position_ids[:, :seq_length]
+
+    #     #         if inputs_embeds is None:
+    #     #             inputs_embeds = text_model.old_embeddings.token_embedding(input_ids)
+
+                    
+    #     #         inputs_embeds = embedding_manager(input_ids, inputs_embeds)
+
+    #     #         position_embeddings = text_model.old_embeddings.position_embedding(position_ids)
+    #     #         embeddings = inputs_embeds + position_embeddings
+            
+    #     #         return embeddings  
+
+    #     # del text_model.embeddings
+    #     # text_model.embeddings = new_embeddings
+
+    #     # class NewEmbeddings(torch.nn.Module):
+
+    #     #     def __init__(self, orig_embedder):
+    #     #         super().__init__()
+    #     #         self.orig_embedder = orig_embedder
+            
+    #     #     def forward(
+    #     #         self,
+    #     #         input_ids = None,
+    #     #         position_ids = None,
+    #     #         inputs_embeds = None,
+    #     #     ) -> torch.Tensor:
+
+    #     #         seq_length = input_ids.shape[-1] if input_ids is not None else inputs_embeds.shape[-2]
+
+    #     #         if position_ids is None:
+    #     #             position_ids = self.orig_embedder.position_ids[:, :seq_length]
+
+    #     #         if inputs_embeds is None:
+    #     #             inputs_embeds = self.orig_embedder.token_embedding(input_ids)
+                    
+    #     #         inputs_embeds = embedding_manager(input_ids, inputs_embeds)
+
+    #     #         position_embeddings = self.orig_embedder.position_embedding(position_ids)
+    #     #         embeddings = inputs_embeds + position_embeddings
+            
+    #     #         return embeddings      
+
+    #     # # self.new_embeddings = 
+    #     # # text_model.embeddings = new_embeddings.__call__.__get__(text_model)
+    #     # text_model.embeddings = NewEmbeddings(text_model.embeddings)
+        
+    #     class NewEmbeddings(torch.nn.Module):
+
+    #         def __init__(self, orig_embedder, embedding_manager):
+    #             super().__init__()
+    #             self.embedding_manager = embedding_manager
+    #             self.orig_embedder     = orig_embedder
+            
+    #         def forward(
+    #             self,
+    #             input_ids = None,
+    #             position_ids = None,
+    #             inputs_embeds = None,
+    #         ) -> torch.Tensor:
+
+    #             seq_length = input_ids.shape[-1] if input_ids is not None else inputs_embeds.shape[-2]
+
+    #             if position_ids is None:
+    #                 position_ids = self.orig_embedder.position_ids[:, :seq_length]
+
+    #             if inputs_embeds is None:
+    #                 inputs_embeds = self.orig_embedder.token_embedding(input_ids)
+                
+    #             # init_embeds = inputs_embeds.clone()
+    #             inputs_embeds = self.embedding_manager(input_ids, inputs_embeds)
+
+    #             # print(inputs_embeds - init_embeds)
+    #             # print((inputs_embeds - init_embeds).max())
+    #             # exit(0)
+
+    #             position_embeddings = self.orig_embedder.position_embedding(position_ids)
+    #             embeddings = inputs_embeds + position_embeddings
+                
+    #             return embeddings      
+
+    #     # self.new_embeddings = 
+    #     # text_model.embeddings = new_embeddings.__call__.__get__(text_model)
+    #     text_model.embeddings = NewEmbeddings(text_model.embeddings, embedding_manager)
 
     def freeze(self):
         self.transformer = self.transformer.eval()

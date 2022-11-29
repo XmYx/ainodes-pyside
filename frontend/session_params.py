@@ -43,7 +43,7 @@ class SessionParams():
 
         for key, value in gs.diffusion.__dict__.items():
             self.params[key] = value
-        print(self.params)
+        #print(self.params)
 
         return self.params
 

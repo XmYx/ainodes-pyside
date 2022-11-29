@@ -48,7 +48,7 @@ class Deforum_UI(QObject):
 
     def run(self):
         params = self.parent.sessionparams.update_params()
-        #print(f"updated parameters to: {params}")
+        ##print(f"updated parameters to: {params}")
         self.deforum_six.run_deforum_six(W=int(params.W),
                                          H=int(params.H),
                                          seed=int(params.seed) if params.seed != '' else -1,
@@ -115,16 +115,22 @@ class Deforum_UI(QObject):
         id = None
         if self.parent.canvas.canvas.rectlist != []:
             for i in self.parent.canvas.canvas.rectlist:
-                #i.stop()
+                try:
+                    i.stop()
+                except:
+                    pass
                 id = i.id
+        self.parent.canvas.canvas.stop_main_clock()
+
         if id is not None:
-            self.parent.canvas.canvas.selected_item = id
+            self.parent.canvas.canvas.render_item = id
+
         gs.karras = self.parent.unicontrol.w.karras.isChecked()
         self.params = self.parent.sessionparams.update_params()
         self.parent.params = self.params
         self.deforum_six = DeforumSix(self)
-        print(self.params.translation_x)
-        #print(f"updated parameters to: {params}")
+        ##print(self.params.translation_x)
+        ##print(f"updated parameters to: {params}")
         model_killer(keep='sd')
         #if "inpaint" in gs.models:
         #    del gs.models["inpaint"]
@@ -132,22 +138,24 @@ class Deforum_UI(QObject):
         if self.params.with_inpaint == True or self.params.max_frames > 1: # todo what is this for?
             #self.parent.w = self.params.W
             #self.parent.cheight = self.params.H
-            self.parent.image = None
-            self.parent.params.advanced = False
-            self.parent.image_preview_func()
+            if self.params.max_frames > 1:
+                self.parent.image = None
+                self.parent.params.advanced = False
+                self.parent.image_preview_func()
             self.parent.params.advanced = True
         else:
             self.parent.params.advanced = False
+
         gs.T = self.parent.unicontrol.w.gradient_steps.value()
         gs.lr = self.parent.unicontrol.w.gradient_scale.value() / 1000000000
         gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.unicontrol.w.aesthetic_embedding.currentText())
         if gs.aesthetic_embedding_path == 'None':
             gs.aesthetic_embedding_path = None
         seed = random.randint(0, 2 ** 32 - 1)
-        #print('strength ui', float(params.strength']))
+        ##print('strength ui', float(params.strength']))
 
         plotting = self.params.plotting
-        #print('plotting', plotting)
+        ##print('plotting', plotting)
 
         if plotting:
 
@@ -159,17 +167,17 @@ class Deforum_UI(QObject):
             plotY = plotx_list_string.split(', ')
             plotX = ploty_list_string.split(', ')
             self.onePercent = 100 / (len(plotX) * len(plotY) * self.params.n_batch * self.params.n_samples * self.params.steps)
-            # print(self.onePercent)
+            # #print(self.onePercent)
 
         else:
             plotX = [1]
             plotY = [1]
             self.onePercent = 100 / (self.params.n_batch * self.params.n_samples * self.params.steps)
-        #print(plotY, plotX)
+        ##print(plotY, plotX)
         all_images = []
-        # print(f"Grid Dimensions: {len(plotX)}, {len(plotY)}")
-        # print(self.onePercent)
-        #print(params)
+        # #print(f"Grid Dimensions: {len(plotX)}, {len(plotY)}")
+        # #print(self.onePercent)
+        ##print(params)
         #self.parent.w = self.params.W
         for i in plotY:
             for j in plotX:
@@ -180,6 +188,7 @@ class Deforum_UI(QObject):
                     if attrib1 == 'lr': gs.lr = float(i)
                     if attrib2 == 'T': gs.T = int(j)
                     if attrib2 == 'lr': gs.lr = float(j)
+                #self.parent.canvas.canvas.select_mode()
                 self.deforum_six.run_deforum_six(W=int(self.params.W),
                                                  H=int(self.params.H),
                                                  seed=int(self.params.seed) if self.params.seed != '' else seed,
@@ -249,7 +258,7 @@ class Deforum_UI(QObject):
                 ver_texts.append([GridAnnotation(f"{attrib1}: {i}")])
             for j in plotX:
                 hor_texts.append([GridAnnotation(f"{attrib2}: {j}")])
-            #print(hor_texts)
+            ##print(hor_texts)
             grid = make_grid(all_images, nrow=len(plotX))
             grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
             filename = f"{time.strftime('%Y%m%d%H%M%S')}_{attrib1}_{attrib2}_grid_{self.params.seed}.png"
@@ -292,7 +301,7 @@ class Deforum_UI(QObject):
         params = self.parent.sessionparams.update_params()
 
         #if params is not None:
-        #print(params)
+        ##print(params)
         steps = int(params.steps)
         H = int(params.H)
         W = int(params.W)
@@ -374,7 +383,7 @@ def draw_grid_annotations(im, width, height, hor_texts, ver_texts, W, H, params)
     cols = im.width // W
     rows = im.height // H
 
-    #print(f"DEBUG: {cols}, {rows}, of which at least one should be more then 1...")
+    ##print(f"DEBUG: {cols}, {rows}, of which at least one should be more then 1...")
 
     assert cols == len(hor_texts), f'bad number of horizontal texts: {len(hor_texts)}; must be {cols}'
     assert rows == len(ver_texts), f'bad number of vertical texts: {len(ver_texts)}; must be {rows}'

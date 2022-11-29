@@ -229,12 +229,13 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
         from ldm_v2.models.diffusion.plms import PLMSSampler
         from ldm_v2.models.diffusion.ddim import DDIMSampler
     sampler = PLMSSampler(gs.models["sd"]) if args.sampler == 'plms' else DDIMSampler(gs.models["sd"])
-    if gs.model_version in gs.system.gen_one_models:
+    if gs.model_version in gs.system.gen_one_models or gs.model_resolution == 512:
         print("using old denoiser")
         k_diffusion.external.CompVisVDenoiser = CompVisDenoiser
         model_wrap = CompVisDenoiser(gs.models["sd"])
-
-    if gs.model_version in gs.system.gen_two_models:
+    print(gs.model_version, gs.model_resolution)
+    if gs.model_version in gs.system.gen_two_models and gs.model_resolution == 768:
+        print("using new denoiser")
         gs.denoiser = 2
         model_wrap = CompVisVDenoiser(gs.models["sd"])
     batch_size = args.n_samples
@@ -428,6 +429,7 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
                         #    args.H = args.oldH
                         #    args.W = args.oldW
                         torch_gc()
+
                         samples = sampler_fn(
                             c=c, 
                             uc=uc,
@@ -440,13 +442,13 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
                             verbose=False)
                         if hires:
                             samples = samples[:, :, t_H//2:samples.shape[2]-t_H//2, t_W//2:samples.shape[3]-t_W//2]
-                            print(samples.shape)
+                            #print(samples.shape)
                             samples = resizeright.resize(samples, scale_factors=None, out_shape=[samples.shape[0], samples.shape[1], args.oldH // 8, args.oldW // 8],
                                                             interp_method=interp_methods.lanczos3, support_sz=None,
                                                             antialiasing=True, by_convs=True, scale_tolerance=None,
                                                             max_numerator=10, pad_mode='reflect')
                             #samples = torch.nn.functional.interpolate(samples, size=(args.oldH // 8, args.oldW // 8), mode="bilinear")
-                            print(samples.shape)
+                            #print(samples.shape)
 
                     else:
                         # args.sampler == 'plms' or args.sampler == 'ddim':

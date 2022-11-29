@@ -181,7 +181,7 @@ class SessionParams():
         normalize_prompt_weights = self.parent.unicontrol.w.normalized_prompts.isChecked()
         outdir = gs.system.txt2imgOut
 
-        if self.parent.unicontrol.w.max_frames_slider.value() < 2:
+        if self.parent.unicontrol.w.max_frames.value() < 2:
             animation_mode = 'None'
         else:
             if self.parent.unicontrol.w.anim2D.isChecked():

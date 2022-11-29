@@ -18,7 +18,7 @@ from einops import rearrange
 
 from backend.worker import Worker
 from frontend import plugin_loader
-from frontend.ui_model_chooser import ModelChooser_UI
+#from frontend.ui_model_chooser import ModelChooser_UI
 
 from backend.prompt_ai.prompt_gen import AiPrompt
 from frontend.ui_paint import PaintUI, spiralOrder, random_path
@@ -104,7 +104,7 @@ class MainWindow(QMainWindow):
         self.path_setup = PathSetup()
         self.image_lab = ImageLab()
         self.image_lab_ui = self.image_lab.imageLab
-        self.model_chooser = ModelChooser_UI(self)
+        #self.model_chooser = ModelChooser_UI(self)
         self.unicontrol.w.dockWidget.setWindowTitle("Parameters")
         self.path_setup.w.dockWidget.setWindowTitle("Model / Paths")
         self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
@@ -488,16 +488,16 @@ class MainWindow(QMainWindow):
 
         #self.unicontrol.w.showHideAll.setVisible(False)
         self.unicontrol.w.H.setVisible(False)
-        self.unicontrol.w.H_slider.setVisible(False)
+        #self.unicontrol.w.H_slider.setVisible(False)
         self.unicontrol.w.W.setVisible(False)
-        self.unicontrol.w.W_slider.setVisible(False)
+        #self.unicontrol.w.W_slider.setVisible(False)
         self.unicontrol.w.cfglabel.setVisible(False)
         self.unicontrol.w.heightlabel.setVisible(False)
         self.unicontrol.w.widthlabel.setVisible(False)
         self.unicontrol.w.steps.setVisible(False)
-        self.unicontrol.w.steps_slider.setVisible(False)
+        #self.unicontrol.w.steps_slider.setVisible(False)
         self.unicontrol.w.scale.setVisible(False)
-        self.unicontrol.w.scale_slider.setVisible(False)
+        #self.unicontrol.w.scale_slider.setVisible(False)
         self.unicontrol.w.stepslabel.setVisible(False)
         self.path_setup.w.dockWidget.setVisible(False)
         self.animKeyEditor.w.dockWidget.setVisible(False)
@@ -535,16 +535,16 @@ class MainWindow(QMainWindow):
             self.unicontrol.w.toggle_embeddings.setVisible(True)
             self.unicontrol.w.toggle_plugins.setVisible(True)
             self.unicontrol.w.H.setVisible(True)
-            self.unicontrol.w.H_slider.setVisible(True)
+            #self.unicontrol.w.H_slider.setVisible(True)
             self.unicontrol.w.W.setVisible(True)
-            self.unicontrol.w.W_slider.setVisible(True)
+            #self.unicontrol.w.W_slider.setVisible(True)
             self.unicontrol.w.cfglabel.setVisible(True)
             self.unicontrol.w.heightlabel.setVisible(True)
             self.unicontrol.w.widthlabel.setVisible(True)
             self.unicontrol.w.steps.setVisible(True)
-            self.unicontrol.w.steps_slider.setVisible(True)
+            #self.unicontrol.w.steps_slider.setVisible(True)
             self.unicontrol.w.scale.setVisible(True)
-            self.unicontrol.w.scale_slider.setVisible(True)
+            #self.unicontrol.w.scale_slider.setVisible(True)
             self.unicontrol.w.stepslabel.setVisible(True)
             self.path_setup.w.dockWidget.setVisible(True)
             self.image_lab_ui.w.dockWidget.setVisible(True)

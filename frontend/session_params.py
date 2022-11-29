@@ -182,18 +182,19 @@ class SessionParams():
         prompt_weighting = self.parent.unicontrol.w.prompt_weighting.isChecked()
         normalize_prompt_weights = self.parent.unicontrol.w.normalized_prompts.isChecked()
         outdir = gs.system.txt2imgOut
-        if self.parent.unicontrol.w.anim2D.isChecked():
-            anim_mode = '2D'
-            outdir = gs.system.txt2vidSingleFrame
-        if self.parent.unicontrol.w.anim3D.isChecked():
-            anim_mode = '3D'
-            outdir = gs.system.txt2vidSingleFrame
-        if self.parent.unicontrol.w.animVid.isChecked():
-            anim_mode = 'Video Input'
 
-        animation_mode = 'None' if self.parent.unicontrol.w.max_frames_slider.value() < 2 else anim_mode
-
-
+        if self.parent.unicontrol.w.max_frames_slider.value() < 2:
+            animation_mode = 'None'
+        else:
+            if self.parent.unicontrol.w.anim2D.isChecked():
+                animation_mode = '2D'
+                outdir = gs.system.txt2vidSingleFrame
+            if self.parent.unicontrol.w.anim3D.isChecked():
+                animation_mode = '3D'
+                outdir = gs.system.txt2vidSingleFrame
+            if self.parent.unicontrol.w.animVid.isChecked():
+                animation_mode = 'Video Input'
+                outdir = gs.system.txt2vidSingleFrame
 
 
         advanced = False if animation_mode == 'None' else True

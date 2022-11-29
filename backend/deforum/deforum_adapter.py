@@ -165,6 +165,10 @@ class DeforumSix:
                 gs.model_version = '2.0'
             if config.model['params']['conditioning_key'] == 'hybrid-adm':
                 gs.model_version = '2.0'
+            if 'parametrization' in config.model['params']:
+                gs.model_reolution = 768
+            else:
+                gs.model_resolution = 512
             #if not 'model_version' in config:
             #    print('you must provide a model_version in the config yaml or we can not figure how to tread your model')
             #    return -1

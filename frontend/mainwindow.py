@@ -466,8 +466,8 @@ class MainWindow(QMainWindow):
         load_canvas.triggered.connect(self.canvas.canvas.load_rects_from_json)
         clear_canvas.triggered.connect(self.canvas.canvas.reset)
         save_canvas_png.triggered.connect(self.canvas.canvas.save_canvas)
-        play.triggered.connect(self.canvas.canvas.play_selected)
-        stop.triggered.connect(self.canvas.canvas.stop_selected)
+        play.triggered.connect(self.canvas.canvas.start_main_clock)
+        stop.triggered.connect(self.canvas.canvas.stop_main_clock)
 
 
 
@@ -590,21 +590,22 @@ class MainWindow(QMainWindow):
 
     def image_preview_signal(self, image, *args, **kwargs):
         self.image = image
-        self.deforum_ui.signals.add_image_to_thumbnail_signal.emit(image)
+        #self.deforum_ui.signals.add_image_to_thumbnail_signal.emit(image)
         self.deforum_ui.signals.txt2img_image_cb.emit()
-        self.currentFrames.append(image)
-        self.renderedFrames += 1
+        #self.currentFrames.append(image)
+        #self.renderedFrames += 1
 
     @Slot()
     def image_preview_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
         x = 0
         y = 0
         print(self.params.advanced)
+        print(self.canvas.canvas.rectlist)
         if self.params.advanced == True:
             if self.canvas.canvas.rectlist != []:
                 for items in self.canvas.canvas.rectlist:
-                    if items.id == self.canvas.canvas.selected_item:
-                        if items.id == self.canvas.canvas.selected_item:
+                    if items.id == self.canvas.canvas.render_item:
+                        if items.id == self.canvas.canvas.render_item:
                             if items.images is not None:
                                 templist = items.images
                             else:
@@ -632,12 +633,14 @@ class MainWindow(QMainWindow):
                 self.canvas.canvas.addrect_atpos(x=0, y=0)
                 self.cheight = self.unicontrol.w.H.value()
                 self.w = self.unicontrol.w.W.value()
+                self.canvas.canvas.render_item = self.canvas.canvas.selected_item
+
                 #print(f"this should only haappen once {self.cheight}")
-                self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
+                #self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
             elif self.canvas.canvas.rectlist != []:
                 for i in self.canvas.canvas.rectlist:
-                    if i.id == self.canvas.canvas.selected_item:
-                        if i.id == self.canvas.canvas.selected_item:
+                    if i.id == self.canvas.canvas.render_item:
+                        if i.id == self.canvas.canvas.render_item:
                             x = i.x + w + 20
                             y = i.y
                             if x > 3000:
@@ -652,13 +655,15 @@ class MainWindow(QMainWindow):
                                 self.cheight = y + i.h
                                 resize = True
                             #self.canvas.canvas.selected_item = None
-            self.canvas.canvas.addrect_atpos(x=x, y=y, params=self.sessionparams.params)
+                self.canvas.canvas.addrect_atpos(x=x, y=y, params=self.sessionparams.params)
+                self.canvas.canvas.render_item = self.canvas.canvas.selected_item
             if resize == True:
+                #pass
                 self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
             if self.image is not None:
                 image = self.image
                 for items in self.canvas.canvas.rectlist:
-                    if items.id == self.canvas.canvas.selected_item:
+                    if items.id == self.canvas.canvas.render_item:
                         if items.images is not None:
                             templist = items.images
                         else:
@@ -674,12 +679,13 @@ class MainWindow(QMainWindow):
                         items.image = items.images[items.index]
                         items.timestring = time.time()
         #self.canvas.canvas.newimage = True
-
+        self.canvas.canvas.render_item = self.canvas.canvas.selected_item
         #if self.image is not None:
         self.canvas.canvas.newimage = True
         self.canvas.canvas.redraw()
         self.canvas.canvas.update()
         #self.canvas.canvas.redraw()
+        self.canvas.canvas.resize_canvas(w=self.canvas.W.value(), h=self.canvas.H.value())
 
     def tensor_preview_signal(self, data, data2):
         self.data = data

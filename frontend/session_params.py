@@ -42,6 +42,7 @@ class SessionParams():
         self.params = {}
         for key, value in gs.diffusion.__dict__.items():
             self.params[key] = value
+
         return self.params
 
     def update_params(self):

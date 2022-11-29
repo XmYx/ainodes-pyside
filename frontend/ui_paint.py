@@ -135,7 +135,8 @@ class Canvas(QGraphicsView):
             for i in self.rectlist:
                 if i.id == self.selected_item:
                     if i.running == False:
-                        i.play()
+                        if i.images != []:
+                            i.play()
     def stop_selected(self):
         if self.selected_item is not None:
             for i in self.rectlist:

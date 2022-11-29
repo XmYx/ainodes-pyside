@@ -32,12 +32,23 @@ def load_last_prompt():
 def model_killer(keep=''):
     temp = None
     if keep in gs.models:
-        temp = gs.models[keep]
-        gs.models = {keep: temp}
+        for i in gs.models:
+            print(i)
+            if i != keep:
+                i.to('cpu')
+                del i
     else:
         gs.models = {}
-    del temp
     torch_gc()
+
+    #if keep in gs.models:
+    #    print(gs.models[keep])
+    #    temp = gs.models[keep].to('cpu')
+    #    gs.models = {keep: temp}
+    #else:
+    #    gs.models = {}
+    #del temp
+    #torch_gc()
 
 
 def check_support_model_exists(model_name, model_path, model_url):

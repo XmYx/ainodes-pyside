@@ -43,9 +43,9 @@ class Deforum_UI(QObject):
         self.deforum = None
         self.parent = parent
         #self.deforum = DeforumGenerator()
+        self.deforum_six = DeforumSix(self)
         self.signals = Callbacks()
         #self.deforum_six = DeforumSix()
-
     def run(self):
         params = self.parent.sessionparams.update_params()
         ##print(f"updated parameters to: {params}")
@@ -128,7 +128,7 @@ class Deforum_UI(QObject):
         gs.karras = self.parent.unicontrol.w.karras.isChecked()
         self.params = self.parent.sessionparams.update_params()
         self.parent.params = self.params
-        self.deforum_six = DeforumSix(self)
+
         ##print(self.params.translation_x)
         ##print(f"updated parameters to: {params}")
         model_killer(keep='sd')
@@ -142,6 +142,8 @@ class Deforum_UI(QObject):
                 self.parent.image = None
                 self.parent.params.advanced = False
                 self.parent.image_preview_func()
+                self.parent.canvas.canvas.select_mode()
+                self.parent.canvas.update()
             self.parent.params.advanced = True
         else:
             self.parent.params.advanced = False
@@ -270,7 +272,7 @@ class Deforum_UI(QObject):
             self.parent.image_preview_signal(grid_image)
             grid_image.save(os.path.join(self.params.outdir, filename))
         #self.signals.reenable_runbutton.emit()
-        self.deforum_six = None
+        #self.deforum_six = None
         return
 
     def run_deforum_outpaint(self, params=None, progress_callback=None):

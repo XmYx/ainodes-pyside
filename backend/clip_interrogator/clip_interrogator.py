@@ -14,7 +14,8 @@ from torchvision import transforms
 from torchvision.transforms.functional import InterpolationMode
 from tqdm import tqdm
 from typing import List
-
+from backend.singleton import singleton
+gs = singleton
 
 @dataclass 
 class Config:
@@ -26,7 +27,7 @@ class Config:
     # blip settings
     blip_image_eval_size: int = 384
     blip_max_length: int = 32
-    blip_model_url: str = 'https://storage.googleapis.com/sfr-vision-language-research/BLIP/models/model_large_caption.pth'
+    blip_model_url: str = gs.system.blip_large_model_path
     blip_num_beams: int = 8
 
     # clip settings
@@ -300,4 +301,3 @@ def _truncate_to_fit(text: str) -> str:
             return text
         except:
             text = ",".join(text.split(",")[:-1])
-        

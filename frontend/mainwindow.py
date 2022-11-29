@@ -28,18 +28,21 @@ import backend.settings as settings
 from backend.singleton import singleton
 from frontend.ui_krea import Krea
 from frontend.ui_lexica import LexicArt
-from frontend.ui_prompt_fetcher import PromptFetcher_UI, FetchPrompts
+
 from backend.devices import choose_torch_device
 from frontend.ui_timeline import Timeline, KeyFrame
 
 
 gs = singleton
 settings.load_settings_json()
+
 # we had to load settings first before we can do this import
+from frontend.ui_prompt_fetcher import PromptFetcher_UI, FetchPrompts
 from frontend.ui_image_lab import ImageLab
 from frontend.ui_deforum import Deforum_UI
 from frontend.session_params import SessionParams
 from backend.shared import save_last_prompt
+from backend.maintain_models import check_models_exist
 
 # please don't remove it totally, just remove what we know is not used
 class Callbacks(QObject):
@@ -135,6 +138,7 @@ class MainWindow(QMainWindow):
         self.resize(1280, 800)
         self.unicontrol.update_model_list()
         self.create_out_folders()
+        check_models_exist()
 
 
     def create_out_folders(self):
@@ -234,7 +238,8 @@ class MainWindow(QMainWindow):
         self.path_setup.w.midasPath.setText(gs.system.midasPath)
         self.path_setup.w.sdClipPath.setText(gs.system.sdClipPath)
         self.path_setup.w.sdPath.setText(gs.system.sdPath)
-        self.path_setup.w.sdInference.setText(gs.system.sdInference)
+        self.path_setup.w.sd1Inference.setText(gs.system.sd1Inference)
+        self.path_setup.w.sd2Inference.setText(gs.system.sd2Inference)
         self.path_setup.w.gfpganPath.setText(gs.system.gfpganPath)
         self.path_setup.w.realesrganPath.setText(gs.system.realesrganPath)
         self.path_setup.w.realesrganAnimeModelPath.setText(gs.system.realesrganAnimeModelPath)

@@ -704,7 +704,8 @@ class MainWindow(QMainWindow):
             [-0.158, 0.189, 0.264],  # L3
             [-0.184, -0.271, -0.473],  # L4
         ], dtype=torch.float, device='cuda')
-        x_samples = torch.clamp((self.data + 1.0) / 2.0, min=0.0, max=1.0)
+        #x_samples = torch.clamp((self.data + 1.0) / 2.0, min=0.0, max=1.0)
+        x_samples = self.data
         if len(x_samples) != 1:
             print(
                 f'we got {len(x_samples)} Tensors but Tensor Preview will show only one')

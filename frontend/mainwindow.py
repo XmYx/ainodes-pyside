@@ -206,6 +206,7 @@ class MainWindow(QMainWindow):
         self.image_lab.signals.run_aestetic_prediction.connect(self.run_aestetic_prediction_thread)
         self.image_lab.signals.run_interrogation.connect(self.run_interrogation_thread)
         self.image_lab.signals.run_volta_accel.connect(self.run_volta_accel_thread)
+        self.image_lab.signals.run_upscale_20.connect(self.run_upscale_20_thread)
 
         self.prompt_fetcher_ui.signals.run_ai_prompt.connect(self.ai_prompt_thread)
         self.prompt_fetcher_ui.signals.run_img_to_prompt.connect(self.image_to_prompt_thread)
@@ -268,6 +269,11 @@ class MainWindow(QMainWindow):
 
     def help_mode(self):
         pass
+
+    @Slot()
+    def run_upscale_20_thread(self):
+        worker = Worker(self.image_lab.run_upscale_20)
+        self.threadpool.start(worker)
 
     @Slot()
     def run_volta_accel_thread(self):

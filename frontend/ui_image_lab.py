@@ -19,6 +19,7 @@ from backend.aestetics_score import get_aestetics_score
 import backend.interrogate
 from backend.guess_prompt import get_prompt_guess_img
 from backend.hypernetworks.modules import images
+from backend.sdv2.superresolution import run_sr
 #from volta_accelerate import convert_to_onnx, convert_to_trt
 gs = singleton
 
@@ -78,6 +79,7 @@ class Callbacks(QObject):
     run_aestetic_prediction = Signal()
     run_interrogation = Signal()
     run_volta_accel = Signal()
+    run_upscale_20 = Signal()
 
 class ImageLab():  # for signaling, could be a QWidget  too
 
@@ -104,9 +106,25 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.imageLab.w.run_interrogation.clicked.connect(self.signal_run_interrogation)
         self.imageLab.w.select_model.clicked.connect(self.select_accel_model)
         self.imageLab.w.run_volta_accel.clicked.connect(self.signal_run_volta_accel)
+        self.imageLab.w.upscale_20.clicked.connect(self.run_upscale_20)
 
 
-    def run_volta_accel(self):
+
+    def run_upscale_20(self, progress_callback=False):
+        run_sr(image_list=self.fileList,
+               target_h=self.imageLab.w.upscale_h.value(),
+               target_w=self.imageLab.w.upscale_w.value(),
+               prompt=self.imageLab.w.textEdit.toPlainText(),
+               seed=self.imageLab.w.seed.text(),
+               num_samples=self.imageLab.w.samples.value(),
+               scale=self.imageLab.w.scale.value(),
+               steps=self.imageLab.w.steps.value(),
+               eta=self.imageLab.w.ddim_eta.value(),
+               noise_level=self.imageLab.w.noise_level.value()
+        )
+
+    # todo get this working on linux boxes
+    def run_volta_accel(self, progress_callback=False):
         args = {}
         args['model_path'] = self.imageLab.w.accel_path.text()
         args = SimpleNamespace(**args)
@@ -134,7 +152,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
         copy_info_text = self.imageLab.w.copy_info_text.isChecked()
         interrogate = self.imageLab.w.interrogate.isChecked()
         guess_prompt = self.imageLab.w.guess_prompt.isChecked()
-        matcher = re.compile('(.*?)(\..*)')
+        matcher = re.compile(r'(.*?)(\..*)')
         if interrogate:
             interrogator.load()
         if interrogate or guess_prompt:
@@ -215,7 +233,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
 
     def run_aestetic_prediction(self, progress_callback=False):
         print('Aestetics calculation started')
-        matcher = re.compile('(.*?)(\..*)')
+        matcher = re.compile(r'(.*?)(\..*)')
         aesthetics_keep_folder_structure = self.imageLab.w.aesthetics_keep_folder_structure.isChecked()
         if len(self.fileList) > 0:
             for file in self.fileList:
@@ -302,12 +320,6 @@ class ImageLab():  # for signaling, could be a QWidget  too
 
     def upscale_count(self, num):
         self.signals.upscale_counter.emit(num)
-
-
-    def check_model_present(self):
-        'src/realesrgan/experiments/pretrained_models/RealESRGAN_x4plus.pth'
-        'src/realesrgan/experiments/pretrained_models/RealESRGAN_x4plus_anime_6B'
-
 
 
     def run_upscale(self, progress_callback=None):

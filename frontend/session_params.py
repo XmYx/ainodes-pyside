@@ -208,7 +208,7 @@ class SessionParams():
         plotY = self.parent.unicontrol.w.plotY.currentText()
         plotXLine = self.parent.unicontrol.w.plotXLine.text()
         plotYLine = self.parent.unicontrol.w.plotYLine.text()
-        self.params = {
+        self.params = {             # todo make this a one step thing not two steps
             # Basic Params
             'mode': mode,
             'sampler': sampler_name,

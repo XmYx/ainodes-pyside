@@ -237,6 +237,8 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
     if gs.model_version in gs.system.gen_two_models:
         gs.denoiser = 2
         model_wrap = CompVisVDenoiser(gs.models["sd"])
+
+
     batch_size = args.n_samples
     prompt = args.prompt
     assert prompt is not None

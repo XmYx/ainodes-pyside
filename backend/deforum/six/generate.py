@@ -233,8 +233,8 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
         print("using old denoiser")
         #k_diffusion.external.CompVisVDenoiser = CompVisDenoiser
         model_wrap = CompVisDenoiser(gs.models["sd"])
-    print(gs.model_version, gs.model_resolution)
-    if gs.model_version in gs.system.gen_two_models and gs.model_resolution == 768:
+        print(gs.model_version, gs.model_resolution)
+    elif gs.model_version in gs.system.gen_two_models and gs.model_resolution == 768:
         print("using new denoiser")
         gs.denoiser = 2
         model_wrap = CompVisVDenoiser(gs.models["sd"])

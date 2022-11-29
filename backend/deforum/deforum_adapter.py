@@ -145,10 +145,10 @@ class DeforumSix:
         # version not the version of the custom model
         #if config is None:
         config_yaml_name = os.path.splitext(ckpt)[0] + '.yaml'
-        print(config_yaml_name)
+        #print(config_yaml_name)
         #else:
         #    config_yaml_name = config
-        print(os.path.isfile(config_yaml_name))
+        #print(os.path.isfile(config_yaml_name))
         #if os.path.isfile(config_yaml_name):
         config = config_yaml_name
 
@@ -157,7 +157,7 @@ class DeforumSix:
                 print(f"Loading model from {ckpt} with config {config}")
             config = OmegaConf.load(config)
 
-            print(config.model['params']['conditioning_key'])
+            #print(config.model['params'])
 
             if 'num_heads' in config.model['params']['unet_config']['params']:
                 gs.model_version = '1.5'
@@ -165,14 +165,14 @@ class DeforumSix:
                 gs.model_version = '2.0'
             if config.model['params']['conditioning_key'] == 'hybrid-adm':
                 gs.model_version = '2.0'
-            if 'parametrization' in config.model['params']:
-                gs.model_reolution = 768
+            if 'parameterization' in config.model['params']:
+                gs.model_resolution = 768
             else:
                 gs.model_resolution = 512
             #if not 'model_version' in config:
             #    print('you must provide a model_version in the config yaml or we can not figure how to tread your model')
             #    return -1
-            print(f'v {gs.model_version} found')
+            print(f'v {gs.model_version} found with resolution {gs.model_resolution}')
 
             #gs.model_version = config.model_version
             if verbose:
@@ -220,7 +220,7 @@ class DeforumSix:
             gs.models["sd"].to("cuda")
             # todo why we do this here?
             from backend.aesthetics import modules
-            print('PersonalizedCLIPEmbedder', backend.aesthetics.modules.PersonalizedCLIPEmbedder)
+            #print('PersonalizedCLIPEmbedder', backend.aesthetics.modules.PersonalizedCLIPEmbedder)
             # todo make this vae thing a setting
             vae_name = os.path.splitext(gs.system.sdPath)[0] + '.pt'
             self.load_vae(vae_name)

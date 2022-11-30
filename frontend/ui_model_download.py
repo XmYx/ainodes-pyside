@@ -24,7 +24,7 @@ class ModelDownload():
 
 
     def show_model_infos(self,**args):
-        print(self.model_download.w.model_list.currentItem().text())
+
         model_info = self.actual_model_list[self.model_download.w.model_list.currentItem().text()]
 
 
@@ -35,7 +35,6 @@ Trained Words: {model_info['model']['trainedWords']}
 Type: {model_info['item']['type']} 
 NSFW: {model_info['item']['nsfw']} 
 """
-        print(info)
         self.model_download.w.model_informations.setPlainText(info)
 
     def executeRequest(self, url):
@@ -72,7 +71,6 @@ NSFW: {model_info['item']['nsfw']}
             print('error: ', er)
 
 
-
     def models_search(self):
         query = 'query=' + self.model_download.w.query.text()
         query += '&tag=' + self.model_download.w.tag.text() if self.model_download.w.tag.text() != '' else ''
@@ -81,7 +79,4 @@ NSFW: {model_info['item']['nsfw']}
         query += '&sort=' + self.model_download.w.sort.currentText()
         query += '&period=' + self.model_download.w.period.currentText()
         url = "https://civitai.com/api/v1/models?" + query
-        print(url)
         self.executeRequest(url)
-        print('hello')
-        pass

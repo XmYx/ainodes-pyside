@@ -133,26 +133,12 @@ class Deforum_UI(QObject):
         ##print(self.params.translation_x)
         ##print(f"updated parameters to: {params}")
         model_killer(keep='sd')
+        print(gs.models)
         #if "inpaint" in gs.models:
         #    del gs.models["inpaint"]
 
-        if self.params.with_inpaint == True or self.params.max_frames > 1: # todo what is this for?
-            #self.parent.w = self.params.W
-            #self.parent.cheight = self.params.H
-            if self.params.max_frames > 1:
-                #self.parent.image = None
-                #self.parent.params.advanced = False
-                #self.parent.image_preview_func()
-                self.parent.add_next_rect()
-                #self.parent.canvas.canvas.select_mode()
-                #self.parent.canvas.canvas.redraw()
-                #self.parent.canvas.canvas.mouseMoveEvent(QMouseEvent(QPoint(0, 0)))
-                #self.parent.canvas.update()
-                #self.parent.canvas.canvas.updateView()
-                self.parent.canvas.canvas.newimage = True
-
+        if self.params.with_inpaint == True: # todo what is this for?
             self.parent.params.advanced = True
-            #self.parent.image_preview_func()
         else:
             self.parent.params.advanced = False
 
@@ -162,10 +148,8 @@ class Deforum_UI(QObject):
         if gs.aesthetic_embedding_path == 'None':
             gs.aesthetic_embedding_path = None
         seed = random.randint(0, 2 ** 32 - 1)
-        ##print('strength ui', float(params.strength']))
 
         plotting = self.params.plotting
-        ##print('plotting', plotting)
 
         if plotting:
 
@@ -177,18 +161,12 @@ class Deforum_UI(QObject):
             plotY = plotx_list_string.split(', ')
             plotX = ploty_list_string.split(', ')
             self.onePercent = 100 / (len(plotX) * len(plotY) * self.params.n_batch * self.params.n_samples * self.params.steps)
-            # #print(self.onePercent)
 
         else:
             plotX = [1]
             plotY = [1]
             self.onePercent = 100 / (self.params.n_batch * self.params.n_samples * self.params.steps)
-        ##print(plotY, plotX)
         all_images = []
-        # #print(f"Grid Dimensions: {len(plotX)}, {len(plotY)}")
-        # #print(self.onePercent)
-        ##print(params)
-        #self.parent.w = self.params.W
         for i in plotY:
             for j in plotX:
                 if plotting:
@@ -198,7 +176,6 @@ class Deforum_UI(QObject):
                     if attrib1 == 'lr': gs.lr = float(i)
                     if attrib2 == 'T': gs.T = int(j)
                     if attrib2 == 'lr': gs.lr = float(j)
-                #self.parent.canvas.canvas.select_mode()
                 self.deforum_six.run_deforum_six(W=int(self.params.W),
                                                  H=int(self.params.H),
                                                  seed=int(self.params.seed) if self.params.seed != '' else seed,

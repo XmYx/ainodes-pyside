@@ -825,7 +825,7 @@ class Canvas(QGraphicsView):
             key = 0
         return key
     def redraw(self):
-        #self.pixmap.fill(Qt.transparent)
+        self.pixmap.fill(__backgroudColor__)
         self.draw_rects()
         self.painter.begin(self.pixmap)
         self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)

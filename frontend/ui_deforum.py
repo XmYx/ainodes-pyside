@@ -140,9 +140,10 @@ class Deforum_UI(QObject):
             #self.parent.cheight = self.params.H
             if self.params.max_frames > 1:
                 self.parent.image = None
-                self.parent.params.advanced = False
-                self.parent.image_preview_func()
-                self.parent.canvas.canvas.select_mode()
+                #self.parent.params.advanced = False
+                #self.parent.image_preview_func()
+                self.parent.add_next_rect()
+                #self.parent.canvas.canvas.select_mode()
                 self.parent.canvas.update()
             self.parent.params.advanced = True
         else:

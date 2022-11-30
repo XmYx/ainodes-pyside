@@ -616,61 +616,26 @@ class MainWindow(QMainWindow):
             if self.canvas.canvas.rectlist != []:
                 for items in self.canvas.canvas.rectlist:
                     if items.id == self.canvas.canvas.render_item:
-                        if items.id == self.canvas.canvas.render_item:
-                            if items.images is not None:
-                                templist = items.images
-                            else:
-                                templist = []
-                            items.PILImage = img
-                            qimage = ImageQt(img.convert("RGBA"))
-                            templist.append(qimage)
-                            items.images = templist
-                            if items.index == None:
-                                items.index = 0
-                            else:
-                                items.index = items.index + 1
-                            items.image = items.images[items.index]
-                            items.timestring = time.time()
-                            self.canvas.canvas.newimage = True
-                            #self.canvas.canvas.update()
-                            self.canvas.canvas.redraw()
+                        #if items.id == self.canvas.canvas.render_item:
+                        if items.images is not None:
+                            templist = items.images
+                        else:
+                            templist = []
+                        items.PILImage = img
+                        qimage = ImageQt(img.convert("RGBA"))
+                        templist.append(qimage)
+                        items.images = templist
+                        if items.index == None:
+                            items.index = 0
+                        else:
+                            items.index = items.index + 1
+                        items.image = items.images[items.index]
+                        items.timestring = time.time()
+                        self.canvas.canvas.newimage = True
+                        #self.canvas.canvas.update()
+                        self.canvas.canvas.redraw()
         elif self.params.advanced == False:
-            w = self.unicontrol.w.W.value()
-            h = self.unicontrol.w.H.value()
-            resize = False
-            if self.canvas.canvas.rectlist == []:
-                self.canvas.canvas.w = w
-                self.canvas.canvas.h = h
-                self.canvas.canvas.addrect_atpos(x=0, y=0)
-                self.cheight = self.unicontrol.w.H.value()
-                self.w = self.unicontrol.w.W.value()
-                self.canvas.canvas.render_item = self.canvas.canvas.selected_item
-
-                #print(f"this should only haappen once {self.cheight}")
-                #self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
-            elif self.canvas.canvas.rectlist != []:
-                for i in self.canvas.canvas.rectlist:
-                    if i.id == self.canvas.canvas.render_item:
-                        if i.id == self.canvas.canvas.render_item:
-                            x = i.x + w + 20
-                            y = i.y
-                            if x > 3000:
-                                x = 0
-                                y = i.y + h + 25
-                                if self.stopwidth == False:
-                                    self.stopwidth = True
-                            if self.stopwidth == False:
-                                self.w = x + w
-                                resize = True
-                            if self.cheight < y + i.h:
-                                self.cheight = y + i.h
-                                resize = True
-                            #self.canvas.canvas.selected_item = None
-                self.canvas.canvas.addrect_atpos(x=x, y=y, params=self.sessionparams.params)
-                self.canvas.canvas.render_item = self.canvas.canvas.selected_item
-            if resize == True:
-                #pass
-                self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
+            self.add_next_rect()
             if img is not None:
                 image = img
                 for items in self.canvas.canvas.rectlist:
@@ -690,14 +655,51 @@ class MainWindow(QMainWindow):
                         items.image = items.images[items.index]
                         items.timestring = time.time()
         #self.canvas.canvas.newimage = True
-        self.canvas.canvas.render_item = self.canvas.canvas.selected_item
+        #self.canvas.canvas.render_item = self.canvas.canvas.selected_item
         #if img is not None:
         self.canvas.canvas.newimage = True
         self.canvas.canvas.redraw()
         self.canvas.canvas.update()
         #self.canvas.canvas.redraw()
-        self.canvas.canvas.resize_canvas(w=self.canvas.W.value(), h=self.canvas.H.value())
+        #self.canvas.canvas.resize_canvas(w=self.canvas.W.value(), h=self.canvas.H.value())
         self.callbackbusy = False
+    def add_next_rect(self):
+        w = self.unicontrol.w.W.value()
+        h = self.unicontrol.w.H.value()
+        resize = False
+        if self.canvas.canvas.rectlist == []:
+            self.canvas.canvas.w = w
+            self.canvas.canvas.h = h
+            self.canvas.canvas.addrect_atpos(x=0, y=0)
+            self.cheight = self.unicontrol.w.H.value()
+            self.w = self.unicontrol.w.W.value()
+            self.canvas.canvas.render_item = self.canvas.canvas.selected_item
+
+            # print(f"this should only haappen once {self.cheight}")
+            # self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
+        elif self.canvas.canvas.rectlist != []:
+            for i in self.canvas.canvas.rectlist:
+                if i.id == self.canvas.canvas.render_item:
+                    if i.id == self.canvas.canvas.render_item:
+                        x = i.x + w + 20
+                        y = i.y
+                        if x > 3000:
+                            x = 0
+                            y = i.y + h + 25
+                            if self.stopwidth == False:
+                                self.stopwidth = True
+                        if self.stopwidth == False:
+                            self.w = x + w
+                            resize = True
+                        if self.cheight < y + i.h:
+                            self.cheight = y + i.h
+                            resize = True
+                        # self.canvas.canvas.selected_item = None
+            self.canvas.canvas.addrect_atpos(x=x, y=y, params=self.sessionparams.params)
+            self.canvas.canvas.render_item = self.canvas.canvas.selected_item
+        if resize == True:
+            # pass
+            self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
 
     def tensor_preview_signal(self, data, data2):
         self.data = data

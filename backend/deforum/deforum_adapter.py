@@ -130,7 +130,7 @@ class DeforumSix:
     def get_autoencoder_version(self):
         return "sd-v1" #TODO this will be different for different models
 
-    def load_model_from_config(self, config=None, ckpt=None, verbose=True):
+    def load_model_from_config(self, config=None, ckpt=None, verbose=False):
 
         if ckpt is None:
             ckpt = gs.system.sdPath

@@ -51,7 +51,7 @@
        <item>
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="outputPath">
           <attribute name="title">
@@ -466,72 +466,6 @@
               </layout>
              </widget>
             </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="modelChooser">
-          <attribute name="title">
-           <string>Model Chooser</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_11">
-           <property name="leftMargin">
-            <number>5</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>5</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="label_24">
-             <property name="text">
-              <string>Active Model</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="activeModel"/>
-           </item>
-           <item>
-            <widget class="QPushButton" name="reloadModelList">
-             <property name="text">
-              <string>Reload Model List</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_25">
-             <property name="text">
-              <string>Choose Model</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="modelList"/>
-           </item>
-           <item>
-            <widget class="QPushButton" name="activateModel">
-             <property name="text">
-              <string>Use Model</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_5">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
            </item>
           </layout>
          </widget>

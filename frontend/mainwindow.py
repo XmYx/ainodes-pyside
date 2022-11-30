@@ -673,6 +673,8 @@ class MainWindow(QMainWindow):
         #self.canvas.canvas.redraw()
         #self.canvas.canvas.resize_canvas(w=self.canvas.W.value(), h=self.canvas.H.value())
         self.callbackbusy = False
+        if self.params.advanced == False and self.params.max_frames > 1:
+            self.params.advanced = True
     def add_next_rect(self):
         w = self.unicontrol.w.W.value()
         h = self.unicontrol.w.H.value()

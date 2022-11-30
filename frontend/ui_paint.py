@@ -54,13 +54,13 @@ class Rectangle(object):
         self.PILImage = None
         self.running = False
         self.img_path = img_path
-        self.signals = RectangleCallbacks()
+        #self.signals = RectangleCallbacks()
         self.timer = QtCore.QTimer()
     def play(self):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.iterate)
         self.timer.start(80)
-        self.signals.start_main.emit()
+        #self.signals.start_main.emit()
         self.running = True
 
 
@@ -123,8 +123,15 @@ class Canvas(QGraphicsView):
         if self.running == False:
             self.maintimer.start(80)
             self.running = True
+        elif self.running == True:
+            for i in self.rectlist:
+                i.play()
+
     def stop_main_clock(self):
         if self.running == True:
+            for i in self.rectlist:
+                i.stop()
+            self.redraw()
             self.maintimer.stop()
             self.running = False
     def set_new(self):

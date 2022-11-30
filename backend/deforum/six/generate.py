@@ -483,11 +483,13 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
                     
                     if return_latent:
                         results.append(samples.clone())
-                    x_samples = [
-                        decode_first_stage(gs.models["sd"], samples[i:i + 1].to('cuda'))[0].cpu() for i
-                        in range(samples.size(0))]
-                    x_samples = torch.stack(x_samples).float()
-                    #x_samples = gs.models["sd"].decode_first_stage(samples)
+                    if hires == False:
+                        x_samples = [
+                            decode_first_stage(gs.models["sd"], samples[i:i + 1].to('cuda'))[0].cpu() for i
+                            in range(samples.size(0))]
+                        x_samples = torch.stack(x_samples).float()
+                    else:
+                        x_samples = gs.models["sd"].decode_first_stage(samples)
 
                     if args.use_mask and args.overlay_mask:
                         # Overlay the masked image after the image is generated

@@ -106,7 +106,7 @@ class Canvas(QGraphicsView):
         self.last_pos = None
         self.signals = Callbacks()
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
-        self.canvas.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.reset()
         self.soft_reset()
         self.sub_hover_item = None

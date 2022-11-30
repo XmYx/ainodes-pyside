@@ -122,7 +122,7 @@
     "strength_0_no_init" : false,
     "device" : "cuda",
     "animation_mode" : "None",
-    "prompts" : "Portrait of Elvis Presley, detailed, concept art, Trending on Artstation",
+    "prompts" : "Portrait of Grace Kelly, detailed, concept art, Trending on Artstation",
     "max_frames" : 1,
     "outdir" : "output/",
     "mean_scale" : 0,

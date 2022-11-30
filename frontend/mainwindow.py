@@ -132,6 +132,7 @@ class MainWindow(QMainWindow):
         self.hide_default()
         self.mode = 'txt2img'
         self.stopwidth = False
+        self.callbackbusy = False
         self.init_plugin_loader()
         self.connections()
         self.list_files()
@@ -595,6 +596,8 @@ class MainWindow(QMainWindow):
 
 
     def image_preview_signal(self, image, *args, **kwargs):
+        while self.callbackbusy == True:
+            time.sleep(0.3)
         self.image = image
         #self.deforum_ui.signals.add_image_to_thumbnail_signal.emit(image)
         self.deforum_ui.signals.txt2img_image_cb.emit()
@@ -603,6 +606,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def image_preview_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
+        self.callbackbusy = True
         x = 0
         y = 0
         img = self.image
@@ -693,6 +697,7 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.update()
         #self.canvas.canvas.redraw()
         self.canvas.canvas.resize_canvas(w=self.canvas.W.value(), h=self.canvas.H.value())
+        self.callbackbusy = False
 
     def tensor_preview_signal(self, data, data2):
         self.data = data

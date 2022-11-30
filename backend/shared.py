@@ -31,12 +31,19 @@ def load_last_prompt():
 
 def model_killer(keep=''):
     temp = None
+    dellist = []
     if keep in gs.models:
         for i in gs.models:
             print(i)
             if i != keep:
-                i.to('cpu')
-                del i
+                dellist.append(i)
+                #gs.models[i].to('cpu')
+                #del gs.models[i]
+        for i in dellist:
+            try:
+                del gs.models[i]
+            except:
+                pass
     else:
         gs.models = {}
     torch_gc()

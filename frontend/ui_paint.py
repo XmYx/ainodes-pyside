@@ -314,6 +314,7 @@ class Canvas(QGraphicsView):
         self.hover_item = None
         self.sub_hover_item = None
         matchFound = False
+
         for i in self.rectlist:
             ###print(i.id)
             if i.x <= self.scene.scenePos.x() <= i.x + i.w and i.y <= self.scene.scenePos.y() <= i.y + i.h:
@@ -324,6 +325,7 @@ class Canvas(QGraphicsView):
                     self.sub_hover_item = i.id
                 if self.sub_hover_item is None:
                     self.hover_item = i.id
+                    self.index = self.rectlist.index(i)
                 matchFound = True
             else:
                 i.color = __idleColor__
@@ -584,6 +586,7 @@ class Canvas(QGraphicsView):
                         i.index = 0
                     uid = i.id
                     self.selected_item = i.id
+                    self.index = self.rectlist.index(i)
                 matchfound = True
 
         if matchfound == False:
@@ -592,6 +595,7 @@ class Canvas(QGraphicsView):
             if self.rectlist == []:
                 self.txt2img = True
             self.rectlist.append(rect[uid])
+            self.index = len(self.rectlist) - 1
             if params == {}:
                 pass
                 #self.signals.update_params.emit(uid)
@@ -835,9 +839,14 @@ class Canvas(QGraphicsView):
             #self.rectlist.sort(reverse=False, key=self.sortRects)
             for i in self.rectlist:
                 if i.image is not None and i.active == True:
-                    rect = QRect(i.x, i.y, i.w, i.h)
+                    #rect = QRect(i.x, i.y, i.w, i.h)
                     pic = i.image.copy(0, 0, i.image.width(), i.image.height())
                     pixmap = QPixmap.fromImage(pic)
+                    self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
+                    if i.running is True:
+                        pixmap = QPixmap('frontend/icons/square.svg')
+                    elif i.running is False:
+                        pixmap = QPixmap('frontend/icons/play.svg')
                     self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
         self.painter.end()
         #self.bgitem.setX(0)
@@ -967,9 +976,10 @@ class Canvas(QGraphicsView):
         if self.hover_item == self.selected_item:
             #if self.sub_hover_item is not None:
 
-            for i in self.rectlist:
-                if i.id == self.selected_item:
-                    i.stop()
+            #for i in self.rectlist:
+            #    if i.id == self.selected_item:
+            #        i.stop()
+            self.rectlist[self.index].stop()
             self.selected_item = None
             #self.drawRect()
             return
@@ -977,9 +987,10 @@ class Canvas(QGraphicsView):
             self.selected_item = self.hover_item
             self.signals.update_selected.emit()
             #self.drawRect()
-            for i in self.rectlist:
-                if i.id == self.selected_item:
-                    i.play()
+            #for i in self.rectlist:
+            #    if i.id == self.selected_item:
+            #        i.play()
+            self.rectlist[self.index].play()
         else:
             self.selected_item = None
 

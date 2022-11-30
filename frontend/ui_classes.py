@@ -134,6 +134,7 @@ class Hypernetwork(QObject):
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
+
 class ThumbsUI(QObject):
 
     def __init__(self, *args, **kwargs):

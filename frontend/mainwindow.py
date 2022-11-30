@@ -28,6 +28,7 @@ import backend.settings as settings
 from backend.singleton import singleton
 from frontend.ui_krea import Krea
 from frontend.ui_lexica import LexicArt
+from frontend.ui_model_download import ModelDownload, ModelDownload_UI
 
 from backend.devices import choose_torch_device
 from frontend.ui_timeline import Timeline, KeyFrame
@@ -104,6 +105,8 @@ class MainWindow(QMainWindow):
         self.path_setup = PathSetup()
         self.image_lab = ImageLab()
         self.image_lab_ui = self.image_lab.imageLab
+        self.model_download = ModelDownload(self)
+        self.model_download_ui = self.model_download.model_download
         #self.model_chooser = ModelChooser_UI(self)
         self.unicontrol.w.dockWidget.setWindowTitle("Parameters")
         self.path_setup.w.dockWidget.setWindowTitle("Model / Paths")
@@ -111,9 +114,15 @@ class MainWindow(QMainWindow):
         self.lexicart.w.dockWidget.setWindowTitle("Lexica Art")
         self.krea.w.dockWidget.setWindowTitle("Krea")
         self.prompt_fetcher.w.dockWidget.setWindowTitle("Prompt Fetcher")
+        self.model_download_ui.w.dockWidget.setWindowTitle("Model Download")
+
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.model_download_ui.w.dockWidget)
+        self.model_download_ui.w.dockWidget.setMaximumHeight(self.height())
 
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.image_lab_ui.w.dockWidget)
         self.image_lab_ui.w.dockWidget.setMaximumHeight(self.height())
+        self.tabifyDockWidget(self.model_download_ui.w.dockWidget, self.image_lab_ui.w.dockWidget)
+
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.path_setup.w.dockWidget)
         self.path_setup.w.dockWidget.setMaximumHeight(self.height())
         self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.path_setup.w.dockWidget)

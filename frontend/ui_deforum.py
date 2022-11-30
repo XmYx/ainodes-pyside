@@ -4,7 +4,8 @@ import random
 
 import numpy as np
 from PIL import Image, ImageFont, ImageDraw
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, Signal, QPoint
+from PySide6.QtGui import QMouseEvent
 
 from backend.deforum.deforum_adapter import DeforumSix
 from backend.hypernetworks.modules.images import GridAnnotation
@@ -139,13 +140,19 @@ class Deforum_UI(QObject):
             #self.parent.w = self.params.W
             #self.parent.cheight = self.params.H
             if self.params.max_frames > 1:
-                self.parent.image = None
+                #self.parent.image = None
                 #self.parent.params.advanced = False
                 #self.parent.image_preview_func()
                 self.parent.add_next_rect()
                 #self.parent.canvas.canvas.select_mode()
-                self.parent.canvas.update()
+                #self.parent.canvas.canvas.redraw()
+                #self.parent.canvas.canvas.mouseMoveEvent(QMouseEvent(QPoint(0, 0)))
+                #self.parent.canvas.update()
+                #self.parent.canvas.canvas.updateView()
+                self.parent.canvas.canvas.newimage = True
+
             self.parent.params.advanced = True
+            #self.parent.image_preview_func()
         else:
             self.parent.params.advanced = False
 
@@ -192,7 +199,7 @@ class Deforum_UI(QObject):
                     if attrib2 == 'T': gs.T = int(j)
                     if attrib2 == 'lr': gs.lr = float(j)
                 #self.parent.canvas.canvas.select_mode()
-                self.deforum_six.run_deforum_six(W=int(self.params.W),
+                """self.deforum_six.run_deforum_six(W=int(self.params.W),
                                                  H=int(self.params.H),
                                                  seed=int(self.params.seed) if self.params.seed != '' else seed,
                                                  sampler=str(self.params.sampler),
@@ -251,7 +258,7 @@ class Deforum_UI(QObject):
                                                  prompt_weighting=self.params.prompt_weighting,
                                                  normalize_prompt_weights=self.params.normalize_prompt_weights,
                                                  lowmem=self.params.lowmem,
-                                                 )
+                                                 )"""
                 if plotting:
                     all_images.append(T.functional.pil_to_tensor(self.parent.image))
         if plotting:

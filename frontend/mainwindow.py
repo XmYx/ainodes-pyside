@@ -8,7 +8,7 @@ import pandas as pd
 import torch
 from PIL import Image, ImageDraw
 from PIL.ImageQt import ImageQt
-from PySide6.QtCore import QFile, QIODevice, QEasingCurve, Slot, QRect, QThreadPool, QDir, Signal, QObject
+from PySide6.QtCore import QFile, QIODevice, QEasingCurve, Slot, QRect, QThreadPool, QDir, Signal, QObject, QPoint
 from PySide6.QtWidgets import QMainWindow, QToolBar, QPushButton, QGraphicsColorizeEffect, QListWidgetItem, QFileDialog, \
     QLabel, QSlider, QFrame, QDockWidget, QWidget
 from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt
@@ -614,26 +614,27 @@ class MainWindow(QMainWindow):
         print(self.canvas.canvas.rectlist)
         if self.params.advanced == True:
             if self.canvas.canvas.rectlist != []:
-                for items in self.canvas.canvas.rectlist:
-                    if items.id == self.canvas.canvas.render_item:
-                        #if items.id == self.canvas.canvas.render_item:
-                        if items.images is not None:
-                            templist = items.images
-                        else:
-                            templist = []
-                        items.PILImage = img
-                        qimage = ImageQt(img.convert("RGBA"))
-                        templist.append(qimage)
-                        items.images = templist
-                        if items.index == None:
-                            items.index = 0
-                        else:
-                            items.index = items.index + 1
-                        items.image = items.images[items.index]
-                        items.timestring = time.time()
-                        self.canvas.canvas.newimage = True
-                        #self.canvas.canvas.update()
-                        self.canvas.canvas.redraw()
+                if img is not None:
+                    for items in self.canvas.canvas.rectlist:
+                        if items.id == self.canvas.canvas.render_item:
+                            #if items.id == self.canvas.canvas.render_item:
+                            if items.images is not None:
+                                templist = items.images
+                            else:
+                                templist = []
+                            items.PILImage = img
+                            qimage = ImageQt(img.convert("RGBA"))
+                            templist.append(qimage)
+                            items.images = templist
+                            if items.index == None:
+                                items.index = 0
+                            else:
+                                items.index = items.index + 1
+                            items.image = items.images[items.index]
+                            items.timestring = time.time()
+                self.canvas.canvas.newimage = True
+                self.canvas.canvas.update()
+                self.canvas.canvas.redraw()
         elif self.params.advanced == False:
             self.add_next_rect()
             if img is not None:
@@ -674,7 +675,6 @@ class MainWindow(QMainWindow):
             self.cheight = self.unicontrol.w.H.value()
             self.w = self.unicontrol.w.W.value()
             self.canvas.canvas.render_item = self.canvas.canvas.selected_item
-
             # print(f"this should only haappen once {self.cheight}")
             # self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
         elif self.canvas.canvas.rectlist != []:
@@ -697,9 +697,12 @@ class MainWindow(QMainWindow):
                         # self.canvas.canvas.selected_item = None
             self.canvas.canvas.addrect_atpos(x=x, y=y, params=self.sessionparams.params)
             self.canvas.canvas.render_item = self.canvas.canvas.selected_item
-        if resize == True:
+        #if resize == True:
             # pass
-            self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
+        print(self.w, self.cheight)
+        self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
+        #self.canvas.canvas.update()
+        #self.canvas.canvas.redraw()
 
     def tensor_preview_signal(self, data, data2):
         self.data = data

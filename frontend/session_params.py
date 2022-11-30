@@ -196,7 +196,7 @@ class SessionParams():
 
 
         advanced = False if animation_mode == 'None' else True
-        max_frame = self.parent.unicontrol.w.max_frames_slider.value() if animation_mode != 'None' else 1
+        max_frame = self.parent.unicontrol.w.max_frames.value() if animation_mode != 'None' else 1
         use_inpaint = self.parent.unicontrol.w.use_inpaint.isChecked()
         with_inpaint = use_inpaint
         lowmem = self.parent.unicontrol.w.lowmem.isChecked()

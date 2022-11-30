@@ -101,10 +101,12 @@ class Canvas(QGraphicsView):
 
     def __init__(self, parent=None):
         QGraphicsView.__init__(self, parent)
+        self.setUpdatesEnabled(True)
         self.parent = parent
         self.last_pos = None
         self.signals = Callbacks()
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.canvas.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.reset()
         self.soft_reset()
         self.sub_hover_item = None
@@ -155,7 +157,7 @@ class Canvas(QGraphicsView):
     def change_resolution(self):
         w = self.parent.W.value()
         h = self.parent.H.value()
-        self.resize_canvas(w, h)
+        #self.resize_canvas(w, h)
         #self.pixmap = QPixmap(w, h)
         #self.bgitem.setPixmap(self.pixmap)
         #self.updateScene([self.bgitem])
@@ -595,9 +597,9 @@ class Canvas(QGraphicsView):
                 #self.signals.update_params.emit(uid)
             self.counter += 1
 
-        self.newimage = True
-        self.update()
-        self.redraw()
+        #self.newimage = True
+        #self.update()
+        #self.redraw()
         return uid
 
     def reusable_inpaint(self, id):
@@ -876,11 +878,11 @@ class Canvas(QGraphicsView):
 
 
     def paintEvent(self, e):
-
+        super(Canvas, self).paintEvent(e)
         if self.newimage == True:
 
             self.redraw()
-        super(Canvas, self).paintEvent(e)
+
 
     def generic_mouseMoveEvent(self, e):
         #self.redraw()
@@ -903,8 +905,8 @@ class Canvas(QGraphicsView):
             pass
         #self.scene.addItem(self.rectItem)
         ###print("Button pressed")
-        self.redraw()
-        self.update()
+        #self.redraw()
+        #self.update()
     def drag_mode(self):
         self.mode = "drag"
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
@@ -1161,9 +1163,9 @@ class PaintUI(QDockWidget):
         self.verticalLayout_2.addWidget(self.widget_2)
 
         self.setWidget(self.dockWidgetContents)
-        self.canvas.setMouseTracking(True)  # Mouse events
-        self.canvas.hoverCheck()
-        self.canvas.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        #self.canvas.setMouseTracking(True)  # Mouse events
+        #self.canvas.hoverCheck()
+        #self.canvas.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
 
         self.H.valueChanged.connect(self.update_spinners)
         self.W.valueChanged.connect(self.update_spinners)

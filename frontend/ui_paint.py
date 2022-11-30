@@ -157,7 +157,7 @@ class Canvas(QGraphicsView):
     def change_resolution(self):
         w = self.parent.W.value()
         h = self.parent.H.value()
-        #self.resize_canvas(w, h)
+        self.resize_canvas(w, h)
         #self.pixmap = QPixmap(w, h)
         #self.bgitem.setPixmap(self.pixmap)
         #self.updateScene([self.bgitem])

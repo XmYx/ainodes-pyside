@@ -222,6 +222,7 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
         args.oldW = args.W
         args.H = new_H
         args.W = new_W
+        args.n_samples = 1
     if gs.model_version == '1.5':
         from ldm.models.diffusion.plms import PLMSSampler
         from ldm.models.diffusion.ddim import DDIMSampler

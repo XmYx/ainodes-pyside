@@ -483,8 +483,11 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
                     
                     if return_latent:
                         results.append(samples.clone())
-
-                    x_samples = gs.models["sd"].decode_first_stage(samples)
+                    x_samples = [
+                        decode_first_stage(gs.models["sd"], samples[i:i + 1].to('cuda'))[0].cpu() for i
+                        in range(samples.size(0))]
+                    x_samples = torch.stack(x_samples).float()
+                    #x_samples = gs.models["sd"].decode_first_stage(samples)
 
                     if args.use_mask and args.overlay_mask:
                         # Overlay the masked image after the image is generated
@@ -888,7 +891,11 @@ def generate_lowmem(args, root, frame = 0, return_latent=False, return_sample=Fa
     #del sampler
     del image
     return results"""
+def decode_first_stage(model, x):
+    with autocast('cuda'):
+        x = model.decode_first_stage(x)
 
+    return x
 
 def generate_lm(
         prompt,

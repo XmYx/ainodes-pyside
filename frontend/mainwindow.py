@@ -605,6 +605,7 @@ class MainWindow(QMainWindow):
     def image_preview_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
         x = 0
         y = 0
+        img = self.image
         print(self.params.advanced)
         print(self.canvas.canvas.rectlist)
         if self.params.advanced == True:
@@ -616,8 +617,8 @@ class MainWindow(QMainWindow):
                                 templist = items.images
                             else:
                                 templist = []
-                            items.PILImage = self.image
-                            qimage = ImageQt(self.image.convert("RGBA"))
+                            items.PILImage = img
+                            qimage = ImageQt(img.convert("RGBA"))
                             templist.append(qimage)
                             items.images = templist
                             if items.index == None:
@@ -666,8 +667,8 @@ class MainWindow(QMainWindow):
             if resize == True:
                 #pass
                 self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
-            if self.image is not None:
-                image = self.image
+            if img is not None:
+                image = img
                 for items in self.canvas.canvas.rectlist:
                     if items.id == self.canvas.canvas.render_item:
                         if items.images is not None:
@@ -686,7 +687,7 @@ class MainWindow(QMainWindow):
                         items.timestring = time.time()
         #self.canvas.canvas.newimage = True
         self.canvas.canvas.render_item = self.canvas.canvas.selected_item
-        #if self.image is not None:
+        #if img is not None:
         self.canvas.canvas.newimage = True
         self.canvas.canvas.redraw()
         self.canvas.canvas.update()

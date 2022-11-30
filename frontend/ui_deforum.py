@@ -199,7 +199,7 @@ class Deforum_UI(QObject):
                     if attrib2 == 'T': gs.T = int(j)
                     if attrib2 == 'lr': gs.lr = float(j)
                 #self.parent.canvas.canvas.select_mode()
-                """self.deforum_six.run_deforum_six(W=int(self.params.W),
+                self.deforum_six.run_deforum_six(W=int(self.params.W),
                                                  H=int(self.params.H),
                                                  seed=int(self.params.seed) if self.params.seed != '' else seed,
                                                  sampler=str(self.params.sampler),
@@ -258,7 +258,7 @@ class Deforum_UI(QObject):
                                                  prompt_weighting=self.params.prompt_weighting,
                                                  normalize_prompt_weights=self.params.normalize_prompt_weights,
                                                  lowmem=self.params.lowmem,
-                                                 )"""
+                                                 )
                 if plotting:
                     all_images.append(T.functional.pil_to_tensor(self.parent.image))
         if plotting:

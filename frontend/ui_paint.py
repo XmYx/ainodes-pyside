@@ -130,7 +130,7 @@ class Canvas(QGraphicsView):
     def set_new(self):
         ##print("triggered")
         self.newimage = True
-        self.update()
+        #self.update()
 
     def play_selected(self):
         if self.selected_item is not None:

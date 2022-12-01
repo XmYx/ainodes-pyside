@@ -154,6 +154,7 @@ class DeforumSix:
         config = config_yaml_name
 
         if "sd" not in gs.models:
+            self.prev_seamless = False
             if verbose:
                 print(f"Loading model from {ckpt} with config {config}")
             config = OmegaConf.load(config)
@@ -520,6 +521,8 @@ class DeforumSix:
                 args.__dict__[key] = self.parent.params.__dict__[key]
             except:
                 pass
+        print(args.make_grid)
+        print(self.parent.params.make_grid)
         if args.seamless == False and self.prev_seamless == True:
             self.prev_seamless = False
             model_killer()
@@ -558,7 +561,7 @@ class DeforumSix:
 
 
 
-        if args.seamless == True:
+        if args.seamless == True and self.prev_seamless == False:
             from backend.deforum.six.seamless import configure_model_padding
             print("Running Seamless sampling...")
             seamless = True

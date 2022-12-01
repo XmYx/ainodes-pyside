@@ -173,7 +173,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                         args.seed = next_seed(args)
 
                 #print(len(all_images))
-                if args.make_grid:
+                if args.make_grid == True:
                     grid = make_grid(all_images, nrow=int(len(all_images)/args.grid_rows))
                     grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
                     filename = f"{args.timestring}_{iprompt:05d}_grid_{args.seed}.png"

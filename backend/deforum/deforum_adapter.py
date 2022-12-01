@@ -29,6 +29,8 @@ import backend.hypernetworks.modules.sd_hijack
 from backend.deforum.six.hijack import hijack_deforum
 from backend.singleton import singleton
 from backend.shared import model_killer
+from backend.deforum.six.seamless import configure_model_padding
+
 gs = singleton
 
 vae_ignore_keys = {"model_ema.decay", "model_ema.num_updates"}
@@ -523,9 +525,9 @@ class DeforumSix:
                 pass
         print(args.make_grid)
         print(self.parent.params.make_grid)
-        if args.seamless == False and self.prev_seamless == True:
-            self.prev_seamless = False
-            model_killer()
+        #if args.seamless == False and self.prev_seamless == True:
+        #    self.prev_seamless = False
+        #    model_killer()
         if lowmem == True:
             print(f'-                 Low Memory Mode                             ')
             if "sd" in gs.models:
@@ -561,13 +563,13 @@ class DeforumSix:
 
 
 
-        if args.seamless == True and self.prev_seamless == False:
-            from backend.deforum.six.seamless import configure_model_padding
-            print("Running Seamless sampling...")
-            seamless = True
-            seamless_axes = args.axis
-            configure_model_padding(gs.models["sd"], seamless, seamless_axes)
-            self.prev_seamless = True
+        #if args.seamless == True and self.prev_seamless == False:
+
+        #print("Running Seamless sampling...")
+        seamless = args.seamless
+        seamless_axes = args.axis
+        configure_model_padding(gs.models["sd"], seamless, seamless_axes)
+        #self.prev_seamless = True
         """
         for key, value in root.__dict__.items():
             try:

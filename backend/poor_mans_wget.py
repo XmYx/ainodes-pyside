@@ -17,3 +17,26 @@ def wget(url, filename):
     # write to model path
     with open(filename, 'wb') as model_file:
         model_file.write(ckpt_request.content)
+
+def wget_progress(url, filename, chunk_size=8192, callback=None):
+
+    length = requests.get(url, stream=True).headers['Content-length']
+    one_percent = int(length) / 100
+    next_percent = 1
+
+
+    with requests.get(url, stream=True) as r:
+
+        r.raise_for_status()
+        downloaded_bytes = 0
+        callback(next_percent)
+        with open(filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                # If you have chunk encoded response uncomment if
+                # and set chunk_size parameter to None.
+                #if chunk:
+                f.write(chunk)
+                downloaded_bytes += chunk_size
+                if downloaded_bytes > next_percent * one_percent:
+                    next_percent += 1
+                    callback(next_percent)

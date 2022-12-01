@@ -390,7 +390,7 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
 
     clamp_fn = threshold_by(threshold=args.clamp_grad_threshold, threshold_type=args.grad_threshold_type, clamp_schedule=args.clamp_schedule)
 
-    args.grad_inject_timing = int(args.grad_inject_timing)
+    args.grad_inject_timing = int(args.grad_inject_timing) if args.grad_inject_timing != 'None' else None
     grad_inject_timing_fn = make_inject_timing_fn(args.grad_inject_timing, model_wrap, args.steps)
 
     cfg_model = CFGDenoiserWithGrad(model_wrap, 

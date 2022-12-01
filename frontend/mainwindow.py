@@ -237,6 +237,8 @@ class MainWindow(QMainWindow):
         self.prompt_fetcher_ui.signals.get_krea_prompts.connect(self.get_krea_prompts_thread)
         self.prompt_fetcher_ui.signals.got_krea_prompts.connect(self.prompt_fetcher_ui.set_krea_prompts)
 
+        self.model_download.signals.startDownload.connect(self.download_model_thread)
+
     def taskswitcher(self):
         gs.stop_all = False
         save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(), self.widgets[self.current_widget].w.prompts.toPlainText())
@@ -333,6 +335,14 @@ class MainWindow(QMainWindow):
     @Slot()
     def get_lexica_prompts_thread(self):
         worker = Worker(self.prompt_fetcher_ui.get_lexica_prompts)
+        self.threadpool.start(worker)
+
+    def model_download_progress_callback(self, percent):
+        self.model_download_ui.w.dl_progress.setValue(percent)
+
+    @Slot()
+    def download_model_thread(self):
+        worker = Worker(self.model_download.download_model)
         self.threadpool.start(worker)
 
     @Slot()
@@ -526,6 +536,7 @@ class MainWindow(QMainWindow):
         self.lexicart.w.dockWidget.setVisible(False)
         self.krea.w.dockWidget.setVisible(False)
         self.prompt_fetcher.w.dockWidget.setVisible(False)
+        self.model_download_ui.w.dockWidget.setVisible(False)
 
         if self.widgets[self.current_widget].samHidden == False:
             self.widgets[self.current_widget].hideSampler_anim()
@@ -574,6 +585,7 @@ class MainWindow(QMainWindow):
             self.prompt_fetcher.w.dockWidget.setVisible(True)
             self.thumbs.w.dockWidget.setVisible(True)
             self.animKeyEditor.w.dockWidget.setVisible(True)
+            self.model_download_ui.w.dockWidget.setVisible(True)
 
             self.default_hidden = False
         else:
@@ -677,6 +689,7 @@ class MainWindow(QMainWindow):
         self.callbackbusy = False
         if self.params.advanced == False and self.params.max_frames > 1:
             self.params.advanced = True
+
     def add_next_rect(self):
         w = self.widgets[self.current_widget].w.W.value()
         h = self.widgets[self.current_widget].w.H.value()

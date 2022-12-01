@@ -36,6 +36,8 @@ from backend.singleton import singleton
 from backend.resizeRight import resizeright, interp_methods
 import k_diffusion
 
+from ...devices import choose_torch_device
+
 gs = singleton
 def randn(seed, shape):
     # Pytorch currently doesn't handle setting randomness correctly when the metal backend is used.
@@ -46,7 +48,7 @@ def randn(seed, shape):
     #    return noise
 
     torch.manual_seed(seed)
-    return torch.randn(shape, device='cuda')
+    return torch.randn(shape, device=choose_torch_device())
 def slerp(val, low, high):
     low_norm = low/torch.norm(low, dim=1, keepdim=True)
     high_norm = high/torch.norm(high, dim=1, keepdim=True)
@@ -61,7 +63,7 @@ def slerp(val, low, high):
     return res
 def create_random_tensors(shape, seeds, subseeds=None, subseed_strength=0.0, seed_resize_from_h=0, seed_resize_from_w=0, p=None):
     xs = []
-    device = 'cuda'
+    device = choose_torch_device()
     seeds = [seeds]
     # if we have multiple seeds, this means we are working with batch size>1; this then
     # enables the generation of additional tensors with noise that the sampler will use during its processing.
@@ -430,7 +432,7 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
                     if args.init_c != None:
                         c = args.init_c
 
-                    if args.sampler in ["klms","dpm2","dpm2_ancestral","heun","euler","euler_ancestral", "dpm_fast", "dpm_adaptive", "dpmpp_2s_a", "dpmpp_2m"]:
+                    if args.sampler in ["klms","dpm2","dpm2_ancestral","heun","euler","euler_ancestral", "dpm_fast", "dpm_adaptive", "dpmpp_2s_a", "dpmpp_2m", "dpmpp_sde"]:
                         #x = t_enc
 
                         #gs.x = create_random_tensors([4, args.H // 8, args.W // 8], seeds=(args.seed), seed_resize_from_h=args.oldH, seed_resize_from_w=args.oldW )
@@ -446,7 +448,7 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
                             model_wrap=cfg_model, 
                             init_latent=init_latent, 
                             t_enc=t_enc,
-                            device="cuda", 
+                            device=root.device,
                             cb=callback,
                             verbose=False)
                         if hires:
@@ -492,7 +494,7 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
                         results.append(samples.clone())
                     if hires == False:
                         x_samples = [
-                            decode_first_stage(gs.models["sd"], samples[i:i + 1].to('cuda'))[0].cpu() for i
+                            decode_first_stage(gs.models["sd"], samples[i:i + 1].to(root.device))[0].cpu() for i
                             in range(samples.size(0))]
                         x_samples = torch.stack(x_samples).float()
                     else:
@@ -901,7 +903,7 @@ def generate_lowmem(args, root, frame = 0, return_latent=False, return_sample=Fa
     del image
     return results"""
 def decode_first_stage(model, x):
-    with autocast('cuda'):
+    with autocast(choose_torch_device()):
         x = model.decode_first_stage(x)
 
     return x

@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 import os
 import json
@@ -21,6 +22,8 @@ from .colors import maintain_colors
 from .display_emu import display
 
 from backend.singleton import singleton
+from ...devices import choose_torch_device
+
 gs = singleton
 def next_seed(args):
     print(type(args.seed))
@@ -87,6 +90,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
     clear_between_batches = args.n_batch >= 32
     fpW = args.W
     fpH = args.H
+    args.timestring = datetime.now().strftime("%Y%m%d-%H%M%S")
     paths = []
     for iprompt, prompt in enumerate(prompts):
         #prevent empty prompts from gernerating images
@@ -233,7 +237,7 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
             print("Loading depth models to cpu")
             depth_model = DepthModel('cpu')
         else:
-            depth_model = DepthModel('cuda')
+            depth_model = DepthModel(choose_torch_device())
 
         depth_model.load_midas(models_path=gs.system.support_models)
         if anim_args.midas_weight < 1.0:

@@ -355,6 +355,8 @@ def translate_sampler(sampler):
         sampler = "dpmpp_2s_a"
     elif sampler == "DPMPP 2M":
         sampler = "dpmpp_2m"
+    elif sampler == "DPMPP SDE":
+        sampler = "dpmpp_sde"
     else:
         sampler = sampler
     return sampler

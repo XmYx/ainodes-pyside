@@ -65,7 +65,7 @@ class DeforumSix:
         self.args = None
         self.anim_args = None
         # self.parent = parent
-        self.device = 'cuda'
+        self.device = choose_torch_device()
         self.full_precision = False
         self.prev_seamless = False
     def load_low_memory(self):
@@ -200,7 +200,7 @@ class DeforumSix:
                 print(u)
             model.half()
             gs.models["sd"] = model
-            gs.models["sd"].cond_stage_model.device = 'cuda'
+            gs.models["sd"].cond_stage_model.device = self.device
             for m in gs.models["sd"].modules():
                 if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
                     m._orig_padding_mode = m.padding_mode
@@ -221,7 +221,7 @@ class DeforumSix:
             gs.models["sd"].eval()
 
             # todo make this 'cuda' a parameter
-            gs.models["sd"].to("cuda")
+            gs.models["sd"].to(self.device)
             # todo why we do this here?
             from backend.aesthetics import modules
             #print('PersonalizedCLIPEmbedder', backend.aesthetics.modules.PersonalizedCLIPEmbedder)
@@ -510,8 +510,8 @@ class DeforumSix:
         hijack_deforum.deforum_hijack()
 
         [args, anim_args, root] = prepare_args(locals())
-
-
+        root.device = self.device
+        device = self.device
         for key, value in anim_args.__dict__.items():
             try:
                 anim_args.__dict__[key] = self.parent.params.__dict__[key]
@@ -1157,7 +1157,7 @@ def load_vae_dict(model, vae_dict_1=None):
         model.first_stage_model.load_state_dict(vae_dict_1)
     else:
         restore_base_vae()
-    model.first_stage_model.to('cuda')
+    model.first_stage_model.to(choose_torch_device())
 
 def get_base_vae(model):
     if base_vae is not None and checkpoint_info == model.sd_checkpoint_info and model:

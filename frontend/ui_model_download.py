@@ -156,7 +156,7 @@ NSFW: {model_info['item']['nsfw']}
         self.executeRequest(url)
 
     def sanitize(self, name):
-        whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+        whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ-')
         tmp = ''.join(filter(whitelist.__contains__, name))
         return tmp.replace(' ', '_')
 
@@ -166,25 +166,28 @@ NSFW: {model_info['item']['nsfw']}
         config_name = ''
 
         if model_info['item']['type'] == 'Checkpoint':
-            model_name = self.sanitize(model_info['item']['name']) + f"_{model_info['model']['name']}"
+            model_name = self.sanitize(model_info['item']['name'] + f"_{model_info['model']['name']}")
             config_name = model_name + '.yaml'
             model_name += '.ckpt'
             model_outpath = os.path.join(gs.system.customModels, model_name)
         if model_info['item']['type'] == 'TextualInversion':
-            model_name = self.sanitize(model_info['item']['name']) + f"_{model_info['model']['name']}" + '.pt'
+            model_name = self.sanitize(model_info['item']['name'] + f"_{model_info['model']['name']}") + '.pt'
             model_outpath = os.path.join(gs.system.embeddings_dir, model_name)
         if model_info['item']['type'] == 'Hypernetwork':
-            model_name = self.sanitize(model_info['item']['name']) + f"_{model_info['model']['name']}" + '.pt'
+            model_name = self.sanitize(model_info['item']['name'] + f"_{model_info['model']['name']}") + '.pt'
             model_outpath = os.path.join(gs.system.hypernetwork_dir, model_name)
         if model_info['item']['type'] == 'AestheticGradient':
-            model_name = self.sanitize(model_info['item']['name']) + f"_{model_info['model']['name']}" + '.pt'
+            model_name = self.sanitize(model_info['item']['name'] + f"_{model_info['model']['name']}") + '.pt'
             model_outpath = os.path.join(gs.system.aesthetic_gradients, model_name)
 
         print(f"download model from url: {model_info['model']['downloadUrl']} ")
         try:
-            wget_progress(model_info['model']['downloadUrl'],model_outpath, 8192, self.parent.model_download_progress_callback)
+            wget_progress(url=model_info['model']['downloadUrl'], filename=model_outpath, chunk_size=1024, callback=self.parent.model_download_progress_callback)
+            self.parent.model_download_progress_callback(100)
         except Exception as e:
             print('Download failed: ', e)
+            self.parent.model_download_progress_callback(0)
+
         self.model_download.w.download_button.setEnabled(True)
         #self.do_download(model_info['model']['downloadUrl'],model_outpath)
         if config_name != '':

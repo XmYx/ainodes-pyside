@@ -91,6 +91,7 @@ def sampler_fn(
         "dpm_adaptive": sampling.sample_dpm_adaptive,
         "dpmpp_2s_a": sampling.sample_dpmpp_2s_ancestral,
         "dpmpp_2m": sampling.sample_dpmpp_2m,
+        "dpmpp_sde": sampling.sample_dpmpp_sde,
     }
 
     samples = sampler_map[args.sampler](**sampler_args)

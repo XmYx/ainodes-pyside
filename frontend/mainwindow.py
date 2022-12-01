@@ -74,8 +74,9 @@ class MainWindow(QMainWindow):
         
         self.widgets = {}
         self.current_widget = 'unicontrol'
-        
         self.widgets[self.current_widget] = UniControl(self)
+
+
         self.sessionparams = SessionParams(self)
         self.sessionparams.create_params()
         self.thumbs = ThumbsUI()

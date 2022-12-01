@@ -28,7 +28,7 @@ from backend.hypernetworks import hypernetwork
 import backend.hypernetworks.modules.sd_hijack
 from backend.deforum.six.hijack import hijack_deforum
 from backend.singleton import singleton
-
+from backend.shared import model_killer
 gs = singleton
 
 vae_ignore_keys = {"model_ema.decay", "model_ema.num_updates"}
@@ -65,6 +65,7 @@ class DeforumSix:
         # self.parent = parent
         self.device = 'cuda'
         self.full_precision = False
+        self.prev_seamless = False
     def load_low_memory(self):
         if "model" not in gs.models:
             config = "optimizedSD/v1-inference.yaml"
@@ -493,6 +494,35 @@ class DeforumSix:
         print(f'-            hires: {hires}                                    ')
         print(f'-                                                              ')
 
+
+
+        #print(f'animation mode: {animation_mode}')
+
+        if precision == 'autocast' and device != "cpu":
+            precision_scope = autocast
+        else:
+            precision_scope = nullcontext
+
+
+        hijack_deforum.deforum_hijack()
+
+        [args, anim_args, root] = prepare_args(locals())
+
+
+        for key, value in anim_args.__dict__.items():
+            try:
+                anim_args.__dict__[key] = self.parent.params.__dict__[key]
+                print(f"settings {key} from {value} to {self.parent.params.__dict__[key]}")
+            except:
+                pass
+        for key, value in args.__dict__.items():
+            try:
+                args.__dict__[key] = self.parent.params.__dict__[key]
+            except:
+                pass
+        if args.seamless == False and self.prev_seamless == True:
+            self.prev_seamless = False
+            model_killer()
         if lowmem == True:
             print(f'-                 Low Memory Mode                             ')
             if "sd" in gs.models:
@@ -516,16 +546,6 @@ class DeforumSix:
                 return check
 
 
-        #print(f'animation mode: {animation_mode}')
-
-        if precision == 'autocast' and device != "cpu":
-            precision_scope = autocast
-        else:
-            precision_scope = nullcontext
-
-
-        hijack_deforum.deforum_hijack()
-
 
         if use_hypernetwork is not None:
             hypernetwork.load_hypernetwork(use_hypernetwork)
@@ -533,23 +553,19 @@ class DeforumSix:
             gs.model_hijack.apply_circular(False)
             gs.model_hijack.clear_comments()
 
-        W, H = map(lambda x: x - x % 64, (W, H))  # resize to integer multiple of 64
-
-        [args, anim_args, root] = prepare_args(locals())
+        #W, H = map(lambda x: x - x % 64, (W, H))  # resize to integer multiple of 64
 
 
-        for key, value in anim_args.__dict__.items():
-            try:
-                anim_args.__dict__[key] = self.parent.params.__dict__[key]
-                print(f"settings {key} from {value} to {self.parent.params.__dict__[key]}")
-            except:
-                pass
 
-        """for key, value in args.__dict__.items():
-            try:
-                args.__dict__[key] = self.parent.params.__dict__[key]
-            except:
-                pass
+
+        if args.seamless == True:
+            from backend.deforum.six.seamless import configure_model_padding
+            print("Running Seamless sampling...")
+            seamless = True
+            seamless_axes = args.axis
+            configure_model_padding(gs.models["sd"], seamless, seamless_axes)
+            self.prev_seamless = True
+        """
         for key, value in root.__dict__.items():
             try:
                 root.__dict__[key] = self.parent.params.__dict__[key]

@@ -168,6 +168,8 @@ def DeforumArgs(attr):
     negative_prompts = attr.negative_prompts
     hires = attr.hires
     lowmem = attr.lowmem
+    seamless = False
+    axis = {'x'}
 
     del attr
     return locals()

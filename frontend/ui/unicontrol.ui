@@ -80,10 +80,10 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="lowmem">
+       <item row="1" column="3">
+        <widget class="QPushButton" name="stop_dream">
          <property name="text">
-          <string>Low Memory</string>
+          <string>Stop</string>
          </property>
         </widget>
        </item>
@@ -98,7 +98,7 @@
             <x>0</x>
             <y>0</y>
             <width>715</width>
-            <height>2578</height>
+            <height>2408</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -438,14 +438,7 @@
               <item row="12" column="0">
                <widget class="QCheckBox" name="toggle_outpaint">
                 <property name="text">
-                 <string>Outpaint</string>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="4">
-               <widget class="QCheckBox" name="toggle_aesthetics">
-                <property name="text">
-                 <string>Aesthetics</string>
+                 <string>Outpaint Settings</string>
                 </property>
                </widget>
               </item>
@@ -902,13 +895,6 @@
                 </property>
                </widget>
               </item>
-              <item row="12" column="6">
-               <widget class="QCheckBox" name="toggle_plugins">
-                <property name="text">
-                 <string>Plugins</string>
-                </property>
-               </widget>
-              </item>
               <item row="19" column="0" colspan="7">
                <widget class="QFrame" name="aesthetic_values">
                 <property name="frameShape">
@@ -1221,14 +1207,14 @@
                  <item row="7" column="0">
                   <widget class="QCheckBox" name="toggle_grad">
                    <property name="text">
-                    <string>Grad</string>
+                    <string>Gradient Settings</string>
                    </property>
                   </widget>
                  </item>
                  <item row="5" column="0">
                   <widget class="QCheckBox" name="toggle_colors">
                    <property name="text">
-                    <string>Colors</string>
+                    <string>Colormatch Settings</string>
                    </property>
                   </widget>
                  </item>
@@ -1460,13 +1446,6 @@
                 </layout>
                </widget>
               </item>
-              <item row="12" column="5">
-               <widget class="QCheckBox" name="toggle_embeddings">
-                <property name="text">
-                 <string>Embedding</string>
-                </property>
-               </widget>
-              </item>
               <item row="1" column="0" colspan="7">
                <widget class="QTextEdit" name="negative_prompts">
                 <property name="sizePolicy">
@@ -1529,20 +1508,6 @@
                   <width>16777215</width>
                   <height>16777215</height>
                  </size>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="3">
-               <widget class="QCheckBox" name="toggle_plotting">
-                <property name="text">
-                 <string>Plotting</string>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="1">
-               <widget class="QCheckBox" name="toggle_animations">
-                <property name="text">
-                 <string>Animation</string>
                 </property>
                </widget>
               </item>
@@ -2579,7 +2544,7 @@
                      </widget>
                     </item>
                     <item row="6" column="1">
-                     <widget class="QCheckBox" name="makegrid">
+                     <widget class="QCheckBox" name="make_grid">
                       <property name="text">
                        <string>Make Grid</string>
                       </property>
@@ -2909,7 +2874,96 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="14" column="6">
+                  <widget class="QCheckBox" name="seamless">
+                   <property name="text">
+                    <string>Seamless</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="16" column="7">
+                  <widget class="QComboBox" name="axis">
+                   <item>
+                    <property name="text">
+                     <string>X</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Y</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Both</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="16" column="6">
+                  <widget class="QLabel" name="label_74">
+                   <property name="text">
+                    <string>Axis</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QLabel" name="label_73">
+                <property name="text">
+                 <string>Preview Mode</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="QComboBox" name="mode">
+                <item>
+                 <property name="text">
+                  <string>basic</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>advanced</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="12" column="1">
+               <widget class="QCheckBox" name="toggle_animations">
+                <property name="text">
+                 <string>Animation Settings</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="2">
+               <widget class="QCheckBox" name="toggle_plotting">
+                <property name="text">
+                 <string>Plotting</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="3">
+               <widget class="QCheckBox" name="toggle_aesthetics">
+                <property name="text">
+                 <string>Aesthetics</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="4">
+               <widget class="QCheckBox" name="toggle_embeddings">
+                <property name="text">
+                 <string>Aes. Gradient</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="5">
+               <widget class="QCheckBox" name="toggle_plugins">
+                <property name="text">
+                 <string>Plugins</string>
+                </property>
                </widget>
               </item>
              </layout>
@@ -2919,10 +2973,10 @@
          </widget>
         </widget>
        </item>
-       <item row="1" column="3">
-        <widget class="QPushButton" name="stop_dream">
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="lowmem">
          <property name="text">
-          <string>Stop</string>
+          <string>Low Memory</string>
          </property>
         </widget>
        </item>

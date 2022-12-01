@@ -230,12 +230,6 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
         from ldm_v2.models.diffusion.plms import PLMSSampler
         from ldm_v2.models.diffusion.ddim import DDIMSampler
 
-    #from backend.deforum.six.seamless import configure_model_padding
-    #seamless = True
-    #seamless_axes = {'x', 'y'}
-    #configure_model_padding(gs.models["sd"], seamless, seamless_axes)
-
-
     sampler = PLMSSampler(gs.models["sd"]) if args.sampler == 'plms' else DDIMSampler(gs.models["sd"])
     if gs.model_version in gs.system.gen_one_models or gs.model_resolution == 512:
         print("using old denoiser")
@@ -396,7 +390,7 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
 
     clamp_fn = threshold_by(threshold=args.clamp_grad_threshold, threshold_type=args.grad_threshold_type, clamp_schedule=args.clamp_schedule)
 
-
+    args.grad_inject_timing = int(args.grad_inject_timing)
     grad_inject_timing_fn = make_inject_timing_fn(args.grad_inject_timing, model_wrap, args.steps)
 
     cfg_model = CFGDenoiserWithGrad(model_wrap, 

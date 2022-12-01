@@ -81,9 +81,9 @@ class SessionParams():
 
 
         if self.parent.widgets[widget].w.n_samples.value() == 1:
-            makegrid = False
+            make_grid = False
         else:
-            makegrid = self.parent.widgets[widget].w.makegrid.isChecked()  # self.parent.widgets[widget].w.make_grid.isChecked()
+            make_grid = self.parent.widgets[widget].w.make_grid.isChecked()  # self.parent.widgets[widget].w.make_grid.isChecked()
         outdir = gs.system.txt2imgOut
         sampler_name = translate_sampler(self.parent.widgets[widget].w.sampler.currentText())
         use_init = self.parent.widgets[widget].w.use_init.isChecked()
@@ -132,7 +132,7 @@ class SessionParams():
         clamp_grad_threshold = self.parent.widgets[widget].w.clamp_grad_threshold.value()
         clamp_start = self.parent.widgets[widget].w.clamp_start.value()
         clamp_stop = self.parent.widgets[widget].w.clamp_stop.value()
-        grad_inject_timing = 0  if self.parent.widgets[widget].w.grad_inject_timing.text() == '' else self.parent.widgets[widget].w.grad_inject_timing.text() #it is a float an int or a list of floats
+        grad_inject_timing = 1  if self.parent.widgets[widget].w.grad_inject_timing.text() == '' else self.parent.widgets[widget].w.grad_inject_timing.text() #it is a float an int or a list of floats
         cond_uncond_sync = self.parent.widgets[widget].w.cond_uncond_sync.isChecked()
         negative_prompts = negative_prompts
         prompts = self.parent.widgets[widget].w.prompts.toPlainText()
@@ -203,7 +203,13 @@ class SessionParams():
         use_inpaint = self.parent.widgets[widget].w.use_inpaint.isChecked()
         with_inpaint = use_inpaint
         lowmem = self.parent.widgets[widget].w.lowmem.isChecked()
-
+        seamless = self.parent.widgets[widget].w.seamless.isChecked()
+        if self.parent.widgets[widget].w.axis.currentText() == 'X':
+            axis = {'x'}
+        elif self.parent.widgets[widget].w.axis.currentText() == 'Y':
+            axis = {'y'}
+        elif self.parent.widgets[widget].w.axis.currentText() == 'Both':
+            axis = {'x', 'y'}
         plotting = self.parent.widgets[widget].w.plotting.isChecked()
         plotX = self.parent.widgets[widget].w.plotX.currentText()
         plotY = self.parent.widgets[widget].w.plotY.currentText()
@@ -220,7 +226,8 @@ class SessionParams():
             'prompts': prompts,
             'seed': seed,
             'advanced': advanced,
-
+            'seamless': seamless,
+            'axis': axis,
             # Advanced Params
             'animation_mode': animation_mode,
             'ddim_eta': ddim_eta,
@@ -229,7 +236,7 @@ class SessionParams():
             'show_sample_per_step': show_sample_per_step,
             'n_batch': n_batch,
             'seed_behavior': seed_behavior,
-            'makegrid': makegrid,
+            'make_grid': make_grid,
             'grid_rows': 2,
             'use_init': use_init,
             'init_image': None if init_image == '' else init_image,

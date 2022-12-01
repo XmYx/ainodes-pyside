@@ -23,6 +23,9 @@ from .display_emu import display
 from backend.singleton import singleton
 gs = singleton
 def next_seed(args):
+    print(type(args.seed))
+    print(args.seed)
+    args.seed = int(args.seed)
     if args.seed_behavior == 'iter':
         args.seed += 1
     elif args.seed_behavior == 'fixed':
@@ -154,13 +157,19 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                                 image.save(outpath)
                                 args.init_sample = None
                                 if args.save_settings == True:
-                                    save_settings(args, outfolder, prompt, index)
+                                    #print(args)
+                                    params = args
+                                    for key, value in params.__dict__.items():
+                                        params.__dict__[key] = str(params.__dict__[key])
+                                    save_settings(params, outfolder, prompt, index)
+                                    del params
                                 #Callback Mod
                                 if image_callback is not None:
                                     image_callback(image)
                             if args.display_samples:
                                 display.display(image)
                             index += 1
+                        args.seed = str(args.seed)
                         args.seed = next_seed(args)
 
                 #print(len(all_images))

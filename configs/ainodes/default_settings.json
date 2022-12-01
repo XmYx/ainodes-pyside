@@ -40,7 +40,7 @@
     "extraModelsCpu": false,
     "extraModelsGpu": false,
     "xformer": false,
-    "aesthetic_gradients":"data/models/embeddings",
+    "aesthetic_gradients":"data/models/aesthetic_gradients",
     "finetune_config": "configs/finetune",
     "dreambooth_config": "configs/dreambooth",
     "hypernetwork_dir": "data/hyper/hypernetworks",

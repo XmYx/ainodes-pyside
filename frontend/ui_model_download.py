@@ -119,7 +119,13 @@ NSFW: {model_info['item']['nsfw']}
             model_outpath = os.path.join(gs.system.customModels, model_name)
         if model_info['item']['type'] == 'TextualInversion':
             model_name = self.sanitize(model_info['item']['name']) + f"_{model_info['model']['name']}" + '.pt'
-            model_outpath = os.path.join(gs.system.aesthetic_gradient, model_name)
+            model_outpath = os.path.join(gs.system.embeddings_dir, model_name)
+        if model_info['item']['type'] == 'Hypernetwork':
+            model_name = self.sanitize(model_info['item']['name']) + f"_{model_info['model']['name']}" + '.pt'
+            model_outpath = os.path.join(gs.system.hypernetwork_dir, model_name)
+        if model_info['item']['type'] == 'AestheticGradient':
+            model_name = self.sanitize(model_info['item']['name']) + f"_{model_info['model']['name']}" + '.pt'
+            model_outpath = os.path.join(gs.system.aesthetic_gradients, model_name)
 
         print(f"download model from url: {model_info['model']['downloadUrl']} ")
         wget_progress(model_info['model']['downloadUrl'],model_outpath, 8192, self.parent.model_download_progress_callback)

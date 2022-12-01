@@ -181,7 +181,10 @@ NSFW: {model_info['item']['nsfw']}
             model_outpath = os.path.join(gs.system.aesthetic_gradients, model_name)
 
         print(f"download model from url: {model_info['model']['downloadUrl']} ")
-        wget_progress(model_info['model']['downloadUrl'],model_outpath, 8192, self.parent.model_download_progress_callback)
+        try:
+            wget_progress(model_info['model']['downloadUrl'],model_outpath, 8192, self.parent.model_download_progress_callback)
+        except Exception as e:
+            print('Download failed: ', e)
         self.model_download.w.download_button.setEnabled(True)
         #self.do_download(model_info['model']['downloadUrl'],model_outpath)
         if config_name != '':

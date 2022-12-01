@@ -98,7 +98,7 @@
             <x>0</x>
             <y>0</y>
             <width>715</width>
-            <height>2408</height>
+            <height>2578</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -2915,27 +2915,6 @@
                 </layout>
                </widget>
               </item>
-              <item row="3" column="2">
-               <widget class="QLabel" name="label_73">
-                <property name="text">
-                 <string>Preview Mode</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="3">
-               <widget class="QComboBox" name="mode">
-                <item>
-                 <property name="text">
-                  <string>basic</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>advanced</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
               <item row="12" column="1">
                <widget class="QCheckBox" name="toggle_animations">
                 <property name="text">
@@ -2968,6 +2947,27 @@
                <widget class="QCheckBox" name="toggle_plugins">
                 <property name="text">
                  <string>Plugins</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="4">
+               <widget class="QComboBox" name="mode">
+                <item>
+                 <property name="text">
+                  <string>basic</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>advanced</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="3" column="2" colspan="2">
+               <widget class="QLabel" name="label_73">
+                <property name="text">
+                 <string>Preview Mode</string>
                 </property>
                </widget>
               </item>

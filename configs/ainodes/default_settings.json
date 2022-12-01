@@ -40,7 +40,7 @@
     "extraModelsCpu": false,
     "extraModelsGpu": false,
     "xformer": false,
-    "aesthetic_gradients":"data/models/embeddings",
+    "aesthetic_gradients":"data/models/aesthetic_gradients",
     "finetune_config": "configs/finetune",
     "dreambooth_config": "configs/dreambooth",
     "hypernetwork_dir": "data/hyper/hypernetworks",
@@ -53,7 +53,9 @@
     "run_setup": true,
     "gen_one_models": ["1.4", "1.5"],
     "gen_two_models": ["2.0"],
-    "blip_model_path": "data/models/support/upscale/model_base_caption_capfilt_large.pth"
+    "blip_model_path": "data/models/support/upscale/model_base_caption_capfilt_large.pth",
+    "default_config_yaml_path": "data/default_configs",
+    "aesthetic_gradient": "data/models/aesthetic_gradient"
   },
   "diffusion": {
     "processType": 0,

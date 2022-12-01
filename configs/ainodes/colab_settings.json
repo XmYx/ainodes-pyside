@@ -35,7 +35,7 @@
     "extraModelsCpu": false,
     "extraModelsGpu": false,
     "xformer": true,
-    "aesthetic_gradients":"data/models/embeddings",
+    "aesthetic_gradients":"data/models/aesthetic_gradients",
     "finetune_config": "configs/finetune",
     "dreambooth_config": "configs/dreambooth",
     "hypernetwork_dir": "data/hyper/hypernetworks",
@@ -47,7 +47,8 @@
     "save_settings_default": true,
     "run_setup": true,
     "gen_one_models": ["1.4", "1.5"],
-    "gen_two_models": ["2.0"]
+    "gen_two_models": ["2.0"],
+    "default_config_yaml_path": "data/default_configs"
   },
   "diffusion": {
     "processType": 0,

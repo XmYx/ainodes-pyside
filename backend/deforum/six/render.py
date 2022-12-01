@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 import os
 import json
@@ -87,6 +88,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
     clear_between_batches = args.n_batch >= 32
     fpW = args.W
     fpH = args.H
+    timestring = datetime.now().strftime("%Y%m%d-%H%M%S")
     paths = []
     for iprompt, prompt in enumerate(prompts):
         #prevent empty prompts from gernerating images
@@ -143,12 +145,12 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                                 all_images.append(T.functional.pil_to_tensor(image))
                             if args.save_samples:
                                 if args.filename_format == "{timestring}_{index}_{prompt}.png":
-                                    filename = f"{args.timestring}_{index:05}_{sanitize(prompt)[:160]}.png"
+                                    filename = f"{timestring}_{index:05}_{sanitize(prompt)[:160]}.png"
                                 else:
-                                    filename = f"{args.timestring}_{index:05}_{args.seed}.png"
+                                    filename = f"{timestring}_{index:05}_{args.seed}.png"
                                 #added prompt to output folder name
                                 if gs.system.pathmode == "subfolders":
-                                    outfolder = os.path.join(args.outdir, f'{args.timestring}_{sanitize(prompt)[:120]}')
+                                    outfolder = os.path.join(args.outdir, f'{timestring}_{sanitize(prompt)[:120]}')
                                 else:
                                     outfolder = os.path.join(args.outdir, datetime.now().strftime("%Y%m%d"))
                                 os.makedirs(outfolder, exist_ok=True)

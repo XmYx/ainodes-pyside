@@ -133,7 +133,7 @@ class Deforum_UI(QObject):
         ##print(self.params.translation_x)
         ##print(f"updated parameters to: {params}")
         model_killer(keep='sd')
-        print(gs.models)
+        #print(gs.models)
         #if "inpaint" in gs.models:
         #    del gs.models["inpaint"]
 
@@ -176,6 +176,9 @@ class Deforum_UI(QObject):
                     if attrib1 == 'lr': gs.lr = float(i)
                     if attrib2 == 'T': gs.T = int(j)
                     if attrib2 == 'lr': gs.lr = float(j)
+                if os.path.isdir(self.params.init_image) and self.params.animation_mode == 'None':
+                    print('Batch Directory found')
+                    self.params.max_frames = 2
                 self.deforum_six.run_deforum_six(W=int(self.params.W),
                                                  H=int(self.params.H),
                                                  seed=int(self.params.seed) if self.params.seed != '' else seed,

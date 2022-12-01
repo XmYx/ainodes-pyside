@@ -263,6 +263,11 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
         init_image = repeat(init_image, '1 ... -> b ...', b=batch_size)
         with precision_scope("cuda"):
             init_latent = gs.models["sd"].get_first_stage_encoding(gs.models["sd"].encode_first_stage(init_image))  # move to latent space
+            init_latent = resizeright.resize(init_latent, scale_factors=None,
+                                         out_shape=[init_latent.shape[0], init_latent.shape[1], args.H // 8, args.W // 8],
+                                         interp_method=interp_methods.lanczos3, support_sz=None,
+                                         antialiasing=True, by_convs=True, scale_tolerance=None,
+                                         max_numerator=10, pad_mode='reflect')
 
     if not args.use_init and args.strength > 0 and args.strength_0_no_init:
         print("\nNo init image, but strength > 0. Strength has been auto set to 0, since use_init is False.")

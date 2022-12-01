@@ -176,8 +176,8 @@ class Canvas(QGraphicsView):
         #            i.h = h
         #self.newimage = True
     def change_rect_resolutions(self):
-        w = self.parent.parent.widgets[self.parent.current_widget].w.W.value()
-        h = self.parent.parent.widgets[self.parent.current_widget].w.H.value()
+        w = self.parent.parent.widgets[self.parent.parent.current_widget].w.W.value()
+        h = self.parent.parent.widgets[self.parent.parent.current_widget].w.H.value()
         if self.selected_item is not None:
             for i in self.rectlist:
                 if i.id == self.selected_item:

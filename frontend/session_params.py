@@ -188,13 +188,15 @@ class SessionParams():
             if self.parent.widgets[widget].w.anim2D.isChecked():
                 animation_mode = '2D'
                 outdir = gs.system.txt2vidSingleFrame
+                gs.system.pathmode = 'subfolders'
             if self.parent.widgets[widget].w.anim3D.isChecked():
                 animation_mode = '3D'
                 outdir = gs.system.txt2vidSingleFrame
+                gs.system.pathmode = 'subfolders'
             if self.parent.widgets[widget].w.animVid.isChecked():
                 animation_mode = 'Video Input'
                 outdir = gs.system.txt2vidSingleFrame
-
+                gs.system.pathmode = 'subfolders'
 
         advanced = False
         max_frame = self.parent.widgets[widget].w.max_frames.value() if animation_mode != 'None' else 1

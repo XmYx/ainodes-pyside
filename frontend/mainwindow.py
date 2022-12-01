@@ -624,8 +624,8 @@ class MainWindow(QMainWindow):
         x = 0
         y = 0
         img = self.image
-        print(self.params.advanced)
-        print(self.canvas.canvas.rectlist)
+        #print(self.params.advanced)
+        #print(self.canvas.canvas.rectlist)
         if self.params.advanced == True:
             if self.canvas.canvas.rectlist != []:
                 if img is not None:
@@ -670,6 +670,7 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.rectlist[self.render_index].index = self.canvas.canvas.rectlist[self.render_index].index + 1
                 self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].index]
                 self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
+                self.canvas.canvas.rectlist[self.render_index].params = self.params
         self.canvas.canvas.newimage = True
         self.canvas.canvas.redraw()
         self.canvas.canvas.update()
@@ -817,6 +818,12 @@ class MainWindow(QMainWindow):
             self.thumbs.w.thumbnails.clear()
             for items in self.canvas.canvas.rectlist:
                 if items.id == self.canvas.canvas.selected_item:
+                    #print(items.params)
+                    try:
+                        self.sessionparams.params = items.params.__dict__
+                        self.update_ui_from_params()
+                    except Exception as e:
+                        print(f"Error, could not update  because of: {e}")
 
                     if items.params != {}:
                         pass

@@ -192,7 +192,7 @@ class Deforum_UI(QObject):
                                                  show_sample_per_step=bool(self.params.show_sample_per_step),
                                                  n_batch=int(self.params.n_batch),
                                                  seed_behavior=self.params.seed_behavior,
-                                                 make_grid=self.params.makegrid,
+                                                 make_grid=self.params.make_grid,
                                                  grid_rows=self.params.grid_rows,
                                                  use_init=self.params.use_init,
                                                  init_image=self.params.init_image,

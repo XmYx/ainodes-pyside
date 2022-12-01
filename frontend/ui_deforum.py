@@ -176,9 +176,10 @@ class Deforum_UI(QObject):
                     if attrib1 == 'lr': gs.lr = float(i)
                     if attrib2 == 'T': gs.T = int(j)
                     if attrib2 == 'lr': gs.lr = float(j)
-                if os.path.isdir(self.params.init_image) and self.params.animation_mode == 'None':
-                    print('Batch Directory found')
-                    self.params.max_frames = 2
+                if self.params.init_image is not None:
+                    if os.path.isdir(self.params.init_image) and self.params.animation_mode == 'None':
+                        print('Batch Directory found')
+                        self.params.max_frames = 2
                 self.deforum_six.run_deforum_six(W=int(self.params.W),
                                                  H=int(self.params.H),
                                                  seed=int(self.params.seed) if self.params.seed != '' else seed,

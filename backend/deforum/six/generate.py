@@ -229,6 +229,13 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
     elif gs.model_version == '2.0':
         from ldm_v2.models.diffusion.plms import PLMSSampler
         from ldm_v2.models.diffusion.ddim import DDIMSampler
+
+    #from backend.deforum.six.seamless import configure_model_padding
+    #seamless = True
+    #seamless_axes = {'x', 'y'}
+    #configure_model_padding(gs.models["sd"], seamless, seamless_axes)
+
+
     sampler = PLMSSampler(gs.models["sd"]) if args.sampler == 'plms' else DDIMSampler(gs.models["sd"])
     if gs.model_version in gs.system.gen_one_models or gs.model_resolution == 512:
         print("using old denoiser")

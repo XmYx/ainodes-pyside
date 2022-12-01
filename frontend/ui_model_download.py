@@ -41,7 +41,9 @@ class ModelDownload():
         self.model_download.w.model_search.clicked.connect(self.models_search)
         self.model_download.w.model_list.itemClicked.connect(self.show_model_infos)
         self.model_download.w.download_button.clicked.connect(self.signal_download_model)
+        self.model_download.w.more_models.clicked.connect(self.get_more_models)
         self.actual_model_list = {}
+        self.next_models_link = None
 
     def signal_download_model(self):
         self.signals.startDownload.emit()
@@ -62,6 +64,12 @@ NSFW: {model_info['item']['nsfw']}
         req = QtNetwork.QNetworkRequest(QtCore.QUrl(url))
         self.nam = QtNetwork.QNetworkAccessManager()
         self.nam.finished.connect(self.handleResponse)
+        self.nam.get(req)
+
+    def executeMoreRequest(self, url):
+        req = QtNetwork.QNetworkRequest(QtCore.QUrl(url))
+        self.nam = QtNetwork.QNetworkAccessManager()
+        self.nam.finished.connect(self.handleMoreResponse)
         self.nam.get(req)
 
     def handleResponse(self, reply):
@@ -86,11 +94,56 @@ NSFW: {model_info['item']['nsfw']}
                     model_description = item['name'] + ' ' + ' Version: ' + model['name']
                     self.actual_model_list[model_description] = {'model':model, 'item':tmp_item}
                     self.model_download.w.model_list.addItem(model_description)
-                    #print(model)
-
+            if 'metadata' in responseDict:
+                if 'nextPage' in responseDict['metadata']:
+                    self.next_models_link = responseDict['metadata']['nextPage']
+                    self.model_download.w.more_models.setEnabled(True)
+                else:
+                    self.model_download.w.more_models.setEnabled(False)
+                    self.next_models_link = None
+            else:
+                self.model_download.w.more_models.setEnabled(False)
+                self.next_models_link = None
         else:
             print('error: ', er)
 
+    def handleMoreResponse(self, reply):
+        er = reply.error()
+        #self.prompts = []
+        #self.counter = 0
+        if er == QtNetwork.QNetworkReply.NoError:
+            bytes_string = reply.readAll()
+            responseDict = json.loads(str(bytes_string, 'utf-8'))
+            for item in responseDict['items']:
+                tmp_item = {
+                    'id': item['id'],
+                    'name': item['name'],
+                    'type': item['type'],
+                    'nsfw': item['nsfw'],
+                    'tags': item['tags']
+                }
+                for model in item['modelVersions']:
+
+                    model_description = item['name'] + ' ' + ' Version: ' + model['name']
+                    self.actual_model_list[model_description] = {'model':model, 'item':tmp_item}
+                    self.model_download.w.model_list.addItem(model_description)
+            if 'metadata' in responseDict:
+                if 'nextPage' in responseDict['metadata']:
+                    self.next_models_link = responseDict['metadata']['nextPage']
+                    self.model_download.w.more_models.setEnabled(True)
+                else:
+                    self.model_download.w.more_models.setEnabled(False)
+                    self.next_models_link = None
+            else:
+                self.model_download.w.more_models.setEnabled(False)
+                self.next_models_link = None
+        else:
+            print('error: ', er)
+
+    def get_more_models(self):
+        print('more', self.next_models_link)
+        if self.next_models_link != None:
+            self.executeMoreRequest(self.next_models_link)
 
     def models_search(self):
         query = 'query=' + self.model_download.w.query.text()

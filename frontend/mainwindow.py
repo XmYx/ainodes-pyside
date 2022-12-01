@@ -71,7 +71,11 @@ class MainWindow(QMainWindow):
         self.animKeyEditor = AnimKeyEditor()
 
         self.resize(1280, 800)
-        self.unicontrol = UniControl(self)
+        
+        self.widgets = {}
+        self.current_widget = 'unicontrol'
+        
+        self.widgets[self.current_widget] = UniControl(self)
         self.sessionparams = SessionParams(self)
         self.sessionparams.create_params()
         self.thumbs = ThumbsUI()
@@ -108,7 +112,7 @@ class MainWindow(QMainWindow):
         self.model_download = ModelDownload(self)
         self.model_download_ui = self.model_download.model_download
         #self.model_chooser = ModelChooser_UI(self)
-        self.unicontrol.w.dockWidget.setWindowTitle("Parameters")
+        self.widgets[self.current_widget].w.dockWidget.setWindowTitle("Parameters")
         self.path_setup.w.dockWidget.setWindowTitle("Model / Paths")
         self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
         self.lexicart.w.dockWidget.setWindowTitle("Lexica Art")
@@ -136,7 +140,7 @@ class MainWindow(QMainWindow):
         self.tabifyDockWidget(self.lexicart.w.dockWidget, self.krea.w.dockWidget)
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.prompt_fetcher.w.dockWidget)
         self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
-        self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.unicontrol.w.dockWidget)
+        self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.widgets[self.current_widget].w.dockWidget)
 
         self.hide_default()
         self.mode = 'txt2img'
@@ -146,7 +150,7 @@ class MainWindow(QMainWindow):
         self.connections()
         self.list_files()
         self.resize(1280, 800)
-        self.unicontrol.update_model_list()
+        self.widgets[self.current_widget].update_model_list()
         self.create_out_folders()
         check_models_exist()
         self.latent_rgb_factors = torch.tensor([
@@ -186,26 +190,26 @@ class MainWindow(QMainWindow):
         #self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
         self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_six_txt2img_thread)
 
-        self.unicontrol.w.dream.clicked.connect(self.taskswitcher)
-        self.unicontrol.w.H.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
-        self.unicontrol.w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
-        self.unicontrol.w.lucky.clicked.connect(self.show_default)
+        self.widgets[self.current_widget].w.dream.clicked.connect(self.taskswitcher)
+        self.widgets[self.current_widget].w.H.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
+        self.widgets[self.current_widget].w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
+        self.widgets[self.current_widget].w.lucky.clicked.connect(self.show_default)
 
 
-        self.unicontrol.w.redo.clicked.connect(self.redo_current_outpaint)
-        self.unicontrol.w.delete_2.clicked.connect(self.delete_outpaint_frame)
-        self.unicontrol.w.preview_batch.clicked.connect(self.preview_batch_outpaint)
+        self.widgets[self.current_widget].w.redo.clicked.connect(self.redo_current_outpaint)
+        self.widgets[self.current_widget].w.delete_2.clicked.connect(self.delete_outpaint_frame)
+        self.widgets[self.current_widget].w.preview_batch.clicked.connect(self.preview_batch_outpaint)
         #self.outpaint_controls.w.createBatch.clicked.connect(self.prepare_batch_outpaint_thread)
-        self.unicontrol.w.run_batch.clicked.connect(self.run_prepared_outpaint_batch_thread)
-        self.unicontrol.w.run_hires.clicked.connect(self.run_hires_batch_thread)
-        self.unicontrol.w.prep_hires.clicked.connect(self.run_create_outpaint_img2img_batch)
-        self.unicontrol.w.update_params.clicked.connect(self.update_params)
+        self.widgets[self.current_widget].w.run_batch.clicked.connect(self.run_prepared_outpaint_batch_thread)
+        self.widgets[self.current_widget].w.run_hires.clicked.connect(self.run_hires_batch_thread)
+        self.widgets[self.current_widget].w.prep_hires.clicked.connect(self.run_create_outpaint_img2img_batch)
+        self.widgets[self.current_widget].w.update_params.clicked.connect(self.update_params)
 
-        self.unicontrol.w.W.valueChanged.connect(self.update_outpaint_parameters)
-        self.unicontrol.w.H.valueChanged.connect(self.update_outpaint_parameters)
-        self.unicontrol.w.mask_offset.valueChanged.connect(self.outpaint_offset_signal)
-        #self.unicontrol.w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.unicontrol.w.mask_offset.value())))  # todo does this work?
-        self.unicontrol.w.rect_overlap.valueChanged.connect(self.outpaint_rect_overlap)
+        self.widgets[self.current_widget].w.W.valueChanged.connect(self.update_outpaint_parameters)
+        self.widgets[self.current_widget].w.H.valueChanged.connect(self.update_outpaint_parameters)
+        self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.outpaint_offset_signal)
+        #self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.widgets[self.current_widget].w.mask_offset.value())))  # todo does this work?
+        self.widgets[self.current_widget].w.rect_overlap.valueChanged.connect(self.outpaint_rect_overlap)
 
         self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
         self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
@@ -234,8 +238,8 @@ class MainWindow(QMainWindow):
 
     def taskswitcher(self):
         gs.stop_all = False
-        save_last_prompt(self.unicontrol.w.prompts.toHtml(), self.unicontrol.w.prompts.toPlainText())
-        if self.unicontrol.w.use_inpaint.isChecked() == True:
+        save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(), self.widgets[self.current_widget].w.prompts.toPlainText())
+        if self.widgets[self.current_widget].w.use_inpaint.isChecked() == True:
             self.canvas.canvas.reusable_outpaint(self.canvas.canvas.selected_item)
             self.deforum_ui.deforum_outpaint_thread()
         else:
@@ -401,17 +405,17 @@ class MainWindow(QMainWindow):
             try:
                 #We have to add check for Animation Mode as thats a radio checkbox with values 'anim2d', 'anim3d', 'animVid'
                 #add colormatch_image (it will be with a fancy preview)
-                type = str(getattr(self.unicontrol.w, key))
+                type = str(getattr(self.widgets[self.current_widget].w, key))
 
                 if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
-                    getattr(self.unicontrol.w, key).setValue(value)
+                    getattr(self.widgets[self.current_widget].w, key).setValue(value)
                 elif  'QTextEdit' in type or 'QLineEdit' in type:
-                    getattr(self.unicontrol.w, key).setText(str(value))
+                    getattr(self.widgets[self.current_widget].w, key).setText(str(value))
                 elif 'QCheckBox' in type:
                     if value == True:
-                        getattr(self.unicontrol.w, key).setCheckState(QtCore.Qt.Checked)
+                        getattr(self.widgets[self.current_widget].w, key).setCheckState(QtCore.Qt.Checked)
                 elif 'QSlider' in type:
-                    getattr(self.unicontrol.w, key).wheelEnabled = False
+                    getattr(self.widgets[self.current_widget].w, key).wheelEnabled = False
 
 
             except Exception as e:
@@ -420,19 +424,19 @@ class MainWindow(QMainWindow):
 
 
     def init_plugin_loader(self):
-        self.unicontrol.w.loadbutton.clicked.connect(self.load_plugin)
-        self.unicontrol.w.unloadbutton.clicked.connect(self.unload_plugin)
+        self.widgets[self.current_widget].w.loadbutton.clicked.connect(self.load_plugin)
+        self.widgets[self.current_widget].w.unloadbutton.clicked.connect(self.unload_plugin)
         self.plugins = plugin_loader.PluginLoader(self)
         list = self.plugins.list_plugins()
         for i in list:
-            self.unicontrol.w.plugins.addItem(i)
+            self.widgets[self.current_widget].w.plugins.addItem(i)
 
     def load_plugin(self):
-        plugin_name = self.unicontrol.w.plugins.currentText()
+        plugin_name = self.widgets[self.current_widget].w.plugins.currentText()
         self.plugins.load_plugin(f"plugins.{plugin_name}.{plugin_name}")
 
     def unload_plugin(self):
-        plugin_name = self.unicontrol.w.plugins.currentText()
+        plugin_name = self.widgets[self.current_widget].w.plugins.currentText()
         self.plugins.unload_plugin(plugin_name)
 
     def create_main_toolbar(self):
@@ -491,30 +495,30 @@ class MainWindow(QMainWindow):
         self.toolbar.setVisible(False)
         self.secondary_toolbar.setVisible(False)
 
-        self.unicontrol.w.toggle_negative_prompt.setVisible(False)
-        self.unicontrol.w.negative_prompts.setVisible(False)
-        self.unicontrol.w.prompt_weighting.setVisible(False)
-        self.unicontrol.w.toggle_sampler.setVisible(False)
-        self.unicontrol.w.toggle_outpaint.setVisible(False)
-        self.unicontrol.w.toggle_animations.setVisible(False)
-        self.unicontrol.w.toggle_plotting.setVisible(False)
-        self.unicontrol.w.toggle_aesthetics.setVisible(False)
-        self.unicontrol.w.toggle_embeddings.setVisible(False)
-        self.unicontrol.w.toggle_plugins.setVisible(False)
+        self.widgets[self.current_widget].w.toggle_negative_prompt.setVisible(False)
+        self.widgets[self.current_widget].w.negative_prompts.setVisible(False)
+        self.widgets[self.current_widget].w.prompt_weighting.setVisible(False)
+        self.widgets[self.current_widget].w.toggle_sampler.setVisible(False)
+        self.widgets[self.current_widget].w.toggle_outpaint.setVisible(False)
+        self.widgets[self.current_widget].w.toggle_animations.setVisible(False)
+        self.widgets[self.current_widget].w.toggle_plotting.setVisible(False)
+        self.widgets[self.current_widget].w.toggle_aesthetics.setVisible(False)
+        self.widgets[self.current_widget].w.toggle_embeddings.setVisible(False)
+        self.widgets[self.current_widget].w.toggle_plugins.setVisible(False)
 
-        #self.unicontrol.w.showHideAll.setVisible(False)
-        self.unicontrol.w.H.setVisible(False)
-        #self.unicontrol.w.H_slider.setVisible(False)
-        self.unicontrol.w.W.setVisible(False)
-        #self.unicontrol.w.W_slider.setVisible(False)
-        self.unicontrol.w.cfglabel.setVisible(False)
-        self.unicontrol.w.heightlabel.setVisible(False)
-        self.unicontrol.w.widthlabel.setVisible(False)
-        self.unicontrol.w.steps.setVisible(False)
-        #self.unicontrol.w.steps_slider.setVisible(False)
-        self.unicontrol.w.scale.setVisible(False)
-        #self.unicontrol.w.scale_slider.setVisible(False)
-        self.unicontrol.w.stepslabel.setVisible(False)
+        #self.widgets[self.current_widget].w.showHideAll.setVisible(False)
+        self.widgets[self.current_widget].w.H.setVisible(False)
+        #self.widgets[self.current_widget].w.H_slider.setVisible(False)
+        self.widgets[self.current_widget].w.W.setVisible(False)
+        #self.widgets[self.current_widget].w.W_slider.setVisible(False)
+        self.widgets[self.current_widget].w.cfglabel.setVisible(False)
+        self.widgets[self.current_widget].w.heightlabel.setVisible(False)
+        self.widgets[self.current_widget].w.widthlabel.setVisible(False)
+        self.widgets[self.current_widget].w.steps.setVisible(False)
+        #self.widgets[self.current_widget].w.steps_slider.setVisible(False)
+        self.widgets[self.current_widget].w.scale.setVisible(False)
+        #self.widgets[self.current_widget].w.scale_slider.setVisible(False)
+        self.widgets[self.current_widget].w.stepslabel.setVisible(False)
         self.path_setup.w.dockWidget.setVisible(False)
         self.animKeyEditor.w.dockWidget.setVisible(False)
         self.image_lab_ui.w.dockWidget.setVisible(False)
@@ -522,15 +526,15 @@ class MainWindow(QMainWindow):
         self.krea.w.dockWidget.setVisible(False)
         self.prompt_fetcher.w.dockWidget.setVisible(False)
 
-        if self.unicontrol.samHidden == False:
-            self.unicontrol.hideSampler_anim()
-        if self.unicontrol.aesHidden == False:
-            self.unicontrol.hideAesthetic_anim()
-        if self.unicontrol.aniHidden == False:
-            self.unicontrol.hideAnimation_anim()
+        if self.widgets[self.current_widget].samHidden == False:
+            self.widgets[self.current_widget].hideSampler_anim()
+        if self.widgets[self.current_widget].aesHidden == False:
+            self.widgets[self.current_widget].hideAesthetic_anim()
+        if self.widgets[self.current_widget].aniHidden == False:
+            self.widgets[self.current_widget].hideAnimation_anim()
 
-        if self.unicontrol.ploHidden == False:
-            self.unicontrol.hidePlotting_anim()
+        if self.widgets[self.current_widget].ploHidden == False:
+            self.widgets[self.current_widget].hidePlotting_anim()
 
         self.thumbs.w.dockWidget.setVisible(False)
 
@@ -541,27 +545,27 @@ class MainWindow(QMainWindow):
             self.toolbar.setVisible(True)
             self.secondary_toolbar.setVisible(True)
 
-            self.unicontrol.w.toggle_negative_prompt.setVisible(True)
-            self.unicontrol.w.prompt_weighting.setVisible(True)
-            self.unicontrol.w.toggle_sampler.setVisible(True)
-            self.unicontrol.w.toggle_outpaint.setVisible(True)
-            self.unicontrol.w.toggle_animations.setVisible(True)
-            self.unicontrol.w.toggle_plotting.setVisible(True)
-            self.unicontrol.w.toggle_aesthetics.setVisible(True)
-            self.unicontrol.w.toggle_embeddings.setVisible(True)
-            self.unicontrol.w.toggle_plugins.setVisible(True)
-            self.unicontrol.w.H.setVisible(True)
-            #self.unicontrol.w.H_slider.setVisible(True)
-            self.unicontrol.w.W.setVisible(True)
-            #self.unicontrol.w.W_slider.setVisible(True)
-            self.unicontrol.w.cfglabel.setVisible(True)
-            self.unicontrol.w.heightlabel.setVisible(True)
-            self.unicontrol.w.widthlabel.setVisible(True)
-            self.unicontrol.w.steps.setVisible(True)
-            #self.unicontrol.w.steps_slider.setVisible(True)
-            self.unicontrol.w.scale.setVisible(True)
-            #self.unicontrol.w.scale_slider.setVisible(True)
-            self.unicontrol.w.stepslabel.setVisible(True)
+            self.widgets[self.current_widget].w.toggle_negative_prompt.setVisible(True)
+            self.widgets[self.current_widget].w.prompt_weighting.setVisible(True)
+            self.widgets[self.current_widget].w.toggle_sampler.setVisible(True)
+            self.widgets[self.current_widget].w.toggle_outpaint.setVisible(True)
+            self.widgets[self.current_widget].w.toggle_animations.setVisible(True)
+            self.widgets[self.current_widget].w.toggle_plotting.setVisible(True)
+            self.widgets[self.current_widget].w.toggle_aesthetics.setVisible(True)
+            self.widgets[self.current_widget].w.toggle_embeddings.setVisible(True)
+            self.widgets[self.current_widget].w.toggle_plugins.setVisible(True)
+            self.widgets[self.current_widget].w.H.setVisible(True)
+            #self.widgets[self.current_widget].w.H_slider.setVisible(True)
+            self.widgets[self.current_widget].w.W.setVisible(True)
+            #self.widgets[self.current_widget].w.W_slider.setVisible(True)
+            self.widgets[self.current_widget].w.cfglabel.setVisible(True)
+            self.widgets[self.current_widget].w.heightlabel.setVisible(True)
+            self.widgets[self.current_widget].w.widthlabel.setVisible(True)
+            self.widgets[self.current_widget].w.steps.setVisible(True)
+            #self.widgets[self.current_widget].w.steps_slider.setVisible(True)
+            self.widgets[self.current_widget].w.scale.setVisible(True)
+            #self.widgets[self.current_widget].w.scale_slider.setVisible(True)
+            self.widgets[self.current_widget].w.stepslabel.setVisible(True)
             self.path_setup.w.dockWidget.setVisible(True)
             self.image_lab_ui.w.dockWidget.setVisible(True)
             self.lexicart.w.dockWidget.setVisible(True)
@@ -672,15 +676,15 @@ class MainWindow(QMainWindow):
         if self.params.advanced == False and self.params.max_frames > 1:
             self.params.advanced = True
     def add_next_rect(self):
-        w = self.unicontrol.w.W.value()
-        h = self.unicontrol.w.H.value()
+        w = self.widgets[self.current_widget].w.W.value()
+        h = self.widgets[self.current_widget].w.H.value()
         resize = False
         if self.canvas.canvas.rectlist == []:
             self.canvas.canvas.w = w
             self.canvas.canvas.h = h
             self.canvas.canvas.addrect_atpos(x=0, y=0)
-            self.cheight = self.unicontrol.w.H.value()
-            self.w = self.unicontrol.w.W.value()
+            self.cheight = self.widgets[self.current_widget].w.H.value()
+            self.w = self.widgets[self.current_widget].w.W.value()
             self.canvas.canvas.render_item = self.canvas.canvas.selected_item
             # print(f"this should only haappen once {self.cheight}")
             # self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
@@ -745,35 +749,35 @@ class MainWindow(QMainWindow):
 
     def outpaint_offset_signal(self):
 
-        value = int(self.unicontrol.w.offset_slider.value())
+        value = int(self.widgets[self.current_widget].w.offset_slider.value())
         self.canvas.canvas.set_offset(value)
 
     @Slot()
     def update_outpaint_parameters(self):
-        W = self.unicontrol.w.W.value()
-        H = self.unicontrol.w.H.value()
+        W = self.widgets[self.current_widget].w.W.value()
+        H = self.widgets[self.current_widget].w.H.value()
         #W, H = map(lambda x: x - x % 64, (W, H))
-        self.unicontrol.w.W.setValue(W)
-        self.unicontrol.w.H.setValue(H)
+        self.widgets[self.current_widget].w.W.setValue(W)
+        self.widgets[self.current_widget].w.H.setValue(H)
 
         self.canvas.canvas.w = W
         self.canvas.canvas.h = H
 
     def prep_rect_params(self, prompt=None):
         #prompt = str(prompt)
-        #steps = self.unicontrol.w.stepsSlider.value()
-        params = {"prompts": self.unicontrol.w.prompts.toPlainText(),
-                  "seed":random.randint(0, 2**32 - 1) if self.unicontrol.w.seed.text() == '' else int(self.unicontrol.w.seed.text()),
-                  "strength": self.unicontrol.w.strength.value(),
-                  "scale":self.unicontrol.w.scale.value(),
-                  "mask_blur":int(self.unicontrol.w.mask_blur.value()),
-                  "reconstruction_blur":int(self.unicontrol.w.reconstruction_blur.value()),
-                  "use_inpaint":self.unicontrol.w.use_inpaint.isChecked(),
-                  "mask_offset":self.unicontrol.w.mask_offset.value(),
-                  "steps":self.unicontrol.w.steps.value(),
-                  "H":self.unicontrol.w.H.value(),
-                  "W":self.unicontrol.w.W.value(),
-                  "ddim_eta":self.unicontrol.w.ddim_eta.value()
+        #steps = self.widgets[self.current_widget].w.stepsSlider.value()
+        params = {"prompts": self.widgets[self.current_widget].w.prompts.toPlainText(),
+                  "seed":random.randint(0, 2**32 - 1) if self.widgets[self.current_widget].w.seed.text() == '' else int(self.widgets[self.current_widget].w.seed.text()),
+                  "strength": self.widgets[self.current_widget].w.strength.value(),
+                  "scale":self.widgets[self.current_widget].w.scale.value(),
+                  "mask_blur":int(self.widgets[self.current_widget].w.mask_blur.value()),
+                  "reconstruction_blur":int(self.widgets[self.current_widget].w.reconstruction_blur.value()),
+                  "use_inpaint":self.widgets[self.current_widget].w.use_inpaint.isChecked(),
+                  "mask_offset":self.widgets[self.current_widget].w.mask_offset.value(),
+                  "steps":self.widgets[self.current_widget].w.steps.value(),
+                  "H":self.widgets[self.current_widget].w.H.value(),
+                  "W":self.widgets[self.current_widget].w.W.value(),
+                  "ddim_eta":self.widgets[self.current_widget].w.ddim_eta.value()
                   }
 
         return params
@@ -816,17 +820,17 @@ class MainWindow(QMainWindow):
                     if items.params != {}:
                         pass
                         #print(f"showing strength of {items.params['strength'] * 100}")
-                        #self.unicontrol.w.steps.setValue(items.params.steps)
-                        #self.unicontrol.w.steps_slider.setValue(items.params.steps)
-                        #self.unicontrol.w.scale.setValue(items.params['scale'] * 10)
-                        #self.unicontrol.w.scale_slider.setValue(items.params['scale'] * 10)
-                        #self.unicontrol.w.strength.setValue(int(items.params['strength'] * 100))
-                        #self.unicontrol.w.strength_slider.setValue(int(items.params['strength'] * 100))
-                        #self.unicontrol.w.reconstruction_blur.setValue(items.params['reconstruction_blur'])
-                        #self.unicontrol.w.mask_blur.setValue(items.params['mask_blur'])
-                        #self.unicontrol.w.prompts.setText(items.params['prompts'])
-                        #self.unicontrol.w.seed.setText(str(items.params['seed']))
-                        #self.unicontrol.w.mask_offset.setValue(items.params['mask_offset'])
+                        #self.widgets[self.current_widget].w.steps.setValue(items.params.steps)
+                        #self.widgets[self.current_widget].w.steps_slider.setValue(items.params.steps)
+                        #self.widgets[self.current_widget].w.scale.setValue(items.params['scale'] * 10)
+                        #self.widgets[self.current_widget].w.scale_slider.setValue(items.params['scale'] * 10)
+                        #self.widgets[self.current_widget].w.strength.setValue(int(items.params['strength'] * 100))
+                        #self.widgets[self.current_widget].w.strength_slider.setValue(int(items.params['strength'] * 100))
+                        #self.widgets[self.current_widget].w.reconstruction_blur.setValue(items.params['reconstruction_blur'])
+                        #self.widgets[self.current_widget].w.mask_blur.setValue(items.params['mask_blur'])
+                        #self.widgets[self.current_widget].w.prompts.setText(items.params['prompts'])
+                        #self.widgets[self.current_widget].w.seed.setText(str(items.params['seed']))
+                        #self.widgets[self.current_widget].w.mask_offset.setValue(items.params['mask_offset'])
 
                     if items.images is not []:
                         for i in items.images:
@@ -879,7 +883,7 @@ class MainWindow(QMainWindow):
         self.callbackbusy = True
         x = 0
         self.busy = False
-        offset = self.unicontrol.w.mask_offset.value()
+        offset = self.widgets[self.current_widget].w.mask_offset.value()
         #self.preview_batch_outpaint()
         if gobig_img_path is not None:
             pil_image = Image.open(gobig_img_path).resize((self.canvas.W.value(),self.canvas.H.value()), Image.Resampling.LANCZOS).convert("RGBA")
@@ -937,8 +941,8 @@ class MainWindow(QMainWindow):
 
     def run_hires_batch(self, progress_callback=None):
         self.sessionparams.params.advanced = True
-        #multi = self.unicontrol.w.multiBatch.isChecked()
-        #batch_n = self.unicontrol.w.multiBatchvalue.value()
+        #multi = self.widgets[self.current_widget].w.multiBatch.isChecked()
+        #batch_n = self.widgets[self.current_widget].w.multiBatchvalue.value()
         multi = False
         batch_n = 1
         self.stopprocessing = False
@@ -965,7 +969,7 @@ class MainWindow(QMainWindow):
             alpha_gradient = ImageDraw.Draw(alpha)
             a = 0
             i = 0
-            overlap = self.unicontrol.w.offsetSlider.value()
+            overlap = self.widgets[self.current_widget].w.offsetSlider.value()
             shape = (og_size, (0, 0))
             while i < overlap:
                 alpha_gradient.rectangle(shape, fill=a)
@@ -1013,8 +1017,8 @@ class MainWindow(QMainWindow):
         self.choice = "Outpaint"
         self.sessionparams.params.advanced = True
 
-        #multi = self.unicontrol.w.multiBatch.isChecked()
-        #batch_n = self.unicontrol.w.multiBatchvalue.value()
+        #multi = self.widgets[self.current_widget].w.multiBatch.isChecked()
+        #batch_n = self.widgets[self.current_widget].w.multiBatchvalue.value()
 
         multi = False
         batch_n = 1
@@ -1071,19 +1075,19 @@ class MainWindow(QMainWindow):
 
     def preview_batch_outpaint(self, with_chops=None, chops_y=None):
         if with_chops is None:
-            self.canvas.canvas.cols = self.unicontrol.w.batch_columns_slider.value()
-            self.canvas.canvas.rows = self.unicontrol.w.batch_rows_slider.value()
+            self.canvas.canvas.cols = self.widgets[self.current_widget].w.batch_columns_slider.value()
+            self.canvas.canvas.rows = self.widgets[self.current_widget].w.batch_rows_slider.value()
         else:
             self.canvas.canvas.cols = with_chops
             self.canvas.canvas.rows = chops_y
-        self.canvas.canvas.offset = self.unicontrol.w.rect_overlap.value()
-        self.canvas.canvas.maskoffset = self.unicontrol.w.mask_offset.value()
-        randomize = self.unicontrol.w.randomize.isChecked()
-        spiral = self.unicontrol.w.spiral.isChecked()
-        reverse = self.unicontrol.w.reverse.isChecked()
-        startOffsetX = self.unicontrol.w.start_offset_x_slider.value()
-        startOffsetY = self.unicontrol.w.start_offset_y_slider.value()
-        prompts = self.unicontrol.w.prompts.toPlainText()
+        self.canvas.canvas.offset = self.widgets[self.current_widget].w.rect_overlap.value()
+        self.canvas.canvas.maskoffset = self.widgets[self.current_widget].w.mask_offset.value()
+        randomize = self.widgets[self.current_widget].w.randomize.isChecked()
+        spiral = self.widgets[self.current_widget].w.spiral.isChecked()
+        reverse = self.widgets[self.current_widget].w.reverse.isChecked()
+        startOffsetX = self.widgets[self.current_widget].w.start_offset_x_slider.value()
+        startOffsetY = self.widgets[self.current_widget].w.start_offset_y_slider.value()
+        prompts = self.widgets[self.current_widget].w.prompts.toPlainText()
         #keyframes = self.prompt.w.keyFrames.toPlainText()
         keyframes = ""
         self.canvas.canvas.create_tempBatch(prompts, keyframes, startOffsetX, startOffsetY, randomize)
@@ -1097,7 +1101,7 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.draw_tempBatch(self.canvas.canvas.tempbatch)
 
     def outpaint_rect_overlap(self):
-        self.canvas.canvas.rectPreview = self.unicontrol.w.enable_overlap.isChecked()
+        self.canvas.canvas.rectPreview = self.widgets[self.current_widget].w.enable_overlap.isChecked()
         if self.canvas.canvas.rectPreview == False:
             self.canvas.canvas.newimage = True
             self.canvas.canvas.redraw()
@@ -1156,16 +1160,16 @@ class MainWindow(QMainWindow):
 
     def list_files(self, index=0):
         paths = []
-        self.unicontrol.w.aesthetic_embedding.clear()
-        self.unicontrol.w.aesthetic_embedding.addItem("None")
+        self.widgets[self.current_widget].w.aesthetic_embedding.clear()
+        self.widgets[self.current_widget].w.aesthetic_embedding.addItem("None")
         for _, _, files in os.walk(gs.system.aesthetic_gradients):
             for file in files:
-                self.unicontrol.w.aesthetic_embedding.addItem(str(file))
+                self.widgets[self.current_widget].w.aesthetic_embedding.addItem(str(file))
         #self.set_txt2img.w.gradientList.setItemText(index)
 
     def select_gradient(self, gradient):
-        if self.unicontrol.w.aesthetic_embedding.itemText(gradient) != "None":
-            gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.unicontrol.w.aesthetic_embedding.itemText(gradient))
+        if self.widgets[self.current_widget].w.aesthetic_embedding.itemText(gradient) != "None":
+            gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.widgets[self.current_widget].w.aesthetic_embedding.itemText(gradient))
         else:
             gs.aesthetic_embedding_path = None
 
@@ -1193,27 +1197,27 @@ class MainWindow(QMainWindow):
         selection = self.animKeyEditor.w.comboBox.currentText()
         if tempString != "":
             if "Contrast" in selection:
-                self.unicontrol.w.contrast_schedule.setText(tempString)
+                self.widgets[self.current_widget].w.contrast_schedule.setText(tempString)
             if "Noise" in selection:
-                self.unicontrol.w.noise_schedule.setText(tempString)
+                self.widgets[self.current_widget].w.noise_schedule.setText(tempString)
             if "Strength" in selection:
-                self.unicontrol.w.strength_schedule.setText(tempString)
+                self.widgets[self.current_widget].w.strength_schedule.setText(tempString)
             if "Rotation X" in selection:
-                self.unicontrol.w.rotation_3d_x.setText(tempString)
+                self.widgets[self.current_widget].w.rotation_3d_x.setText(tempString)
             if "Rotation Y" in selection:
-                self.unicontrol.w.rotation_3d_y.setText(tempString)
+                self.widgets[self.current_widget].w.rotation_3d_y.setText(tempString)
             if "Rotation Z" in selection:
-                self.unicontrol.w.rotation_3d_z.setText(tempString)
+                self.widgets[self.current_widget].w.rotation_3d_z.setText(tempString)
             if "Translation X" in selection:
-                self.unicontrol.w.translation_x.setText(tempString)
+                self.widgets[self.current_widget].w.translation_x.setText(tempString)
             if "Translation Y" in selection:
-                self.unicontrol.w.translation_y.setText(tempString)
+                self.widgets[self.current_widget].w.translation_y.setText(tempString)
             if "Translation Z" in selection:
-                self.unicontrol.w.translation_z.setText(tempString)
+                self.widgets[self.current_widget].w.translation_z.setText(tempString)
             if "Angle" in selection:
-                self.unicontrol.w.angle.setText(tempString)
+                self.widgets[self.current_widget].w.angle.setText(tempString)
             if "Zoom" in selection:
-                self.unicontrol.w.zoom.setText(tempString)
+                self.widgets[self.current_widget].w.zoom.setText(tempString)
 
     @Slot()
     def updateKeyFramesFromTemp(self):

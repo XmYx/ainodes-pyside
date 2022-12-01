@@ -850,11 +850,12 @@ class Canvas(QGraphicsView):
                     pic = i.image.copy(0, 0, i.image.width(), i.image.height())
                     pixmap = QPixmap.fromImage(pic)
                     self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
-                    if i.running is True:
-                        pixmap = QPixmap('frontend/icons/square.svg')
-                    elif i.running is False:
-                        pixmap = QPixmap('frontend/icons/play.svg')
-                    self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
+                    if len(i.images) > 1:
+                        if i.running is True:
+                            pixmap = QPixmap('frontend/icons/square.svg')
+                        elif i.running is False:
+                            pixmap = QPixmap('frontend/icons/play.svg')
+                        self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
         self.painter.end()
         #self.bgitem.setX(0)
         self.bgitem.setPixmap(self.pixmap)

@@ -100,7 +100,7 @@ class Deforum_UI(QObject):
                                          clamp_start=params.clamp_start,
                                          clamp_stop=params.clamp_stop,
                                          grad_inject_timing=1,
-                                         # if self.parent.unicontrol.w.grad_inject_timing.text() == '' else self.parent.unicontrol.w.grad_inject_timing.text(), #it is a float an int or a list of floats
+                                         # if self.parent.widgets[self.parent.current_widget].w.grad_inject_timing.text() == '' else self.parent.widgets[self.parent.current_widget].w.grad_inject_timing.text(), #it is a float an int or a list of floats
                                          cond_uncond_sync=params.cond_uncond_sync,
                                          step_callback=self.parent.tensor_preview_signal if params.show_sample_per_step else None,
                                          image_callback=self.parent.image_preview_signal,
@@ -126,7 +126,7 @@ class Deforum_UI(QObject):
         if id is not None:
             self.parent.canvas.canvas.render_item = id
 
-        gs.karras = self.parent.unicontrol.w.karras.isChecked()
+        gs.karras = self.parent.widgets[self.parent.current_widget].w.karras.isChecked()
         self.params = self.parent.sessionparams.update_params()
         self.parent.params = self.params
 
@@ -142,9 +142,9 @@ class Deforum_UI(QObject):
         else:
             self.parent.params.advanced = False
 
-        gs.T = self.parent.unicontrol.w.gradient_steps.value()
-        gs.lr = self.parent.unicontrol.w.gradient_scale.value() / 1000000000
-        gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.unicontrol.w.aesthetic_embedding.currentText())
+        gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
+        gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value() / 1000000000
+        gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
         if gs.aesthetic_embedding_path == 'None':
             gs.aesthetic_embedding_path = None
         seed = random.randint(0, 2 ** 32 - 1)
@@ -226,7 +226,7 @@ class Deforum_UI(QObject):
                                                  clamp_start=self.params.clamp_start,
                                                  clamp_stop=self.params.clamp_stop,
                                                  grad_inject_timing=1,
-                                                 # if self.parent.unicontrol.w.grad_inject_timing.text() == '' else self.parent.unicontrol.w.grad_inject_timing.text(), #it is a float an int or a list of floats
+                                                 # if self.parent.widgets[self.parent.current_widget].w.grad_inject_timing.text() == '' else self.parent.widgets[self.parent.current_widget].w.grad_inject_timing.text(), #it is a float an int or a list of floats
                                                  cond_uncond_sync=self.params.cond_uncond_sync,
                                                  step_callback=self.parent.tensor_preview_signal if self.params.show_sample_per_step is not False else None,
                                                  image_callback=self.parent.image_preview_signal,
@@ -281,9 +281,9 @@ class Deforum_UI(QObject):
         #sampler_name = translate_sampler(self.parent.sampler.w.sampler.currentText())
         sampler_name = "ddim"
         init_image = "outpaint.png"
-        gs.T = self.parent.unicontrol.w.gradient_steps.value()
-        gs.lr = self.parent.unicontrol.w.gradient_scale.value() / 1000000000
-        gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.unicontrol.w.aesthetic_embedding.currentText())
+        gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
+        gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value() / 1000000000
+        gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
         #if params == None:
         params = self.parent.sessionparams.update_params()
 

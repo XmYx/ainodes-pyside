@@ -47,165 +47,166 @@ class SessionParams():
 
     def update_params(self):
         mode = ""
-        steps = self.parent.unicontrol.w.steps.value()
-        H = self.parent.unicontrol.w.H.value()
-        W = self.parent.unicontrol.w.W.value()
-        seed = random.randint(0, 2 ** 32 - 1) if self.parent.unicontrol.w.seed.text() == '' else int(
-            self.parent.unicontrol.w.seed.text())
-        prompt = self.parent.unicontrol.w.prompts.toPlainText()
-        mask_blur = int(self.parent.unicontrol.w.mask_blur.value())
-        recons_blur = int(self.parent.unicontrol.w.reconstruction_blur.value())
-        scale = self.parent.unicontrol.w.scale.value()
-        ddim_eta = self.parent.unicontrol.w.ddim_eta.value()
-        with_inpaint = self.parent.unicontrol.w.use_inpaint.isChecked()
+        widget = 'unicontrol'
+        steps = self.parent.widgets[widget].w.steps.value()
+        H = self.parent.widgets[widget].w.H.value()
+        W = self.parent.widgets[widget].w.W.value()
+        seed = random.randint(0, 2 ** 32 - 1) if self.parent.widgets[widget].w.seed.text() == '' else int(
+            self.parent.widgets[widget].w.seed.text())
+        prompt = self.parent.widgets[widget].w.prompts.toPlainText()
+        mask_blur = int(self.parent.widgets[widget].w.mask_blur.value())
+        recons_blur = int(self.parent.widgets[widget].w.reconstruction_blur.value())
+        scale = self.parent.widgets[widget].w.scale.value()
+        ddim_eta = self.parent.widgets[widget].w.ddim_eta.value()
+        with_inpaint = self.parent.widgets[widget].w.use_inpaint.isChecked()
         gs.T = 0
         gs.lr = 0
 
 
-        # todo find out why this is no used self.parent.unicontrol.w.aesthetic_embedding.currentText()
-        # gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.unicontrol.w.aesthetic_embedding.currentText())
+        # todo find out why this is no used self.parent.widgets[widget].w.aesthetic_embedding.currentText()
+        # gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[widget].w.aesthetic_embedding.currentText())
         if gs.aesthetic_embedding_path != "None":
-            gs.T = self.parent.unicontrol.w.gradient_steps.value()
-            gs.lr = self.parent.unicontrol.w.gradient_scale.value()
+            gs.T = self.parent.widgets[widget].w.gradient_steps.value()
+            gs.lr = self.parent.widgets[widget].w.gradient_scale.value()
         else:
             gs.aesthetic_embedding_path = None
 
         if gs.aesthetic_embedding_path != "None": # todo whats the difference ?
-            gs.T = self.parent.unicontrol.w.gradient_steps.value()
-            gs.lr = self.parent.unicontrol.w.gradient_scale.value()
+            gs.T = self.parent.widgets[widget].w.gradient_steps.value()
+            gs.lr = self.parent.widgets[widget].w.gradient_scale.value()
             # print(f"Aesthetic Gradients: {gs.aesthetic_embedding_path} \nSteps: {gs.T} \nScale: {gs.lr}\n\nGL HF\n\n")
             # print(f"Expected Tensor Value: {(gs.T * gs.lr) + -0.3}")
         else:
             gs.aesthetic_embedding_path = None
 
 
-        if self.parent.unicontrol.w.n_samples.value() == 1:
+        if self.parent.widgets[widget].w.n_samples.value() == 1:
             makegrid = False
         else:
-            makegrid = self.parent.unicontrol.w.makegrid.isChecked()  # self.parent.unicontrol.w.make_grid.isChecked()
+            makegrid = self.parent.widgets[widget].w.makegrid.isChecked()  # self.parent.widgets[widget].w.make_grid.isChecked()
         outdir = gs.system.txt2imgOut
-        sampler_name = translate_sampler(self.parent.unicontrol.w.sampler.currentText())
-        use_init = self.parent.unicontrol.w.use_init.isChecked()
-        strength = self.parent.unicontrol.w.strength.value()
-        seed_behavior = self.parent.unicontrol.w.seed_behavior.currentText()
-        n_batch = self.parent.unicontrol.w.n_batch.value()
-        n_samples = self.parent.unicontrol.w.n_samples.value()
-        show_sample_per_step = self.parent.unicontrol.w.show_sample_per_step.isChecked()
-        save_settings = self.parent.unicontrol.w.save_settings.isChecked()
-        strength_0_no_init = self.parent.unicontrol.w.strength_0_no_init.isChecked()
+        sampler_name = translate_sampler(self.parent.widgets[widget].w.sampler.currentText())
+        use_init = self.parent.widgets[widget].w.use_init.isChecked()
+        strength = self.parent.widgets[widget].w.strength.value()
+        seed_behavior = self.parent.widgets[widget].w.seed_behavior.currentText()
+        n_batch = self.parent.widgets[widget].w.n_batch.value()
+        n_samples = self.parent.widgets[widget].w.n_samples.value()
+        show_sample_per_step = self.parent.widgets[widget].w.show_sample_per_step.isChecked()
+        save_settings = self.parent.widgets[widget].w.save_settings.isChecked()
+        strength_0_no_init = self.parent.widgets[widget].w.strength_0_no_init.isChecked()
 
         # self.parent.deforum.sampler_name = sampler_name
         print(f'sampler: {sampler_name} steps {steps}\nscale: {scale}\nddim_eta: {ddim_eta}')
 
-        decode_method = None if self.parent.unicontrol.w.decode_method.currentText() == 'None' else self.parent.unicontrol.w.decode_method.currentText()
+        decode_method = None if self.parent.widgets[widget].w.decode_method.currentText() == 'None' else self.parent.widgets[widget].w.decode_method.currentText()
 
-        if self.parent.unicontrol.w.toggle_negative_prompt.isChecked():
-            negative_prompts = self.parent.unicontrol.w.negative_prompts.toPlainText()
+        if self.parent.widgets[widget].w.toggle_negative_prompt.isChecked():
+            negative_prompts = self.parent.widgets[widget].w.negative_prompts.toPlainText()
             print(f"Using negative prompts {negative_prompts}")
         else:
             negative_prompts = None
 
-        mean_scale = self.parent.unicontrol.w.mean_scale.value()
-        var_scale = self.parent.unicontrol.w.var_scale.value()
-        exposure_scale = self.parent.unicontrol.w.exposure_scale.value()
-        exposure_target = self.parent.unicontrol.w.exposure_target.value()
-        colormatch_scale = self.parent.unicontrol.w.colormatch_scale.value()
+        mean_scale = self.parent.widgets[widget].w.mean_scale.value()
+        var_scale = self.parent.widgets[widget].w.var_scale.value()
+        exposure_scale = self.parent.widgets[widget].w.exposure_scale.value()
+        exposure_target = self.parent.widgets[widget].w.exposure_target.value()
+        colormatch_scale = self.parent.widgets[widget].w.colormatch_scale.value()
         # To Do: Image selector, and line editor PopUp window
-        colormatch_image = None  # if self.parent.unicontrol.w.colormatch_image.text() == '' else self.parent.unicontrol.w.colormatch_image.text()
-        colormatch_n_colors = self.parent.unicontrol.w.colormatch_n_colors.value()
-        ignore_sat_weight = self.parent.unicontrol.w.ignore_sat_weight.value()
-        clip_name = self.parent.unicontrol.w.clip_name.currentText()  # @param ['ViT-L/14' 'ViT-L/14@336px' 'ViT-B/16' 'ViT-B/32']
-        clip_scale = self.parent.unicontrol.w.clip_scale.value()
-        aesthetics_scale = self.parent.unicontrol.w.aesthetics_scale.value()
-        cutn = int(self.parent.unicontrol.w.cutn.value())
-        cut_pow = self.parent.unicontrol.w.cut_pow.value()
+        colormatch_image = None  # if self.parent.widgets[widget].w.colormatch_image.text() == '' else self.parent.widgets[widget].w.colormatch_image.text()
+        colormatch_n_colors = self.parent.widgets[widget].w.colormatch_n_colors.value()
+        ignore_sat_weight = self.parent.widgets[widget].w.ignore_sat_weight.value()
+        clip_name = self.parent.widgets[widget].w.clip_name.currentText()  # @param ['ViT-L/14' 'ViT-L/14@336px' 'ViT-B/16' 'ViT-B/32']
+        clip_scale = self.parent.widgets[widget].w.clip_scale.value()
+        aesthetics_scale = self.parent.widgets[widget].w.aesthetics_scale.value()
+        cutn = int(self.parent.widgets[widget].w.cutn.value())
+        cut_pow = self.parent.widgets[widget].w.cut_pow.value()
 
-        init_mse_scale = self.parent.unicontrol.w.init_mse_scale.value()
-        init_mse_image = None #if self.parent.unicontrol.w.init_mse_image.text() == '' else self.parent.unicontrol.w.init_mse_image.text()
-        blue_scale = self.parent.unicontrol.w.blue_scale.value()
+        init_mse_scale = self.parent.widgets[widget].w.init_mse_scale.value()
+        init_mse_image = None #if self.parent.widgets[widget].w.init_mse_image.text() == '' else self.parent.widgets[widget].w.init_mse_image.text()
+        blue_scale = self.parent.widgets[widget].w.blue_scale.value()
 
-        gradient_wrt = self.parent.unicontrol.w.gradient_wrt.currentText()  # ["x" "x0_pred"]
-        gradient_add_to = self.parent.unicontrol.w.gradient_add_to.currentText()  # ["cond" "uncond" "both"]
+        gradient_wrt = self.parent.widgets[widget].w.gradient_wrt.currentText()  # ["x" "x0_pred"]
+        gradient_add_to = self.parent.widgets[widget].w.gradient_add_to.currentText()  # ["cond" "uncond" "both"]
         decode_method = decode_method  # ["autoencoder""linear"]
-        grad_threshold_type = self.parent.unicontrol.w.grad_threshold_type.currentText()  # ["dynamic" "static" "mean" "schedule"]
-        clamp_grad_threshold = self.parent.unicontrol.w.clamp_grad_threshold.value()
-        clamp_start = self.parent.unicontrol.w.clamp_start.value()
-        clamp_stop = self.parent.unicontrol.w.clamp_stop.value()
-        grad_inject_timing = 0  if self.parent.unicontrol.w.grad_inject_timing.text() == '' else self.parent.unicontrol.w.grad_inject_timing.text() #it is a float an int or a list of floats
-        cond_uncond_sync = self.parent.unicontrol.w.cond_uncond_sync.isChecked()
+        grad_threshold_type = self.parent.widgets[widget].w.grad_threshold_type.currentText()  # ["dynamic" "static" "mean" "schedule"]
+        clamp_grad_threshold = self.parent.widgets[widget].w.clamp_grad_threshold.value()
+        clamp_start = self.parent.widgets[widget].w.clamp_start.value()
+        clamp_stop = self.parent.widgets[widget].w.clamp_stop.value()
+        grad_inject_timing = 0  if self.parent.widgets[widget].w.grad_inject_timing.text() == '' else self.parent.widgets[widget].w.grad_inject_timing.text() #it is a float an int or a list of floats
+        cond_uncond_sync = self.parent.widgets[widget].w.cond_uncond_sync.isChecked()
         negative_prompts = negative_prompts
-        prompts = self.parent.unicontrol.w.prompts.toPlainText()
-        hires = self.parent.unicontrol.w.hires.isChecked()
+        prompts = self.parent.widgets[widget].w.prompts.toPlainText()
+        hires = self.parent.widgets[widget].w.hires.isChecked()
 
-        mask_overlay_blur = self.parent.unicontrol.w.mask_overlay_blur.value()
+        mask_overlay_blur = self.parent.widgets[widget].w.mask_overlay_blur.value()
         precision = 'autocast'
         timestring = ""
-        border = self.parent.unicontrol.w.border.currentText()
-        angle = self.parent.unicontrol.w.angle.toPlainText()
-        zoom = self.parent.unicontrol.w.zoom.toPlainText()
-        translation_x = self.parent.unicontrol.w.translation_x.toPlainText()
-        translation_y = self.parent.unicontrol.w.translation_y.toPlainText()
-        translation_z = self.parent.unicontrol.w.translation_z.toPlainText()
-        rotation_3d_x = self.parent.unicontrol.w.rotation_3d_x.toPlainText()
-        rotation_3d_y = self.parent.unicontrol.w.rotation_3d_y.toPlainText()
-        rotation_3d_z = self.parent.unicontrol.w.rotation_3d_z.toPlainText()
-        flip_2d_perspective = self.parent.unicontrol.w.flip_2d_perspective.isChecked()
-        perspective_flip_theta = self.parent.unicontrol.w.perspective_flip_theta.toPlainText()
-        perspective_flip_phi = self.parent.unicontrol.w.perspective_flip_phi.toPlainText()
-        perspective_flip_gamma = self.parent.unicontrol.w.perspective_flip_gamma.toPlainText()
-        perspective_flip_fv = self.parent.unicontrol.w.perspective_flip_fv.toPlainText()
-        noise_schedule = self.parent.unicontrol.w.noise_schedule.toPlainText()
-        strength_schedule = self.parent.unicontrol.w.strength_schedule.toPlainText()
-        contrast_schedule = self.parent.unicontrol.w.contrast_schedule.toPlainText()
-        diffusion_cadence = self.parent.unicontrol.w.diffusion_cadence.value()
-        color_coherence = self.parent.unicontrol.w.color_coherence.currentText()
-        use_depth_warping = self.parent.unicontrol.w.use_depth_warping.isChecked()
-        midas_weight = self.parent.unicontrol.w.midas_weight.value()
-        near_plane = self.parent.unicontrol.w.near_plane.value()
-        far_plane = self.parent.unicontrol.w.far_plane.value()
-        fov = self.parent.unicontrol.w.fov.value()
-        padding_mode = self.parent.unicontrol.w.padding_mode.currentText()
-        sampling_mode = self.parent.unicontrol.w.sampling_mode.currentText()
-        save_depth_maps = self.parent.unicontrol.w.save_depth_maps.isChecked()
-        use_mask_video = self.parent.unicontrol.w.use_mask_video.isChecked()
-        resume_from_timestring = self.parent.unicontrol.w.resume_from_timestring.isChecked()
-        resume_timestring = self.parent.unicontrol.w.resume_timestring.text()
-        clear_latent = self.parent.unicontrol.w.clear_latent.isChecked()
-        clear_sample = self.parent.unicontrol.w.clear_sample.isChecked()
+        border = self.parent.widgets[widget].w.border.currentText()
+        angle = self.parent.widgets[widget].w.angle.toPlainText()
+        zoom = self.parent.widgets[widget].w.zoom.toPlainText()
+        translation_x = self.parent.widgets[widget].w.translation_x.toPlainText()
+        translation_y = self.parent.widgets[widget].w.translation_y.toPlainText()
+        translation_z = self.parent.widgets[widget].w.translation_z.toPlainText()
+        rotation_3d_x = self.parent.widgets[widget].w.rotation_3d_x.toPlainText()
+        rotation_3d_y = self.parent.widgets[widget].w.rotation_3d_y.toPlainText()
+        rotation_3d_z = self.parent.widgets[widget].w.rotation_3d_z.toPlainText()
+        flip_2d_perspective = self.parent.widgets[widget].w.flip_2d_perspective.isChecked()
+        perspective_flip_theta = self.parent.widgets[widget].w.perspective_flip_theta.toPlainText()
+        perspective_flip_phi = self.parent.widgets[widget].w.perspective_flip_phi.toPlainText()
+        perspective_flip_gamma = self.parent.widgets[widget].w.perspective_flip_gamma.toPlainText()
+        perspective_flip_fv = self.parent.widgets[widget].w.perspective_flip_fv.toPlainText()
+        noise_schedule = self.parent.widgets[widget].w.noise_schedule.toPlainText()
+        strength_schedule = self.parent.widgets[widget].w.strength_schedule.toPlainText()
+        contrast_schedule = self.parent.widgets[widget].w.contrast_schedule.toPlainText()
+        diffusion_cadence = self.parent.widgets[widget].w.diffusion_cadence.value()
+        color_coherence = self.parent.widgets[widget].w.color_coherence.currentText()
+        use_depth_warping = self.parent.widgets[widget].w.use_depth_warping.isChecked()
+        midas_weight = self.parent.widgets[widget].w.midas_weight.value()
+        near_plane = self.parent.widgets[widget].w.near_plane.value()
+        far_plane = self.parent.widgets[widget].w.far_plane.value()
+        fov = self.parent.widgets[widget].w.fov.value()
+        padding_mode = self.parent.widgets[widget].w.padding_mode.currentText()
+        sampling_mode = self.parent.widgets[widget].w.sampling_mode.currentText()
+        save_depth_maps = self.parent.widgets[widget].w.save_depth_maps.isChecked()
+        use_mask_video = self.parent.widgets[widget].w.use_mask_video.isChecked()
+        resume_from_timestring = self.parent.widgets[widget].w.resume_from_timestring.isChecked()
+        resume_timestring = self.parent.widgets[widget].w.resume_timestring.text()
+        clear_latent = self.parent.widgets[widget].w.clear_latent.isChecked()
+        clear_sample = self.parent.widgets[widget].w.clear_sample.isChecked()
         shouldStop = False
-        cpudepth = self.parent.unicontrol.w.cpudepth.isChecked()
+        cpudepth = self.parent.widgets[widget].w.cpudepth.isChecked()
         skip_video_for_run_all = False
 
-        init_image = self.parent.unicontrol.w.init_image.text()
-        prompt_weighting = self.parent.unicontrol.w.prompt_weighting.isChecked()
-        normalize_prompt_weights = self.parent.unicontrol.w.normalized_prompts.isChecked()
+        init_image = self.parent.widgets[widget].w.init_image.text()
+        prompt_weighting = self.parent.widgets[widget].w.prompt_weighting.isChecked()
+        normalize_prompt_weights = self.parent.widgets[widget].w.normalized_prompts.isChecked()
         outdir = gs.system.txt2imgOut
 
-        if self.parent.unicontrol.w.max_frames.value() < 2:
+        if self.parent.widgets[widget].w.max_frames.value() < 2:
             animation_mode = 'None'
         else:
-            if self.parent.unicontrol.w.anim2D.isChecked():
+            if self.parent.widgets[widget].w.anim2D.isChecked():
                 animation_mode = '2D'
                 outdir = gs.system.txt2vidSingleFrame
-            if self.parent.unicontrol.w.anim3D.isChecked():
+            if self.parent.widgets[widget].w.anim3D.isChecked():
                 animation_mode = '3D'
                 outdir = gs.system.txt2vidSingleFrame
-            if self.parent.unicontrol.w.animVid.isChecked():
+            if self.parent.widgets[widget].w.animVid.isChecked():
                 animation_mode = 'Video Input'
                 outdir = gs.system.txt2vidSingleFrame
 
 
         advanced = False
-        max_frame = self.parent.unicontrol.w.max_frames.value() if animation_mode != 'None' else 1
-        use_inpaint = self.parent.unicontrol.w.use_inpaint.isChecked()
+        max_frame = self.parent.widgets[widget].w.max_frames.value() if animation_mode != 'None' else 1
+        use_inpaint = self.parent.widgets[widget].w.use_inpaint.isChecked()
         with_inpaint = use_inpaint
-        lowmem = self.parent.unicontrol.w.lowmem.isChecked()
+        lowmem = self.parent.widgets[widget].w.lowmem.isChecked()
 
-        plotting = self.parent.unicontrol.w.plotting.isChecked()
-        plotX = self.parent.unicontrol.w.plotX.currentText()
-        plotY = self.parent.unicontrol.w.plotY.currentText()
-        plotXLine = self.parent.unicontrol.w.plotXLine.text()
-        plotYLine = self.parent.unicontrol.w.plotYLine.text()
+        plotting = self.parent.widgets[widget].w.plotting.isChecked()
+        plotX = self.parent.widgets[widget].w.plotX.currentText()
+        plotY = self.parent.widgets[widget].w.plotY.currentText()
+        plotXLine = self.parent.widgets[widget].w.plotXLine.text()
+        plotYLine = self.parent.widgets[widget].w.plotYLine.text()
         self.params = {             # todo make this a one step thing not two steps
             # Basic Params
             'mode': mode,

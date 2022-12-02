@@ -170,13 +170,16 @@ class AestheticCLIP:
             self.image_embs_name = None
         print(gs.aesthetic_embedding_path)
         #print(os.path.join(gs.system.aesthetic_gradients, 'None'))
-        if gs.aesthetic_embedding_path is not None:
+        if gs.diffusion.selected_aesthetic_embedding is not 'None':
             self.image_embs_name = image_embs_name
-            self.image_embs = torch.load(os.path.join(gs.system.aesthetic_gradients, image_embs_name), map_location=self.device)
+            self.image_embs = torch.load(os.path.join(gs.system.aesthetic_gradients, gs.diffusion.selected_aesthetic_embedding), map_location=self.device)
             self.image_embs /= self.image_embs.norm(dim=-1, keepdim=True)
             self.image_embs.requires_grad_(False)
 
     def __call__(self, remade_batch_tokens, multipliers):
+        print(gs.diffusion.selected_aesthetic_embedding)
+        if gs.diffusion.selected_aesthetic_embedding != 'None':
+            self.load_image_embs(gs.diffusion.selected_aesthetic_embedding)
         z = self.process_tokens(remade_batch_tokens, multipliers)
         self.aesthetic_steps = gs.T
         self.aesthetic_lr = gs.lr

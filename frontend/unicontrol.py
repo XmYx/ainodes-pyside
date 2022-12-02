@@ -76,7 +76,7 @@ class UniControl(QObject):
         self.w.select_vae.clear()
         self.w.select_vae.addItem('None')
         for model in files:
-            if '.pt' in model:
+            if '.ckpt' in model:
                 self.w.select_vae.addItem(model)
         item_count = self.w.select_vae.count()
         model_items = []

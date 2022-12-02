@@ -141,9 +141,17 @@ class Deforum_UI(QObject):
             self.parent.params.advanced = True
         else:
             self.parent.params.advanced = False
-
+        gs.diffusion.selected_aesthetic_embedding = self.parent.widgets[self.parent.current_widget].w.select_aesthetic_embedding.currentText()
         gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
         gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value()
+        gs.aesthetic_weight = self.parent.widgets[self.parent.current_widget].w.aesthetic_weight.value()
+        gs.slerp = self.parent.widgets[self.parent.current_widget].w.slerp.isChecked()
+        gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.toPlainText()
+        gs.slerp_angle = self.parent.widgets[self.parent.current_widget].w.slerp_angle.value()
+        gs.aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.toPlainText()
+
+
+
         #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
         #if gs.aesthetic_embedding_path == 'None':
         #    gs.aesthetic_embedding_path = None

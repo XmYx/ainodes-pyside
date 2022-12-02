@@ -209,4 +209,4 @@ NSFW: {model_info['item']['nsfw']}
             dst = os.path.join(gs.system.customModels, config_name)
             shutil.copyfile(src, dst)
 
-        self.parent.unicontrol.update_model_list()
+        self.parent.widgets[self.parent.current_widget].update_model_list()

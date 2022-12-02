@@ -1,13 +1,14 @@
 import io
 import json
 import os
+import re
 import shutil
 import urllib.request
 import urllib.parse
 
 from PySide6 import QtUiTools, QtNetwork, QtCore
 from PySide6.QtCore import QObject, QFile, Signal
-from backend.poor_mans_wget import wget_progress
+from backend.poor_mans_wget import wget_progress, wget_headers
 from backend.singleton import singleton
 gs = singleton
 
@@ -164,26 +165,33 @@ NSFW: {model_info['item']['nsfw']}
         self.model_download.w.download_button.setEnabled(False)
         model_info = self.actual_model_list[self.model_download.w.model_list.currentItem().text()]
         config_name = ''
+        regex = re.compile(r'(.*?)\.')
+        headers = wget_headers(model_info['model']['downloadUrl'])
+        filename = headers['Content-Disposition'].replace('attachment; filename="','').replace('"','')
+        filename = regex.match(filename)[1]
+        length = headers['Content-Length']
+        model_name = 'noNameFound'
+        if len(filename) < 1:
+            model_Version_info = model_info['model']['name'].replace('learned embeds','')
+            filename = self.sanitize(model_info['item']['name'] + f"_{model_Version_info}")
 
         if model_info['item']['type'] == 'Checkpoint':
-            model_name = self.sanitize(model_info['item']['name'] + f"_{model_info['model']['name']}")
-            config_name = model_name + '.yaml'
-            model_name += '.ckpt'
+            config_name = filename + '.yaml'
+            model_name = filename + '.ckpt'
             model_outpath = os.path.join(gs.system.customModels, model_name)
         if model_info['item']['type'] == 'TextualInversion':
-            model_Version_info = model_info['model']['name'].replace('learned embeds','')
-            model_name = self.sanitize(model_info['item']['name'] + f"_{model_Version_info}") + '.pt'
+            model_name = filename + '.pt'
             model_outpath = os.path.join(gs.system.embeddings_dir, model_name)
         if model_info['item']['type'] == 'Hypernetwork':
-            model_name = self.sanitize(model_info['item']['name'] + f"_{model_info['model']['name']}") + '.pt'
+            model_name = filename + '.pt'
             model_outpath = os.path.join(gs.system.hypernetwork_dir, model_name)
         if model_info['item']['type'] == 'AestheticGradient':
-            model_name = self.sanitize(model_info['item']['name'] + f"_{model_info['model']['name']}") + '.pt'
+            model_name = filename + '.pt'
             model_outpath = os.path.join(gs.system.aesthetic_gradients, model_name)
 
-        print(f"download model from url: {model_info['model']['downloadUrl']} ")
+        print(f"download model {model_name} from url: {model_info['model']['downloadUrl']} ")
         try:
-            wget_progress(url=model_info['model']['downloadUrl'], filename=model_outpath, chunk_size=1024, callback=self.parent.model_download_progress_callback)
+            wget_progress(url=model_info['model']['downloadUrl'], filename=model_outpath, length=length, chunk_size=1024, callback=self.parent.model_download_progress_callback)
             self.parent.model_download_progress_callback(100)
         except Exception as e:
             print('Download failed: ', e)

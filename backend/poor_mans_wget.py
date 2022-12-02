@@ -18,12 +18,15 @@ def wget(url, filename):
     with open(filename, 'wb') as model_file:
         model_file.write(ckpt_request.content)
 
-def wget_progress(url, filename, chunk_size=8192, callback=None):
 
-    length = requests.get(url, stream=True).headers['Content-length']
+def wget_headers(url):
+    r = requests.get(url, stream=True, headers={'Connection':'close'})
+    return r.headers
+
+def wget_progress(url, filename, length=0, chunk_size=8192, callback=None):
+
     one_percent = int(length) / 100
     next_percent = 1
-
 
     with requests.get(url, stream=True) as r:
 

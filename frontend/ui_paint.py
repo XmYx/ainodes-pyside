@@ -205,7 +205,7 @@ class Canvas(QGraphicsView):
         self.rectlist.clear()
         self.selected_item = None
         self.signals.update_selected.emit()
-
+        self.render_item = 0
     def reset(self):
         self.zoom = 1
         self.rotate = 0

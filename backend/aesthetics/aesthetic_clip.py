@@ -190,7 +190,7 @@ class AestheticCLIP:
         gs.CLIP_stop_at_last_layers = 1
         #print(self.aesthetic_embedding_path)
 
-        if not self.skip and self.aesthetic_steps != 0 and self.aesthetic_lr != 0 and self.aesthetic_weight != 0 and self.image_embs_name is not None:
+        if not self.skip and self.aesthetic_steps != 0 and self.aesthetic_lr != 0 and self.aesthetic_weight != 0 and gs.aesthetic_embedding_path != os.path.join(gs.system.aesthetic_gradients, 'None'):
             #gs.models["sd"].cond_stage_model.tokenizer = gs.models["sd"].cond_stage_model.tokenizer
             use_old_emphasis_implementation = None
             if not use_old_emphasis_implementation:
@@ -226,7 +226,7 @@ class AestheticCLIP:
                     optimizer.zero_grad()
                     loss.mean().backward()
                     optimizer.step()
-                    print(loss)
+                    #print(loss)
 
                 zn = model.text_model(input_ids=tokens, output_hidden_states=-gs.CLIP_stop_at_last_layers)
                 if gs.CLIP_stop_at_last_layers > 1:

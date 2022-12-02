@@ -184,7 +184,7 @@ class MainWindow(QMainWindow):
         os.makedirs(gs.system.vae_path, exist_ok=True)
         os.makedirs(gs.system.hypernetwork, exist_ok=True)
         os.makedirs(gs.system.hypernetwork_dir, exist_ok=True)
-
+        os.makedirs(gs.system.aesthetic_gradients, exist_ok=True)
 
 
 

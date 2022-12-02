@@ -1,5 +1,7 @@
 import gc, os, random, sys, time, traceback
 from contextlib import nullcontext
+from datetime import datetime
+
 import clip
 import numpy as np
 import pandas as pd
@@ -678,6 +680,7 @@ class DeforumSix:
         mp4_path = gs.system.txt2vidOut  # @param {type:"string"}
         render_steps = False  # @param {type: 'boolean'}
         path_name_modifier = "x0_pred"  # @param ["x0_pred","x"]
+        file = datetime.now().strftime("%Y%m%d-%H%M%S")
 
 
         skip_video_for_run_all = True if anim_args.max_frames < 2 else False
@@ -701,11 +704,12 @@ class DeforumSix:
                     newest_dir = max(all_step_dirs, key=os.path.getmtime)
                     image_path = os.path.join(newest_dir, fname)
                     print(f"Reading images from {image_path}")
+                    print(args.timestring)
                     mp4_path = os.path.join(newest_dir, f"{args.timestring}_{path_name_modifier}.mp4")
                     max_frames = str(args.steps)
                 else:  # render images for a video
                     image_path = os.path.join(args.outdir, f"{args.timestring}_%05d.png")
-                    mp4_path = os.path.join(mp4_path, f"{args.timestring}.mp4")
+                    mp4_path = os.path.join(mp4_path, f"{file}.mp4")
                     max_frames = str(anim_args.max_frames)
 
             # make video

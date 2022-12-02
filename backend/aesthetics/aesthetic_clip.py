@@ -225,7 +225,7 @@ class AestheticCLIP:
                     optimizer.zero_grad()
                     loss.mean().backward()
                     optimizer.step()
-                    print(loss)
+                    #print(loss)
 
                 zn = model.text_model(input_ids=tokens, output_hidden_states=-gs.CLIP_stop_at_last_layers)
                 if gs.CLIP_stop_at_last_layers > 1:

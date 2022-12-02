@@ -1,13 +1,14 @@
 import io
 import json
 import os
+import re
 import shutil
 import urllib.request
 import urllib.parse
 
 from PySide6 import QtUiTools, QtNetwork, QtCore
 from PySide6.QtCore import QObject, QFile, Signal
-from backend.poor_mans_wget import wget_progress
+from backend.poor_mans_wget import wget_progress, wget_headers
 from backend.singleton import singleton
 gs = singleton
 
@@ -41,7 +42,9 @@ class ModelDownload():
         self.model_download.w.model_search.clicked.connect(self.models_search)
         self.model_download.w.model_list.itemClicked.connect(self.show_model_infos)
         self.model_download.w.download_button.clicked.connect(self.signal_download_model)
+        self.model_download.w.more_models.clicked.connect(self.get_more_models)
         self.actual_model_list = {}
+        self.next_models_link = None
 
     def signal_download_model(self):
         self.signals.startDownload.emit()
@@ -62,6 +65,12 @@ NSFW: {model_info['item']['nsfw']}
         req = QtNetwork.QNetworkRequest(QtCore.QUrl(url))
         self.nam = QtNetwork.QNetworkAccessManager()
         self.nam.finished.connect(self.handleResponse)
+        self.nam.get(req)
+
+    def executeMoreRequest(self, url):
+        req = QtNetwork.QNetworkRequest(QtCore.QUrl(url))
+        self.nam = QtNetwork.QNetworkAccessManager()
+        self.nam.finished.connect(self.handleMoreResponse)
         self.nam.get(req)
 
     def handleResponse(self, reply):
@@ -86,11 +95,56 @@ NSFW: {model_info['item']['nsfw']}
                     model_description = item['name'] + ' ' + ' Version: ' + model['name']
                     self.actual_model_list[model_description] = {'model':model, 'item':tmp_item}
                     self.model_download.w.model_list.addItem(model_description)
-                    #print(model)
-
+            if 'metadata' in responseDict:
+                if 'nextPage' in responseDict['metadata']:
+                    self.next_models_link = responseDict['metadata']['nextPage']
+                    self.model_download.w.more_models.setEnabled(True)
+                else:
+                    self.model_download.w.more_models.setEnabled(False)
+                    self.next_models_link = None
+            else:
+                self.model_download.w.more_models.setEnabled(False)
+                self.next_models_link = None
         else:
             print('error: ', er)
 
+    def handleMoreResponse(self, reply):
+        er = reply.error()
+        #self.prompts = []
+        #self.counter = 0
+        if er == QtNetwork.QNetworkReply.NoError:
+            bytes_string = reply.readAll()
+            responseDict = json.loads(str(bytes_string, 'utf-8'))
+            for item in responseDict['items']:
+                tmp_item = {
+                    'id': item['id'],
+                    'name': item['name'],
+                    'type': item['type'],
+                    'nsfw': item['nsfw'],
+                    'tags': item['tags']
+                }
+                for model in item['modelVersions']:
+
+                    model_description = item['name'] + ' ' + ' Version: ' + model['name']
+                    self.actual_model_list[model_description] = {'model':model, 'item':tmp_item}
+                    self.model_download.w.model_list.addItem(model_description)
+            if 'metadata' in responseDict:
+                if 'nextPage' in responseDict['metadata']:
+                    self.next_models_link = responseDict['metadata']['nextPage']
+                    self.model_download.w.more_models.setEnabled(True)
+                else:
+                    self.model_download.w.more_models.setEnabled(False)
+                    self.next_models_link = None
+            else:
+                self.model_download.w.more_models.setEnabled(False)
+                self.next_models_link = None
+        else:
+            print('error: ', er)
+
+    def get_more_models(self):
+        print('more', self.next_models_link)
+        if self.next_models_link != None:
+            self.executeMoreRequest(self.next_models_link)
 
     def models_search(self):
         query = 'query=' + self.model_download.w.query.text()
@@ -103,7 +157,7 @@ NSFW: {model_info['item']['nsfw']}
         self.executeRequest(url)
 
     def sanitize(self, name):
-        whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+        whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ-')
         tmp = ''.join(filter(whitelist.__contains__, name))
         return tmp.replace(' ', '_')
 
@@ -111,24 +165,38 @@ NSFW: {model_info['item']['nsfw']}
         self.model_download.w.download_button.setEnabled(False)
         model_info = self.actual_model_list[self.model_download.w.model_list.currentItem().text()]
         config_name = ''
+        regex = re.compile(r'(.*?)\.')
+        headers = wget_headers(model_info['model']['downloadUrl'])
+        filename = headers['Content-Disposition'].replace('attachment; filename="','').replace('"','')
+        filename = regex.match(filename)[1]
+        length = headers['Content-Length']
+        model_name = 'noNameFound'
+        if len(filename) < 1:
+            model_Version_info = model_info['model']['name'].replace('learned embeds','')
+            filename = self.sanitize(model_info['item']['name'] + f"_{model_Version_info}")
 
         if model_info['item']['type'] == 'Checkpoint':
-            model_name = self.sanitize(model_info['item']['name']) + f"_{model_info['model']['name']}"
-            config_name = model_name + '.yaml'
-            model_name += '.ckpt'
+            config_name = filename + '.yaml'
+            model_name = filename + '.ckpt'
             model_outpath = os.path.join(gs.system.customModels, model_name)
         if model_info['item']['type'] == 'TextualInversion':
-            model_name = self.sanitize(model_info['item']['name']) + f"_{model_info['model']['name']}" + '.pt'
+            model_name = filename + '.pt'
             model_outpath = os.path.join(gs.system.embeddings_dir, model_name)
         if model_info['item']['type'] == 'Hypernetwork':
-            model_name = self.sanitize(model_info['item']['name']) + f"_{model_info['model']['name']}" + '.pt'
+            model_name = filename + '.pt'
             model_outpath = os.path.join(gs.system.hypernetwork_dir, model_name)
         if model_info['item']['type'] == 'AestheticGradient':
-            model_name = self.sanitize(model_info['item']['name']) + f"_{model_info['model']['name']}" + '.pt'
+            model_name = filename + '.pt'
             model_outpath = os.path.join(gs.system.aesthetic_gradients, model_name)
 
-        print(f"download model from url: {model_info['model']['downloadUrl']} ")
-        wget_progress(model_info['model']['downloadUrl'],model_outpath, 8192, self.parent.model_download_progress_callback)
+        print(f"download model {model_name} from url: {model_info['model']['downloadUrl']} ")
+        try:
+            wget_progress(url=model_info['model']['downloadUrl'], filename=model_outpath, length=length, chunk_size=1024, callback=self.parent.model_download_progress_callback)
+            self.parent.model_download_progress_callback(100)
+        except Exception as e:
+            print('Download failed: ', e)
+            self.parent.model_download_progress_callback(0)
+
         self.model_download.w.download_button.setEnabled(True)
         #self.do_download(model_info['model']['downloadUrl'],model_outpath)
         if config_name != '':

@@ -2410,6 +2410,11 @@
                      <string>ViT-B/32</string>
                     </property>
                    </item>
+                   <item>
+                    <property name="text">
+                     <string>ViT-H/14</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item row="5" column="0">

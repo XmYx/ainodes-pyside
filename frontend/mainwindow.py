@@ -728,7 +728,8 @@ class MainWindow(QMainWindow):
                         y = i.y
                         if x > 3000:
                             x = 0
-                            y = i.y + h + 25
+                            y = self.cheight + 25
+                            
                             if self.stopwidth == False:
                                 self.stopwidth = True
                         if self.stopwidth == False:

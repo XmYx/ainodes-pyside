@@ -171,7 +171,8 @@ NSFW: {model_info['item']['nsfw']}
             model_name += '.ckpt'
             model_outpath = os.path.join(gs.system.customModels, model_name)
         if model_info['item']['type'] == 'TextualInversion':
-            model_name = self.sanitize(model_info['item']['name'] + f"_{model_info['model']['name']}") + '.pt'
+            model_Version_info = model_info['model']['name'].replace('learned embeds','')
+            model_name = self.sanitize(model_info['item']['name'] + f"_{model_Version_info}") + '.pt'
             model_outpath = os.path.join(gs.system.embeddings_dir, model_name)
         if model_info['item']['type'] == 'Hypernetwork':
             model_name = self.sanitize(model_info['item']['name'] + f"_{model_info['model']['name']}") + '.pt'

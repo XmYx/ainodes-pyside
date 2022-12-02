@@ -96,9 +96,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-572</y>
-            <width>715</width>
-            <height>2886</height>
+            <y>0</y>
+            <width>719</width>
+            <height>2308</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -3014,7 +3014,7 @@
                   <widget class="QComboBox" name="select_aesthetic_embedding"/>
                  </item>
                  <item row="7" column="0" colspan="6">
-                  <widget class="QTextEdit" name="aesthetic_neg_prompt"/>
+                  <widget class="QTextEdit" name="aesthetic_text_negative"/>
                  </item>
                  <item row="8" column="2">
                   <widget class="QLabel" name="label_18">

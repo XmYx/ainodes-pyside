@@ -243,7 +243,7 @@ def load_hypernetwork(filename):
         print(f"Loading hypernetwork {filename}")
         try:
             gs.loaded_hypernetwork = Hypernetwork()
-            gs.loaded_hypernetwork.load(path + filename)
+            gs.loaded_hypernetwork.load(filename)
 
         except Exception:
             print(f"Error loading hypernetwork {filename}")# , file=sys.stderr)

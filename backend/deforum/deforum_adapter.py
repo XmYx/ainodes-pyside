@@ -583,7 +583,7 @@ class DeforumSix:
 
         if gs.diffusion.selected_aesthetic_embedding != 'None':
             gs.models["sd"].cond_stage_model.process_tokens.set_aesthetic_params(
-                esthetic_lr=gs.lr,
+                aesthetic_lr=gs.lr,
                 aesthetic_weight=gs.aesthetic_weight,
                 aesthetic_steps=gs.T,
                 image_embs_name=gs.diffusion.selected_aesthetic_embedding,

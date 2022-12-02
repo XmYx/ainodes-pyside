@@ -23,6 +23,7 @@ from backend.utils import sampleToImage, encoded_to_torch_image, image_path_to_t
     get_conditionings, torch_image_to_latent, get_prompts_data
 from backend.ddim_simplified import DDIMSampler_simple
 from backend.torch_gc import torch_gc
+from ldm_deforum.modules.embedding_managerpt import EmbeddingManager
 from ldm_v2.util import instantiate_from_config
 from backend.hypernetworks import hypernetwork
 import backend.hypernetworks.modules.sd_hijack
@@ -30,6 +31,7 @@ from backend.deforum.six.hijack import hijack_deforum
 from backend.singleton import singleton
 from backend.shared import model_killer
 from backend.deforum.six.seamless import configure_model_padding
+from backend.aesthetics.aesthetic_clip import AestheticCLIP
 
 gs = singleton
 
@@ -127,8 +129,16 @@ class DeforumSix:
         #print("Loading Hypaaaa")
         gs.model_hijack = backend.hypernetworks.modules.sd_hijack.StableDiffusionModelHijack()
 
-        #print("hijacking??")
+        print("hijacking??")
         gs.model_hijack.hijack(gs.models["sd"])
+        gs.model_hijack.embedding_db.load_textual_inversion_embeddings()
+
+        #gs.models["sd"].cond_stage_model = backend.aesthetics.modules.PersonalizedCLIPEmbedder()
+
+        aesthetic = AestheticCLIP()
+        aesthetic.process_tokens = gs.models["sd"].cond_stage_model.process_tokens
+        gs.models["sd"].cond_stage_model.process_tokens = aesthetic
+
 
     def get_autoencoder_version(self):
         return "sd-v1" #TODO this will be different for different models
@@ -201,6 +211,13 @@ class DeforumSix:
             model.half()
             gs.models["sd"] = model
             gs.models["sd"].cond_stage_model.device = self.device
+            #gs.models["sd"].embedding_manager = EmbeddingManager(gs.models["sd"].cond_stage_model)
+            #embedding_path = '001glitch-core.pt'
+            #if embedding_path is not None:
+            #    gs.models["sd"].embedding_manager.load(
+            #        embedding_path
+            #    )
+
             for m in gs.models["sd"].modules():
                 if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
                     m._orig_padding_mode = m.padding_mode
@@ -577,7 +594,7 @@ class DeforumSix:
             except:
                 pass"""
 
-
+        gs.models["sd"].cond_stage_model.process_tokens.set_aesthetic_params()
 
         if hires:
             args.hiresstr = args.strength

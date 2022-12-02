@@ -17,15 +17,6 @@ model:
     scale_factor: 0.18215
     use_ema: False
 
-    scheduler_config: # 10000 warmup steps
-      target: ldm.lr_scheduler.LambdaLinearScheduler
-      params:
-        warm_up_steps: [ 10000 ]
-        cycle_lengths: [ 10000000000000 ] # incredibly large number to prevent corner cases
-        f_start: [ 1.e-6 ]
-        f_max: [ 1. ]
-        f_min: [ 1. ]
-
     unet_config:
       target: ldm.modules.diffusionmodules.openaimodel.UNetModel
       params:
@@ -56,10 +47,10 @@ model:
           out_ch: 3
           ch: 128
           ch_mult:
-            - 1
-            - 2
-            - 4
-            - 4
+          - 1
+          - 2
+          - 4
+          - 4
           num_res_blocks: 2
           attn_resolutions: []
           dropout: 0.0
@@ -67,8 +58,4 @@ model:
           target: torch.nn.Identity
 
     cond_stage_config:
-      target: backend.aesthetics.modules.PersonalizedCLIPEmbedder
-      params:
-        aesthetic_embedding_path: "aesthetic_embeddings/sac_8plus.pt"
-        T: 3
-        lr: 0.0001
+      target: ldm.modules.encoders.modules.FrozenCLIPEmbedder

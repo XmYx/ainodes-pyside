@@ -10,7 +10,7 @@ import backend.hypernetworks.modules.textual_inversion.textual_inversion
 import ldm.modules.attention
 import ldm.modules.diffusionmodules.model
 import ldm.modules.diffusionmodules.util
-from backend.devices import torch_gc
+from backend.devices import torch_gc, choose_torch_device
 from backend.hypernetworks.modules import prompt_parser, sd_hijack_optimizations
 
 ddim_timesteps = ldm.modules.diffusionmodules.util.make_ddim_timesteps
@@ -81,13 +81,19 @@ class StableDiffusionModelHijack:
     circular_enabled = False
     clip = None
 
-    embedding_db = backend.hypernetworks.modules.textual_inversion.textual_inversion.EmbeddingDatabase(gs.embeddings_path)
+    embedding_db = backend.hypernetworks.modules.textual_inversion.textual_inversion.EmbeddingDatabase(gs.system.embeddings_dir)
 
     def hijack(self, m):
 
-        model_embeddings = gs.models["sd"].cond_stage_model.transformer.text_model.embeddings
+        #model_embeddings = gs.models["sd"].cond_stage_model.transformer.text_model.embeddings
 
+
+        model_embeddings = gs.models["sd"].cond_stage_model.transformer.text_model.embeddings
         model_embeddings.token_embedding = EmbeddingsWithFixes(model_embeddings.token_embedding, self)
+        gs.models["sd"].cond_stage_model = FrozenCLIPEmbedderWithCustomWords(gs.models["sd"].cond_stage_model, self)
+
+
+        #model_embeddings.token_embedding = EmbeddingsWithFixes(model_embeddings.token_embedding, self)
         #gs.models["sd"].cond_stage_model = FrozenCLIPEmbedderWithCustomWords(gs.models["sd"].cond_stage_model, self)
 
         #self.clip = gs.models["sd"].cond_stage_model
@@ -361,7 +367,7 @@ class FrozenCLIPEmbedderWithCustomWords(torch.nn.Module):
         if not gs.use_old_emphasis_implementation:
             remade_batch_tokens = [[self.wrapped.tokenizer.bos_token_id] + x[:75] + [self.wrapped.tokenizer.eos_token_id] for x in remade_batch_tokens]
             batch_multipliers = [[1.0] + x[:75] + [1.0] for x in batch_multipliers]
-
+        device = choose_torch_device()
         tokens = torch.asarray(remade_batch_tokens).to(device)
         outputs = self.wrapped.transformer(input_ids=tokens, output_hidden_states=-gs.CLIP_stop_at_last_layers)
 

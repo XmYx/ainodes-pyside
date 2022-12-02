@@ -9,9 +9,11 @@ import datetime
 import csv
 
 from PIL import Image, PngImagePlugin
+from torch import autocast
 
 #from backend.hypernetworks.modules import shared, devices, sd_hijack, processing, sd_models, images
 import backend.hypernetworks.modules.textual_inversion.dataset
+from backend.devices import choose_torch_device
 from backend.hypernetworks.modules.textual_inversion.learn_schedule import LearnRateScheduler
 
 from backend.hypernetworks.modules.textual_inversion.image_embedding import (embedding_to_b64, embedding_from_b64,
@@ -66,17 +68,18 @@ class EmbeddingDatabase:
         self.word_embeddings[embedding.name] = embedding
 
         ids = model.cond_stage_model.tokenizer([embedding.name], add_special_tokens=False)['input_ids'][0]
-
+        #print(ids)
         first_id = ids[0]
         if first_id not in self.ids_lookup:
             self.ids_lookup[first_id] = []
 
         self.ids_lookup[first_id] = sorted(self.ids_lookup[first_id] + [(ids, embedding)], key=lambda x: len(x[0]), reverse=True)
-
+        #print(embedding)
         return embedding
 
     def load_textual_inversion_embeddings(self):
         mt = os.path.getmtime(self.embeddings_dir)
+        #print(self.embeddings_dir)
         if self.dir_mtime is not None and mt <= self.dir_mtime:
             return
 
@@ -85,44 +88,47 @@ class EmbeddingDatabase:
         self.word_embeddings.clear()
 
         def process_file(path, filename):
-            name = os.path.splitext(filename)[0]
+            if '.gitignore' not in path:
+                name = os.path.splitext(filename)[0]
 
-            data = []
+                data = []
 
-            if os.path.splitext(filename.upper())[-1] in ['.PNG', '.WEBP', '.JXL', '.AVIF']:
-                embed_image = Image.open(path)
-                if hasattr(embed_image, 'text') and 'sd-ti-embedding' in embed_image.text:
-                    data = embedding_from_b64(embed_image.text['sd-ti-embedding'])
-                    name = data.get('name', name)
+                if os.path.splitext(filename.upper())[-1] in ['.PNG', '.WEBP', '.JXL', '.AVIF']:
+                    embed_image = Image.open(path)
+                    if hasattr(embed_image, 'text') and 'sd-ti-embedding' in embed_image.text:
+                        data = embedding_from_b64(embed_image.text['sd-ti-embedding'])
+                        name = data.get('name', name)
+                    else:
+                        data = extract_image_data_embed(embed_image)
+                        name = data.get('name', name)
                 else:
-                    data = extract_image_data_embed(embed_image)
-                    name = data.get('name', name)
-            else:
-                data = torch.load(path, map_location="cpu")
+                    #print(path)
 
-            # textual inversion embeddings
-            if 'string_to_param' in data:
-                param_dict = data['string_to_param']
-                if hasattr(param_dict, '_parameters'):
-                    param_dict = getattr(param_dict, '_parameters')  # fix for torch 1.12.1 loading saved file from torch 1.11
-                assert len(param_dict) == 1, 'embedding file has multiple terms in it'
-                emb = next(iter(param_dict.items()))[1]
-            # diffuser concepts
-            elif type(data) == dict and type(next(iter(data.values()))) == torch.Tensor:
-                assert len(data.keys()) == 1, 'embedding file has multiple terms in it'
+                    data = torch.load(path, map_location="cpu")
 
-                emb = next(iter(data.values()))
-                if len(emb.shape) == 1:
-                    emb = emb.unsqueeze(0)
-            else:
-                raise Exception(f"Couldn't identify {filename} as neither textual inversion embedding nor diffuser concept.")
+                # textual inversion embeddings
+                if 'string_to_param' in data:
+                    param_dict = data['string_to_param']
+                    if hasattr(param_dict, '_parameters'):
+                        param_dict = getattr(param_dict, '_parameters')  # fix for torch 1.12.1 loading saved file from torch 1.11
+                    assert len(param_dict) == 1, 'embedding file has multiple terms in it'
+                    emb = next(iter(param_dict.items()))[1]
+                # diffuser concepts
+                elif type(data) == dict and type(next(iter(data.values()))) == torch.Tensor:
+                    assert len(data.keys()) == 1, 'embedding file has multiple terms in it'
 
-            vec = emb.detach().to(devices.device, dtype=torch.float32)
-            embedding = Embedding(vec, name)
-            embedding.step = data.get('step', None)
-            embedding.sd_checkpoint = data.get('sd_checkpoint', None)
-            embedding.sd_checkpoint_name = data.get('sd_checkpoint_name', None)
-            self.register_embedding(embedding, gs.models["sd"])
+                    emb = next(iter(data.values()))
+                    if len(emb.shape) == 1:
+                        emb = emb.unsqueeze(0)
+                else:
+                    raise Exception(f"Couldn't identify {filename} as neither textual inversion embedding nor diffuser concept.")
+                device = choose_torch_device()
+                vec = emb.detach().to(device, dtype=torch.float32)
+                embedding = Embedding(vec, name)
+                embedding.step = data.get('step', None)
+                embedding.sd_checkpoint = data.get('sd_checkpoint', None)
+                embedding.sd_checkpoint_name = data.get('sd_checkpoint_name', None)
+                self.register_embedding(embedding, gs.models["sd"])
 
         for fn in os.listdir(self.embeddings_dir):
             try:
@@ -158,7 +164,7 @@ def create_embedding(name, num_vectors_per_token, overwrite_old, init_text='*'):
     cond_model = gs.models["sd"].cond_stage_model
     embedding_layer = cond_model.wrapped.transformer.text_model.embeddings
 
-    with devices.autocast():
+    with autocast:
         cond_model([""])  # will send cond model to GPU if lowvram/medvram is active
 
     ids = cond_model.tokenizer(init_text, max_length=num_vectors_per_token, return_tensors="pt", add_special_tokens=False)["input_ids"]
@@ -170,7 +176,7 @@ def create_embedding(name, num_vectors_per_token, overwrite_old, init_text='*'):
 
     # Remove illegal characters from name.
     name = "".join( x for x in name if (x.isalnum() or x in "._- "))
-    fn = os.path.join(shared.cmd_opts.embeddings_dir, f"{name}.pt")
+    fn = os.path.join(gs.system.embeddings_dir, f"{name}.pt")
     if not overwrite_old:
         assert not os.path.exists(fn), f"file {fn} already exists"
 

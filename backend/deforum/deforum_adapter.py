@@ -113,17 +113,6 @@ class DeforumSix:
             del lo
             del sd
 
-
-    def run_pre_load_model_generation_specifics(self, config):
-
-
-        if gs.model_version in gs.system.gen_one_models and 2==1:
-            config.model.params.cond_stage_config.params.T = 10
-            config.model.params.cond_stage_config.params.lr = 0.0001
-            config.model.params.cond_stage_config.params.aesthetic_embedding_path = (
-                "models/embeddings/discostyle.pt"
-            )
-
     def run_post_load_model_generation_specifics(self):
 
         #print("Loading Hypaaaa")
@@ -192,8 +181,6 @@ class DeforumSix:
             if verbose:
                 print(gs.model_version)
 
-            self.run_pre_load_model_generation_specifics(config)
-
 
             pl_sd = torch.load(ckpt, map_location="cpu")
             if "global_step" in pl_sd:
@@ -241,10 +228,8 @@ class DeforumSix:
             gs.models["sd"].to(self.device)
             # todo why we do this here?
             from backend.aesthetics import modules
-            #print('PersonalizedCLIPEmbedder', backend.aesthetics.modules.PersonalizedCLIPEmbedder)
-            # todo make this vae thing a setting
-            vae_name = os.path.splitext(gs.system.sdPath)[0] + '.pt'
-            self.load_vae(vae_name)
+            if gs.diffusion.selected_vae != 'None':
+                self.load_vae(gs.diffusion.selected_vae)
 
     def load_vae(self, vae_file=None):
         global first_load, vae_dict, vae_list, loaded_vae_file
@@ -496,7 +481,7 @@ class DeforumSix:
                         prompt="",
                         negative_prompts=None,
                         hires=None,
-                        use_hypernetwork=None,
+                        #use_hypernetwork=None,
                         apply_strength=0,
                         apply_circular=False,
                         lowmem=False
@@ -569,8 +554,8 @@ class DeforumSix:
 
 
 
-        if use_hypernetwork is not None:
-            hypernetwork.load_hypernetwork(use_hypernetwork)
+        if gs.diffusion.selected_hypernetwork != 'None':
+            hypernetwork.load_hypernetwork(gs.diffusion.selected_hypernetwork)
             hypernetwork.apply_strength(apply_strength)                          #1.0, "Hypernetwork strength", gr.Slider, {"minimum": 0.0, "maximum": 1.0, "step": 0.001}),
             gs.model_hijack.apply_circular(False)
             gs.model_hijack.clear_comments()
@@ -594,7 +579,16 @@ class DeforumSix:
             except:
                 pass"""
 
-        gs.models["sd"].cond_stage_model.process_tokens.set_aesthetic_params()
+        if gs.diffusion.selected_aesthetic_embedding != 'None':
+            gs.models["sd"].cond_stage_model.process_tokens.set_aesthetic_params(
+                esthetic_lr=gs.lr,
+                aesthetic_weight=gs.aesthetic_weight,
+                aesthetic_steps=gs.T,
+                image_embs_name=gs.diffusion.selected_aesthetic_embedding,
+                aesthetic_slerp=gs.slerp,
+                aesthetic_imgs_text=gs.aesthetic_imgs_text,
+                aesthetic_slerp_angle=gs.slerp_angle,
+                aesthetic_text_negative=gs.aesthetic_text_negative)
 
         if hires:
             args.hiresstr = args.strength

@@ -151,8 +151,15 @@ class MainWindow(QMainWindow):
         self.connections()
         self.list_files()
         self.resize(1280, 800)
+        self.create_sys_folders()
+
         self.widgets[self.current_widget].update_model_list()
-        self.create_out_folders()
+        self.widgets[self.current_widget].update_vae_list()
+        self.widgets[self.current_widget].update_hypernetworks_list()
+        self.widgets[self.current_widget].update_aesthetics_list()
+
+
+
         check_models_exist()
         self.latent_rgb_factors = torch.tensor([
             #   R        G        B
@@ -162,7 +169,7 @@ class MainWindow(QMainWindow):
             [-0.184, -0.271, -0.473],  # L4
         ], dtype=torch.float, device='cuda')
 
-    def create_out_folders(self):
+    def create_sys_folders(self):
         os.makedirs(gs.system.galleryMainPath, exist_ok=True)
         os.makedirs(gs.system.txt2imgOut, exist_ok=True)
         os.makedirs(gs.system.img2imgTmp, exist_ok=True)
@@ -173,6 +180,13 @@ class MainWindow(QMainWindow):
         os.makedirs(gs.system.vid2vidSingleFrame, exist_ok=True)
         os.makedirs(gs.system.vid2vidOut, exist_ok=True)
         os.makedirs(gs.system.customModels, exist_ok=True)
+        os.makedirs(gs.system.default_config_yaml_path, exist_ok=True)
+        os.makedirs(gs.system.vae_path, exist_ok=True)
+        os.makedirs(gs.system.hypernetwork, exist_ok=True)
+        os.makedirs(gs.system.hypernetwork_dir, exist_ok=True)
+
+
+
 
     def connections(self):
         self.deforum_ui.signals.txt2img_image_cb.connect(self.image_preview_func)
@@ -1184,16 +1198,16 @@ class MainWindow(QMainWindow):
 
     def list_files(self, index=0):
         paths = []
-        self.widgets[self.current_widget].w.aesthetic_embedding.clear()
-        self.widgets[self.current_widget].w.aesthetic_embedding.addItem("None")
+        self.widgets[self.current_widget].w.select_aesthetic_embedding.clear()
+        self.widgets[self.current_widget].w.select_aesthetic_embedding.addItem("None")
         for _, _, files in os.walk(gs.system.aesthetic_gradients):
             for file in files:
-                self.widgets[self.current_widget].w.aesthetic_embedding.addItem(str(file))
+                self.widgets[self.current_widget].w.select_aesthetic_embedding.addItem(str(file))
         #self.set_txt2img.w.gradientList.setItemText(index)
 
     def select_gradient(self, gradient):
-        if self.widgets[self.current_widget].w.aesthetic_embedding.itemText(gradient) != "None":
-            gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.widgets[self.current_widget].w.aesthetic_embedding.itemText(gradient))
+        if self.widgets[self.current_widget].w.select_aesthetic_embedding.itemText(gradient) != "None":
+            gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.widgets[self.current_widget].w.select_aesthetic_embedding.itemText(gradient))
         else:
             gs.aesthetic_embedding_path = None
 

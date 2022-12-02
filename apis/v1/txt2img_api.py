@@ -146,7 +146,7 @@ def txt2img_json(t2i_json):
                                            # grid_rows=t2i_json.grid_rows,
                                            # use_init=t2i_json.use_init,
                                            # init_image=t2i_json.init_image,
-                                          strength=float(t2i_json.strength),
+                                           strength=float(t2i_json.strength),
                                            # strength_0_no_init=t2i_json.strength_0_no_init,
                                            # device=t2i_json.device,
                                            # animation_mode=t2i_json.animation_mode,

@@ -43,6 +43,7 @@
     "aesthetic_gradients":"data/models/aesthetic_gradients",
     "finetune_config": "configs/finetune",
     "dreambooth_config": "configs/dreambooth",
+    "hypernetwork": "data/hyper",
     "hypernetwork_dir": "data/hyper/hypernetworks",
     "sd_model_checkpoint":  "data/models/v1-5-pruned-emaonly.ckpt",
     "embeddings_dir": "data/embeddings",
@@ -55,7 +56,8 @@
     "gen_two_models": ["2.0"],
     "blip_model_path": "data/models/support/upscale/model_base_caption_capfilt_large.pth",
     "default_config_yaml_path": "data/default_configs",
-    "aesthetic_gradient": "data/models/aesthetic_gradient"
+    "aesthetic_gradient_path": "data/models/aesthetic_gradient",
+    "vae_path": "data/models/vae"
   },
   "diffusion": {
     "processType": 0,
@@ -170,6 +172,9 @@
     "cpudepth" : false,
     "skip_video_for_run_all" : true,
     "mask_offset": 10,
-    "reconstruction_blur": 5
+    "reconstruction_blur": 5,
+    "selected_hypernetwork": "None",
+    "selected_vae": "None",
+    "selected_aesthetic_embedding": "None"
   }
 }

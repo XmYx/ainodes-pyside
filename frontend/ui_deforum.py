@@ -144,9 +144,9 @@ class Deforum_UI(QObject):
 
         gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
         gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value()
-        gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
-        if gs.aesthetic_embedding_path == 'None':
-            gs.aesthetic_embedding_path = None
+        #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
+        #if gs.aesthetic_embedding_path == 'None':
+        #    gs.aesthetic_embedding_path = None
         seed = random.randint(0, 2 ** 32 - 1)
 
         plotting = self.params.plotting
@@ -287,7 +287,16 @@ class Deforum_UI(QObject):
         init_image = "outpaint.png"
         gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
         gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value() / 1000000000
-        gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
+        gs.slerp = self.parent.widgets[self.parent.current_widget].w.slerp.isChecked()
+        gs.slerp_angle = self.parent.widgets[self.parent.current_widget].w.slerp_angle.value()
+        gs.aesthetic_weight = self.parent.widgets[self.parent.current_widget].w.aesthetic_weight.value()
+
+        gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.plainText()
+
+        aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.plainText()
+        gs.aesthetic_text_negative = False if aesthetic_text_negative == '' else aesthetic_text_negative
+
+        #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
         #if params == None:
         params = self.parent.sessionparams.update_params()
 

@@ -187,11 +187,16 @@ NSFW: {model_info['item']['nsfw']}
             model_outpath = os.path.join(gs.system.hypernetwork_dir, model_name)
         if model_info['item']['type'] == 'AestheticGradient':
             model_name = filename + '.pt'
-            model_outpath = os.path.join(gs.system.aesthetic_gradients, model_name)
+            model_outpath = os.path.join(gs.system.aesthetic_gradient_path, model_name)
 
         print(f"download model {model_name} from url: {model_info['model']['downloadUrl']} ")
+
+        chunk_size = 1024
+        if int(length) > 102400:
+            chunk_size = 8192
+
         try:
-            wget_progress(url=model_info['model']['downloadUrl'], filename=model_outpath, length=length, chunk_size=1024, callback=self.parent.model_download_progress_callback)
+            wget_progress(url=model_info['model']['downloadUrl'], filename=model_outpath, length=length, chunk_size=chunk_size, callback=self.parent.model_download_progress_callback)
             self.parent.model_download_progress_callback(100)
         except Exception as e:
             print('Download failed: ', e)
@@ -203,3 +208,5 @@ NSFW: {model_info['item']['nsfw']}
             src = os.path.join(gs.system.default_config_yaml_path, self.model_download.w.config_yaml.currentText())
             dst = os.path.join(gs.system.customModels, config_name)
             shutil.copyfile(src, dst)
+
+        self.parent.unicontrol.update_model_list()

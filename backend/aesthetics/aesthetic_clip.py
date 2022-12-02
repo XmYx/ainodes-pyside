@@ -136,6 +136,7 @@ class AestheticCLIP:
                              aesthetic_slerp=True, aesthetic_imgs_text="",
                              aesthetic_slerp_angle=0.15,
                              aesthetic_text_negative=False):
+
         self.aesthetic_imgs_text = aesthetic_imgs_text
         self.aesthetic_slerp_angle = aesthetic_slerp_angle
         self.aesthetic_text_negative = aesthetic_text_negative
@@ -144,7 +145,7 @@ class AestheticCLIP:
         self.aesthetic_weight = aesthetic_weight
         self.aesthetic_steps = aesthetic_steps
         self.image_embs_name = None
-        self.load_image_embs(gs.aesthetic_embedding_path)
+        self.load_image_embs(image_embs_name)
 
 
         #if self.image_embs_name is not None:

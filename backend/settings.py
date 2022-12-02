@@ -14,8 +14,6 @@ def load_settings_json():
     gs.diffusion = SimpleNamespace(**settings.diffusion)
     gs.system = SimpleNamespace(**settings.system)
 
-
-
     settingsfile = 'configs/ainodes/settings.json'
     if os.path.exists(settingsfile):
         f = open("configs/ainodes/settings.json", "r")

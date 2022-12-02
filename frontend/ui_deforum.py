@@ -143,7 +143,7 @@ class Deforum_UI(QObject):
             self.parent.params.advanced = False
 
         gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
-        gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value() / 1000000000
+        gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value()
         gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
         if gs.aesthetic_embedding_path == 'None':
             gs.aesthetic_embedding_path = None

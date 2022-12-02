@@ -948,6 +948,9 @@ class Canvas(QGraphicsView):
         #self.parent.update()
         #self.redraw()
         self.setUpdatesEnabled(True)
+    def inpaint_mode(self):
+        self.mode = "inpaint"
+        self.setDragMode(QGraphicsView.DragMode.NoDrag)
 
         ##print("Add Mode")
     def keyPressEvent(self, e):

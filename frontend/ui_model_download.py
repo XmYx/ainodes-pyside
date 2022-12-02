@@ -187,7 +187,7 @@ NSFW: {model_info['item']['nsfw']}
             model_outpath = os.path.join(gs.system.hypernetwork_dir, model_name)
         if model_info['item']['type'] == 'AestheticGradient':
             model_name = filename + '.pt'
-            model_outpath = os.path.join(gs.system.aesthetic_gradient_path, model_name)
+            model_outpath = os.path.join(gs.system.aesthetic_gradients, model_name)
 
         print(f"download model {model_name} from url: {model_info['model']['downloadUrl']} ")
 

@@ -56,7 +56,7 @@
     "gen_two_models": ["2.0"],
     "blip_model_path": "data/models/support/upscale/model_base_caption_capfilt_large.pth",
     "default_config_yaml_path": "data/default_configs",
-    "aesthetic_gradient_path": "data/models/aesthetic_gradient",
+    "aesthetic_gradients": "data/models/aesthetic_gradient",
     "vae_path": "data/models/vae"
   },
   "diffusion": {

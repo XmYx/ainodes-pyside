@@ -141,7 +141,7 @@ class UniControl(QObject):
         if item_count > 0:
             current_text = self.w.select_aesthetic_embedding.currentText()
             current_aesthetic_embedding = current_text if current_text != '' else None
-        files = os.listdir(gs.system.hypernetwork_dir)
+        files = os.listdir(gs.system.aesthetic_gradient_path)
         self.w.select_aesthetic_embedding.clear()
         self.w.select_aesthetic_embedding.addItem('None')
         for model in files:

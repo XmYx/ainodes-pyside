@@ -15,6 +15,8 @@ from backend.devices import choose_torch_device
 from transformers import CLIPModel, CLIPProcessor, CLIPTokenizer
 from tqdm.auto import tqdm, trange
 from backend.singleton import singleton
+from backend.torch_gc import torch_gc
+
 gs = singleton
 
 
@@ -168,7 +170,7 @@ class AestheticCLIP:
         if image_embs_name is None or len(image_embs_name) == 0 or image_embs_name == "None":
             image_embs_name = None
             self.image_embs_name = None
-        print(gs.aesthetic_embedding_path)
+        #print(gs.aesthetic_embedding_path)
         #print(os.path.join(gs.system.aesthetic_gradients, 'None'))
         if gs.diffusion.selected_aesthetic_embedding is not 'None':
             self.image_embs_name = image_embs_name
@@ -184,11 +186,7 @@ class AestheticCLIP:
         self.aesthetic_steps = gs.T
         self.aesthetic_lr = gs.lr
         self.image_embs_name = gs.aesthetic_embedding_path
-        self.aesthetic_weight = 1.0
-        self.slerp = True
-        self.aesthetic_imgs_text = ""
-        self.aesthetic_text_negative = None
-        self.aesthetic_slerp_angle = 0.4
+
         self.device = choose_torch_device()
         gs.CLIP_stop_at_last_layers = 1
         #print(self.aesthetic_embedding_path)
@@ -238,9 +236,15 @@ class AestheticCLIP:
                 else:
                     zn = zn.last_hidden_state
                 model.cpu()
+
                 del model
-                gc.collect()
-                torch.cuda.empty_cache()
+                del optimizer
+                del loss
+                del sim
+                del text_embs
+                del img_embs
+
+                torch_gc()
             zn = torch.concat([zn[77 * i:77 * (i + 1)] for i in range(max(z.shape[1] // 77, 1))], 1)
             if self.slerp:
                 z = slerp(z, zn, self.aesthetic_weight)

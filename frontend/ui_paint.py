@@ -192,9 +192,9 @@ class Canvas(QGraphicsView):
         self.pixmap.fill(__backgroudColor__)
         self.bgitem = QGraphicsPixmapItem()
         self.rectItem = QGraphicsRectItem(0, 0, 512, 512)
-        self.parent.w = 512
-        self.parent.cheight = 512
-        self.parent.stopwidth = False
+        self.parent.parent.w = 512
+        self.parent.parent.cheight = 512
+        self.parent.parent.stopwidth = False
         #self.debugtext = QGraphicsTextItem("0, 0\n")
         #self.helpText = QGraphicsTextItem("C - Hand Drag\nV - Place Rectangles")
         self.bgitem.setPixmap(self.pixmap)
@@ -203,9 +203,11 @@ class Canvas(QGraphicsView):
         #self.scene.addItem(self.rectItem)
         self.tensor_preview_item = None
         self.rectlist.clear()
+        self.rectlist = []
         self.selected_item = None
+        self.render_item = None
         self.signals.update_selected.emit()
-        self.render_item = 0
+        self.parent.parent.render_index = 0
     def reset(self):
         self.zoom = 1
         self.rotate = 0

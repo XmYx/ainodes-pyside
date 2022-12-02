@@ -726,10 +726,11 @@ class MainWindow(QMainWindow):
                     if i.id == self.canvas.canvas.render_item:
                         x = i.x + w + 20
                         y = i.y
+                        #print(i.x + w, i.y, self.cheight, self.w, self.stopwidth)
                         if x > 3000:
                             x = 0
                             y = self.cheight + 25
-                            
+
                             if self.stopwidth == False:
                                 self.stopwidth = True
                         if self.stopwidth == False:
@@ -743,7 +744,7 @@ class MainWindow(QMainWindow):
             self.canvas.canvas.render_item = self.canvas.canvas.selected_item
         #if resize == True:
             # pass
-        print(self.w, self.cheight)
+        #print(self.w, self.cheight)
         self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
         #self.canvas.canvas.update()
         #self.canvas.canvas.redraw()

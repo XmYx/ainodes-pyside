@@ -184,10 +184,17 @@ class UniControl(QObject):
                 print(f'you have no models installed in {gs.system.models_path} please install any model before you run this software, you can try to download a model using the download feature')
 
         else:
+
             if item_count > 0:
-                self.w.model_list.setCurrentIndex(model_items.index(target_model))
+                try:
+                    self.w.model_list.setCurrentIndex(model_items.index(target_model))
+                except:
+                    pass
             else:
-                self.w.model_list.setCurrentIndex(0)
+                try:
+                    self.w.model_list.setCurrentIndex(0)
+                except:
+                    pass
 
     def select_new_model(self):
         new_model = os.path.join(gs.system.models_path,self.w.model_list.currentText())

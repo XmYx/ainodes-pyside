@@ -699,7 +699,7 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.rectlist[self.render_index].render_index = 0
                 else:
                     self.canvas.canvas.rectlist[self.render_index].render_index += 1
-                self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].index]
+                self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
                 self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
                 self.canvas.canvas.rectlist[self.render_index].params = self.params
         self.canvas.canvas.newimage = True

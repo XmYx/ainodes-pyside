@@ -1136,8 +1136,8 @@ class MainWindow(QMainWindow):
 
     def preview_batch_outpaint(self, with_chops=None, chops_y=None):
         if with_chops is None:
-            self.canvas.canvas.cols = self.widgets[self.current_widget].w.batch_columns_slider.value()
-            self.canvas.canvas.rows = self.widgets[self.current_widget].w.batch_rows_slider.value()
+            self.canvas.canvas.cols = self.widgets[self.current_widget].w.batch_columns.value()
+            self.canvas.canvas.rows = self.widgets[self.current_widget].w.batch_rows.value()
         else:
             self.canvas.canvas.cols = with_chops
             self.canvas.canvas.rows = chops_y
@@ -1146,8 +1146,8 @@ class MainWindow(QMainWindow):
         randomize = self.widgets[self.current_widget].w.randomize.isChecked()
         spiral = self.widgets[self.current_widget].w.spiral.isChecked()
         reverse = self.widgets[self.current_widget].w.reverse.isChecked()
-        startOffsetX = self.widgets[self.current_widget].w.start_offset_x_slider.value()
-        startOffsetY = self.widgets[self.current_widget].w.start_offset_y_slider.value()
+        startOffsetX = self.widgets[self.current_widget].w.start_offset_x.value()
+        startOffsetY = self.widgets[self.current_widget].w.start_offset_y.value()
         prompts = self.widgets[self.current_widget].w.prompts.toPlainText()
         #keyframes = self.prompt.w.keyFrames.toPlainText()
         keyframes = ""

@@ -177,7 +177,7 @@ class UniControl(QObject):
         for i in range(0, item_count-1):
             model_items.append(self.w.model_list.itemText(i))
         if target_model is None:
-            if len(model_items) > 0:
+            if item_count > 0:
                 print('model from config does not exist therefore we choose first model from the loaded list')
                 self.w.model_list.setCurrentIndex(0)
             else:

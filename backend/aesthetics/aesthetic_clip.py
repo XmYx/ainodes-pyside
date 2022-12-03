@@ -130,7 +130,7 @@ class AestheticCLIP:
 
         self.image_embs_name = None
         self.image_embs = None
-        self.load_image_embs(None)
+        #self.load_image_embs(None)
         self.process_tokens = None
         self.device = choose_torch_device()
 

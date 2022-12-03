@@ -1159,20 +1159,6 @@ class PaintUI(QDockWidget):
         sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
         self.dockWidgetContents = QWidget()
         self.dockWidgetContents.setObjectName(u"dockWidgetContents")
-
-        sizePolicy.setHeightForWidth(self.dockWidgetContents.sizePolicy().hasHeightForWidth())
-        self.dockWidgetContents.setSizePolicy(sizePolicy)
-        self.verticalLayout_2 = QVBoxLayout(self.dockWidgetContents)
-        self.verticalLayout_2.setSpacing(0)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(5, 0, 5, 0)
-        self.canvas = Canvas(self)
-        self.widget_2 = QWidget()
-        self.horizontalLayout = QHBoxLayout(self.widget_2)
-        self.horizontalLayout.setSpacing(0)
-        self.horizontalLayout.setObjectName(u"horizontal")
-        self.horizontalLayout.setContentsMargins(5, 0, 5, 0)
-
         self.W_spinbox = QSpinBox()
         self.W_spinbox.setMinimum(256)
         self.W_spinbox.setMaximum(4096)
@@ -1194,8 +1180,7 @@ class PaintUI(QDockWidget):
         self.W.setPageStep(64)
         self.W.setSingleStep(64)
         self.W.setOrientation(Qt.Horizontal)
-        
-        
+
         self.H = QSlider()
         self.H.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.H.setMinimumSize(QSize(100, 15))
@@ -1206,6 +1191,19 @@ class PaintUI(QDockWidget):
         self.H.setPageStep(64)
         self.H.setSingleStep(64)
         self.H.setOrientation(Qt.Horizontal)
+        sizePolicy.setHeightForWidth(self.dockWidgetContents.sizePolicy().hasHeightForWidth())
+        self.dockWidgetContents.setSizePolicy(sizePolicy)
+        self.verticalLayout_2 = QVBoxLayout(self.dockWidgetContents)
+        self.verticalLayout_2.setSpacing(0)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(5, 0, 5, 0)
+        self.canvas = Canvas(self)
+        self.widget_2 = QWidget()
+        self.horizontalLayout = QHBoxLayout(self.widget_2)
+        self.horizontalLayout.setSpacing(0)
+        self.horizontalLayout.setObjectName(u"horizontal")
+        self.horizontalLayout.setContentsMargins(5, 0, 5, 0)
+
 
         self.horizontalLayout.addWidget(self.W)
         self.horizontalLayout.addWidget(self.W_spinbox)

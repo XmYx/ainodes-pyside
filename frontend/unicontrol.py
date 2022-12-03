@@ -18,7 +18,6 @@ class UniControl(QObject):
         file.close()
         self.initAnimation()
 
-
         self.w.toggle_sampler.stateChanged.connect(self.hideSampler_anim)
         self.w.show_output_setup.stateChanged.connect(self.hideOutput_anim)
         self.w.show_init_setup.stateChanged.connect(self.hideInitImage_anim)
@@ -41,24 +40,14 @@ class UniControl(QObject):
         self.w.select_vae.currentIndexChanged.connect(self.select_new_vae)
         self.w.select_hypernetwork.currentIndexChanged.connect(self.select_new_hypernetwork)
         self.w.select_aesthetic_embedding.currentIndexChanged.connect(self.select_new_aesthetic_embedding)
-
-
         self.w.negative_prompts.setVisible(False)
-
-
         self.init_anims()
         self.initAnim.start()
         self.hide_all()
-
-
         self.ui_unicontrol = UniControl_UI(self)
-
-
-
 
     def stop_all(self):
         gs.stop_all = True
-
 
     def add_to_model_list(self, models):
         for model in models:
@@ -89,27 +78,28 @@ class UniControl(QObject):
         else:
             self.w.select_vae.setCurrentIndex(0)
 
-
     def select_new_vae(self):
         current_text = self.w.select_vae.currentText()
         new_vae = 'None'
         if current_text != 'None':
-            new_vae = os.path.join(gs.system.vae_path,current_text)
+            new_vae = os.path.join(gs.system.vae_path, current_text)
         gs.diffusion.selected_vae = new_vae
 
     def select_new_hypernetwork(self):
         current_text = self.w.select_hypernetwork.currentText()
         new_hyper_net = 'None'
         if current_text != 'None':
-            new_hyper_net = os.path.join(gs.system.hypernetwork_dir,current_text)
+            new_hyper_net = os.path.join(gs.system.hypernetwork_dir, current_text)
         gs.diffusion.selected_hypernetwork = new_hyper_net
 
     def select_new_aesthetic_embedding(self):
         current_text = self.w.select_aesthetic_embedding.currentText()
         new_aesthetic_embedding = 'None'
         if current_text != 'None':
-            new_aesthetic_embedding = os.path.join(gs.system.hypernetwork_dir,current_text)
+            new_aesthetic_embedding = os.path.join(gs.system.aesthetic_gradients, current_text)
         gs.diffusion.selected_aesthetic_embedding = new_aesthetic_embedding
+
+
 
     def update_hypernetworks_list(self):
         item_count = self.w.select_hypernetwork.count()
@@ -165,7 +155,7 @@ class UniControl(QObject):
             target_model = None
         else:
             if 'custom' in gs.system.sdPath:
-                target_model = os.path.join('custom', os.path.basename(gs.system.sdPath)) # to work around the signal which triggers once we start changing the dropdowns items
+                target_model = 'custom/' + os.path.basename(gs.system.sdPath) # to work around the signal which triggers once we start changing the dropdowns items
             else:
                 target_model = os.path.basename(gs.system.sdPath)
 
@@ -187,14 +177,17 @@ class UniControl(QObject):
         for i in range(0, item_count-1):
             model_items.append(self.w.model_list.itemText(i))
         if target_model is None:
-            if len(model_items) > 0:
+            if item_count > 0:
                 print('model from config does not exist therefore we choose first model from the loaded list')
                 self.w.model_list.setCurrentIndex(0)
             else:
-                print(f'you have no models installed in {gs.system.models_path} please install any model before you run this software')
-                exit(0)
+                print(f'you have no models installed in {gs.system.models_path} please install any model before you run this software, you can try to download a model using the download feature')
+
         else:
-            self.w.model_list.setCurrentIndex(model_items.index(target_model))
+            if item_count > 0:
+                self.w.model_list.setCurrentIndex(model_items.index(target_model))
+            else:
+                self.w.model_list.setCurrentIndex(0)
 
     def select_new_model(self):
         new_model = os.path.join(gs.system.models_path,self.w.model_list.currentText())

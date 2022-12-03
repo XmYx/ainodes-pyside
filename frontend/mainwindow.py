@@ -149,7 +149,6 @@ class MainWindow(QMainWindow):
         self.callbackbusy = False
         self.init_plugin_loader()
         self.connections()
-        self.list_files()
         self.resize(1280, 800)
         self.create_sys_folders()
 
@@ -1220,20 +1219,6 @@ class MainWindow(QMainWindow):
             t.exec_()
         return t.selectedFiles()[0]
 
-    def list_files(self, index=0):
-        paths = []
-        self.widgets[self.current_widget].w.select_aesthetic_embedding.clear()
-        self.widgets[self.current_widget].w.select_aesthetic_embedding.addItem("None")
-        for _, _, files in os.walk(gs.system.aesthetic_gradients):
-            for file in files:
-                self.widgets[self.current_widget].w.select_aesthetic_embedding.addItem(str(file))
-        #self.set_txt2img.w.gradientList.setItemText(index)
-
-    def select_gradient(self, gradient):
-        if self.widgets[self.current_widget].w.select_aesthetic_embedding.itemText(gradient) != "None":
-            gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.widgets[self.current_widget].w.select_aesthetic_embedding.itemText(gradient))
-        else:
-            gs.aesthetic_embedding_path = None
 
     #Timeline functions
     def showTypeKeyframes(self):

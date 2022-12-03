@@ -1063,14 +1063,14 @@ class DeforumSix:
         torch_gc()
 def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, mask_for_reconstruction, masked_image_for_blend, num_samples=1, w=512, h=512, callback=None):
     #model = sampler.model
-    gs.models["inpaint"].to(device)
+    #gs.models["inpaint"].to(device)
 
     prng = np.random.RandomState(seed)
     start_code = prng.randn(num_samples, 4, h//8, w//8)
     start_code = torch.from_numpy(start_code).to(device=device, dtype=torch.float16)
 
     #gs.models["inpaint"].model.to("cpu")
-    gs.models["inpaint"].cond_stage_model.to(device)
+    #gs.models["inpaint"].cond_stage_model.to(device)
     with torch.no_grad():
         with torch.autocast("cuda"):
             batch = make_batch_sd(image, mask, txt=prompt, device=device, num_samples=num_samples)
@@ -1095,7 +1095,7 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, mask_
             uc_cross = gs.models["inpaint"].get_unconditional_conditioning(num_samples, "")
             uc_full = {"c_concat": [c_cat], "c_crossattn": [uc_cross]}
 
-            gs.models["inpaint"].cond_stage_model.to("cpu")
+            #gs.models["inpaint"].cond_stage_model.to("cpu")
             #gs.models["inpaint"].model.to(device)
             shape = [gs.models["inpaint"].channels, h//8, w//8]
             samples_cfg, intermediates = sampler.sample(
@@ -1140,7 +1140,7 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, mask_
 
     #result = [Image.fromarray(img.astype(np.uint8)) for img in result]
     # result = [put_watermark(img for img in result]
-    gs.models["inpaint"].to("cpu")
+    #gs.models["inpaint"].to("cpu")
     return result
 
 

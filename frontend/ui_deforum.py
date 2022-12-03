@@ -275,8 +275,10 @@ class Deforum_UI(QObject):
     def run_deforum_outpaint(self, params=None, progress_callback=None):
         # self.deforum = DeforumGenerator()
         # self.deforum.signals = Callbacks()
-        self.parent.params = self.parent.sessionparams.update_params()
-        params = self.parent.params
+        if params == None:
+            params = self.parent.sessionparams.update_params()
+            self.parent.params = self.parent.sessionparams.update_params()
+            params = self.parent.params
         self.deforum_six = DeforumSix(self)
         self.progress = 0.0
         self.parent.update = 0
@@ -306,7 +308,7 @@ class Deforum_UI(QObject):
 
         #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
         #if params == None:
-        params = self.parent.sessionparams.update_params()
+
 
         #if params is not None:
         ##print(params)

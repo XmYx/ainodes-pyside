@@ -940,12 +940,13 @@ class MainWindow(QMainWindow):
         self.create_outpaint_batch()
 
     def create_outpaint_batch(self, gobig_img_path=None):
-        self.sessionparams.params.advanced = True
+        #self.sessionparams.params.advanced = True
         self.callbackbusy = True
         x = 0
         self.busy = False
         offset = self.widgets[self.current_widget].w.mask_offset.value()
         #self.preview_batch_outpaint()
+        self.params = self.sessionparams.update_params()
         if gobig_img_path is not None:
             pil_image = Image.open(gobig_img_path).resize((self.canvas.W.value(),self.canvas.H.value()), Image.Resampling.LANCZOS).convert("RGBA")
             qimage = ImageQt(pil_image)
@@ -970,7 +971,7 @@ class MainWindow(QMainWindow):
                     offset = offset + 512
                     params = self.prep_rect_params(item["prompt"])
 
-                    self.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image, index=index, order=item["order"], params=params)
+                    self.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image, index=index, order=item["order"], params=self.params)
 
                     #x = self.iterate_further(x)
                     x += 1
@@ -992,7 +993,7 @@ class MainWindow(QMainWindow):
 
                 params = self.prep_rect_params(items["prompt"])
 
-                self.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image, index=index, order=items["order"], params=params)
+                self.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image, index=index, order=items["order"], params=self.params)
 
                 #x = self.iterate_further(x)
                 x += 1

@@ -785,7 +785,7 @@ class MainWindow(QMainWindow):
 
     def outpaint_offset_signal(self):
 
-        value = int(self.widgets[self.current_widget].w.offset_slider.value())
+        value = int(self.widgets[self.current_widget].w.mask_offset.value())
         self.canvas.canvas.set_offset(value)
 
     @Slot()

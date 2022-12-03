@@ -108,7 +108,7 @@ data= {
     "dataset_filename_join_string": " ",
     "training_image_repeats_per_epoch": 1,
     "training_write_csv_every": 500,
-    "sd_model_checkpoint": "model.ckpt [a9263745]",
+    "sd_model_file": "model.ckpt [a9263745]",
     "sd_checkpoint_cache": 0,
     "sd_hypernetwork": "None",
     "sd_hypernetwork_strength": 1.0,
@@ -148,7 +148,7 @@ data= {
     "js_modal_lightbox": True,
     "js_modal_lightbox_initially_zoomed": True,
     "show_progress_in_title": True,
-    "quicksettings": "sd_model_checkpoint",
+    "quicksettings": "sd_model_file",
     "localization": "None",
     "hide_samplers": [],
     "eta_ddim": 0.0,
@@ -266,7 +266,7 @@ def list_models():
         title, short_model_name = modeltitle(cmd_ckpt, h)
 
         checkpoints_list[title] = CheckpointInfo(cmd_ckpt, title, h, short_model_name, config)
-        data['sd_model_checkpoint'] = title
+        data['sd_model_file'] = title
     elif cmd_ckpt is not None and cmd_ckpt != default_sd_model_file:
         print(f"Checkpoint in --ckpt argument not found (Possible it was moved to {model_path}: {cmd_ckpt}", file=sys.stderr)
     for filename in model_list:
@@ -483,9 +483,9 @@ def load_model_weights(model, checkpoint_info):
         devices.dtype_vae = torch.float16
 
         vae_file = os.path.splitext(checkpoint_file)[0] + ".vae.pt"
-        vae_path = None
-        if not os.path.exists(vae_file) and vae_path is not None:
-            vae_file = vae_path
+        vae_dir = None
+        if not os.path.exists(vae_file) and vae_dir is not None:
+            vae_file = vae_dir
         vae_file = 'model.vae.pt'
         if os.path.exists(vae_file):
             print(f"Loading VAE weights from: {vae_file}")
@@ -507,5 +507,5 @@ def load_model_weights(model, checkpoint_info):
         model.load_state_dict(checkpoints_loaded[checkpoint_info])
 
     model.sd_model_hash = sd_model_hash
-    model.sd_model_checkpoint = checkpoint_file
+    model.sd_model_file = checkpoint_file
     model.sd_checkpoint_info = checkpoint_info

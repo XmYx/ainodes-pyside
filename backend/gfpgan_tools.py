@@ -10,7 +10,7 @@ from backend.singleton import singleton
 gs = singleton
 
 
-model_path          = os.path.join(gs.system.gfpganModelPath)
+model_path          = os.path.join(gs.system.gfpgan_model_file)
 gfpgan_model_exists = os.path.isfile(model_path)
 
 def run_gfpgan(image, strength, seed, upsampler_scale=4):

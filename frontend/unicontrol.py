@@ -61,7 +61,7 @@ class UniControl(QObject):
         if item_count > 0:
             current_text = self.w.select_vae.currentText()
             current_vae = current_text if current_text != '' else None
-        files = os.listdir(gs.system.vae_path)
+        files = os.listdir(gs.system.vae_dir)
         self.w.select_vae.clear()
         self.w.select_vae.addItem('None')
         for model in files:
@@ -82,7 +82,7 @@ class UniControl(QObject):
         current_text = self.w.select_vae.currentText()
         new_vae = 'None'
         if current_text != 'None':
-            new_vae = os.path.join(gs.system.vae_path, current_text)
+            new_vae = os.path.join(gs.system.vae_dir, current_text)
         gs.diffusion.selected_vae = new_vae
 
     def select_new_hypernetwork(self):
@@ -96,7 +96,7 @@ class UniControl(QObject):
         current_text = self.w.select_aesthetic_embedding.currentText()
         new_aesthetic_embedding = 'None'
         if current_text != 'None':
-            new_aesthetic_embedding = os.path.join(gs.system.aesthetic_gradients, current_text)
+            new_aesthetic_embedding = os.path.join(gs.system.aesthetic_gradients_dir, current_text)
         gs.diffusion.selected_aesthetic_embedding = new_aesthetic_embedding
 
 
@@ -131,7 +131,7 @@ class UniControl(QObject):
         if item_count > 0:
             current_text = self.w.select_aesthetic_embedding.currentText()
             current_aesthetic_embedding = current_text if current_text != '' else None
-        files = os.listdir(gs.system.aesthetic_gradients)
+        files = os.listdir(gs.system.aesthetic_gradients_dir)
         self.w.select_aesthetic_embedding.clear()
         self.w.select_aesthetic_embedding.addItem('None')
         for model in files:
@@ -151,13 +151,13 @@ class UniControl(QObject):
 
     def update_model_list(self):
 
-        if not os.path.isfile(gs.system.sdPath):
+        if not os.path.isfile(gs.system.sd_model_file):
             target_model = None
         else:
-            if 'custom' in gs.system.sdPath:
-                target_model = 'custom/' + os.path.basename(gs.system.sdPath) # to work around the signal which triggers once we start changing the dropdowns items
+            if 'custom' in gs.system.sd_model_file:
+                target_model = 'custom/' + os.path.basename(gs.system.sd_model_file) # to work around the signal which triggers once we start changing the dropdowns items
             else:
-                target_model = os.path.basename(gs.system.sdPath)
+                target_model = os.path.basename(gs.system.sd_model_file)
 
         self.w.model_list.clear()
         files = os.listdir(gs.system.models_path)
@@ -166,8 +166,8 @@ class UniControl(QObject):
         for model in files:
             if '.ckpt' in model:
                 self.w.model_list.addItem(model)
-        files = os.listdir(gs.system.customModels)
-        files = [f for f in files if os.path.isfile(gs.system.customModels+'/'+f)] #Filtering only the files.
+        files = os.listdir(gs.system.custom_models_dir)
+        files = [f for f in files if os.path.isfile(gs.system.custom_models_dir+'/'+f)] #Filtering only the files.
         model_items.append(files)
         for model in files:
             if '.ckpt' in model:
@@ -191,7 +191,7 @@ class UniControl(QObject):
 
     def select_new_model(self):
         new_model = os.path.join(gs.system.models_path,self.w.model_list.currentText())
-        gs.system.sdPath = new_model
+        gs.system.sd_model_file = new_model
         if 'sd' in gs.models:
             del gs.models['sd']
         torch_gc()

@@ -64,7 +64,7 @@ class SessionParams():
 
 
         # todo find out why this is no used self.parent.widgets[widget].w.aesthetic_embedding.currentText()
-        # gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[widget].w.aesthetic_embedding.currentText())
+        # gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients_dir, self.parent.widgets[widget].w.aesthetic_embedding.currentText())
         if gs.aesthetic_embedding_path != "None":
             gs.T = self.parent.widgets[widget].w.gradient_steps.value()
             gs.lr = self.parent.widgets[widget].w.gradient_scale.value()

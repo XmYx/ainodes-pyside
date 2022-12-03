@@ -39,7 +39,7 @@ def generate_imgs_embd(name="doom", folder="learn", batch_size=5):
         embs = torch.cat(embs, dim=0).mean(dim=0, keepdim=True)
 
         # The generated embedding will be located here
-        path = f"models/aesthetic_gradients/{name}.pt"
+        path = f"models/aesthetic_gradients_dir/{name}.pt"
         torch.save(embs, path)
 
         model.cpu()

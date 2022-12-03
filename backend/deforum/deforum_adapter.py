@@ -75,7 +75,7 @@ class DeforumSix:
     def load_low_memory(self):
         if "model" not in gs.models:
             config = "optimizedSD/v1-inference.yaml"
-            ckpt = gs.system.sdPath
+            ckpt = gs.system.sd_model_file
             sd = load_model_from_config_lm(f"{ckpt}")
             li, lo = [], []
             for key, v_ in sd.items():
@@ -137,7 +137,7 @@ class DeforumSix:
     def load_model_from_config(self, config=None, ckpt=None, verbose=False):
 
         if ckpt is None:
-            ckpt = gs.system.sdPath
+            ckpt = gs.system.sd_model_file
 
         # loads config.yaml with the name of the model
         # the config yaml has to be provided with pöropper naming,
@@ -273,7 +273,7 @@ class DeforumSix:
             gs.models["inpaint"].to("cpu")
             del gs.models["inpaint"]
             torch_gc()
-        weights = gs.system.sdPath
+        weights = gs.system.sd_model_file
         config = 'configs/stable-diffusion/v1-inference-a.yaml'
         embedding_path = None
 
@@ -708,7 +708,7 @@ class DeforumSix:
 
             # make video
             cmd = [
-                gs.system.ffmpegPath,
+                gs.system.ffmpeg_file,
                 '-y',
                 '-vcodec', 'png',
                 '-r', str(fps),

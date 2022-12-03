@@ -240,11 +240,11 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
         else:
             depth_model = DepthModel(choose_torch_device())
 
-        depth_model.load_midas(models_path=gs.system.support_models)
+        depth_model.load_midas(models_path=gs.system.support_models_dir)
         if anim_args.midas_weight < 1.0:
             if adabins:
                 if "adabins" not in gs.models:
-                    depth_model.load_adabins(models_path=gs.system.support_models)
+                    depth_model.load_adabins(models_path=gs.system.support_models_dir)
             else:
                 gs.models["adabins"] = None
     else:

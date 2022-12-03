@@ -84,7 +84,7 @@ class SessionParams():
             make_grid = False
         else:
             make_grid = self.parent.widgets[widget].w.make_grid.isChecked()  # self.parent.widgets[widget].w.make_grid.isChecked()
-        outdir = gs.system.txt2imgOut
+        outdir = gs.system.txt2img_out_dir
         sampler_name = translate_sampler(self.parent.widgets[widget].w.sampler.currentText())
         use_init = self.parent.widgets[widget].w.use_init.isChecked()
         strength = self.parent.widgets[widget].w.strength.value()
@@ -180,22 +180,22 @@ class SessionParams():
         init_image = self.parent.widgets[widget].w.init_image.text()
         prompt_weighting = self.parent.widgets[widget].w.prompt_weighting.isChecked()
         normalize_prompt_weights = self.parent.widgets[widget].w.normalized_prompts.isChecked()
-        outdir = gs.system.txt2imgOut
+        outdir = gs.system.txt2img_out_dir
 
         if self.parent.widgets[widget].w.max_frames.value() < 2:
             animation_mode = 'None'
         else:
             if self.parent.widgets[widget].w.anim2D.isChecked():
                 animation_mode = '2D'
-                outdir = gs.system.txt2vidSingleFrame
+                outdir = gs.system.img2img_single_frame_dir
                 gs.system.pathmode = 'subfolders'
             if self.parent.widgets[widget].w.anim3D.isChecked():
                 animation_mode = '3D'
-                outdir = gs.system.txt2vidSingleFrame
+                outdir = gs.system.img2img_single_frame_dir
                 gs.system.pathmode = 'subfolders'
             if self.parent.widgets[widget].w.animVid.isChecked():
                 animation_mode = 'Video Input'
-                outdir = gs.system.txt2vidSingleFrame
+                outdir = gs.system.img2img_single_frame_dir
                 gs.system.pathmode = 'subfolders'
 
         advanced = False

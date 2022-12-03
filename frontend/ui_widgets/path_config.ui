@@ -113,7 +113,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="txt2imgOut">
+                  <widget class="QLineEdit" name="txt2img_out_dir">
                    <property name="text">
                     <string>output/txt2img</string>
                    </property>
@@ -127,7 +127,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="img2imgTmp">
+                  <widget class="QLineEdit" name="img2img_tmp_dir">
                    <property name="text">
                     <string>output/img2img/tmp</string>
                    </property>
@@ -141,7 +141,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="img2imgOut">
+                  <widget class="QLineEdit" name="img2img_out_dir">
                    <property name="text">
                     <string>output/img2img/output</string>
                    </property>
@@ -155,7 +155,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="txt2vidSingleFrame">
+                  <widget class="QLineEdit" name="img2img_single_frame_dir">
                    <property name="text">
                     <string>output/txt2vid/singe_frame</string>
                    </property>
@@ -169,7 +169,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="txt2vidOut">
+                  <widget class="QLineEdit" name="txt2vid_out_dir">
                    <property name="text">
                     <string>output/txt2vid/outputs</string>
                    </property>
@@ -183,7 +183,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="vid2vidTmp">
+                  <widget class="QLineEdit" name="txt2vid_tmp_dir">
                    <property name="text">
                     <string>output/vid2vid/tmp</string>
                    </property>
@@ -197,7 +197,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="vid2vidSingleFrame">
+                  <widget class="QLineEdit" name="vid2vid_single_frame_dir">
                    <property name="text">
                     <string>output/vid2vid/single_frame</string>
                    </property>
@@ -211,7 +211,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="vid2vidOut">
+                  <widget class="QLineEdit" name="vid2vid_out_dir">
                    <property name="text">
                     <string>output/vid2vid/output</string>
                    </property>

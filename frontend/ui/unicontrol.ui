@@ -96,9 +96,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-698</y>
             <width>719</width>
-            <height>2308</height>
+            <height>2317</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -3072,6 +3072,53 @@
                   <widget class="QPushButton" name="update_aesthetics">
                    <property name="text">
                     <string>Update</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLabel" name="label_75">
+                   <property name="text">
+                    <string>HiRes Gradient Pass:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="2">
+                  <widget class="QComboBox" name="gradient_pass">
+                   <item>
+                    <property name="text">
+                     <string>First</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Second</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Both</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="3" column="4">
+                  <widget class="QComboBox" name="return_type">
+                   <item>
+                    <property name="text">
+                     <string>Sample</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Latent</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="3" column="3">
+                  <widget class="QLabel" name="label_81">
+                   <property name="text">
+                    <string>Return type</string>
                    </property>
                   </widget>
                  </item>

@@ -130,7 +130,7 @@ class AestheticCLIP:
 
         self.image_embs_name = None
         self.image_embs = None
-        self.load_image_embs(None)
+        #self.load_image_embs(None)
         self.process_tokens = None
         self.device = choose_torch_device()
 
@@ -147,7 +147,7 @@ class AestheticCLIP:
         self.aesthetic_weight = aesthetic_weight
         self.aesthetic_steps = aesthetic_steps
         self.image_embs_name = None
-        self.load_image_embs(image_embs_name)
+        #self.load_image_embs(image_embs_name)
 
 
         #if self.image_embs_name is not None:
@@ -172,7 +172,7 @@ class AestheticCLIP:
             self.image_embs_name = None
         #print(gs.aesthetic_embedding_path)
         #print(os.path.join(gs.system.aesthetic_gradients, 'None'))
-        if gs.diffusion.selected_aesthetic_embedding is not 'None':
+        if gs.diffusion.selected_aesthetic_embedding is not None and gs.diffusion.selected_aesthetic_embedding is not 'None':
             self.image_embs_name = image_embs_name
             self.image_embs = torch.load(os.path.join(gs.system.aesthetic_gradients, gs.diffusion.selected_aesthetic_embedding), map_location=self.device)
             self.image_embs /= self.image_embs.norm(dim=-1, keepdim=True)
@@ -191,7 +191,7 @@ class AestheticCLIP:
         gs.CLIP_stop_at_last_layers = 1
         #print(self.aesthetic_embedding_path)
 
-        if not self.skip and self.aesthetic_steps != 0 and self.aesthetic_lr != 0 and self.aesthetic_weight != 0 and gs.aesthetic_embedding_path != os.path.join(gs.system.aesthetic_gradients, 'None'):
+        if not self.skip and self.aesthetic_steps != 0 and self.aesthetic_lr != 0 and self.aesthetic_weight != 0 and gs.diffusion.selected_aesthetic_embedding != 'None':
             #gs.models["sd"].cond_stage_model.tokenizer = gs.models["sd"].cond_stage_model.tokenizer
             use_old_emphasis_implementation = None
             if not use_old_emphasis_implementation:
@@ -217,7 +217,9 @@ class AestheticCLIP:
                 optimizer = optim.Adam(
                     model.text_model.parameters(), lr=self.aesthetic_lr
                 )
-                gs.models["sd"].to("cpu")
+                gs.models["sd"].model.to("cpu")
+                #gs.models["sd"].cond_stage_model.to("cpu")
+                gs.models["sd"].first_stage_model.to("cpu")
                 for _ in trange(self.aesthetic_steps, desc="Aesthetic optimization"):
 
                     text_embs = model.get_text_features(input_ids=tokens)
@@ -250,5 +252,5 @@ class AestheticCLIP:
                 z = slerp(z, zn, self.aesthetic_weight)
             else:
                 z = z * (1 - self.aesthetic_weight) + zn * self.aesthetic_weight
-        gs.models["sd"].to("cuda")
+        gs.models["sd"].model.to("cuda")
         return z

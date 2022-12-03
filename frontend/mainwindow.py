@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import torch
 from PIL import Image, ImageDraw
-from PIL.ImageQt import ImageQt
+from PIL.ImageQt import ImageQt, QImage
 from PySide6.QtCore import QFile, QIODevice, QEasingCurve, Slot, QRect, QThreadPool, QDir, Signal, QObject, QPoint
 from PySide6.QtWidgets import QMainWindow, QToolBar, QPushButton, QGraphicsColorizeEffect, QListWidgetItem, QFileDialog, \
     QLabel, QSlider, QFrame, QDockWidget, QWidget
@@ -253,10 +253,12 @@ class MainWindow(QMainWindow):
 
         self.model_download.signals.startDownload.connect(self.download_model_thread)
 
+        self.thumbs.w.thumbnails.itemClicked.connect(self.select_outpaint_image)
     def taskswitcher(self):
         gs.stop_all = False
         save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(), self.widgets[self.current_widget].w.prompts.toPlainText())
         if self.widgets[self.current_widget].w.use_inpaint.isChecked() == True:
+            self.params = self.sessionparams.update_params()
             self.canvas.canvas.reusable_outpaint(self.canvas.canvas.selected_item)
             self.deforum_ui.deforum_outpaint_thread()
         else:
@@ -658,6 +660,7 @@ class MainWindow(QMainWindow):
         if self.params.advanced == True:
             if self.canvas.canvas.rectlist != []:
                 if img is not None:
+                    print(f"Rendering image into index: {self.render_index}")
                     #for items in self.canvas.canvas.rectlist:
                     #    if items.id == self.canvas.canvas.render_item:
                             #if items.id == self.canvas.canvas.render_item:
@@ -669,11 +672,11 @@ class MainWindow(QMainWindow):
                     qimage = ImageQt(img.convert("RGBA"))
                     templist.append(qimage)
                     self.canvas.canvas.rectlist[self.render_index].images = templist
-                    if self.canvas.canvas.rectlist[self.render_index].index == None:
-                        self.canvas.canvas.rectlist[self.render_index].index = 0
+                    if self.canvas.canvas.rectlist[self.render_index].render_index == None:
+                        self.canvas.canvas.rectlist[self.render_index].render_index = 0
                     else:
-                        self.canvas.canvas.rectlist[self.render_index].index = self.canvas.canvas.rectlist[self.render_index].index + 1
-                    self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].index]
+                        self.canvas.canvas.rectlist[self.render_index].render_index += 1
+                    self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
                     self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
                 self.canvas.canvas.newimage = True
                 self.canvas.canvas.update()
@@ -693,10 +696,10 @@ class MainWindow(QMainWindow):
                 qimage = ImageQt(image.convert("RGBA"))
                 templist.append(qimage)
                 self.canvas.canvas.rectlist[self.render_index].images = templist
-                if self.canvas.canvas.rectlist[self.render_index].index == None:
-                    self.canvas.canvas.rectlist[self.render_index].index = 0
+                if self.canvas.canvas.rectlist[self.render_index].render_index == None:
+                    self.canvas.canvas.rectlist[self.render_index].render_index = 0
                 else:
-                    self.canvas.canvas.rectlist[self.render_index].index = self.canvas.canvas.rectlist[self.render_index].index + 1
+                    self.canvas.canvas.rectlist[self.render_index].render_index += 1
                 self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].index]
                 self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
                 self.canvas.canvas.rectlist[self.render_index].params = self.params
@@ -877,10 +880,29 @@ class MainWindow(QMainWindow):
                             if i is not None:
                                 image = i.copy(0, 0, i.width(), i.height())
                                 pixmap = QPixmap.fromImage(image)
-                                self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap), f"{items.index}"))
+                                self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap), f"{items.render_index}"))
 
     def redo_current_outpaint(self):
         self.canvas.canvas.redo_outpaint(self.canvas.canvas.selected_item)
+    def select_outpaint_image(self, item):
+        width=self.widgets[self.current_widget].w.W.value()
+        height=self.widgets[self.current_widget].w.H.value()
+        templist = self.canvas.canvas.rectlist
+        imageSize = item.icon().actualSize(QtCore.QSize(width, height))
+        if self.canvas.canvas.selected_item is not None:
+            for i in templist:
+                if i.id == self.canvas.canvas.selected_item:
+                    qimage = QImage(item.icon().actualSize(QtCore.QSize(width, height)), QImage.Format_ARGB32)
+                    painter = QPainter()
+                    painter.begin(qimage)
+                    painter.drawPixmap(0, 0, item.icon().pixmap(imageSize))
+                    painter.end()
+                    i.image = qimage
+                    i.timestring = time.time()
+        self.canvas.canvas.update()
+        self.canvas.canvas.rectlist = templist
+        self.canvas.canvas.newimage = True
+        self.canvas.canvas.update()
 
     def delete_outpaint_frame(self):
         #self.canvas.canvas.undoitems = []

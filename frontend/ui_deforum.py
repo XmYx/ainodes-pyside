@@ -277,7 +277,7 @@ class Deforum_UI(QObject):
         # self.deforum.signals = Callbacks()
         self.parent.params = self.parent.sessionparams.update_params()
         params = self.parent.params
-        self.deforum_six = DeforumSix()
+        self.deforum_six = DeforumSix(self)
         self.progress = 0.0
         self.parent.update = 0
         self.onePercent = 100 / params.steps
@@ -299,9 +299,9 @@ class Deforum_UI(QObject):
         gs.slerp_angle = self.parent.widgets[self.parent.current_widget].w.slerp_angle.value()
         gs.aesthetic_weight = self.parent.widgets[self.parent.current_widget].w.aesthetic_weight.value()
 
-        gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.plainText()
+        gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.toPlainText()
 
-        aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.plainText()
+        aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.toPlainText()
         gs.aesthetic_text_negative = False if aesthetic_text_negative == '' else aesthetic_text_negative
 
         #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
@@ -323,7 +323,7 @@ class Deforum_UI(QObject):
         with_inpaint = bool(params.with_inpaint)
 
         self.parent.sessionparams.params.advanced = True
-
+        self.parent.params.advanced = True
         self.deforum_six.outpaint_txt2img(init_image=init_image,
                                           steps=steps,
                                           H=H,

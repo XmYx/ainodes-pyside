@@ -257,6 +257,8 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
         init_latent = args.init_latent
     elif args.init_sample is not None:
         with precision_scope("cuda"):
+            #gs.models["sd"].first_stage_model.to(root.device)
+            #args.init_sample.float()
             init_latent = gs.models["sd"].get_first_stage_encoding(gs.models["sd"].encode_first_stage(args.init_sample))
     elif args.use_init and args.init_image != None and args.init_image != '':
         init_image, mask_image = load_img(args.init_image, 
@@ -492,13 +494,28 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
                     
                     if return_latent:
                         results.append(samples.clone())
-                    if hires == False:
-                        x_samples = [
-                            decode_first_stage(gs.models["sd"], samples[i:i + 1].to(root.device))[0].cpu() for i
-                            in range(samples.size(0))]
-                        x_samples = torch.stack(x_samples).float()
-                    else:
-                        x_samples = gs.models["sd"].decode_first_stage(samples)
+                    #if hires == False:
+                    if not return_latent:
+                        try:
+                            gs.models["sd"].first_stage_model.to(root.device)
+                        except:
+                            pass
+                        try:
+                            gs.models["sd"].cond_stage_model.to("cpu")
+                        except:
+                            pass
+                        try:
+                            gs.models["sd"].model.to("cpu")
+                        except:
+                            pass
+                        if not hires:
+                            x_samples = [
+                                decode_first_stage(gs.models["sd"], samples[i:i + 1].to(root.device))[0].cpu() for i
+                                in range(samples.size(0))]
+                            x_samples = torch.stack(x_samples).float()
+                        else:
+                            x_samples = gs.models["sd"].decode_first_stage(samples)
+                            #x_samples = samples[0]
 
                     if args.use_mask and args.overlay_mask:
                         # Overlay the masked image after the image is generated
@@ -526,16 +543,17 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
 
                     if return_sample:
                         results.append(x_samples.clone())
+                    if return_latent == False and return_sample == False:
+                        x_samples = torch.clamp((x_samples + 1.0) / 2.0, min=0.0, max=1.0)
 
-                    x_samples = torch.clamp((x_samples + 1.0) / 2.0, min=0.0, max=1.0)
-
-                    if return_c:
-                        results.append(c.clone())
-
-                    for x_sample in x_samples:
-                        x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
-                        image = Image.fromarray(x_sample.astype(np.uint8))
-                        results.append(image)
+                        if return_c:
+                            results.append(c.clone())
+                        if not return_latent:
+                            for x_sample in x_samples:
+                                x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
+                                image = Image.fromarray(x_sample.astype(np.uint8))
+                                results.append(image)
+                                del image
 
     k_sigmas = None
     mask_fullres = None
@@ -554,7 +572,7 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
     del c
     del uc
     del sampler
-    del image
+
     torch_gc()
     return results
 def generate_lowmem(args, root, frame = 0, return_latent=False, return_sample=False, return_c=False, step_callback=None, hires=None):

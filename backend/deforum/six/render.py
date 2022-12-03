@@ -116,14 +116,17 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                             args.init_sample = None
                             args.init_latent = None
                             args.init_c = None
+                            args.backupaesthetics = gs.diffusion.selected_aesthetic_embedding
+                            gs.diffusion.selected_aesthetic_embedding = 'None'
                             if args.lowmem == True:
-                                sample = generate_lowmem(args, root, return_sample=True, step_callback=step_callback,
+                                sample = generate_lowmem(args, root, return_latent=True, step_callback=step_callback,
                                                          hires=True)
                             else:
-                                sample = generate(args, root, return_sample=True, step_callback=step_callback,
+                                sample = generate(args, root, return_latent=True, step_callback=step_callback,
                                                          hires=True)
-
-                            args.init_sample = sample[0]
+                            gs.diffusion.selected_aesthetic_embedding = args.backupaesthetics
+                            args.backupaesthetics = None
+                            args.init_latent = sample[0]
                             args.use_init = True
                             args.strength = args.hiresstr
                             args.W = fpW

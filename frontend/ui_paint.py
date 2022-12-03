@@ -33,7 +33,8 @@ __selColor__ = QColor(255, 102, 102)
 
 
 class Rectangle(object):
-    def __init__(self, prompt, x, y, w, h, id, order = None, img_path = None, image = None, index=None, params=None):
+    def __init__(self, parent, prompt, x, y, w, h, id, order = None, img_path = None, image = None, index=None, params=None):
+        self.parent = parent
         self.prompt = prompt
         self.id = id
         self.x = x
@@ -41,12 +42,12 @@ class Rectangle(object):
         self.w = w
         self.h = h
         self.image = image
-        self.index = index
+        self.render_index = index
         self.images = []
         self.params = params
         if self.image is not None:
             self.images.append(self.image)
-            self.index = 0
+            self.render_index = 0
         self.order = order
         self.color = __idleColor__
         self.timestring = time.time()
@@ -57,19 +58,21 @@ class Rectangle(object):
         #self.signals = RectangleCallbacks()
         self.timer = QtCore.QTimer()
     def play(self):
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.iterate)
-        self.timer.start(80)
-        #self.signals.start_main.emit()
-        self.running = True
+        if self.parent.running == True:
+            if self.images != []:
+                self.timer = QtCore.QTimer()
+                self.timer.timeout.connect(self.iterate)
+                self.timer.start(80)
+                #self.signals.start_main.emit()
+                self.running = True
 
 
     def iterate(self):
-        self.image = self.images[self.index]
-        self.index = (self.index + 1) % len(self.images)
-        if self.index == len(self.images):
-            self.index = 0
-        ##print(self.index)
+        self.image = self.images[self.render_index]
+        self.render_index = (self.render_index + 1) % len(self.images)
+        if self.render_index == len(self.images):
+            self.render_index = 0
+        ##print(self.render_index)
 
 
     def stop(self):
@@ -267,10 +270,11 @@ class Canvas(QGraphicsView):
         rect = {}
         uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
         prompt = ""
-        rect[uid] = Rectangle(prompt, self.scene.scenePos.x() - self.w / 2, self.scene.scenePos.y() - self.h / 2, self.w, self.h, uid)
+        rect[uid] = Rectangle(self, prompt, self.scene.scenePos.x() - self.w / 2, self.scene.scenePos.y() - self.h / 2, self.w, self.h, uid)
         #rect[uid].signals.set_new_signal.connect(self.set_new)
         self.selected_item = uid
         self.rectlist.append(rect[uid])
+
         if dummy == True:
             self.rectlist.remove(rect[uid])
 
@@ -334,7 +338,7 @@ class Canvas(QGraphicsView):
                     self.sub_hover_item = i.id
                 if self.sub_hover_item is None:
                     self.hover_item = i.id
-                    self.index = self.rectlist.index(i)
+                    self.render_index = self.rectlist.index(i)
                 matchFound = True
             else:
                 i.color = __idleColor__
@@ -435,7 +439,7 @@ class Canvas(QGraphicsView):
                         params = x['params']
                     except:
                         params = {}
-                    rect[x['id']] = Rectangle(prompt, x['x'], x['y'], x['w'], x['h'], x['id'], x['order'], x['img_path'], params=params)
+                    rect[x['id']] = Rectangle(self, prompt, x['x'], x['y'], x['w'], x['h'], x['id'], x['order'], x['img_path'], params=params)
                     self.rectlist.append(rect[x['id']])
             for items in self.rectlist:
                 if items.img_path is not None:
@@ -595,16 +599,16 @@ class Canvas(QGraphicsView):
                         i.index = 0
                     uid = i.id
                     self.selected_item = i.id
-                    self.index = self.rectlist.index(i)
+                    self.render_index = self.rectlist.index(i)
                 matchfound = True
 
         if matchfound == False:
-            rect[uid] = Rectangle(prompt, x, y, self.w, self.h, uid, order = order, image=image, index=index, params=params)
+            rect[uid] = Rectangle(self, prompt, x, y, self.w, self.h, uid, order = order, image=image, index=index, params=params)
             self.selected_item = uid
             if self.rectlist == []:
                 self.txt2img = True
             self.rectlist.append(rect[uid])
-            self.index = len(self.rectlist) - 1
+            self.render_index = len(self.rectlist) - 1
             if params == {}:
                 pass
                 #self.signals.update_params.emit(uid)
@@ -687,6 +691,10 @@ class Canvas(QGraphicsView):
                                     outpainter.drawImage(0,0,newimage)
                                     outpainter.end()
                                     #self.addrect()
+                    if i.id == x.id:
+                        print(f"setting render index to:{self.rectlist.index(i)}")
+                        self.parent.parent.params.advanced = True
+                        self.parent.parent.render_index = self.rectlist.index(i)
         outpaintimage.save("outpaint.png")
         #outpainter.end()
         outpaintmaskimage.save("outpaint_mask.png")
@@ -695,7 +703,7 @@ class Canvas(QGraphicsView):
         self.busy = False
 
     def redo_outpaint(self, id):
-        #self.offset = 0
+        print('redo')
         outpaintimage = QPixmap(self.w, self.h)
         outpaintimage.fill(Qt.transparent)
         outpainter = QPainter()
@@ -705,6 +713,7 @@ class Canvas(QGraphicsView):
         outpainter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         outpainter.setRenderHint(QPainter.LosslessImageRendering)
         self.selected_item = id
+
         for x in self.rectlist:
             if x.id == id:
                 x.image = None
@@ -735,7 +744,9 @@ class Canvas(QGraphicsView):
                                     outpainter.begin(outpaintimage)
                                     outpainter.drawImage(0,0,newimage)
                                     outpainter.end()
-                                    #self.addrect()
+                    if i.id == x.id:
+                        print("Found an image to outpaint")
+                        self.parent.parent.render_index = self.rectlist.index(i)
         outpaintimage.save("outpaint.png")
         #outpainter.end()
         outpaintmaskimage.save("outpaint_mask.png")
@@ -743,6 +754,7 @@ class Canvas(QGraphicsView):
         self.redo = True
         self.render_item = self.selected_item
         self.signals.update_params.emit(id)
+        # = render_index
         self.signals.outpaint_signal.emit()
 
     def region_to_outpaint(self, event):
@@ -785,6 +797,7 @@ class Canvas(QGraphicsView):
 
 
         self.addrect()
+        self.parent.render_index = len(self.rectlist) - 1
         self.render_item = self.selected_item
         self.draw_rects()
         self.newimage = True
@@ -852,12 +865,13 @@ class Canvas(QGraphicsView):
                     pic = i.image.copy(0, 0, i.image.width(), i.image.height())
                     pixmap = QPixmap.fromImage(pic)
                     self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
-                    if len(i.images) > 1:
-                        if i.running is True:
-                            pixmap = QPixmap('frontend/icons/square.svg')
-                        elif i.running is False:
-                            pixmap = QPixmap('frontend/icons/play.svg')
-                        self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
+                    if self.running == True:
+                        if len(i.images) > 1:
+                            if i.running is True:
+                                pixmap = QPixmap('frontend/icons/square.svg')
+                            elif i.running is False:
+                                pixmap = QPixmap('frontend/icons/play.svg')
+                            self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
         self.painter.end()
         #self.bgitem.setX(0)
         self.bgitem.setPixmap(self.pixmap)
@@ -992,20 +1006,28 @@ class Canvas(QGraphicsView):
             #for i in self.rectlist:
             #    if i.id == self.selected_item:
             #        i.stop()
-            self.rectlist[self.index].stop()
             self.selected_item = None
             #self.drawRect()
             return
         if self.hover_item is not None:
             self.selected_item = self.hover_item
+            for i in self.rectlist:
+                if i.id == self.selected_item:
+                    self.render_index = self.rectlist.index(i)
             self.signals.update_selected.emit()
-            #self.drawRect()
+            if self.rectlist[self.render_index].running == True:
+                self.rectlist[self.render_index].stop()
+            else:
+                self.rectlist[self.render_index].play()
+            self.drawRect()
+            self.newimage = True
             #for i in self.rectlist:
             #    if i.id == self.selected_item:
             #        i.play()
-            self.rectlist[self.index].play()
+            #self.rectlist[self.render_index].play()
         else:
-            self.selected_item = None
+            pass
+            #self.selected_item = None
 
     def select_mouseMoveEvent(self, e):
         self.hoverCheck()

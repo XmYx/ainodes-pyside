@@ -155,7 +155,7 @@ class UniControl(QObject):
             target_model = None
         else:
             if 'custom' in gs.system.sdPath:
-                target_model = os.path.join('custom', os.path.basename(gs.system.sdPath)) # to work around the signal which triggers once we start changing the dropdowns items
+                target_model = 'custom/' + os.path.basename(gs.system.sdPath) # to work around the signal which triggers once we start changing the dropdowns items
             else:
                 target_model = os.path.basename(gs.system.sdPath)
 
@@ -184,7 +184,7 @@ class UniControl(QObject):
                 print(f'you have no models installed in {gs.system.models_path} please install any model before you run this software')
                 exit(0)
         else:
-            if len(model_items) > 1:
+            if item_count > 0:
                 self.w.model_list.setCurrentIndex(model_items.index(target_model))
             else:
                 self.w.model_list.setCurrentIndex(0)

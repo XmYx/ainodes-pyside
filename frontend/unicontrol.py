@@ -181,8 +181,8 @@ class UniControl(QObject):
                 print('model from config does not exist therefore we choose first model from the loaded list')
                 self.w.model_list.setCurrentIndex(0)
             else:
-                print(f'you have no models installed in {gs.system.models_path} please install any model before you run this software')
-                exit(0)
+                print(f'you have no models installed in {gs.system.models_path} please install any model before you run this software, you can try to download a model using the download feature')
+
         else:
             if item_count > 0:
                 self.w.model_list.setCurrentIndex(model_items.index(target_model))

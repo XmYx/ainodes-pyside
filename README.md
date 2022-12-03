@@ -21,6 +21,7 @@ A more simple install method is WIP, until then, please make sure that you have 
 
 ```\n
 conda env create -n ai-pixel -f environment-installer.yaml
+conda activate ai-pixel
 setup.bat
 ```
 

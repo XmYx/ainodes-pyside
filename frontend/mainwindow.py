@@ -1007,7 +1007,7 @@ class MainWindow(QMainWindow):
         #batch_n = self.widgets[self.current_widget].w.multiBatchvalue.value()
         multi = False
         batch_n = 1
-        self.stopprocessing = False
+        gs.stop_all = False
         self.callbackbusy = False
         self.sleepytime = 0.0
         self.choice = "Outpaint"
@@ -1020,7 +1020,7 @@ class MainWindow(QMainWindow):
             og_size = (512, 512)
             tiles = (self.canvas.canvas.cols - 1) * (self.canvas.canvas.rows - 1)
             for x in range(int(tiles)):
-                if self.stopprocessing == False:
+                if gs.stop_all != True:
                     self.run_hires_step_x(x)
                     betterslices.append((self.image.convert('RGBA'), self.canvas.canvas.rectlist[x].x, self.canvas.canvas.rectlist[x].y))
                 else:
@@ -1073,7 +1073,7 @@ class MainWindow(QMainWindow):
         return x
 
     def run_prepared_outpaint_batch(self, progress_callback=None):
-        self.stopprocessing = False
+        gs.stop_all = False
         self.callbackbusy = False
         self.sleepytime = 0.0
         self.choice = "Outpaint"
@@ -1098,13 +1098,13 @@ class MainWindow(QMainWindow):
                     self.create_outpaint_batch()
                 for x in range(tiles):
                     #print(x)
-                    if self.stopprocessing == False:
+                    if gs.stop_all == False:
                         self.run_outpaint_step_x(x)
                     else:
                         break
         else:
             for x in range(tiles):
-                if self.stopprocessing == False:
+                if gs.stop_all == False:
                     print(f"running step {x}")
                     self.run_outpaint_step_x(x)
                 else:

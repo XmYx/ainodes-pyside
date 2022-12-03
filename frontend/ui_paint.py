@@ -188,6 +188,8 @@ class Canvas(QGraphicsView):
                     i.h = h
         #self.newimage = True
     def soft_reset(self, w=512, h=512):
+        w = self.parent.W.value()
+        h = self.parent.H.value()
         self.pixmap = QPixmap(w, h)
         self.currentWidth = w
         self.currentHeight = h
@@ -195,9 +197,10 @@ class Canvas(QGraphicsView):
         self.pixmap.fill(__backgroudColor__)
         self.bgitem = QGraphicsPixmapItem()
         self.rectItem = QGraphicsRectItem(0, 0, 512, 512)
-        self.parent.parent.w = 512
-        self.parent.parent.cheight = 512
-        self.parent.parent.stopwidth = False
+        self.parent.parent.w = w
+        self.parent.parent.cheight = h
+        if w < 3000:
+            self.parent.parent.stopwidth = False
         #self.debugtext = QGraphicsTextItem("0, 0\n")
         #self.helpText = QGraphicsTextItem("C - Hand Drag\nV - Place Rectangles")
         self.bgitem.setPixmap(self.pixmap)

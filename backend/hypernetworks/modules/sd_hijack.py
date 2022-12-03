@@ -51,8 +51,9 @@ def apply_optimizations():
         ldm.modules.attention.CrossAttention.forward = sd_hijack_optimizations.split_cross_attention_forward
         ldm.modules.diffusionmodules.model.AttnBlock.forward = sd_hijack_optimizations.cross_attention_attnblock_forward"""
     print("Applying xformers cross attention optimization.")
-    ldm.modules.attention.CrossAttention.forward = sd_hijack_optimizations.xformers_attention_forward
-    ldm.modules.diffusionmodules.model.AttnBlock.forward = sd_hijack_optimizations.xformers_attnblock_forward
+    if gs.system.xformer == True:
+        ldm.modules.attention.CrossAttention.forward = sd_hijack_optimizations.xformers_attention_forward
+        ldm.modules.diffusionmodules.model.AttnBlock.forward = sd_hijack_optimizations.xformers_attnblock_forward
 
     #print('hijack util')
     #ldm.modules.diffusionmodules.util.make_ddim_timesteps = hijack_util.make_ddim_timesteps

@@ -655,6 +655,7 @@ class Canvas(QGraphicsView):
 
     def reusable_inpaint(self, id):
         self.busy = True
+        self.redraw(transparent=True)
         outpaintimage = QPixmap(self.w, self.h)
         outpaintimage.fill(Qt.transparent)
         outpainter = QPainter()
@@ -678,6 +679,7 @@ class Canvas(QGraphicsView):
         self.render_item = self.selected_item
         self.outpaintsource = "outpaint.png"
         self.busy = False
+        self.parent.parent.widgets[self.parent.parent.current_widget].w.reconstruction_blur.setValue(0)
         self.signals.outpaint_signal.emit()
 
 
@@ -886,9 +888,12 @@ class Canvas(QGraphicsView):
         else:
             key = 0
         return key
-    def redraw(self):
-        self.pixmap.fill(__backgroudColor__)
-        self.draw_rects()
+    def redraw(self, transparent=None):
+        if transparent:
+            self.pixmap.fill(Qt.transparent)
+        else:
+            self.pixmap.fill(__backgroudColor__)
+            self.draw_rects()
         self.painter.begin(self.pixmap)
         self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         if self.rectlist is not [] and self.rectlist is not None:

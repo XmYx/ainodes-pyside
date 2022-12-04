@@ -17,7 +17,8 @@ from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockW
     QGraphicsTextItem, QScrollArea, QHBoxLayout, QLayout, QAbstractScrollArea, QFileDialog, QSpinBox
 
 from PySide6 import QtCore, QtGui
-
+from backend.singleton import singleton
+gs = singleton
 from time import gmtime, strftime
 import time
 from uuid import uuid4
@@ -437,7 +438,20 @@ class Canvas(QGraphicsView):
             t.setWindowTitle(title)
         t.exec_()
         return t.selectedFiles()[0]
+    def load_img_into_rect(self):
+        data = self.getfile()
+        if data is not None:
+            gs.temppath = data
+            if self.selected_item is not None:
+                for i in self.rectlist:
+                    if i.id == self.selected_item:
+                        self.parent.parent.image = Image.open(data)
+                        i.w = self.parent.parent.image.size[0]
+                        i.h = self.parent.parent.image.size[1]
+                        self.parent.parent.render_index = self.rectlist.index(i)
 
+                        self.parent.parent.params.advanced = True
+                        self.parent.parent.image_preview_func()
 
     def load_rects_from_json(self):
 

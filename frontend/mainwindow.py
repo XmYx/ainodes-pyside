@@ -171,6 +171,8 @@ class MainWindow(QMainWindow):
             [-0.184, -0.271, -0.473],  # L4
         ], dtype=torch.float, device='cuda')
 
+        self.params = self.sessionparams.update_params()
+
     def create_sys_folders(self):
         os.makedirs(gs.system.galleryMainPath, exist_ok=True)
         os.makedirs(gs.system.txt2imgOut, exist_ok=True)
@@ -500,6 +502,7 @@ class MainWindow(QMainWindow):
         save_canvas_png = QAction(QIcon_from_svg('frontend/icons/save.svg'), 'Save as PNG', self)
         clear_canvas = QAction(QIcon_from_svg('frontend/icons/frown.svg'), 'Clear Canvas', self)
         load_canvas = QAction(QIcon_from_svg('frontend/icons/folder.svg'), 'Load from Json', self)
+        load_image = QAction(QIcon_from_svg('frontend/icons/folder.svg'), 'Load Image', self)
         play = QAction(QIcon_from_svg('frontend/icons/play.svg'), 'Enable Playback / Play All', self)
         stop = QAction(QIcon_from_svg('frontend/icons/square.svg'), 'Stop All', self)
 
@@ -512,6 +515,7 @@ class MainWindow(QMainWindow):
         self.secondary_toolbar.addAction(save_canvas)
         self.secondary_toolbar.addAction(save_canvas_png)
         self.secondary_toolbar.addAction(load_canvas)
+        self.secondary_toolbar.addAction(load_image)
         self.secondary_toolbar.addAction(clear_canvas)
         self.secondary_toolbar.addSeparator()
         self.secondary_toolbar.addAction(play)
@@ -524,6 +528,7 @@ class MainWindow(QMainWindow):
         move_mode.triggered.connect(self.canvas.canvas.move_mode)
         save_canvas.triggered.connect(self.canvas.canvas.save_rects_as_json)
         load_canvas.triggered.connect(self.canvas.canvas.load_rects_from_json)
+        load_image.triggered.connect(self.canvas.canvas.load_img_into_rect)
         clear_canvas.triggered.connect(self.canvas.canvas.reset)
         save_canvas_png.triggered.connect(self.canvas.canvas.save_canvas)
         play.triggered.connect(self.canvas.canvas.start_main_clock)

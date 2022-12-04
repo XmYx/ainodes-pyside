@@ -96,9 +96,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-360</y>
+            <y>-570</y>
             <width>715</width>
-            <height>2724</height>
+            <height>2727</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -467,6 +467,13 @@
                   <widget class="QPushButton" name="load_inpaint_model">
                    <property name="text">
                     <string>PreLoad Inpaint Model</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="2">
+                  <widget class="QPushButton" name="load_image">
+                   <property name="text">
+                    <string>Load Image</string>
                    </property>
                   </widget>
                  </item>

@@ -329,6 +329,7 @@ class Deforum_UI(QObject):
 
         self.parent.sessionparams.params.advanced = True
         self.parent.params.advanced = True
+        #print(prompt)
         self.deforum_six.outpaint_txt2img(init_image=init_image,
                                           steps=steps,
                                           H=H,

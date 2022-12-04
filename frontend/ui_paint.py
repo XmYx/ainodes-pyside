@@ -35,6 +35,7 @@ __selColor__ = QColor(255, 102, 102)
 
 class Rectangle(object):
     def __init__(self, parent, prompt, x, y, w, h, id, order = None, img_path = None, image = None, index=None, params=None):
+
         self.parent = parent
         self.prompt = prompt
         self.id = id
@@ -315,7 +316,7 @@ class Canvas(QGraphicsView):
             y = (y - scaledHeight) * Yscale
             if x < 0: x = 0
             if y < 0: y = 0
-        if self.mode == "generic" or self.mode == "outpaint" or self.mode == "inpaint":
+        if self.mode == "generic" or self.mode == "outpaint" or self.mode == "inpaint" or self.mode == "move":
             pen = QPen(Qt.GlobalColor.blue, 3, Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
             self.rectItem.setPen(pen)
             self.rectItem.setRect(x, y, self.w, self.h)
@@ -909,9 +910,6 @@ class Canvas(QGraphicsView):
         #self.bgitem.setX(0)
         self.bgitem.setPixmap(self.pixmap)
         self.newimage = False
-        #self.setGeometry(0, 0, self.width(), self.height())
-
-
 
         self.anim = QtCore.QPropertyAnimation(self, b"geometry")
         self.anim.setDuration(500)
@@ -973,6 +971,13 @@ class Canvas(QGraphicsView):
         ###print("Button pressed")
         #self.redraw()
         #self.update()
+    def move_mode(self):
+        self.mode = "move"
+        self.setDragMode(QGraphicsView.DragMode.NoDrag)
+        try:
+            self.scene.addItem(self.rectItem)
+        except:
+            pass
     def drag_mode(self):
         self.mode = "drag"
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
@@ -1016,8 +1021,8 @@ class Canvas(QGraphicsView):
         elif e.key() == 78:
             self.mode = "outpaint"
         elif e.key() == 77:
-            self.mode = "inpaint"
-            #print("inpaint mode")
+            self.mode = "move"
+            print("move mode")
             self.setDragMode(QGraphicsView.DragMode.NoDrag)
         elif e.key() == 90 and self.ctrlmodifier == True:
             self.undoEvent()
@@ -1087,7 +1092,25 @@ class Canvas(QGraphicsView):
         return
     def drag_mousePressEvent(self, event):
         return
+    def move_mouseMoveEvent(self, e):
+        if self.scene.pos is not None:
+            self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), self.w, self.h)
+        self.update()
+        return
+    def move_mouseReleaseEvent(self, event):
+        return
+    def move_mousePressEvent(self, event):
+        self.move_action()
+        return
 
+    def move_action(self):
+        if self.selected_item is not None:
+            for i in self.rectlist:
+                if i.id == self.selected_item:
+                    i.x = self.scene.scenePos.x() - i.w / 2
+                    i.y = self.scene.scenePos.y() - i.h / 2
+                    self.newimage = True
+                    self.update()
     def inpaint_mousePressEvent(self, e):
         if e.button() == Qt.LeftButton:
             self.eraser_color = QColor(QColor(Qt.white))

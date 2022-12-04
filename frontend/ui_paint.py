@@ -746,8 +746,8 @@ class Canvas(QGraphicsView):
                                     #self.addrect()
                     if i.id == x.id:
                         print(f"setting render index to:{self.rectlist.index(i)}")
-                        self.parent.parent.params = x.params
-                        self.parent.parent.params.advanced = True
+                        #self.parent.parent.params = x.params
+                        #self.parent.parent.params.advanced = True
                         self.parent.parent.render_index = self.rectlist.index(i)
         outpaintimage.save("outpaint.png")
         #outpainter.end()
@@ -807,7 +807,7 @@ class Canvas(QGraphicsView):
         self.outpaintsource = "outpaint.png"
         self.redo = True
         self.render_item = self.selected_item
-        #self.signals.update_params.emit(id)
+        self.signals.update_params.emit(id)
         # = render_index
         self.signals.outpaint_signal.emit()
 
@@ -1185,6 +1185,7 @@ class Canvas(QGraphicsView):
     def outpaint_mousePressEvent(self, event):
         if self.scene.pos is not None:
             self.addrect()
+            self.signals.update_selected.emit()
             self.redraw()
             if self.ctrlmodifier == True:
                 self.reusable_outpaint(self.selected_item)

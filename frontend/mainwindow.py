@@ -268,6 +268,7 @@ class MainWindow(QMainWindow):
         save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(), self.widgets[self.current_widget].w.prompts.toPlainText())
         if self.widgets[self.current_widget].w.use_inpaint.isChecked() == True:
             self.params = self.sessionparams.update_params()
+            self.params.advanced = True
             self.canvas.canvas.reusable_outpaint(self.canvas.canvas.selected_item)
             self.deforum_ui.deforum_outpaint_thread()
         else:
@@ -877,9 +878,9 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def show_outpaint_details(self):
-
+        self.thumbs.w.thumbnails.clear()
         if self.canvas.canvas.selected_item is not None:
-            self.thumbs.w.thumbnails.clear()
+
             for items in self.canvas.canvas.rectlist:
                 if items.id == self.canvas.canvas.selected_item:
                     #print(items.params)

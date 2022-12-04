@@ -313,7 +313,7 @@ class DeforumSix:
             torch_gc()
         """Load and initialize the model from configuration variables passed at object creation time"""
         if "inpaint" not in gs.models:
-            weights = 'models/sd-v1-5-inpaint.ckpt'
+            weights = gs.system.sdInpaintPath
             config = 'configs/stable-diffusion/inpaint.yaml'
             embedding_path = None
 
@@ -841,6 +841,7 @@ class DeforumSix:
 
         if with_inpaint == False:
             self.load_model_from_config()
+            gs.models["sd"].to('cuda')
             print(f"txt2img seed: {seed}   steps: {steps}  prompt: {prompt}")
             print(f"size:  {W}x{H}")
 
@@ -974,7 +975,7 @@ class DeforumSix:
                                 image = sampleToImage(x_sample)
                                 fpath = os.path.join(sample_path, f"{base_name}_{base_count:05}.png")
                                 image.save(fpath)
-                                self.temppath = fpath
+                                gs.temppath = fpath
                                 if image_callback is not None:
                                     image_callback(image)
                                 # save_image(
@@ -1023,7 +1024,7 @@ class DeforumSix:
                 callback=step_callback)
             fpath = os.path.join(sample_path, f"{base_name}_{base_count:05}.png")
             result[0].save(fpath, 'PNG')
-            self.temppath = fpath
+            gs.temppath = fpath
             image_callback(result[0])
 
         # global plms_sampler

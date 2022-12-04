@@ -96,9 +96,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-698</y>
-            <width>719</width>
-            <height>2317</height>
+            <y>-570</y>
+            <width>715</width>
+            <height>2724</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -463,6 +463,13 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="7" column="2">
+                  <widget class="QPushButton" name="load_inpaint_model">
+                   <property name="text">
+                    <string>PreLoad Inpaint Model</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </widget>
               </item>
@@ -636,13 +643,6 @@
                    </property>
                    <property name="checked">
                     <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="7">
-                  <widget class="QPushButton" name="update_models">
-                   <property name="text">
-                    <string>Update Models</string>
                    </property>
                   </widget>
                  </item>
@@ -1029,6 +1029,20 @@
                   <widget class="QPushButton" name="update_hyper">
                    <property name="text">
                     <string>Update Hyper</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="7">
+                  <widget class="QPushButton" name="update_models">
+                   <property name="text">
+                    <string>Update Models</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="7">
+                  <widget class="QPushButton" name="load_model">
+                   <property name="text">
+                    <string>Load Model</string>
                    </property>
                   </widget>
                  </item>
@@ -3123,6 +3137,13 @@
                   </widget>
                  </item>
                 </layout>
+               </widget>
+              </item>
+              <item row="9" column="6">
+               <widget class="QPushButton" name="cleanup">
+                <property name="text">
+                 <string>Clean Up Memory</string>
+                </property>
                </widget>
               </item>
              </layout>

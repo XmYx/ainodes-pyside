@@ -29,6 +29,7 @@ from backend.singleton import singleton
 from frontend.ui_krea import Krea
 from frontend.ui_lexica import LexicArt
 from frontend.ui_model_download import ModelDownload, ModelDownload_UI
+from backend.shared import model_killer
 
 from backend.devices import choose_torch_device
 from frontend.ui_timeline import Timeline, KeyFrame
@@ -120,6 +121,8 @@ class MainWindow(QMainWindow):
         self.krea.w.dockWidget.setWindowTitle("Krea")
         self.prompt_fetcher.w.dockWidget.setWindowTitle("Prompt Fetcher")
         self.model_download_ui.w.dockWidget.setWindowTitle("Model Download")
+        self.timeline.setWindowTitle("Timeline")
+        self.thumbs.w.dockWidget.setWindowTitle("History")
 
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.model_download_ui.w.dockWidget)
         self.model_download_ui.w.dockWidget.setMaximumHeight(self.height())
@@ -167,6 +170,8 @@ class MainWindow(QMainWindow):
             [-0.158, 0.189, 0.264],  # L3
             [-0.184, -0.271, -0.473],  # L4
         ], dtype=torch.float, device='cuda')
+
+        self.params = self.sessionparams.update_params()
 
     def create_sys_folders(self):
         os.makedirs(gs.system.galleryMainPath, exist_ok=True)
@@ -218,6 +223,9 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.run_hires.clicked.connect(self.run_hires_batch_thread)
         self.widgets[self.current_widget].w.prep_hires.clicked.connect(self.run_create_outpaint_img2img_batch)
         self.widgets[self.current_widget].w.update_params.clicked.connect(self.update_params)
+        self.widgets[self.current_widget].w.load_model.clicked.connect(self.deforum_ui.deforum_six.load_model_from_config)
+        self.widgets[self.current_widget].w.load_inpaint_model.clicked.connect(self.deforum_ui.deforum_six.load_inpaint_model)
+        self.widgets[self.current_widget].w.cleanup.clicked.connect(model_killer)
 
         self.widgets[self.current_widget].w.W.valueChanged.connect(self.update_outpaint_parameters)
         self.widgets[self.current_widget].w.H.valueChanged.connect(self.update_outpaint_parameters)
@@ -488,11 +496,13 @@ class MainWindow(QMainWindow):
         select_mode = QAction(QIcon_from_svg('frontend/icons/mouse-pointer.svg'), 'Select', self)
         drag_mode = QAction(QIcon_from_svg('frontend/icons/wind.svg'), 'Drag', self)
         add_mode = QAction(QIcon_from_svg('frontend/icons/plus.svg'), 'Outpaint', self)
-        inpaint_mode = QAction(QIcon_from_svg('frontend/icons/plus.svg'), 'Inpaint', self)
-        save_canvas = QAction(QIcon_from_svg('frontend/icons/save.svg'), 'Save as Json', self)
+        inpaint_mode = QAction(QIcon_from_svg('frontend/icons/edit.svg'), 'Inpaint', self)
+        move_mode = QAction(QIcon_from_svg('frontend/icons/move.svg'), 'Move', self)
+        save_canvas = QAction(QIcon_from_svg('frontend/icons/file-text.svg'), 'Save as Json', self)
         save_canvas_png = QAction(QIcon_from_svg('frontend/icons/save.svg'), 'Save as PNG', self)
         clear_canvas = QAction(QIcon_from_svg('frontend/icons/frown.svg'), 'Clear Canvas', self)
         load_canvas = QAction(QIcon_from_svg('frontend/icons/folder.svg'), 'Load from Json', self)
+        load_image = QAction(QIcon_from_svg('frontend/icons/folder.svg'), 'Load Image', self)
         play = QAction(QIcon_from_svg('frontend/icons/play.svg'), 'Enable Playback / Play All', self)
         stop = QAction(QIcon_from_svg('frontend/icons/square.svg'), 'Stop All', self)
 
@@ -500,10 +510,14 @@ class MainWindow(QMainWindow):
         self.secondary_toolbar.addAction(drag_mode)
         self.secondary_toolbar.addAction(add_mode)
         self.secondary_toolbar.addAction(inpaint_mode)
+        self.secondary_toolbar.addAction(move_mode)
+        self.secondary_toolbar.addSeparator()
         self.secondary_toolbar.addAction(save_canvas)
         self.secondary_toolbar.addAction(save_canvas_png)
-        self.secondary_toolbar.addAction(clear_canvas)
         self.secondary_toolbar.addAction(load_canvas)
+        self.secondary_toolbar.addAction(load_image)
+        self.secondary_toolbar.addAction(clear_canvas)
+        self.secondary_toolbar.addSeparator()
         self.secondary_toolbar.addAction(play)
         self.secondary_toolbar.addAction(stop)
 
@@ -511,8 +525,10 @@ class MainWindow(QMainWindow):
         drag_mode.triggered.connect(self.canvas.canvas.drag_mode)
         add_mode.triggered.connect(self.canvas.canvas.add_mode)
         inpaint_mode.triggered.connect(self.canvas.canvas.inpaint_mode)
+        move_mode.triggered.connect(self.canvas.canvas.move_mode)
         save_canvas.triggered.connect(self.canvas.canvas.save_rects_as_json)
         load_canvas.triggered.connect(self.canvas.canvas.load_rects_from_json)
+        load_image.triggered.connect(self.canvas.canvas.load_img_into_rect)
         clear_canvas.triggered.connect(self.canvas.canvas.reset)
         save_canvas_png.triggered.connect(self.canvas.canvas.save_canvas)
         play.triggered.connect(self.canvas.canvas.start_main_clock)
@@ -657,6 +673,7 @@ class MainWindow(QMainWindow):
         #print(self.params.advanced)
         #print(self.canvas.canvas.rectlist)
         if self.params.advanced == True:
+            print("advanced callback")
             if self.canvas.canvas.rectlist != []:
                 if img is not None:
                     print(f"Rendering image into index: {self.render_index}")
@@ -677,7 +694,7 @@ class MainWindow(QMainWindow):
                         self.canvas.canvas.rectlist[self.render_index].render_index += 1
                     self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
                     self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
-                    self.canvas.canvas.rectlist[self.render_index].img_path = self.deforum_ui.deforum_six.temppath
+                    self.canvas.canvas.rectlist[self.render_index].img_path = gs.temppath
                 self.canvas.canvas.newimage = True
                 self.canvas.canvas.update()
                 self.canvas.canvas.redraw()

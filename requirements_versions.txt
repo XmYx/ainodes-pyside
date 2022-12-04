@@ -122,7 +122,3 @@ uvicorn
 pydantic
 transformers~=4.24.0
 diffusers~=0.9.0
-pycuda~=2022.2
-onnxsim~=0.4.10
-onnxruntime~=1.13.1
-onnxconverter-common~=1.13.0

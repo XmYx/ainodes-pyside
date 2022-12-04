@@ -669,7 +669,7 @@ class Canvas(QGraphicsView):
 
     def reusable_inpaint(self, id):
         self.busy = True
-        self.redraw(transparent=True)
+        #self.redraw(transparent=True)
         outpaintimage = QPixmap(self.w, self.h)
         outpaintimage.fill(Qt.transparent)
         outpainter = QPainter()
@@ -988,7 +988,7 @@ class Canvas(QGraphicsView):
             pass
         #self.scene.addItem(self.rectItem)
         ###print("Button pressed")
-        #self.redraw()
+        self.redraw()
         #self.update()
     def move_mode(self):
         self.mode = "move"
@@ -997,6 +997,8 @@ class Canvas(QGraphicsView):
             self.scene.addItem(self.rectItem)
         except:
             pass
+        self.redraw()
+
     def drag_mode(self):
         self.mode = "drag"
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
@@ -1011,18 +1013,22 @@ class Canvas(QGraphicsView):
         is_in = True
         self.bgitem.update()
         self.rectItem.update()
+        #self.redraw()
+
     def add_mode(self):
         self.addrect(dummy=True)
         self.mode = "outpaint"
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
         self.scene.addItem(self.rectItem)
         self.setUpdatesEnabled(True)
+        self.redraw()
     def inpaint_mode(self):
         self.addrect(dummy=True)
         self.mode = "inpaint"
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
         self.scene.addItem(self.rectItem)
         self.setUpdatesEnabled(True)
+        self.redraw(transparent=True)
     def keyPressEvent(self, e):
         super(Canvas, self).keyPressEvent(e)
         ##print(f"key pressed: {e.key()}")

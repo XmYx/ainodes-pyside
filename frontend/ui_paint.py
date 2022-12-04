@@ -35,7 +35,7 @@ __selColor__ = QColor(255, 102, 102)
 
 
 class Rectangle(object):
-    def __init__(self, parent, prompt, x, y, w, h, id, order = None, img_path = None, image = None, index=None, params=None):
+    def __init__(self, parent, prompt, x, y, w, h, id, order = None, img_path = None, image = None, render_index=None, params=None):
 
         self.parent = parent
         self.prompt = prompt
@@ -45,9 +45,10 @@ class Rectangle(object):
         self.w = w
         self.h = h
         self.image = image
-        self.render_index = index
+        self.render_index = render_index
         self.images = []
         self.params = params
+        #print(f"Hello, I'm a rectangle with seed {params.seed}")
         if self.image is not None:
             self.images.append(self.image)
             self.render_index = 0
@@ -629,8 +630,13 @@ class Canvas(QGraphicsView):
     #def get_next_color(self, x):
 
 
-    def addrect_atpos(self, prompt='', x=0, y=0, image=None, index=None, order=None, params=None):
+    def addrect_atpos(self, prompt='', x=0, y=0, image=None, render_index=None, order=None, params=None):
         rect = {}
+        uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
+        rect[uid] = Rectangle(self, prompt, x, y, self.w, self.h, uid, order=order, image=image, render_index=render_index,
+                              params=params)
+        self.rectlist.append(rect[uid])
+        """rect = {}
         uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
         ###print(f"adding rectangles at:{x} {y}")
         matchfound = False
@@ -652,19 +658,15 @@ class Canvas(QGraphicsView):
 
         if matchfound == False:
             rect[uid] = Rectangle(self, prompt, x, y, self.w, self.h, uid, order = order, image=image, index=index, params=params)
+            print(f"adding rect with seed {params.seed}")
             self.selected_item = uid
             if self.rectlist == []:
                 self.txt2img = True
             self.rectlist.append(rect[uid])
             self.parent.parent.render_index = len(self.rectlist) - 1
-            if params == {}:
-                pass
-                #self.signals.update_params.emit(uid)
             self.counter += 1
 
-        self.newimage = True
-        #self.update()
-        #self.redraw()
+        self.newimage = True"""
         return uid
 
     def reusable_inpaint(self, id):
@@ -743,6 +745,7 @@ class Canvas(QGraphicsView):
                                     #self.addrect()
                     if i.id == x.id:
                         print(f"setting render index to:{self.rectlist.index(i)}")
+                        self.parent.parent.params = x.params
                         self.parent.parent.params.advanced = True
                         self.parent.parent.render_index = self.rectlist.index(i)
         outpaintimage.save("outpaint.png")
@@ -852,7 +855,7 @@ class Canvas(QGraphicsView):
         self.draw_rects()
         self.newimage = True
         self.redraw()
-        self.signals.update_params.emit(self.selected_item)
+        #self.signals.update_params.emit(self.selected_item)
         outpaintimage.save("outpaint.png")
         outpaintmaskimage.save("outpaint_mask.png")
 

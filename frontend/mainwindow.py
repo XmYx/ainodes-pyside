@@ -672,12 +672,13 @@ class MainWindow(QMainWindow):
         y = 0
         img = self.image
         #print(self.params.advanced)
+        #print(f"rectlist: {self.canvas.canvas.rectlist}")
         #print(self.canvas.canvas.rectlist)
         if self.params.advanced == True:
-            print("advanced callback")
+            #print("advanced callback")
             if self.canvas.canvas.rectlist != []:
                 if img is not None:
-                    print(f"Rendering image into index: {self.render_index}")
+                    #print(f"Rendering image into index: {self.render_index}")
                     #for items in self.canvas.canvas.rectlist:
                     #    if items.id == self.canvas.canvas.render_item:
                             #if items.id == self.canvas.canvas.render_item:
@@ -732,10 +733,12 @@ class MainWindow(QMainWindow):
         w = self.widgets[self.current_widget].w.W.value()
         h = self.widgets[self.current_widget].w.H.value()
         resize = False
+
+        params = copy.deepcopy(self.params)
         if self.canvas.canvas.rectlist == []:
             self.canvas.canvas.w = w
             self.canvas.canvas.h = h
-            self.canvas.canvas.addrect_atpos(x=0, y=0)
+            self.canvas.canvas.addrect_atpos(x=0, y=0, params=params)
             self.cheight = self.widgets[self.current_widget].w.H.value()
             self.w = self.widgets[self.current_widget].w.W.value()
             self.canvas.canvas.render_item = self.canvas.canvas.selected_item
@@ -761,7 +764,7 @@ class MainWindow(QMainWindow):
                             self.cheight = y + i.h
                             resize = True
                         # self.canvas.canvas.selected_item = None
-            self.canvas.canvas.addrect_atpos(x=x, y=y, params=self.sessionparams.params)
+            self.canvas.canvas.addrect_atpos(x=x, y=y, params=params)
             self.canvas.canvas.render_item = self.canvas.canvas.selected_item
         #if resize == True:
             # pass

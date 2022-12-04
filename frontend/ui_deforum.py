@@ -281,7 +281,6 @@ class Deforum_UI(QObject):
         if params == None:
             params = self.parent.sessionparams.update_params()
             self.parent.params = self.parent.sessionparams.update_params()
-            params = self.parent.params
         self.deforum_six = DeforumSix(self)
         self.progress = 0.0
         self.parent.update = 0
@@ -299,22 +298,15 @@ class Deforum_UI(QObject):
         sampler_name = "ddim"
         init_image = "outpaint.png"
         gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
-        gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value() / 1000000000
+        gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value()
         gs.slerp = self.parent.widgets[self.parent.current_widget].w.slerp.isChecked()
         gs.slerp_angle = self.parent.widgets[self.parent.current_widget].w.slerp_angle.value()
         gs.aesthetic_weight = self.parent.widgets[self.parent.current_widget].w.aesthetic_weight.value()
-
         gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.toPlainText()
-
         aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.toPlainText()
         gs.aesthetic_text_negative = False if aesthetic_text_negative == '' else aesthetic_text_negative
 
-        #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
-        #if params == None:
 
-
-        #if params is not None:
-        ##print(params)
         steps = int(params.steps)
         H = int(params.H)
         W = int(params.W)

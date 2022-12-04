@@ -131,7 +131,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                                     args.init_latent = sample[0]
                                     args.init_sample = None
                                 elif args.return_type == 'Sample':
-                                    sample = generate(args, root, return_sample=True, step_callback=step_callback)
+                                    sample = generate(args, root, return_sample=True, step_callback=step_callback, hires=True)
                                     args.init_sample = sample[0]
                                     args.init_latent = None
                             if args.gradient_pass == 'Second' or args.gradient_pass == 'Both':
@@ -146,7 +146,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                             if args.lowmem == True:
                                 results = generate_lowmem(args, root, step_callback=step_callback)
                             else:
-                                results = generate(args, root, step_callback=step_callback,)
+                                results = generate(args, root, step_callback=step_callback)
                             args.init_latent = None
                             args.init_sample = None
                             args.strength = 0

@@ -294,7 +294,7 @@ class Deforum_UI(QObject):
         if params.n_samples == 1:
             makegrid = False
         else:
-            makegrid = self.parent.animKeys.w.makeGrid.isChecked()
+            makegrid = self.parent.widgets[self.parent.current_widget].w.make_grid.isChecked()
         #sampler_name = translate_sampler(self.parent.sampler.w.sampler.currentText())
         sampler_name = "ddim"
         init_image = "outpaint.png"

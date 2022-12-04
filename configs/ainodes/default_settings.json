@@ -18,7 +18,6 @@
     "realesrgan_anime_model_file": "data/models/support/upscale/RealESRGAN_x4plus_anime_6B.pth",
     "realesrgan_model_file": "data/models/support/upscale/RealESRGAN_x4plus.pth",
     "gfpgan_model_file": "data/models/support/upscale/GFPGANv1.3.pth",
-    "blip_model_file": "data/models/support/model_base_caption_capfilt_large.pth",
     "blip_large_model_file": "data/models/support/model_large_caption.pth",
     "sd_model_file": "data/models/v1-5-pruned-emaonly.ckpt",
     "sd_inpaint_model_file": "data/models/sd-v1-5-inpaint.ckpt",

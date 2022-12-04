@@ -36,7 +36,7 @@ class UniControl(QObject):
         self.w.update_hyper.clicked.connect(self.update_hypernetworks_list)
         self.w.update_aesthetics.clicked.connect(self.update_aesthetics_list)
         self.w.stop_dream.clicked.connect(self.stop_all)
-        self.w.model_list.currentIndexChanged.connect(self.select_new_model)
+        self.w.select_model.currentIndexChanged.connect(self.select_new_model)
         self.w.select_vae.currentIndexChanged.connect(self.select_new_vae)
         self.w.select_hypernetwork.currentIndexChanged.connect(self.select_new_hypernetwork)
         self.w.select_aesthetic_embedding.currentIndexChanged.connect(self.select_new_aesthetic_embedding)
@@ -52,7 +52,7 @@ class UniControl(QObject):
     def add_to_model_list(self, models):
         for model in models:
             if '.ckpt' in model:
-                self.w.model_list.addItem(model)
+                self.w.select_model.addItem(model)
 
     def update_vae_list(self):
         item_count = self.w.select_vae.count()
@@ -159,38 +159,38 @@ class UniControl(QObject):
             else:
                 target_model = os.path.basename(gs.system.sd_model_file)
 
-        self.w.model_list.clear()
+        self.w.select_model.clear()
         files = os.listdir(gs.system.models_path)
         files = [f for f in files if os.path.isfile(gs.system.models_path+'/'+f)] #Filtering only the files.
         model_items = files
         for model in files:
             if '.ckpt' in model:
-                self.w.model_list.addItem(model)
+                self.w.select_model.addItem(model)
         files = os.listdir(gs.system.custom_models_dir)
         files = [f for f in files if os.path.isfile(gs.system.custom_models_dir+'/'+f)] #Filtering only the files.
         model_items.append(files)
         for model in files:
             if '.ckpt' in model:
-                self.w.model_list.addItem('custom/' + model)
-        item_count = self.w.model_list.count()
+                self.w.select_model.addItem('custom/' + model)
+        item_count = self.w.select_model.count()
         model_items = []
         for i in range(0, item_count-1):
-            model_items.append(self.w.model_list.itemText(i))
+            model_items.append(self.w.select_model.itemText(i))
         if target_model is None:
             if item_count > 0:
                 print('model from config does not exist therefore we choose first model from the loaded list')
-                self.w.model_list.setCurrentIndex(0)
+                self.w.select_model.setCurrentIndex(0)
             else:
                 print(f'you have no models installed in {gs.system.models_path} please install any model before you run this software, you can try to download a model using the download feature')
 
         else:
             if item_count > 0:
-                self.w.model_list.setCurrentIndex(model_items.index(target_model))
+                self.w.select_model.setCurrentIndex(model_items.index(target_model))
             else:
-                self.w.model_list.setCurrentIndex(0)
+                self.w.select_model.setCurrentIndex(0)
 
     def select_new_model(self):
-        new_model = os.path.join(gs.system.models_path,self.w.model_list.currentText())
+        new_model = os.path.join(gs.system.models_path,self.w.select_model.currentText())
         gs.system.sd_model_file = new_model
         if 'sd' in gs.models:
             del gs.models['sd']

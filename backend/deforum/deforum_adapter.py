@@ -185,6 +185,13 @@ class DeforumSix:
 
 
             pl_sd = torch.load(ckpt, map_location="cpu")
+
+            #if extension.lower() == ".safetensors":
+            #    pl_sd = safetensors.torch.load_file(checkpoint_file, device=map_location or shared.weight_load_location)
+            #else:
+            #    pl_sd = torch.load(checkpoint_file, map_location=map_location or shared.weight_load_location)
+
+
             if "global_step" in pl_sd:
                 print(f"Global Step: {pl_sd['global_step']}")
             sd = pl_sd["state_dict"]

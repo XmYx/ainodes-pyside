@@ -121,6 +121,8 @@ class MainWindow(QMainWindow):
         self.krea.w.dockWidget.setWindowTitle("Krea")
         self.prompt_fetcher.w.dockWidget.setWindowTitle("Prompt Fetcher")
         self.model_download_ui.w.dockWidget.setWindowTitle("Model Download")
+        self.timeline.setWindowTitle("Timeline")
+        self.thumbs.w.dockWidget.setWindowTitle("History")
 
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.model_download_ui.w.dockWidget)
         self.model_download_ui.w.dockWidget.setMaximumHeight(self.height())

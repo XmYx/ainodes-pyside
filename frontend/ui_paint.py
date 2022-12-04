@@ -786,7 +786,7 @@ class Canvas(QGraphicsView):
         self.outpaintsource = "outpaint.png"
         self.redo = True
         self.render_item = self.selected_item
-        self.signals.update_params.emit(id)
+        #self.signals.update_params.emit(id)
         # = render_index
         self.signals.outpaint_signal.emit()
 

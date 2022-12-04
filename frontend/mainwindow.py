@@ -29,6 +29,7 @@ from backend.singleton import singleton
 from frontend.ui_krea import Krea
 from frontend.ui_lexica import LexicArt
 from frontend.ui_model_download import ModelDownload, ModelDownload_UI
+from backend.shared import model_killer
 
 from backend.devices import choose_torch_device
 from frontend.ui_timeline import Timeline, KeyFrame
@@ -218,6 +219,9 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.run_hires.clicked.connect(self.run_hires_batch_thread)
         self.widgets[self.current_widget].w.prep_hires.clicked.connect(self.run_create_outpaint_img2img_batch)
         self.widgets[self.current_widget].w.update_params.clicked.connect(self.update_params)
+        self.widgets[self.current_widget].w.load_model.clicked.connect(self.deforum_ui.deforum_six.load_model_from_config)
+        self.widgets[self.current_widget].w.load_inpaint_model.clicked.connect(self.deforum_ui.deforum_six.load_inpaint_model)
+        self.widgets[self.current_widget].w.cleanup.clicked.connect(model_killer)
 
         self.widgets[self.current_widget].w.W.valueChanged.connect(self.update_outpaint_parameters)
         self.widgets[self.current_widget].w.H.valueChanged.connect(self.update_outpaint_parameters)

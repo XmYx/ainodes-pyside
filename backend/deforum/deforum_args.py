@@ -170,6 +170,8 @@ def DeforumArgs(attr):
     lowmem = attr.lowmem
     seamless = False
     axis = {'x'}
+    gradient_pass = 'Second'
+    return_type = 'latent'
 
     del attr
     return locals()

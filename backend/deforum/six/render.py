@@ -116,17 +116,29 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                             args.init_sample = None
                             args.init_latent = None
                             args.init_c = None
+                            print(f"HiRes mode with {args.return_type} return type and Aesthetic Gradient in {args.gradient_pass} pass(es)")
                             args.backupaesthetics = gs.diffusion.selected_aesthetic_embedding
-                            gs.diffusion.selected_aesthetic_embedding = 'None'
+                            if args.gradient_pass == "Second":
+                                gs.diffusion.selected_aesthetic_embedding = 'None'
                             if args.lowmem == True:
                                 sample = generate_lowmem(args, root, return_latent=True, step_callback=step_callback,
                                                          hires=True)
+                                args.init_latent = sample[0]
                             else:
-                                sample = generate(args, root, return_latent=True, step_callback=step_callback,
-                                                         hires=True)
-                            gs.diffusion.selected_aesthetic_embedding = args.backupaesthetics
+                                if args.return_type == 'Latent':
+                                    sample = generate(args, root, return_latent=True, step_callback=step_callback,
+                                                             hires=True)
+                                    args.init_latent = sample[0]
+                                    args.init_sample = None
+                                elif args.return_type == 'Sample':
+                                    sample = generate(args, root, return_sample=True, step_callback=step_callback)
+                                    args.init_sample = sample[0]
+                                    args.init_latent = None
+                            if args.gradient_pass == 'Second' or args.gradient_pass == 'Both':
+                                gs.diffusion.selected_aesthetic_embedding = args.backupaesthetics
+                            else:
+                                gs.diffusion.selected_aesthetic_embedding = 'None'
                             args.backupaesthetics = None
-                            args.init_latent = sample[0]
                             args.use_init = True
                             args.strength = args.hiresstr
                             args.W = fpW

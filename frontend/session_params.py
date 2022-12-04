@@ -215,6 +215,10 @@ class SessionParams():
         plotY = self.parent.widgets[widget].w.plotY.currentText()
         plotXLine = self.parent.widgets[widget].w.plotXLine.text()
         plotYLine = self.parent.widgets[widget].w.plotYLine.text()
+        gradient_pass = self.parent.widgets[widget].w.gradient_pass.currentText()
+        return_type = self.parent.widgets[widget].w.return_type.currentText()
+
+
         self.params = {             # todo make this a one step thing not two steps
             # Basic Params
             'mode': mode,
@@ -327,7 +331,9 @@ class SessionParams():
             "plotX": plotX,
             "plotY": plotY,
             "plotXLine": plotXLine,
-            "plotYLine": plotYLine
+            "plotYLine": plotYLine,
+            "gradient_pass": gradient_pass,
+            "return_type": return_type,
         }
 
         self.params = SimpleNamespace(**self.params)

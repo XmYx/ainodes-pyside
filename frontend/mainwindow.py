@@ -657,6 +657,7 @@ class MainWindow(QMainWindow):
         #print(self.params.advanced)
         #print(self.canvas.canvas.rectlist)
         if self.params.advanced == True:
+            print("advanced callback")
             if self.canvas.canvas.rectlist != []:
                 if img is not None:
                     print(f"Rendering image into index: {self.render_index}")
@@ -677,7 +678,7 @@ class MainWindow(QMainWindow):
                         self.canvas.canvas.rectlist[self.render_index].render_index += 1
                     self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
                     self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
-                    self.canvas.canvas.rectlist[self.render_index].img_path = self.deforum_ui.deforum_six.temppath
+                    self.canvas.canvas.rectlist[self.render_index].img_path = gs.temppath
                 self.canvas.canvas.newimage = True
                 self.canvas.canvas.update()
                 self.canvas.canvas.redraw()

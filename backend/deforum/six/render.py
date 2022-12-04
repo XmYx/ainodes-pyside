@@ -160,6 +160,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                                     outfolder = os.path.join(args.outdir, datetime.now().strftime("%Y%m%d"))
                                 os.makedirs(outfolder, exist_ok=True)
                                 outpath = os.path.join(outfolder, filename)
+                                gs.temppath = outpath
                                 paths.append(outpath)
                                 image.save(outpath)
                                 args.init_sample = None

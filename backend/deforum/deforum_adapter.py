@@ -1023,7 +1023,7 @@ class DeforumSix:
                 callback=step_callback)
             fpath = os.path.join(sample_path, f"{base_name}_{base_count:05}.png")
             result[0].save(fpath, 'PNG')
-            self.temppath = fpath
+            gs.temppath = fpath
             image_callback(result[0])
 
         # global plms_sampler

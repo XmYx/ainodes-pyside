@@ -140,7 +140,10 @@ class Deforum_UI(QObject):
         if self.params.with_inpaint == True: # todo what is this for?
             self.parent.params.advanced = True
         else:
-            self.parent.params.advanced = False
+            if self.parent.widgets[self.parent.current_widget].w.mode.currentText() == 'basic':
+                self.parent.params.advanced = False
+            elif self.parent.widgets[self.parent.current_widget].w.mode.currentText() == 'advanced':
+                self.parent.params.advanced = True
         gs.diffusion.selected_aesthetic_embedding = self.parent.widgets[self.parent.current_widget].w.select_aesthetic_embedding.currentText()
         gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
         gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value()

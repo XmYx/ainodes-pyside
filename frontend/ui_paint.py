@@ -623,13 +623,13 @@ class Canvas(QGraphicsView):
                     i.image = image
                     i.order = order
                     i.params = params
-                    if i.index is not None:
-                        i.index += 1
+                    if i.render_index is not None:
+                        i.render_index += 1
                     else:
-                        i.index = 0
+                        i.render_index = 0
                     uid = i.id
                     self.selected_item = i.id
-                    self.render_index = self.rectlist.index(i)
+                    self.parent.parent.render_index = self.rectlist.index(i)
                 matchfound = True
 
         if matchfound == False:
@@ -638,13 +638,13 @@ class Canvas(QGraphicsView):
             if self.rectlist == []:
                 self.txt2img = True
             self.rectlist.append(rect[uid])
-            self.render_index = len(self.rectlist) - 1
+            self.parent.parent.render_index = len(self.rectlist) - 1
             if params == {}:
                 pass
                 #self.signals.update_params.emit(uid)
             self.counter += 1
 
-        #self.newimage = True
+        self.newimage = True
         #self.update()
         #self.redraw()
         return uid
@@ -1043,7 +1043,7 @@ class Canvas(QGraphicsView):
             self.selected_item = self.hover_item
             for i in self.rectlist:
                 if i.id == self.selected_item:
-                    self.render_index = self.rectlist.index(i)
+                    self.parent.parent.render_index = self.rectlist.index(i)
             self.signals.update_selected.emit()
             if self.rectlist[self.render_index].running == True:
                 self.rectlist[self.render_index].stop()

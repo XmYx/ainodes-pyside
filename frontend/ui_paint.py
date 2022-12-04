@@ -315,7 +315,7 @@ class Canvas(QGraphicsView):
             y = (y - scaledHeight) * Yscale
             if x < 0: x = 0
             if y < 0: y = 0
-        if self.mode == "generic" or self.mode == "outpaint":
+        if self.mode == "generic" or self.mode == "outpaint" or self.mode == "inpaint":
             pen = QPen(Qt.GlobalColor.blue, 3, Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
             self.rectItem.setPen(pen)
             self.rectItem.setRect(x, y, self.w, self.h)
@@ -665,6 +665,7 @@ class Canvas(QGraphicsView):
         self.selected_item = id
         for items in self.rectlist:
             if items.id == id:
+                self.parent.parent.render_index = self.rectlist.index(items)
                 rect = QRect(items.x, items.y, self.w, self.h)
                 image = self.pixmap.toImage()
                 newimage = image.copy(rect)
@@ -672,7 +673,6 @@ class Canvas(QGraphicsView):
                 outpainter.drawImage(0,0,newimage)
                 outpainter.end()
         outpaintimage.save("outpaint.png")
-        #outpainter.end()
         outpaintimage.save("outpaint_mask.png")
         self.render_item = self.selected_item
         self.outpaintsource = "outpaint.png"
@@ -988,20 +988,17 @@ class Canvas(QGraphicsView):
         self.bgitem.update()
         self.rectItem.update()
     def add_mode(self):
-        #self.outpaint_mousePressEvent(QPoint(0, 0))
         self.addrect(dummy=True)
         self.mode = "outpaint"
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
         self.scene.addItem(self.rectItem)
-        #self.enterEvent(QPoint(0,0))
-        #self.parent.update()
-        #self.redraw()
         self.setUpdatesEnabled(True)
     def inpaint_mode(self):
+        self.addrect(dummy=True)
         self.mode = "inpaint"
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
-
-        ##print("Add Mode")
+        self.scene.addItem(self.rectItem)
+        self.setUpdatesEnabled(True)
     def keyPressEvent(self, e):
         super(Canvas, self).keyPressEvent(e)
         ##print(f"key pressed: {e.key()}")
@@ -1020,6 +1017,7 @@ class Canvas(QGraphicsView):
             self.mode = "outpaint"
         elif e.key() == 77:
             self.mode = "inpaint"
+            #print("inpaint mode")
             self.setDragMode(QGraphicsView.DragMode.NoDrag)
         elif e.key() == 90 and self.ctrlmodifier == True:
             self.undoEvent()
@@ -1106,7 +1104,11 @@ class Canvas(QGraphicsView):
             self.reusable_inpaint(id)
 
     def inpaint_mouseMoveEvent(self, e):
-        self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), self.w, self.h)
+        if self.scene.pos is not None:
+            self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), self.w, self.h)
+        self.update()
+
+
         if self.last_pos:
             self.painter.begin(self.pixmap)
             self.painter.setCompositionMode(QPainter.CompositionMode_Clear)
@@ -1115,8 +1117,8 @@ class Canvas(QGraphicsView):
             self.last_pos = self.scene.scenePos
             self.bgitem.setPixmap(self.pixmap)
             self.painter.end()
-            self.update()
             self.bgitem.update()
+        return
 
     def inpaint_mouseReleaseEvent(self, e):
         self.last_pos = None

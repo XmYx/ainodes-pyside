@@ -841,6 +841,7 @@ class DeforumSix:
 
         if with_inpaint == False:
             self.load_model_from_config()
+            gs.models["sd"].to('cuda')
             print(f"txt2img seed: {seed}   steps: {steps}  prompt: {prompt}")
             print(f"size:  {W}x{H}")
 
@@ -974,7 +975,7 @@ class DeforumSix:
                                 image = sampleToImage(x_sample)
                                 fpath = os.path.join(sample_path, f"{base_name}_{base_count:05}.png")
                                 image.save(fpath)
-                                self.temppath = fpath
+                                gs.temppath = fpath
                                 if image_callback is not None:
                                     image_callback(image)
                                 # save_image(

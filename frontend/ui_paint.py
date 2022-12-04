@@ -694,8 +694,8 @@ class Canvas(QGraphicsView):
                 #x.image = None
                 #self.update()
                 for i in self.rectlist:
-                    if x.y >= i.y - self.h and x.x >= i.x - self.w:
-                        if x.y <= i.y + self.h and x.x <= i.x + i.w:
+                    if x.y >= i.y - i.h and x.x >= i.x - i.w:
+                        if x.y <= i.y + i.h and x.x <= i.x + i.w:
                             if i.id != x.id:
                                 if x.y > i.y:
                                     Ymaskoffset = self.maskoffset

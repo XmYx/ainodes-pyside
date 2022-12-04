@@ -990,7 +990,7 @@ class MainWindow(QMainWindow):
             self.preview_batch_outpaint(with_chops=chops_x, chops_y=chops_y)
         rparams = self.params
 
-        prompt_series = pd.Series([np.nan for a in range(len(self.canvas.canvas.tempbatch) - 1)])
+        prompt_series = pd.Series([np.nan for a in range(len(self.canvas.canvas.tempbatch))])
         if rparams.keyframes == '':
             rparams.keyframes = "0"
         prom = rparams.prompts
@@ -1132,7 +1132,7 @@ class MainWindow(QMainWindow):
         self.callbackbusy = False
         self.sleepytime = 0.0
         self.choice = "Outpaint"
-        self.sessionparams.params.advanced = True
+        self.params.advanced = True
 
         #multi = self.widgets[self.current_widget].w.multiBatch.isChecked()
         #batch_n = self.widgets[self.current_widget].w.multiBatchvalue.value()

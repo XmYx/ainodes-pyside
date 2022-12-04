@@ -660,7 +660,7 @@ class MainWindow(QMainWindow):
         while self.callbackbusy == True:
             time.sleep(0.3)
         self.image = image
-        #self.deforum_ui.signals.add_image_to_thumbnail_signal.emit(image)
+        self.deforum_ui.signals.add_image_to_thumbnail_signal.emit(image)
         self.deforum_ui.signals.txt2img_image_cb.emit()
         #self.currentFrames.append(image)
         #self.renderedFrames += 1
@@ -689,6 +689,8 @@ class MainWindow(QMainWindow):
                         templist = []
                     self.canvas.canvas.rectlist[self.render_index].PILImage = img
                     qimage = ImageQt(img.convert("RGBA"))
+                    pixmap = QPixmap.fromImage(qimage)
+                    self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap), f"{self.canvas.canvas.rectlist[self.render_index].render_index}"))
                     templist.append(qimage)
                     self.canvas.canvas.rectlist[self.render_index].images = templist
                     if self.canvas.canvas.rectlist[self.render_index].render_index == None:
@@ -701,6 +703,8 @@ class MainWindow(QMainWindow):
                 self.canvas.canvas.newimage = True
                 self.canvas.canvas.update()
                 self.canvas.canvas.redraw()
+                qimage = None
+                pixmap = None
         elif self.params.advanced == False:
             self.add_next_rect()
             self.render_index = len(self.canvas.canvas.rectlist) - 1
@@ -729,6 +733,7 @@ class MainWindow(QMainWindow):
         self.callbackbusy = False
         if self.params.advanced == False and self.params.max_frames > 1:
             self.params.advanced = True
+        #self.signals.add_image_to_thumbnail_signal.emit(gs.temppath)
 
     def add_next_rect(self):
         w = self.widgets[self.current_widget].w.W.value()

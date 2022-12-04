@@ -677,6 +677,7 @@ class MainWindow(QMainWindow):
                         self.canvas.canvas.rectlist[self.render_index].render_index += 1
                     self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
                     self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
+                    self.canvas.canvas.rectlist[self.render_index].img_path = self.deforum_ui.deforum_six.temppath
                 self.canvas.canvas.newimage = True
                 self.canvas.canvas.update()
                 self.canvas.canvas.redraw()

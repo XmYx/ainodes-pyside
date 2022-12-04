@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime
+from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
@@ -371,7 +372,9 @@ class Canvas(QGraphicsView):
     def set_offset(self, offset):
         self.maskoffset = offset
         ###print(f"offset is now: {self.maskoffset}")
-
+    def toJSON(self, item):
+        return json.dumps(item, default=lambda o: o.__dict__,
+            sort_keys=True, indent=4)
     def save_rects_as_json(self, filename=None):
         ###print(filename)
         # Save json to file (data.json)
@@ -379,7 +382,9 @@ class Canvas(QGraphicsView):
         for items in self.rectlist:
             ###print(items.x)
             item = {}
-            item[items.order] = {
+            print(items.params.__dict__)
+            params = items.params.__dict__
+            item = {
                 "x": items.x,
                 "y": items.y,
                 "w": items.w,
@@ -388,8 +393,17 @@ class Canvas(QGraphicsView):
                 "img_path": items.img_path,
                 "timestring": items.timestring,
                 "order": items.order,
-                "params": items.params,
             }
+            for key, value in params.items():
+                pass
+                #item[key] = value
+                #print(key, value)
+                #print(item[key], value)
+                #item[key] = value
+                #print(item[key])
+                #print(value)
+
+            print(item)
             templist.append(item)
         if filename != False:
             data = filename
@@ -397,6 +411,7 @@ class Canvas(QGraphicsView):
             data = self.getfile(save=True)
         with open(data, "w") as output:
             json.dump(templist, output, sort_keys=True, indent=4)
+        print("File Saved")
     def getfile(self, file_ext='', text='', button_caption='', button_type=0, title='', save=False):
         filter = {
             '': '',
@@ -434,21 +449,28 @@ class Canvas(QGraphicsView):
                 json_object = json.load(openfile)
             x = 0
             for key in json_object:
-                for x in key.values():
+                print(key)
+                rect = {}
+                for w, x in key.items():
+                    print(w, x)
+                    rect[w] = x
                     ###print(x['x'])
-                    rect = {}
+                    #rect = {}
                     #uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
                     ###print(f"adding rectangles at:{x} {y}")
-                    try:
-                        prompt = x['prompt']
-                    except:
-                        prompt = ''
-                    try:
-                        params = x['params']
-                    except:
-                        params = {}
-                    rect[x['id']] = Rectangle(self, prompt, x['x'], x['y'], x['w'], x['h'], x['id'], x['order'], x['img_path'], params=params)
-                    self.rectlist.append(rect[x['id']])
+                    #try:
+                    #    prompt = x['prompt']
+                    #except:
+                    #    prompt = ''
+                    #try:
+                    #    #params = SimpleNamespace(**x['params'])
+                    #    params = x['params']
+                    #except Exception as e:
+                    #    print(e)
+                    #    params = {}
+                    #print(x)
+                rect[rect['id']] = Rectangle(self, rect['x'], rect['x'], rect['y'], rect['w'], rect['h'], rect['id'], rect['order'], rect['img_path'], params=None)
+                self.rectlist.append(rect[rect['id']])
             for items in self.rectlist:
                 if items.img_path is not None:
                     image = Image.open(items.img_path) #.convert("RGBA")

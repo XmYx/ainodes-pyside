@@ -1183,6 +1183,8 @@ class Canvas(QGraphicsView):
             self.addrect()
             self.redraw()
             if self.ctrlmodifier == True:
+                self.reusable_outpaint(self.selected_item)
+                self.signals.outpaint_signal.emit()
                 return
             elif self.ctrlmodifier == False:
                 self.drag_mode()

@@ -218,6 +218,7 @@ class Canvas(QGraphicsView):
         self.render_item = None
         self.signals.update_selected.emit()
         self.parent.parent.render_index = 0
+        self.parent.parent.thumbs.w.thumbnails.clear()
     def reset(self):
         self.zoom = 1
         self.rotate = 0

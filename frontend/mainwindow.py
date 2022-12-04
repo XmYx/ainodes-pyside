@@ -66,6 +66,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.signals = Callbacks()
         self.load_last_prompt()
+        self.thumbs = ThumbsUI()
         self.canvas = PaintUI(self)
         self.setCentralWidget(self.canvas)
         self.setWindowTitle("aiNodes - Still Mode")
@@ -81,7 +82,7 @@ class MainWindow(QMainWindow):
 
         self.sessionparams = SessionParams(self)
         self.sessionparams.create_params()
-        self.thumbs = ThumbsUI()
+
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.timeline)
         self.tabifyDockWidget(self.timeline, self.thumbs.w.dockWidget)

@@ -365,11 +365,13 @@ class Canvas(QGraphicsView):
         #self.update()
 
     def save_canvas(self):
+        self.redraw(transparent=True)
         timestring = time.strftime('%Y-%m-%d-%H-%S')
         filename = f"output/canvas/canvas_{timestring}.png"
         os.makedirs('output/canvas', exist_ok=True)
         file = QFile(filename)
         self.pixmap.save(file, "PNG")
+        self.redraw()
     def first_rectangle(self):
         self.hoverCheck()
         if self.hover_item is None:

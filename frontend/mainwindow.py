@@ -677,6 +677,7 @@ class MainWindow(QMainWindow):
         if self.params.advanced == True:
             #print("advanced callback")
             if self.canvas.canvas.rectlist != []:
+
                 if img is not None:
                     #print(f"Rendering image into index: {self.render_index}")
                     #for items in self.canvas.canvas.rectlist:
@@ -936,10 +937,13 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.rectlist.pop(x)
                     pass
                 x += 1
-
-        self.canvas.canvas.update()
         self.canvas.canvas.pixmap.fill(Qt.transparent)
         self.canvas.canvas.newimage = True
+        self.canvas.canvas.selected_item = None
+        self.canvas.canvas.update()
+        #self.canvas.canvas.draw_rects()
+        self.thumbs.w.thumbnails.clear()
+
 
     def test_save_outpaint(self):
 

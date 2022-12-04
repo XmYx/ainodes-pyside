@@ -933,11 +933,11 @@ class Canvas(QGraphicsView):
         self.bgitem.setPixmap(self.pixmap)
         self.newimage = False
 
-        self.anim = QtCore.QPropertyAnimation(self, b"geometry")
-        self.anim.setDuration(500)
-        self.anim.setStartValue(QRect(512, 0, self.width(), self.height()))
-        self.anim.setEndValue(QRect(0, 0, self.width(), self.height()))
-        self.anim.setEasingCurve(QEasingCurve.Linear)
+        #self.anim = QtCore.QPropertyAnimation(self, b"geometry")
+        #self.anim.setDuration(500)
+        #self.anim.setStartValue(QRect(512, 0, self.width(), self.height()))
+        #self.anim.setEndValue(QRect(0, 0, self.width(), self.height()))
+        #self.anim.setEasingCurve(QEasingCurve.Linear)
 
         #self.anim.start()
 

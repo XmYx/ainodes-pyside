@@ -287,9 +287,12 @@ class Canvas(QGraphicsView):
         if self.tensor_preview_item is not None:
             w = self.tensor_preview_item.size().width() * 8
             h = self.tensor_preview_item.size().height() * 8
-
-            x = self.rectlist[self.parent.parent.render_index].x
-            y = self.rectlist[self.parent.parent.render_index].y
+            try:
+                x = self.rectlist[self.parent.parent.render_index].x
+                y = self.rectlist[self.parent.parent.render_index].y
+            except:
+                x = 0
+                y = 0
 
             self.painter.begin(self.pixmap)
             pixmap = QPixmap(w, h).fromImage(self.tensor_preview_item)

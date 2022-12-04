@@ -347,6 +347,7 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
                 filepath = os.path.join(args.outdir, filename)
                 cv2.imwrite(os.path.join(args.outdir, filename), cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGB2BGR))
                 if image_callback is not None:
+                    gs.temppath = filepath
                     image_callback(Image.open(filepath))
                 if anim_args.save_depth_maps:
                     depth_model.save(os.path.join(args.outdir, f"{args.timestring}_depth_{tween_frame_idx:05}.png"), depth)
@@ -411,9 +412,12 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
             frame_idx += turbo_steps
         else:    
             filename = f"{args.timestring}_{frame_idx:05}.png"
+            filepath = os.path.join(args.outdir, filename)
+            image.save(filepath)
             if image_callback is not None and anim_args.diffusion_cadence < 2:
+                gs.temppath = filepath
                 image_callback(image)
-            image.save(os.path.join(args.outdir, filename))
+
             if anim_args.save_depth_maps:
                 if depth is None:
                     depth = depth_model.predict(sample_to_cv2(sample), anim_args)

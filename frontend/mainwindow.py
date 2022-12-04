@@ -988,9 +988,10 @@ class MainWindow(QMainWindow):
             chops_x = int(qimage.width() / self.canvas.canvas.w)
             chops_y = int(qimage.width() / self.canvas.canvas.h)
             self.preview_batch_outpaint(with_chops=chops_x, chops_y=chops_y)
-        rparams = self.params
-
-        prompt_series = pd.Series([np.nan for a in range(len(self.canvas.canvas.tempbatch))])
+        rparams = self.sessionparams.update_params()
+        #print(self.tempsize_int)
+        prompt_series = pd.Series([np.nan for a in range(self.tempsize_int)])
+        #print(prompt_series)
         if rparams.keyframes == '':
             rparams.keyframes = "0"
         prom = rparams.prompts
@@ -1005,6 +1006,7 @@ class MainWindow(QMainWindow):
             n = int(i)
             prompt_series[n] = prompt
         animation_prompts = prompt_series.ffill().bfill()
+        print(animation_prompts)
         x = 0
         for items in self.canvas.canvas.tempbatch:
             if type(items) == list:
@@ -1026,11 +1028,12 @@ class MainWindow(QMainWindow):
                         rparams.seed = random.randint(0, 2 ** 32 - 1)
                     #print(f"seed bhavior:{rparams.seed_behavior} {rparams.seed}")
                     self.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image, render_index=index, order=item["order"], params=copy.deepcopy(rparams))
-
+                    print(animation_prompts[x])
                     if rparams.seed_behavior == 'iter':
                         rparams.seed += 1
                     while self.busy == True:
                         time.sleep(0.25)
+                    x += 1
             elif type(items) == dict:
 
                 if gobig_img_path is not None:
@@ -1045,6 +1048,7 @@ class MainWindow(QMainWindow):
                     self.hires_source = None
                 offset = offset + 512
                 rparams.prompts = animation_prompts[x]
+                #print(rparams.prompts)
                 if rparams.seed_behavior == 'random':
                     rparams.seed = random.randint(0, 2 ** 32 - 1)
                 self.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image, render_index=index, order=items["order"], params=copy.deepcopy(rparams))
@@ -1053,7 +1057,7 @@ class MainWindow(QMainWindow):
                     rparams.seed += 1
                 while self.busy == True:
                     time.sleep(0.25)
-            x += 1
+                x += 1
         self.callbackbusy = False
 
     def run_hires_batch(self, progress_callback=None):
@@ -1216,7 +1220,8 @@ class MainWindow(QMainWindow):
             self.canvas.canvas.tempbatch = spiralOrder(self.canvas.canvas.tempbatch)
         if reverse:
             self.canvas.canvas.tempbatch.reverse()
-
+        #print(len(self.canvas.canvas.tempbatch))
+        self.tempsize_int = self.canvas.canvas.cols * self.canvas.canvas.rows
         self.canvas.canvas.draw_tempBatch(self.canvas.canvas.tempbatch)
 
     def outpaint_rect_overlap(self):

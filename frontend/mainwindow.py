@@ -100,7 +100,7 @@ class MainWindow(QMainWindow):
         self.deforum_ui = Deforum_UI(self)
         self.w = 512
         self.cheight = 512
-
+        self.setAcceptDrops(True)
         self.y = 0
         self.lastheight = None
         self.cheight = gs.diffusion.H
@@ -220,7 +220,7 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.redo.clicked.connect(self.redo_current_outpaint)
         self.widgets[self.current_widget].w.delete_2.clicked.connect(self.delete_outpaint_frame)
         self.widgets[self.current_widget].w.preview_batch.clicked.connect(self.preview_batch_outpaint)
-        #self.outpaint_controls.w.createBatch.clicked.connect(self.prepare_batch_outpaint_thread)
+        self.widgets[self.current_widget].w.prepare_batch.clicked.connect(self.prepare_batch_outpaint_thread)
         self.widgets[self.current_widget].w.run_batch.clicked.connect(self.run_prepared_outpaint_batch_thread)
         self.widgets[self.current_widget].w.run_hires.clicked.connect(self.run_hires_batch_thread)
         self.widgets[self.current_widget].w.prep_hires.clicked.connect(self.run_create_outpaint_img2img_batch)
@@ -567,6 +567,7 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.scale.setVisible(False)
         #self.widgets[self.current_widget].w.scale_slider.setVisible(False)
         self.widgets[self.current_widget].w.stepslabel.setVisible(False)
+        self.widgets[self.current_widget].w.keyframes.setVisible(False)
         self.path_setup.w.dockWidget.setVisible(False)
         self.animKeyEditor.w.dockWidget.setVisible(False)
         self.image_lab_ui.w.dockWidget.setVisible(False)
@@ -615,6 +616,7 @@ class MainWindow(QMainWindow):
             self.widgets[self.current_widget].w.scale.setVisible(True)
             #self.widgets[self.current_widget].w.scale_slider.setVisible(True)
             self.widgets[self.current_widget].w.stepslabel.setVisible(True)
+            self.widgets[self.current_widget].w.keyframes.setVisible(True)
             self.path_setup.w.dockWidget.setVisible(True)
             self.image_lab_ui.w.dockWidget.setVisible(True)
             self.lexicart.w.dockWidget.setVisible(True)
@@ -857,11 +859,11 @@ class MainWindow(QMainWindow):
                     if i.id == uid:
                         if params == None:
                                 params = self.get_params()
-                        i.params = params
+                        i.params = copy.deepcopy(params)
                 else:
                     if i.id == self.canvas.canvas.selected_item:
                         params = self.get_params()
-                        i.params = params
+                        i.params = copy.deepcopy(params)
 
     @Slot(str)
     def create_params(self, uid=None):
@@ -872,7 +874,7 @@ class MainWindow(QMainWindow):
 
 
     def get_params(self):
-        params = self.sessionparams.params()
+        params = self.sessionparams.update_params()
         #print(f"Created Params")
         return params
 
@@ -976,7 +978,6 @@ class MainWindow(QMainWindow):
     def create_outpaint_batch(self, gobig_img_path=None):
         #self.sessionparams.params.advanced = True
         self.callbackbusy = True
-        x = 0
         self.busy = False
         offset = self.widgets[self.current_widget].w.mask_offset.value()
         #self.preview_batch_outpaint()
@@ -988,6 +989,23 @@ class MainWindow(QMainWindow):
             chops_y = int(qimage.width() / self.canvas.canvas.h)
             self.preview_batch_outpaint(with_chops=chops_x, chops_y=chops_y)
         rparams = self.params
+
+        prompt_series = pd.Series([np.nan for a in range(len(self.canvas.canvas.tempbatch) - 1)])
+        if rparams.keyframes == '':
+            rparams.keyframes = "0"
+        prom = rparams.prompts
+        key = rparams.keyframes
+
+        new_prom = list(prom.split("\n"))
+        new_key = list(key.split("\n"))
+
+        prompts = dict(zip(new_key, new_prom))
+
+        for i, prompt in prompts.items():
+            n = int(i)
+            prompt_series[n] = prompt
+        animation_prompts = prompt_series.ffill().bfill()
+        x = 0
         for items in self.canvas.canvas.tempbatch:
             if type(items) == list:
                 for item in items:
@@ -1003,14 +1021,14 @@ class MainWindow(QMainWindow):
                         index = None
                         self.hires_source = None
                     offset = offset + 512
+                    rparams.prompts = animation_prompts[x]
                     if rparams.seed_behavior == 'random':
-                        rparams.seed = seed_everything()
+                        rparams.seed = random.randint(0, 2 ** 32 - 1)
                     #print(f"seed bhavior:{rparams.seed_behavior} {rparams.seed}")
                     self.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image, render_index=index, order=item["order"], params=copy.deepcopy(rparams))
 
                     if rparams.seed_behavior == 'iter':
                         rparams.seed += 1
-                    x += 1
                     while self.busy == True:
                         time.sleep(0.25)
             elif type(items) == dict:
@@ -1026,15 +1044,16 @@ class MainWindow(QMainWindow):
                     index = None
                     self.hires_source = None
                 offset = offset + 512
+                rparams.prompts = animation_prompts[x]
                 if rparams.seed_behavior == 'random':
-                    rparams.seed = seed_everything()
+                    rparams.seed = random.randint(0, 2 ** 32 - 1)
                 self.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image, render_index=index, order=items["order"], params=copy.deepcopy(rparams))
 
                 if rparams.seed_behavior == 'iter':
                     rparams.seed += 1
-                x += 1
                 while self.busy == True:
                     time.sleep(0.25)
+            x += 1
         self.callbackbusy = False
 
     def run_hires_batch(self, progress_callback=None):

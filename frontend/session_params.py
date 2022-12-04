@@ -217,7 +217,7 @@ class SessionParams():
         plotYLine = self.parent.widgets[widget].w.plotYLine.text()
         gradient_pass = self.parent.widgets[widget].w.gradient_pass.currentText()
         return_type = self.parent.widgets[widget].w.return_type.currentText()
-
+        keyframes = self.parent.widgets[widget].w.keyframes.toPlainText()
 
         self.params = {             # todo make this a one step thing not two steps
             # Basic Params
@@ -334,6 +334,7 @@ class SessionParams():
             "plotYLine": plotYLine,
             "gradient_pass": gradient_pass,
             "return_type": return_type,
+            "keyframes": keyframes,
         }
 
         self.params = SimpleNamespace(**self.params)

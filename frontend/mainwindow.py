@@ -15,7 +15,8 @@ from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt
 from PySide6 import QtCore, QtWidgets, QtGui
 from backend.deforum.six.animation import check_is_number
 from einops import rearrange
-
+from pytorch_lightning import seed_everything
+import copy
 from backend.worker import Worker
 from frontend import plugin_loader
 #from frontend.ui_model_chooser import ModelChooser_UI
@@ -838,6 +839,7 @@ class MainWindow(QMainWindow):
 
     @Slot(str)
     def update_params(self, uid=None, params=None):
+
         if self.canvas.canvas.selected_item is not None:
             for i in self.canvas.canvas.rectlist:
                 if uid is not None:
@@ -971,7 +973,7 @@ class MainWindow(QMainWindow):
             chops_x = int(qimage.width() / self.canvas.canvas.w)
             chops_y = int(qimage.width() / self.canvas.canvas.h)
             self.preview_batch_outpaint(with_chops=chops_x, chops_y=chops_y)
-
+        rparams = self.params
         for items in self.canvas.canvas.tempbatch:
             if type(items) == list:
                 for item in items:
@@ -987,11 +989,13 @@ class MainWindow(QMainWindow):
                         index = None
                         self.hires_source = None
                     offset = offset + 512
-                    params = self.prep_rect_params(item["prompt"])
+                    if rparams.seed_behavior == 'random':
+                        rparams.seed = seed_everything()
+                    #print(f"seed bhavior:{rparams.seed_behavior} {rparams.seed}")
+                    self.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image, render_index=index, order=item["order"], params=copy.deepcopy(rparams))
 
-                    self.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image, index=index, order=item["order"], params=self.params)
-
-                    #x = self.iterate_further(x)
+                    if rparams.seed_behavior == 'iter':
+                        rparams.seed += 1
                     x += 1
                     while self.busy == True:
                         time.sleep(0.25)
@@ -1008,12 +1012,12 @@ class MainWindow(QMainWindow):
                     index = None
                     self.hires_source = None
                 offset = offset + 512
+                if rparams.seed_behavior == 'random':
+                    rparams.seed = seed_everything()
+                self.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image, render_index=index, order=items["order"], params=copy.deepcopy(rparams))
 
-                params = self.prep_rect_params(items["prompt"])
-
-                self.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image, index=index, order=items["order"], params=self.params)
-
-                #x = self.iterate_further(x)
+                if rparams.seed_behavior == 'iter':
+                    rparams.seed += 1
                 x += 1
                 while self.busy == True:
                     time.sleep(0.25)
@@ -1104,9 +1108,11 @@ class MainWindow(QMainWindow):
         batch_n = 1
 
         tiles = len(self.canvas.canvas.rectlist)
+
         print(f"Tiles to Outpaint:{tiles}")
 
         if multi == True:
+            print("multi outpaint batch")
             for i in range(batch_n):
                 if i != 0:
                     filename = str(random.randint(1111111,9999999))
@@ -1140,9 +1146,9 @@ class MainWindow(QMainWindow):
         while self.canvas.canvas.busy == True:
             time.sleep(0.25)
             self.sleepytime += 0.25
-        params = self.canvas.canvas.rectlist[x].params
-
-        self.deforum_ui.run_deforum_outpaint(params)
+        #params = self.canvas.canvas.rectlist[x].params
+        print(self.canvas.canvas.rectlist[self.render_index].params.seed)
+        self.deforum_ui.run_deforum_outpaint(self.canvas.canvas.rectlist[x].params)
         while self.callbackbusy == True:
             time.sleep(0.25)
             self.sleepytime += 0.25

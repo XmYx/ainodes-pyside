@@ -805,7 +805,9 @@ class DeforumSix:
         img = Image.open(init_image)
 
         # mask_img = img.split()[-1]
-
+        #print(f"using seed: {seed}")
+        if seed == 0 or seed == -1 or seed == '':
+            seed = seed_everything()
         width = img.size[0]
         height = img.size[1]
         for i in range(0, width):  # process all pixels

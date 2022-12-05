@@ -23,7 +23,7 @@ from frontend import plugin_loader
 
 from backend.prompt_ai.prompt_gen import AiPrompt
 from frontend.ui_paint import PaintUI, spiralOrder, random_path
-from frontend.ui_classes import Thumbnails, PathSetup, ThumbsUI, AnimKeyEditor
+from frontend.ui_classes import Thumbnails, SystemSetup, ThumbsUI, AnimKeyEditor
 from frontend.unicontrol import UniControl
 import backend.settings as settings
 from backend.singleton import singleton
@@ -110,7 +110,7 @@ class MainWindow(QMainWindow):
         self.prompt_fetcher = FetchPrompts()
         self.prompt_fetcher_ui = PromptFetcher_UI(self)
 
-        self.path_setup = PathSetup()
+        self.path_setup = SystemSetup()
         self.image_lab = ImageLab()
         self.image_lab_ui = self.image_lab.imageLab
         self.model_download = ModelDownload(self)

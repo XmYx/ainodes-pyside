@@ -253,7 +253,7 @@ class AnimSliders(QObject):
         self.w = loader.load(file)
         file.close()
 
-class PathSetup(QObject):
+class SystemSetup(QObject):
 
     def __init__(self, *args, **kwargs):
         loader = QtUiTools.QUiLoader()

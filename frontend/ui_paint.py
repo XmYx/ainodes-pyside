@@ -77,11 +77,15 @@ class Rectangle(object):
         print(self.render_index)
         self.image = self.images[self.render_index]
         self.render_index = (self.render_index + 1) % len(self.images)
+        if self.running == False:
+            self.parent.redraw()
     def iterate_back(self):
-        if self.render_index == 0:
+        if self.render_index == -1:
             self.render_index = len(self.images)
         self.image = self.images[self.render_index]
         self.render_index = (self.render_index - 1) % len(self.images)
+        if self.running == False:
+            self.parent.redraw()
 
 
     def stop(self):

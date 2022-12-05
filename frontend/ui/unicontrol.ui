@@ -98,7 +98,7 @@
             <x>0</x>
             <y>0</y>
             <width>715</width>
-            <height>2724</height>
+            <height>2900</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -760,7 +760,7 @@
                   </widget>
                  </item>
                  <item row="7" column="2" colspan="5">
-                  <widget class="QComboBox" name="model_list"/>
+                  <widget class="QComboBox" name="select_model"/>
                  </item>
                  <item row="15" column="4" colspan="2">
                   <widget class="QCheckBox" name="show_sample_per_step">

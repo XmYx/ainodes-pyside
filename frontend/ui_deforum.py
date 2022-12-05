@@ -147,7 +147,7 @@ class Deforum_UI(QObject):
                 self.parent.params.advanced = True
                 self.parent.render_index = index
 
-        gs.diffusion.selected_aesthetic_embedding = self.parent.widgets[self.parent.current_widget].w.select_aesthetic_embedding.currentText()
+        gs.diffusion.selected_aesthetic_embedding = self.parent.widgets[self.parent.current_widget].w.selected_aesthetic_embedding.currentText()
         gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
         gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value()
         gs.aesthetic_weight = self.parent.widgets[self.parent.current_widget].w.aesthetic_weight.value()

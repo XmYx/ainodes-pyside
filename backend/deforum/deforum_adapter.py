@@ -353,7 +353,7 @@ class DeforumSix:
             torch_gc()
         """Load and initialize the model from configuration variables passed at object creation time"""
         if "inpaint" not in gs.models:
-            weights = gs.system.sdInpaintPath
+            weights = gs.system.sd_inpaint_model_file
             config = 'configs/stable-diffusion/inpaint.yaml'
             embedding_path = None
 

@@ -266,7 +266,7 @@ class MainWindow(QMainWindow):
     def taskswitcher(self):
         gs.stop_all = False
         save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(), self.widgets[self.current_widget].w.prompts.toPlainText())
-        if self.widgets[self.current_widget].w.use_inpaint.isChecked() == True:
+        if self.widgets[self.current_widget].w.with_inpaint.isChecked() == True:
             self.params = self.sessionparams.update_params()
             self.params.advanced = True
             self.canvas.canvas.reusable_outpaint(self.canvas.canvas.selected_item)

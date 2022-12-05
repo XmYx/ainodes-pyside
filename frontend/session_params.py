@@ -55,10 +55,10 @@ class SessionParams():
             self.parent.widgets[widget].w.seed.text())
         prompt = self.parent.widgets[widget].w.prompts.toPlainText()
         mask_blur = int(self.parent.widgets[widget].w.mask_blur.value())
-        recons_blur = int(self.parent.widgets[widget].w.reconstruction_blur.value())
+        recons_blur = int(self.parent.widgets[widget].w.recons_blur.value())
         scale = self.parent.widgets[widget].w.scale.value()
         ddim_eta = self.parent.widgets[widget].w.ddim_eta.value()
-        with_inpaint = self.parent.widgets[widget].w.use_inpaint.isChecked()
+        with_inpaint = self.parent.widgets[widget].w.with_inpaint.isChecked()
         gs.T = 0
         gs.lr = 0
 
@@ -200,8 +200,6 @@ class SessionParams():
 
         advanced = False
         max_frame = self.parent.widgets[widget].w.max_frames.value() if animation_mode != 'None' else 1
-        use_inpaint = self.parent.widgets[widget].w.use_inpaint.isChecked()
-        with_inpaint = use_inpaint
         lowmem = self.parent.widgets[widget].w.lowmem.isChecked()
         seamless = self.parent.widgets[widget].w.seamless.isChecked()
         if self.parent.widgets[widget].w.axis.currentText() == 'X':
@@ -325,7 +323,6 @@ class SessionParams():
             "skip_video_for_run_all": skip_video_for_run_all,
             "prompt_weighting": prompt_weighting,
             "normalize_prompt_weights": normalize_prompt_weights,
-            "use_inpaint": use_inpaint,
             "lowmem": lowmem,
             "plotting": plotting,
             "plotX": plotX,

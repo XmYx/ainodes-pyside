@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.signals = Callbacks()
-        self.load_last_prompt()
+
         self.thumbs = ThumbsUI()
         self.canvas = PaintUI(self)
         self.setCentralWidget(self.canvas)
@@ -78,7 +78,7 @@ class MainWindow(QMainWindow):
         self.widgets = {}
         self.current_widget = 'unicontrol'
         self.widgets[self.current_widget] = UniControl(self)
-
+        self.load_last_prompt()
 
         self.sessionparams = SessionParams(self)
         self.sessionparams.create_params()

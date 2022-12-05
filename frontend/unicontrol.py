@@ -61,7 +61,7 @@ class UniControl(QObject):
         if item_count > 0:
             current_text = self.w.select_vae.currentText()
             current_vae = current_text if current_text != '' else None
-        files = os.listdir(gs.system.vae_path)
+        files = os.listdir(gs.system.vae_dir)
         self.w.select_vae.clear()
         self.w.select_vae.addItem('None')
         for model in files:
@@ -131,7 +131,7 @@ class UniControl(QObject):
         if item_count > 0:
             current_text = self.w.select_aesthetic_embedding.currentText()
             current_aesthetic_embedding = current_text if current_text != '' else None
-        files = os.listdir(gs.system.aesthetic_gradients)
+        files = os.listdir(gs.system.aesthetic_gradients_dir)
         self.w.select_aesthetic_embedding.clear()
         self.w.select_aesthetic_embedding.addItem('None')
         for model in files:
@@ -166,8 +166,8 @@ class UniControl(QObject):
         for model in files:
             if '.ckpt' in model or 'safetensors' in model:
                 self.w.select_model.addItem(model)
-        files = os.listdir(gs.system.customModels)
-        files = [f for f in files if os.path.isfile(gs.system.customModels+'/'+f)] #Filtering only the files.
+        files = os.listdir(gs.system.custom_models_dir)
+        files = [f for f in files if os.path.isfile(gs.system.custom_models_dir + '/' +f)] #Filtering only the files.
         model_items.append(files)
         for model in files:
             if '.ckpt' in model or 'safetensors' in model:

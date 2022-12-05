@@ -748,13 +748,14 @@ class MainWindow(QMainWindow):
             for i in self.canvas.canvas.rectlist:
                 if i.id == self.canvas.canvas.render_item:
                     if i.id == self.canvas.canvas.render_item:
-                        x = i.x + w + 20
+                        w = self.canvas.canvas.rectlist[self.canvas.canvas.rectlist.index(i)].w
+                        x = self.canvas.canvas.rectlist[self.canvas.canvas.rectlist.index(i)].x + w + 20
+                        print(f"w, x: {w}, {x}")
                         y = i.y
                         #print(i.x + w, i.y, self.cheight, self.w, self.stopwidth)
                         if x > 3000:
                             x = 0
                             y = self.cheight + 25
-
                             if self.stopwidth == False:
                                 self.stopwidth = True
                         if self.stopwidth == False:

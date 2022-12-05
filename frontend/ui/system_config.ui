@@ -35,7 +35,7 @@
       <string>systemConfig</string>
      </property>
      <widget class="QWidget" name="dockWidgetContents">
-      <layout class="QVBoxLayout" name="verticalLayout_8">
+      <layout class="QGridLayout" name="gridLayout">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -48,10 +48,24 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="ok">
+         <property name="text">
+          <string>OK</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="cancel">
+         <property name="text">
+          <string>Cancel</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
-          <number>4</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="tab_2">
           <attribute name="title">
@@ -66,7 +80,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_2">
+            <widget class="QLineEdit" name="models_path">
              <property name="text">
               <string>data/models</string>
              </property>
@@ -80,7 +94,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit">
+            <widget class="QLineEdit" name="custom_models_dir">
              <property name="text">
               <string>data/models/custom</string>
              </property>
@@ -108,7 +122,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_3">
+            <widget class="QLineEdit" name="hypernetwork_dir">
              <property name="text">
               <string>data/hypernetworks</string>
              </property>
@@ -185,7 +199,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>392</width>
-                <height>643</height>
+                <height>613</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -412,7 +426,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>382</width>
-                <height>643</height>
+                <height>613</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -609,7 +623,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>392</width>
-                <height>643</height>
+                <height>613</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -703,6 +717,76 @@
                 </widget>
                </item>
                <item>
+                <widget class="QLabel" name="label_37">
+                 <property name="text">
+                  <string>V1 inference yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="v1_inference_yaml_file">
+                 <property name="text">
+                  <string>configs/stable-diffusion/v1-inference.yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_38">
+                 <property name="text">
+                  <string>V2 inference yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="v2_inference_yaml_file">
+                 <property name="text">
+                  <string>configs/stable-diffusion/v2-inference.yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_39">
+                 <property name="text">
+                  <string>V2 upscale inference yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="v2_upscale_inference_yaml_file">
+                 <property name="text">
+                  <string>backend/sdv2/v2_upscale_inference_yaml_file.yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_40">
+                 <property name="text">
+                  <string>V2 upscale model</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="v2_upscale_model_file">
+                 <property name="text">
+                  <string>data/models/768-v-ema.ckpt</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_41">
+                 <property name="text">
+                  <string>V2 midas inference yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="v2_midas_inference_yaml_file">
+                 <property name="text">
+                  <string>backend/sdv2/v2-midas-inference.yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
@@ -762,7 +846,7 @@
              <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
-               <height>524</height>
+               <height>494</height>
               </size>
              </property>
             </spacer>
@@ -797,7 +881,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>392</width>
-                <height>643</height>
+                <height>613</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_10">

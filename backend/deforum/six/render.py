@@ -174,7 +174,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                                 if gs.system.pathmode == "subfolders":
                                     outfolder = os.path.join(args.outdir, f'{args.timestring}_{sanitize(prompt)[:120]}')
                                 else:
-                                    outfolder = os.path.join(args.outdir, f'{args.timestring}_{sanitize(prompt)[:120]}')
+                                    outfolder = args.timestring
                                 os.makedirs(outfolder, exist_ok=True)
                                 outpath = os.path.join(outfolder, filename)
                                 gs.temppath = outpath

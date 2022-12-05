@@ -117,6 +117,8 @@ class Deforum_UI(QObject):
         self.params = self.parent.sessionparams.update_params()
         self.parent.params = self.params
 
+        index = 0
+
         if self.parent.canvas.canvas.rectlist != []:
             for i in self.parent.canvas.canvas.rectlist:
                 try:

@@ -1,6 +1,6 @@
 import random
 from types import SimpleNamespace
-
+from backend.settings import save_settings_json
 from backend.singleton import singleton
 
 gs = singleton
@@ -8,6 +8,7 @@ gs = singleton
 
 class SessionParams():
     def __init__(self, parent):
+        self.system_params = None
         self.parent = parent
         self.max_history = None
         self.history = None
@@ -38,12 +39,42 @@ class SessionParams():
             self.update_ui_from_params()
 
 
-    def create_params(self):
+    def create_diffusion_params(self):
         self.params = {}
         for key, value in gs.diffusion.__dict__.items():
             self.params[key] = value
 
         return self.params
+
+
+    def create_system_params(self):
+        self.system_params = {}
+        for key, value in gs.system.__dict__.items():
+            self.system_params[key] = value
+
+        return self.params
+
+
+    def update_system_params(self):
+        for key, value in self.system_params.items():
+            try:
+                current_widget = self.parent.system_setup.w
+                type = str(getattr(current_widget, key))
+                if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
+                    self.system_params[key] = getattr(current_widget, key).value()
+                elif  'QTextEdit' in type or 'QLineEdit' in type:
+                    self.system_params[key] = getattr(current_widget, key).text()
+                elif 'QCheckBox' in type:
+                    self.system_params[key] = getattr(current_widget, key).isChecked()
+                elif 'QComboBox' in type:
+                    self.system_params[key] = getattr(current_widget, key).currentText()
+            except Exception as e:
+                continue
+            try:
+                gs.system.__dict__[key] = value
+            except:
+                pass
+        save_settings_json()
 
     def update_params(self):
         mode = ""

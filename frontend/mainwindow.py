@@ -3,8 +3,9 @@ import backend.settings as settings
 from backend.singleton import singleton
 gs = singleton
 settings.load_settings_json()
-os.makedirs(gs.system.cache_dir, exist_ok=True)
-os.environ['TRANSFORMERS_CACHE'] = gs.system.cache_dir
+if gs.system.custom_cache_dir == True:
+    os.makedirs(gs.system.cache_dir, exist_ok=True)
+    os.environ['TRANSFORMERS_CACHE'] = gs.system.cache_dir
 import time
 import random
 from datetime import datetime

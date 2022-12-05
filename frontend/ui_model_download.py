@@ -162,29 +162,38 @@ NSFW: {model_info['item']['nsfw']}
         return tmp.replace(' ', '_')
 
     def download_model(self, progress_callback=False):
+        safetensors = False
         self.model_download.w.download_button.setEnabled(False)
         model_info = self.actual_model_list[self.model_download.w.model_list.currentItem().text()]
         config_name = ''
         regex = re.compile(r'(.*?)\.')
         headers = wget_headers(model_info['model']['downloadUrl'])
         filename = headers['Content-Disposition'].replace('attachment; filename="','').replace('"','')
+        safetensors = True if 'safetensors' in filename else False
         filename = regex.match(filename)[1]
         length = headers['Content-Length']
         model_name = 'noNameFound'
         if len(filename) < 1:
             model_Version_info = model_info['model']['name'].replace('learned embeds','')
             filename = self.sanitize(model_info['item']['name'] + f"_{model_Version_info}")
-
         if model_info['item']['type'] == 'Checkpoint':
             config_name = filename + '.yaml'
-            model_name = filename + '.ckpt'
+
+            if safetensors is False:
+                model_name = filename + '.ckpt'
+            else:
+                model_name = filename + '.safetensors'
+
             model_outpath = os.path.join(gs.system.customModels, model_name)
+
         if model_info['item']['type'] == 'TextualInversion':
             model_name = filename + '.pt'
             model_outpath = os.path.join(gs.system.embeddings_dir, model_name)
+
         if model_info['item']['type'] == 'Hypernetwork':
             model_name = filename + '.pt'
             model_outpath = os.path.join(gs.system.hypernetwork_dir, model_name)
+
         if model_info['item']['type'] == 'AestheticGradient':
             model_name = filename + '.pt'
             model_outpath = os.path.join(gs.system.aesthetic_gradients, model_name)

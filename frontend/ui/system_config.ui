@@ -51,7 +51,7 @@
        <item>
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
-          <number>4</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tab_2">
           <attribute name="title">
@@ -66,7 +66,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_2">
+            <widget class="QLineEdit" name="models_path">
              <property name="text">
               <string>data/models</string>
              </property>
@@ -80,7 +80,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit">
+            <widget class="QLineEdit" name="custom_models_dir">
              <property name="text">
               <string>data/models/custom</string>
              </property>
@@ -108,7 +108,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_3">
+            <widget class="QLineEdit" name="hypernetwork_dir">
              <property name="text">
               <string>data/hypernetworks</string>
              </property>
@@ -699,6 +699,76 @@
                 <widget class="QLineEdit" name="content_db_dir">
                  <property name="text">
                   <string>data/content_db</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_37">
+                 <property name="text">
+                  <string>V1 inference yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="v1_inference_yaml_file">
+                 <property name="text">
+                  <string>configs/stable-diffusion/v1-inference.yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_38">
+                 <property name="text">
+                  <string>V2 inference yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="v2_inference_yaml_file">
+                 <property name="text">
+                  <string>configs/stable-diffusion/v2-inference.yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_39">
+                 <property name="text">
+                  <string>V2 upscale inference yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="v2_upscale_inference_yaml_file">
+                 <property name="text">
+                  <string>backend/sdv2/v2_upscale_inference_yaml_file.yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_40">
+                 <property name="text">
+                  <string>V2 upscale model</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="v2_upscale_model_file">
+                 <property name="text">
+                  <string>data/models/768-v-ema.ckpt</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_41">
+                 <property name="text">
+                  <string>V2 midas inference yaml</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="v2_midas_inference_yaml_file">
+                 <property name="text">
+                  <string>backend/sdv2/v2-midas-inference.yaml</string>
                  </property>
                 </widget>
                </item>

@@ -81,7 +81,8 @@ class MainWindow(QMainWindow):
         self.load_last_prompt()
 
         self.sessionparams = SessionParams(self)
-        self.sessionparams.create_params()
+        self.sessionparams.create_diffusion_params()
+        self.sessionparams.create_system_params()
 
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.timeline)
@@ -89,7 +90,7 @@ class MainWindow(QMainWindow):
 
         self.create_main_toolbar()
         self.create_secondary_toolbar()
-
+        self.system_setup = SystemSetup()
         self.sessionparams.add_state_to_history()
         self.update_ui_from_params()
 
@@ -110,14 +111,14 @@ class MainWindow(QMainWindow):
         self.prompt_fetcher = FetchPrompts()
         self.prompt_fetcher_ui = PromptFetcher_UI(self)
 
-        self.path_setup = SystemSetup()
+
         self.image_lab = ImageLab()
         self.image_lab_ui = self.image_lab.imageLab
         self.model_download = ModelDownload(self)
         self.model_download_ui = self.model_download.model_download
         #self.model_chooser = ModelChooser_UI(self)
         self.widgets[self.current_widget].w.dockWidget.setWindowTitle("Parameters")
-        self.path_setup.w.dockWidget.setWindowTitle("Model / Paths")
+        self.system_setup.w.dockWidget.setWindowTitle("Model / Paths")
         self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
         self.lexicart.w.dockWidget.setWindowTitle("Lexica Art")
         self.krea.w.dockWidget.setWindowTitle("Krea")
@@ -133,13 +134,13 @@ class MainWindow(QMainWindow):
         self.image_lab_ui.w.dockWidget.setMaximumHeight(self.height())
         self.tabifyDockWidget(self.model_download_ui.w.dockWidget, self.image_lab_ui.w.dockWidget)
 
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.path_setup.w.dockWidget)
-        self.path_setup.w.dockWidget.setMaximumHeight(self.height())
-        self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.path_setup.w.dockWidget)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.system_setup.w.dockWidget)
+        self.system_setup.w.dockWidget.setMaximumHeight(self.height())
+        self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.system_setup.w.dockWidget)
 
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.lexicart.w.dockWidget)
         self.lexicart.w.dockWidget.setMaximumHeight(self.height())
-        self.tabifyDockWidget(self.path_setup.w.dockWidget, self.lexicart.w.dockWidget)
+        self.tabifyDockWidget(self.system_setup.w.dockWidget, self.lexicart.w.dockWidget)
 
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.krea.w.dockWidget)
         self.krea.w.dockWidget.setMaximumHeight(self.height())
@@ -263,6 +264,7 @@ class MainWindow(QMainWindow):
         self.model_download.signals.startDownload.connect(self.download_model_thread)
 
         self.thumbs.w.thumbnails.itemClicked.connect(self.select_outpaint_image)
+
     def task_switcher(self):
         gs.stop_all = False
         save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(), self.widgets[self.current_widget].w.prompts.toPlainText())
@@ -275,31 +277,31 @@ class MainWindow(QMainWindow):
             self.deforum_six_txt2img_thread()
 
     def path_setup_temp(self):
-        self.path_setup.w.out_dir.setText(gs.system.out_dir)
-        self.path_setup.w.txt2img_out_dir.setText(gs.system.txt2img_out_dir)
-        self.path_setup.w.img2img_tmp_dir.setText(gs.system.img2img_tmp_dir)
-        self.path_setup.w.img2img_out_dir.setText(gs.system.img2img_out_dir)
-        self.path_setup.w.txt2vid_single_frame_dir.setText(gs.system.txt2vid_single_frame_dir)
-        self.path_setup.w.txt2vid_out_dir.setText(gs.system.txt2vid_out_dir)
-        self.path_setup.w.vid2vid_tmp_dir.setText(gs.system.vid2vid_tmp_dir)
-        self.path_setup.w.vid2vid_single_frame_dir.setText(gs.system.vid2vid_single_frame_dir)
-        self.path_setup.w.vid2vid_out_dir.setText(gs.system.vid2vid_out_dir)
-        self.path_setup.w.adabins_model_file.setText(gs.system.adabins_model_file)
-        self.path_setup.w.midas_model_file.setText(gs.system.midas_model_file)
-        self.path_setup.w.sd_clip_model_file.setText(gs.system.sd_clip_model_file)
-        self.path_setup.w.sd_model_file.setText(gs.system.sd_model_file)
-        self.path_setup.w.v1_inference_yaml_file.setText(gs.system.v1_inference_yaml_file)
-        self.path_setup.w.v2_inference_yaml_file.setText(gs.system.v2_inference_yaml_file)
-        self.path_setup.w.gfpgan_dir.setText(gs.system.gfpgan_dir)
-        self.path_setup.w.realesrgan_dir.setText(gs.system.realesrgan_dir)
-        self.path_setup.w.realesrgan_anime_model_file.setText(gs.system.realesrgan_anime_model_file)
-        self.path_setup.w.ffmpeg_file.setText(gs.system.ffmpeg_file)
-        self.path_setup.w.settingsPath.setText(gs.system.settingsPath)
-        self.path_setup.w.gfpgan_cpu.setChecked(gs.system.gfpgan_cpu)
-        self.path_setup.w.realesrgan_cpu.setChecked(gs.system.realesrgan_cpu)
-        self.path_setup.w.extra_models_cpu.setChecked(gs.system.extra_models_cpu)
-        self.path_setup.w.extra_models_gpu.setChecked(gs.system.extra_models_gpu)
-        self.path_setup.w.gpu.setText(str(gs.system.gpu))
+        self.system_setup.w.out_dir.setText(gs.system.out_dir)
+        self.system_setup.w.txt2img_out_dir.setText(gs.system.txt2img_out_dir)
+        self.system_setup.w.img2img_tmp_dir.setText(gs.system.img2img_tmp_dir)
+        self.system_setup.w.img2img_out_dir.setText(gs.system.img2img_out_dir)
+        self.system_setup.w.txt2vid_single_frame_dir.setText(gs.system.txt2vid_single_frame_dir)
+        self.system_setup.w.txt2vid_out_dir.setText(gs.system.txt2vid_out_dir)
+        self.system_setup.w.vid2vid_tmp_dir.setText(gs.system.vid2vid_tmp_dir)
+        self.system_setup.w.vid2vid_single_frame_dir.setText(gs.system.vid2vid_single_frame_dir)
+        self.system_setup.w.vid2vid_out_dir.setText(gs.system.vid2vid_out_dir)
+        self.system_setup.w.adabins_model_file.setText(gs.system.adabins_model_file)
+        self.system_setup.w.midas_model_file.setText(gs.system.midas_model_file)
+        self.system_setup.w.sd_clip_model_file.setText(gs.system.sd_clip_model_file)
+        self.system_setup.w.sd_model_file.setText(gs.system.sd_model_file)
+        self.system_setup.w.v1_inference_yaml_file.setText(gs.system.v1_inference_yaml_file)
+        self.system_setup.w.v2_inference_yaml_file.setText(gs.system.v2_inference_yaml_file)
+        self.system_setup.w.gfpgan_dir.setText(gs.system.gfpgan_dir)
+        self.system_setup.w.realesrgan_dir.setText(gs.system.realesrgan_dir)
+        self.system_setup.w.realesrgan_anime_model_file.setText(gs.system.realesrgan_anime_model_file)
+        self.system_setup.w.ffmpeg_file.setText(gs.system.ffmpeg_file)
+        self.system_setup.w.settingsPath.setText(gs.system.settingsPath)
+        self.system_setup.w.gfpgan_cpu.setChecked(gs.system.gfpgan_cpu)
+        self.system_setup.w.realesrgan_cpu.setChecked(gs.system.realesrgan_cpu)
+        self.system_setup.w.extra_models_cpu.setChecked(gs.system.extra_models_cpu)
+        self.system_setup.w.extra_models_gpu.setChecked(gs.system.extra_models_gpu)
+        self.system_setup.w.gpu.setText(str(gs.system.gpu))
 
     def still_mode(self):
         pass
@@ -451,12 +453,25 @@ class MainWindow(QMainWindow):
                 elif 'QCheckBox' in type:
                     if value == True:
                         getattr(self.widgets[self.current_widget].w, key).setCheckState(QtCore.Qt.Checked)
-                elif 'QSlider' in type:
-                    getattr(self.widgets[self.current_widget].w, key).wheelEnabled = False
-
 
             except Exception as e:
                 print(e)
+                continue
+
+        for key, value in self.sessionparams.system_params.items():
+            try:
+                current_widget = self.system_setup.w
+                type = str(getattr(current_widget, key))
+
+                if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
+                    getattr(current_widget, key).setValue(value)
+                elif  'QTextEdit' in type or 'QLineEdit' in type:
+                    getattr(current_widget, key).setText(str(value))
+                elif 'QCheckBox' in type:
+                    if value == True:
+                        getattr(current_widget, key).setCheckState(QtCore.Qt.Checked)
+
+            except Exception as e:
                 continue
 
 
@@ -499,6 +514,7 @@ class MainWindow(QMainWindow):
 
         skip_back.triggered.connect(self.canvas.canvas.skip_back)
         skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
+
     def create_secondary_toolbar(self):
         self.secondary_toolbar = QToolBar('Outpaint Tools')
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.secondary_toolbar)
@@ -574,7 +590,7 @@ class MainWindow(QMainWindow):
         #self.widgets[self.current_widget].w.scale_slider.setVisible(False)
         self.widgets[self.current_widget].w.stepslabel.setVisible(False)
         self.widgets[self.current_widget].w.keyframes.setVisible(False)
-        self.path_setup.w.dockWidget.setVisible(False)
+        self.system_setup.w.dockWidget.setVisible(False)
         self.animKeyEditor.w.dockWidget.setVisible(False)
         self.image_lab_ui.w.dockWidget.setVisible(False)
         self.lexicart.w.dockWidget.setVisible(False)
@@ -625,7 +641,7 @@ class MainWindow(QMainWindow):
             #self.widgets[self.current_widget].w.scale_slider.setVisible(True)
             self.widgets[self.current_widget].w.stepslabel.setVisible(True)
             self.widgets[self.current_widget].w.keyframes.setVisible(True)
-            self.path_setup.w.dockWidget.setVisible(True)
+            self.system_setup.w.dockWidget.setVisible(True)
             self.image_lab_ui.w.dockWidget.setVisible(True)
             self.lexicart.w.dockWidget.setVisible(True)
             self.krea.w.dockWidget.setVisible(True)

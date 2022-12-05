@@ -96,7 +96,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-780</y>
             <width>715</width>
             <height>2900</height>
            </rect>
@@ -359,7 +359,7 @@
                   </widget>
                  </item>
                  <item row="11" column="1">
-                  <widget class="QSpinBox" name="reconstruction_blur">
+                  <widget class="QSpinBox" name="recons_blur">
                    <property name="maximum">
                     <number>200</number>
                    </property>
@@ -394,9 +394,9 @@
                   </widget>
                  </item>
                  <item row="6" column="2">
-                  <widget class="QCheckBox" name="use_inpaint">
+                  <widget class="QCheckBox" name="with_inpaint">
                    <property name="text">
-                    <string>Use Inpaint Inference</string>
+                    <string>With inpaint</string>
                    </property>
                   </widget>
                  </item>

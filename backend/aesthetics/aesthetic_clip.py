@@ -171,10 +171,11 @@ class AestheticCLIP:
             image_embs_name = None
             self.image_embs_name = None
         #print(gs.aesthetic_embedding_path)
-        #print(os.path.join(gs.system.aesthetic_gradients, 'None'))
-        if gs.diffusion.selected_aesthetic_embedding is not None and gs.diffusion.selected_aesthetic_embedding is not 'None':
+
+        #print(os.path.join(gs.system.aesthetic_gradients_dir, 'None'))
+        if gs.diffusion.selected_aesthetic_embedding is not 'None':
             self.image_embs_name = image_embs_name
-            self.image_embs = torch.load(os.path.join(gs.system.aesthetic_gradients, gs.diffusion.selected_aesthetic_embedding), map_location=self.device)
+            self.image_embs = torch.load(os.path.join(gs.system.aesthetic_gradients_dir, gs.diffusion.selected_aesthetic_embedding), map_location=self.device)
             self.image_embs /= self.image_embs.norm(dim=-1, keepdim=True)
             self.image_embs.requires_grad_(False)
 
@@ -191,7 +192,9 @@ class AestheticCLIP:
         gs.CLIP_stop_at_last_layers = 1
         #print(self.aesthetic_embedding_path)
 
+
         if not self.skip and self.aesthetic_steps != 0 and self.aesthetic_lr != 0 and self.aesthetic_weight != 0 and gs.diffusion.selected_aesthetic_embedding != 'None':
+
             #gs.models["sd"].cond_stage_model.tokenizer = gs.models["sd"].cond_stage_model.tokenizer
             use_old_emphasis_implementation = None
             if not use_old_emphasis_implementation:

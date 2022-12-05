@@ -68,7 +68,7 @@ def list_models():
         h = model_hash(cmd_ckpt)
         title, short_model_name = modeltitle(cmd_ckpt, h)
         checkpoints_list[title] = CheckpointInfo(cmd_ckpt, title, h, short_model_name, shared.cmd_opts.config)
-        shared.opts.data['sd_model_checkpoint'] = title
+        shared.opts.data['sd_model_file'] = title
     elif cmd_ckpt is not None and cmd_ckpt != shared.default_sd_model_file:
         print(f"Checkpoint in --ckpt argument not found (Possible it was moved to {model_path}: {cmd_ckpt}", file=sys.stderr)
     for filename in model_list:
@@ -104,7 +104,7 @@ def model_hash(filename):
 
 
 def select_checkpoint():
-    model_checkpoint = shared.opts.sd_model_checkpoint
+    model_checkpoint = shared.opts.sd_model_file
     checkpoint_info = checkpoints_list.get(model_checkpoint, None)
     if checkpoint_info is not None:
         return checkpoint_info
@@ -188,8 +188,8 @@ def load_model_weights(model, checkpoint_info):
 
         vae_file = os.path.splitext(checkpoint_file)[0] + ".vae.pt"
 
-        if not os.path.exists(vae_file) and shared.cmd_opts.vae_path is not None:
-            vae_file = shared.cmd_opts.vae_path
+        if not os.path.exists(vae_file) and shared.cmd_opts.vae_dir is not None:
+            vae_file = shared.cmd_opts.vae_dir
 
         if os.path.exists(vae_file):
             print(f"Loading VAE weights from: {vae_file}")
@@ -209,7 +209,7 @@ def load_model_weights(model, checkpoint_info):
         model.load_state_dict(checkpoints_loaded[checkpoint_info])
 
     model.sd_model_hash = sd_model_hash
-    model.sd_model_checkpoint = checkpoint_file
+    model.sd_model_file = checkpoint_file
     model.sd_checkpoint_info = checkpoint_info
 
 
@@ -256,7 +256,7 @@ def reload_model_weights(sd_model, info=None):
     from backend.hypernetworks.modules import lowvram, devices, sd_hijack
     checkpoint_info = info or select_checkpoint()
 
-    if sd_model.sd_model_checkpoint == checkpoint_info.filename:
+    if sd_model.sd_model_file == checkpoint_info.filename:
         return
 
     if sd_model.sd_checkpoint_info.config != checkpoint_info.config or should_hijack_inpainting(checkpoint_info) != should_hijack_inpainting(sd_model.sd_checkpoint_info):

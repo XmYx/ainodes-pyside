@@ -30,7 +30,7 @@ def merge_models(model_0, model_1, alpha, output, device):
 
     print("Saving...")
 
-    output_file = os.path.join(gs.system.customModels,f'{output}-{str(alpha)[2:] + "0"}.ckpt')
+    output_file = os.path.join(gs.system.custom_models_dir,f'{output}-{str(alpha)[2:] + "0"}.ckpt')
     torch.save({"state_dict": theta_0}, output_file)
 
     print("Done!")

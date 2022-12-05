@@ -424,7 +424,7 @@ class DeforumAPI(QObject):
         init_image = "outpaint.png"
         gs.T = self.parent.unicontrol.w.gradient_steps.value()
         gs.lr = self.parent.unicontrol.w.gradient_scale.value() / 1000000000
-        gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients,
+        gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients_dir,
                                                    self.parent.unicontrol.w.aesthetic_embedding.currentText())
         if params == None:
             params = self.parent.params
@@ -472,7 +472,7 @@ class DeforumAPI(QObject):
         self.parent.threadpool.start(worker)
     def set_model(self):
         self.url = QtCore.QUrl(f"{self.parent.urledit.text()}/api/v1/txttoimg/change_model")
-        print(os.path.join(gs.system.customModels, self.parent.path_setup.w.modelList.currentText()))
+        print(os.path.join(gs.system.custom_models_dir, self.parent.path_setup.w.modelList.currentText()))
         params = {
             "ckpt": str(self.parent.path_setup.w.modelList.currentText())
         }

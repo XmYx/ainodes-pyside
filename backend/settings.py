@@ -22,9 +22,11 @@ def load_settings_json():
         user_diffusion = SimpleNamespace(**user_settings.diffusion)
         user_system = SimpleNamespace(**user_settings.system)
         for key, value in user_diffusion.__dict__.items():
-            gs.diffusion.__dict__[key] = value
+            if key in gs.diffusion.__dict__:
+                gs.diffusion.__dict__[key] = value
         for key, value in user_system.__dict__.items():
-            gs.system.__dict__[key] = value
+            if key in gs.system.__dict__:
+                gs.system.__dict__[key] = value
     save_settings_json()
 
 def load_default_settings_json():

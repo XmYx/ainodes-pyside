@@ -63,7 +63,7 @@ def check_support_model_exists(model_name, model_path, model_url):
     if os.path.isfile(out_path):
         return out_path
     else:
-        os.makedirs(gs.system.support_models, exist_ok=True)
+        os.makedirs(gs.system.support_models_dir, exist_ok=True)
         print(f'Installing {model_name} Model to {model_path} from {model_url}')
         http = urllib3.PoolManager()
         r = http.request('GET', model_url, preload_content=False)

@@ -18,10 +18,10 @@ from backend.shared import check_support_model_exists
 from backend.singleton import singleton
 gs = singleton
 
-artist_db = artists.ArtistsDatabase(os.path.join(gs.system.content_db, 'artists.csv'))
+artist_db = artists.ArtistsDatabase(os.path.join(gs.system.content_db_dir, 'artists.csv'))
 
 blip_image_eval_size = 384
-blip_model_name = 'model_base_caption_capfilt_large.pth'
+blip_model_file = 'model_base_caption_capfilt_large.pth'
 blip_model_url = 'https://storage.googleapis.com/sfr-vision-language-research/BLIP/models/model_base_caption_capfilt_large.pth'
 clip_model_name = 'ViT-L/14'
 
@@ -56,7 +56,7 @@ class InterrogateModels:
                 self.categories.append(Category(name=filename, topn=topn, items=lines))
 
     def check_blip_model(self):
-        return check_support_model_exists(blip_model_name, gs.system.support_models, blip_model_url)
+        return check_support_model_exists(blip_model_file, gs.system.support_models_dir, blip_model_url)
 
     def load_blip_model(self):
         import src.BLIP.models.blip

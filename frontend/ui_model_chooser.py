@@ -20,13 +20,13 @@ class ModelChooser_UI(QObject):
 
     def load_folder_content(self):
         self.parent.path_setup.w.modelList.clear()
-        models = os.listdir(gs.system.customModels)
-        self.parent.path_setup.w.activeModel.setText(gs.system.sdPath)
+        models = os.listdir(gs.system.custom_models_dir)
+        self.parent.path_setup.w.activeModel.setText(gs.system.sd_model_file)
         for model in models:
-            location = os.path.join(gs.system.customModels, model)
+            location = os.path.join(gs.system.custom_models_dir, model)
             self.parent.path_setup.w.modelList.addItem(model)
 
     def set_model(self):
         if 'custom_model_name' not in gs.models:
             gs.models['custom_model_name'] = ''
-        load_models.load_custom_model(os.path.join(gs.system.customModels, self.parent.path_setup.w.modelList.currentText()))
+        load_models.load_custom_model(os.path.join(gs.system.custom_models_dir, self.parent.path_setup.w.modelList.currentText()))

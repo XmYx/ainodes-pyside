@@ -117,9 +117,9 @@ def run_sr(image_list , target_h, target_w, prompt, seed, num_samples, scale, st
 
     print('run_sr', locals())
 
-    if os.path.isfile(gs.system.sdPath) and os.path.isfile(gs.system.sdv2_upscale_inference):
+    if os.path.isfile(gs.system.sd_model_file) and os.path.isfile(gs.system.v2_upscale_inference_yaml_file):
         print('ready to run upscale 2.0')
-        sampler = initialize_model(gs.system.sdv2_upscale_inference, gs.system.sdPath)
+        sampler = initialize_model(gs.system.v2_upscale_inference_yaml_file, gs.system.sd_model_file)
 
         for image in image_list:
             if image:

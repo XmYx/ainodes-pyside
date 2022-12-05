@@ -68,7 +68,7 @@ def integrate_settings_paste_fields(component_dict):
         'sd_hypernetwork': 'Hypernet',
         'sd_hypernetwork_strength': 'Hypernet strength',
         'CLIP_stop_at_last_layers': 'Clip skip',
-        'sd_model_checkpoint': 'Model hash',
+        'sd_model_file': 'Model hash',
     }
     settings_paste_fields = [
         (component_dict[k], lambda d, k=k, v=v: ui.apply_setting(k, d.get(v, None)))

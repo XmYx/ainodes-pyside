@@ -158,7 +158,7 @@ class Deforum_UI(QObject):
 
 
 
-        #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
+        #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients_dir, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
         #if gs.aesthetic_embedding_path == 'None':
         #    gs.aesthetic_embedding_path = None
         seed = random.randint(0, 2 ** 32 - 1)
@@ -308,6 +308,11 @@ class Deforum_UI(QObject):
         gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.toPlainText()
         aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.toPlainText()
         gs.aesthetic_text_negative = False if aesthetic_text_negative == '' else aesthetic_text_negative
+
+
+        #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients_dir, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
+        #if params == None:
+        params = self.parent.sessionparams.update_params()
 
 
         steps = int(params.steps)

@@ -76,7 +76,7 @@ class DeforumSix:
     def load_low_memory(self):
         if "model" not in gs.models:
             config = "optimizedSD/v1-inference.yaml"
-            ckpt = gs.system.sdPath
+            ckpt = gs.system.sd_model_file
             sd = load_model_from_config_lm(f"{ckpt}")
             li, lo = [], []
             for key, v_ in sd.items():
@@ -169,7 +169,7 @@ class DeforumSix:
     def load_model_from_config(self, config=None, ckpt=None, verbose=False):
 
         if ckpt is None:
-            ckpt = gs.system.sdPath
+            ckpt = gs.system.sd_model_file
 
         # loads config.yaml with the name of the model
         # the config yaml has to be provided with pöropper naming,
@@ -214,6 +214,7 @@ class DeforumSix:
             #gs.model_version = config.model_version
             if verbose:
                 print(gs.model_version)
+
             checkpoint_file = ckpt
             _, extension = os.path.splitext(checkpoint_file)
             map_location="cpu"
@@ -222,6 +223,7 @@ class DeforumSix:
             else:
                 pl_sd = torch.load(checkpoint_file, map_location=map_location)
             #pl_sd = torch.load(ckpt, map_location="cpu")
+
             if "global_step" in pl_sd:
                 print(f"Global Step: {pl_sd['global_step']}")
             sd = self.get_state_dict_from_checkpoint(pl_sd)
@@ -311,7 +313,7 @@ class DeforumSix:
             gs.models["inpaint"].to("cpu")
             del gs.models["inpaint"]
             torch_gc()
-        weights = gs.system.sdPath
+        weights = gs.system.sd_model_file
         config = 'configs/stable-diffusion/v1-inference-a.yaml'
         embedding_path = None
 
@@ -708,8 +710,8 @@ class DeforumSix:
         fps = 12  # @param {type:"number"}
         # @markdown **Manual Settings**
         use_manual_settings = False  # @param {type:"boolean"}
-        image_path = gs.system.txt2vidSingleFrame  # @param {type:"string"}
-        mp4_path = gs.system.txt2vidOut  # @param {type:"string"}
+        image_path = gs.system.img2img_single_frame_dir  # @param {type:"string"}
+        mp4_path = gs.system.txt2vid_out_dir  # @param {type:"string"}
         render_steps = False  # @param {type: 'boolean'}
         path_name_modifier = "x0_pred"  # @param ["x0_pred","x"]
         file = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -746,7 +748,7 @@ class DeforumSix:
 
             # make video
             cmd = [
-                gs.system.ffmpegPath,
+                gs.system.ffmpeg_file,
                 '-y',
                 '-vcodec', 'png',
                 '-r', str(fps),

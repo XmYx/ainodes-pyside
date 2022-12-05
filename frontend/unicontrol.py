@@ -36,7 +36,7 @@ class UniControl(QObject):
         self.w.update_hyper.clicked.connect(self.update_hypernetworks_list)
         self.w.update_aesthetics.clicked.connect(self.update_aesthetics_list)
         self.w.stop_dream.clicked.connect(self.stop_all)
-        self.w.model_list.currentIndexChanged.connect(self.select_new_model)
+        self.w.select_model.currentIndexChanged.connect(self.select_new_model)
         self.w.select_vae.currentIndexChanged.connect(self.select_new_vae)
         self.w.select_hypernetwork.currentIndexChanged.connect(self.select_new_hypernetwork)
         self.w.select_aesthetic_embedding.currentIndexChanged.connect(self.select_new_aesthetic_embedding)
@@ -52,7 +52,7 @@ class UniControl(QObject):
     def add_to_model_list(self, models):
         for model in models:
             if '.ckpt' in model:
-                self.w.model_list.addItem(model)
+                self.w.select_model.addItem(model)
 
     def update_vae_list(self):
         item_count = self.w.select_vae.count()
@@ -61,7 +61,7 @@ class UniControl(QObject):
         if item_count > 0:
             current_text = self.w.select_vae.currentText()
             current_vae = current_text if current_text != '' else None
-        files = os.listdir(gs.system.vae_path)
+        files = os.listdir(gs.system.vae_dir)
         self.w.select_vae.clear()
         self.w.select_vae.addItem('None')
         for model in files:
@@ -82,7 +82,7 @@ class UniControl(QObject):
         current_text = self.w.select_vae.currentText()
         new_vae = 'None'
         if current_text != 'None':
-            new_vae = os.path.join(gs.system.vae_path, current_text)
+            new_vae = os.path.join(gs.system.vae_dir, current_text)
         gs.diffusion.selected_vae = new_vae
 
     def select_new_hypernetwork(self):
@@ -96,7 +96,7 @@ class UniControl(QObject):
         current_text = self.w.select_aesthetic_embedding.currentText()
         new_aesthetic_embedding = 'None'
         if current_text != 'None':
-            new_aesthetic_embedding = os.path.join(gs.system.aesthetic_gradients, current_text)
+            new_aesthetic_embedding = os.path.join(gs.system.aesthetic_gradients_dir, current_text)
         gs.diffusion.selected_aesthetic_embedding = new_aesthetic_embedding
 
 
@@ -131,7 +131,7 @@ class UniControl(QObject):
         if item_count > 0:
             current_text = self.w.select_aesthetic_embedding.currentText()
             current_aesthetic_embedding = current_text if current_text != '' else None
-        files = os.listdir(gs.system.aesthetic_gradients)
+        files = os.listdir(gs.system.aesthetic_gradients_dir)
         self.w.select_aesthetic_embedding.clear()
         self.w.select_aesthetic_embedding.addItem('None')
         for model in files:
@@ -151,41 +151,44 @@ class UniControl(QObject):
 
     def update_model_list(self):
 
-        if not os.path.isfile(gs.system.sdPath):
+        if not os.path.isfile(gs.system.sd_model_file):
             target_model = None
         else:
-            if 'custom' in gs.system.sdPath:
-                target_model = 'custom/' + os.path.basename(gs.system.sdPath) # to work around the signal which triggers once we start changing the dropdowns items
+            if 'custom' in gs.system.sd_model_file:
+                target_model = 'custom/' + os.path.basename(gs.system.sd_model_file) # to work around the signal which triggers once we start changing the dropdowns items
             else:
-                target_model = os.path.basename(gs.system.sdPath)
+                target_model = os.path.basename(gs.system.sd_model_file)
 
-        self.w.model_list.clear()
+        self.w.select_model.clear()
         files = os.listdir(gs.system.models_path)
         files = [f for f in files if os.path.isfile(gs.system.models_path+'/'+f)] #Filtering only the files.
         model_items = files
         for model in files:
-            if '.ckpt' in model or 'safetensors' in model:
-                self.w.model_list.addItem(model)
-        files = os.listdir(gs.system.customModels)
-        files = [f for f in files if os.path.isfile(gs.system.customModels+'/'+f)] #Filtering only the files.
+
+            if '.ckpt' in model:
+                self.w.select_model.addItem(model)
+        files = os.listdir(gs.system.custom_models_dir)
+        files = [f for f in files if os.path.isfile(gs.system.custom_models_dir+'/'+f)] #Filtering only the files.
         model_items.append(files)
         for model in files:
-            if '.ckpt' in model or 'safetensors' in model:
-                self.w.model_list.addItem('custom/' + model)
-        item_count = self.w.model_list.count()
+            if '.ckpt' in model:
+                self.w.select_model.addItem('custom/' + model)
+        item_count = self.w.select_model.count()
+
         model_items = []
         for i in range(0, item_count-1):
-            model_items.append(self.w.model_list.itemText(i))
+            model_items.append(self.w.select_model.itemText(i))
         if target_model is None:
             if item_count > 0:
                 print('model from config does not exist therefore we choose first model from the loaded list')
-                self.w.model_list.setCurrentIndex(0)
+                self.w.select_model.setCurrentIndex(0)
             else:
                 print(f'you have no models installed in {gs.system.models_path} please install any model before you run this software, you can try to download a model using the download feature')
 
         else:
 
             if item_count > 0:
+
                 try:
                     self.w.model_list.setCurrentIndex(model_items.index(target_model))
                 except:
@@ -196,9 +199,10 @@ class UniControl(QObject):
                 except:
                     pass
 
+
     def select_new_model(self):
-        new_model = os.path.join(gs.system.models_path,self.w.model_list.currentText())
-        gs.system.sdPath = new_model
+        new_model = os.path.join(gs.system.models_path,self.w.select_model.currentText())
+        gs.system.sd_model_file = new_model
         if 'sd' in gs.models:
             del gs.models['sd']
         torch_gc()

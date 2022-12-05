@@ -113,7 +113,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="txt2imgOut">
+                  <widget class="QLineEdit" name="txt2img_out_dir">
                    <property name="text">
                     <string>output/txt2img</string>
                    </property>
@@ -127,7 +127,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="img2imgTmp">
+                  <widget class="QLineEdit" name="img2img_tmp_dir">
                    <property name="text">
                     <string>output/img2img/tmp</string>
                    </property>
@@ -141,7 +141,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="img2imgOut">
+                  <widget class="QLineEdit" name="img2img_out_dir">
                    <property name="text">
                     <string>output/img2img/output</string>
                    </property>
@@ -155,7 +155,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="txt2vidSingleFrame">
+                  <widget class="QLineEdit" name="img2img_single_frame_dir">
                    <property name="text">
                     <string>output/txt2vid/singe_frame</string>
                    </property>
@@ -169,7 +169,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="txt2vidOut">
+                  <widget class="QLineEdit" name="txt2vid_out_dir">
                    <property name="text">
                     <string>output/txt2vid/outputs</string>
                    </property>
@@ -183,7 +183,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="vid2vidTmp">
+                  <widget class="QLineEdit" name="txt2vid_tmp_dir">
                    <property name="text">
                     <string>output/vid2vid/tmp</string>
                    </property>
@@ -197,7 +197,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="vid2vidSingleFrame">
+                  <widget class="QLineEdit" name="vid2vid_single_frame_dir">
                    <property name="text">
                     <string>output/vid2vid/single_frame</string>
                    </property>
@@ -211,7 +211,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="vid2vidOut">
+                  <widget class="QLineEdit" name="vid2vid_out_dir">
                    <property name="text">
                     <string>output/vid2vid/output</string>
                    </property>
@@ -225,7 +225,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="galleryMainPath">
+                  <widget class="QLineEdit" name="out_dir">
                    <property name="text">
                     <string>output</string>
                    </property>
@@ -304,7 +304,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="adabinsPath">
+                <widget class="QLineEdit" name="adabins_model_file">
                  <property name="text">
                   <string>models/AdaBins_nyu.pt</string>
                  </property>
@@ -318,7 +318,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="midasPath">
+                <widget class="QLineEdit" name="midas_model_file">
                  <property name="text">
                   <string>models/dpt_large-midas-2f21e586.pt</string>
                  </property>
@@ -332,7 +332,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="sdClipPath">
+                <widget class="QLineEdit" name="sd_clip_model_file">
                  <property name="text">
                   <string>models/sd-clip-vit-l14-img-embed_ema_only.ckpt</string>
                  </property>
@@ -346,7 +346,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="sdPath">
+                <widget class="QLineEdit" name="sd_model_file">
                  <property name="text">
                   <string>models/sd-v1-4.ckpt</string>
                  </property>
@@ -374,7 +374,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="gfpganPath">
+                <widget class="QLineEdit" name="gfpgan_dir">
                  <property name="text">
                   <string>src/gfpgan</string>
                  </property>
@@ -388,7 +388,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="gfpganModelPath">
+                <widget class="QLineEdit" name="gfpgan_model_file">
                  <property name="text">
                   <string>experiments/pretrained_models/GFPGANv1.3.pth</string>
                  </property>
@@ -402,7 +402,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="realesrganPath">
+                <widget class="QLineEdit" name="realesrgan_dir">
                  <property name="text">
                   <string>src/realesrgan</string>
                  </property>
@@ -416,7 +416,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="realesrganModelPath">
+                <widget class="QLineEdit" name="realesrgan_model_file">
                  <property name="text">
                   <string>experiments/pretrained_models/RealESRGAN_x4plus.pth</string>
                  </property>
@@ -430,7 +430,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="realesrganAnimeModelPath">
+                <widget class="QLineEdit" name="realesrgan_anime_model_file">
                  <property name="text">
                   <string>experiments/pretrained_models/RealESRGAN_x4plus_anime_6B.pth</string>
                  </property>
@@ -524,7 +524,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="ffmpegPath">
+                <widget class="QLineEdit" name="ffmpeg_file">
                  <property name="text">
                   <string>C:\\tools\\ffmpeg\\bin\\ffmpeg.exe</string>
                  </property>
@@ -622,28 +622,28 @@
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="gfpganCpu">
+                <widget class="QCheckBox" name="gfpgan_cpu">
                  <property name="text">
                   <string>GFPGAN CPU</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="realesrganCpu">
+                <widget class="QCheckBox" name="realesrgan_cpu">
                  <property name="text">
                   <string>RealESRGAN CPU</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="extraModelsCpu">
+                <widget class="QCheckBox" name="extra_models_cpu">
                  <property name="text">
                   <string>Extra Models CPU</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="extraModelsGpu">
+                <widget class="QCheckBox" name="extra_models_gpu">
                  <property name="text">
                   <string>Extra Models GPU</string>
                  </property>

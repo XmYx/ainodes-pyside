@@ -13,19 +13,19 @@ gs.models = {}
 
 def load_gfpgan():
     model_name = 'GFPGANv1.3'
-    model_path = os.path.join(gs.system.gfpganPath, gs.system.gfpganModelPath)
+    model_path = os.path.join(gs.system.gfpgan_dir, gs.system.gfpgan_model_file)
     if not os.path.isfile(model_path):
         raise Exception("GFPGAN model not found at path " + model_path)
 
-    sys.path.append(os.path.abspath(gs.system.gfpganPath))
+    sys.path.append(os.path.abspath(gs.system.gfpgan_dir))
     from gfpgan import GFPGANer
 
-    if gs.system.gfpganCpu or gs.system.extraModelsCpu:
+    if gs.system.gfpgan_cpu or gs.system.extra_models_cpu:
         instance = GFPGANer(model_path=model_path, upscale=1, arch='clean', channel_multiplier=2, bg_upsampler=None,
                             device=torch.device('cpu'))
-    elif gs.system.extraModelsGpu:
+    elif gs.system.extra_models_gpu:
         instance = GFPGANer(model_path=model_path, upscale=1, arch='clean', channel_multiplier=2, bg_upsampler=None,
-                            device=torch.device(f'cuda:{gs.system.extraModelsGpu}'))
+                            device=torch.device(f'cuda:{gs.system.extra_models_gpu}'))
     else:
         instance = GFPGANer(model_path=model_path, upscale=1, arch='clean', channel_multiplier=2, bg_upsampler=None,
                             device=torch.device(f'cuda:{gs.system.gpu}'))
@@ -42,26 +42,26 @@ def load_realesrgan(model_name: str):
 
     model_path = ''
     if model_name == 'RealESRGAN_x4plus':
-        model_path = gs.system.realesrganModelPath
+        model_path = gs.system.realesrgan_model_file
     if model_name == 'RealESRGAN_x4plus_anime_6B':
-        model_path = gs.system.realesrganAnimeModelPath
+        model_path = gs.system.realesrgan_anime_model_file
 
-    #model_path = os.path.join(gs.system.realesrganPath, model_path)
+    #model_path = os.path.join(gs.system.realesrgan_dir, model_path)
     if not os.path.exists(model_path):
         raise Exception("Model not found at path " + model_path)
 
-    sys.path.append(os.path.abspath(gs.system.realesrganPath))
+    sys.path.append(os.path.abspath(gs.system.realesrgan_dir))
     from realesrgan import RealESRGANer
 
-    if gs.system.realesrganCpu or gs.system.extraModelsCpu:
+    if gs.system.realesrgan_cpu or gs.system.extra_models_cpu:
         instance = RealESRGANer(scale=2, model_path=model_path, model=realesrgan_models[model_name], pre_pad=0,
                                 half=False)  # cpu does not support half
         instance.device = torch.device('cpu')
         instance.model.to('cpu')
-    elif gs.system.extraModelsGpu:
+    elif gs.system.extra_models_gpu:
         instance = RealESRGANer(scale=2, model_path=model_path, model=realesrgan_models[model_name], pre_pad=0,
                                 half=gs.diffusion.fullPrecision,)
-                                #device=torch.device(f'cuda:{gs.system.extraModelsGpu}'))
+                                #device=torch.device(f'cuda:{gs.system.extra_models_gpu}'))
     else:
         instance = RealESRGANer(scale=2,
                                 model_path=model_path,
@@ -104,7 +104,7 @@ def load_upscaler(use_gfpgan=False, use_realesrgan=False, realesrgan_model="Real
             print("GFPGAN already loaded")
         else:
             # Load GFPGAN
-            if os.path.exists(gs.system.gfpganPath):
+            if os.path.exists(gs.system.gfpgan_dir):
                 try:
                     gs.models["GFPGAN"] = load_gfpgan()
                     print("Loaded GFPGAN")
@@ -128,7 +128,7 @@ def load_upscaler(use_gfpgan=False, use_realesrgan=False, realesrgan_model="Real
             except KeyError:
                 pass
 
-            if os.path.exists(gs.system.realesrganPath):
+            if os.path.exists(gs.system.realesrgan_dir):
                 # st.session_state is used for keeping the models in memory across multiple pages or runs.
                 gs.models["RealESRGAN"] = load_realesrgan(realesrgan_model)
                 print("Loaded RealESRGAN with model " + gs.models["RealESRGAN"].model.name)
@@ -158,7 +158,7 @@ def load_models(continue_prev_run=False, use_gfpgan=False, use_realesrgan=False,
         print("Model already loaded")
     else:
         config = OmegaConf.load(gs.system.sdInference)
-        gs.models["model"] = load_model_from_config(config, gs.system.sdPath)
+        gs.models["model"] = load_model_from_config(config, gs.system.sd_model_file)
 
         gs.device = torch.device(
             f"cuda:{gs.system.gpu}") if torch.cuda.is_available() else torch.device("cpu")

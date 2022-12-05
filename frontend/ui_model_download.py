@@ -179,12 +179,14 @@ NSFW: {model_info['item']['nsfw']}
         if model_info['item']['type'] == 'Checkpoint':
             config_name = filename + '.yaml'
 
+
             if safetensors is False:
                 model_name = filename + '.ckpt'
             else:
                 model_name = filename + '.safetensors'
 
             model_outpath = os.path.join(gs.system.customModels, model_name)
+
 
         if model_info['item']['type'] == 'TextualInversion':
             model_name = filename + '.pt'
@@ -196,7 +198,7 @@ NSFW: {model_info['item']['nsfw']}
 
         if model_info['item']['type'] == 'AestheticGradient':
             model_name = filename + '.pt'
-            model_outpath = os.path.join(gs.system.aesthetic_gradients, model_name)
+            model_outpath = os.path.join(gs.system.aesthetic_gradients_dir, model_name)
 
         print(f"download model {model_name} from url: {model_info['model']['downloadUrl']} ")
 
@@ -214,8 +216,8 @@ NSFW: {model_info['item']['nsfw']}
         self.model_download.w.download_button.setEnabled(True)
         #self.do_download(model_info['model']['downloadUrl'],model_outpath)
         if config_name != '':
-            src = os.path.join(gs.system.default_config_yaml_path, self.model_download.w.config_yaml.currentText())
-            dst = os.path.join(gs.system.customModels, config_name)
+            src = os.path.join(gs.system.default_config_yaml_dir, self.model_download.w.config_yaml.currentText())
+            dst = os.path.join(gs.system.custom_models_dir, config_name)
             shutil.copyfile(src, dst)
 
         self.parent.widgets[self.parent.current_widget].update_model_list()

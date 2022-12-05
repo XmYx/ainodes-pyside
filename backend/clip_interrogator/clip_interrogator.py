@@ -27,7 +27,7 @@ class Config:
     # blip settings
     blip_image_eval_size: int = 384
     blip_max_length: int = 32
-    blip_model_url: str = gs.system.blip_large_model_path
+    blip_model_url: str = gs.system.blip_large_model_file
     blip_num_beams: int = 8
 
     # clip settings

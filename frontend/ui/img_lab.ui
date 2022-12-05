@@ -950,7 +950,7 @@ hr { height: 1px; border-width: 0; }
                <widget class="QLineEdit" name="accel_path"/>
               </item>
               <item row="0" column="2">
-               <widget class="QPushButton" name="select_model">
+               <widget class="QPushButton" name="selected_model">
                 <property name="text">
                  <string>Select Model</string>
                 </property>

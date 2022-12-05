@@ -37,7 +37,7 @@ class UniControl(QObject):
         self.w.update_aesthetics.clicked.connect(self.update_aesthetics_list)
         self.w.stop_dream.clicked.connect(self.stop_all)
         self.w.select_model.currentIndexChanged.connect(self.select_new_model)
-        self.w.select_vae.currentIndexChanged.connect(self.select_new_vae)
+        self.w.selected_vae.currentIndexChanged.connect(self.select_new_vae)
         self.w.selected_hypernetwork.currentIndexChanged.connect(self.select_new_hypernetwork)
         self.w.selected_aesthetic_embedding.currentIndexChanged.connect(self.select_new_aesthetic_embedding)
         self.w.negative_prompts.setVisible(False)
@@ -55,31 +55,31 @@ class UniControl(QObject):
                 self.w.select_model.addItem(model)
 
     def update_vae_list(self):
-        item_count = self.w.select_vae.count()
+        item_count = self.w.selected_vae.count()
         model_items = []
         current_vae = None
         if item_count > 0:
-            current_text = self.w.select_vae.currentText()
+            current_text = self.w.selected_vae.currentText()
             current_vae = current_text if current_text != '' else None
         files = os.listdir(gs.system.vae_dir)
-        self.w.select_vae.clear()
-        self.w.select_vae.addItem('None')
+        self.w.selected_vae.clear()
+        self.w.selected_vae.addItem('None')
         for model in files:
             if '.ckpt' in model:
-                self.w.select_vae.addItem(model)
-        item_count = self.w.select_vae.count()
+                self.w.selected_vae.addItem(model)
+        item_count = self.w.selected_vae.count()
         model_items = []
         for i in range(0, item_count-1):
-            model_items.append(self.w.select_vae.itemText(i))
+            model_items.append(self.w.selected_vae.itemText(i))
         print(item_count)
         current_vae = 'None' if current_vae == None else current_vae
         if current_vae != 'None':
-            self.w.select_vae.setCurrentIndex(model_items.index(current_vae))
+            self.w.selected_vae.setCurrentIndex(model_items.index(current_vae))
         else:
-            self.w.select_vae.setCurrentIndex(0)
+            self.w.selected_vae.setCurrentIndex(0)
 
     def select_new_vae(self):
-        current_text = self.w.select_vae.currentText()
+        current_text = self.w.selected_vae.currentText()
         new_vae = 'None'
         if current_text != 'None':
             new_vae = os.path.join(gs.system.vae_path, current_text)

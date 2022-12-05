@@ -227,7 +227,7 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.update_params.clicked.connect(self.update_params)
         self.widgets[self.current_widget].w.load_model.clicked.connect(self.deforum_ui.deforum_six.load_model_from_config)
         self.widgets[self.current_widget].w.load_inpaint_model.clicked.connect(self.deforum_ui.deforum_six.load_inpaint_model)
-        self.widgets[self.current_widget].w.cleanup.clicked.connect(model_killer)
+        self.widgets[self.current_widget].w.cleanup_memory.clicked.connect(model_killer)
 
         self.widgets[self.current_widget].w.W.valueChanged.connect(self.update_outpaint_parameters)
         self.widgets[self.current_widget].w.H.valueChanged.connect(self.update_outpaint_parameters)
@@ -581,6 +581,8 @@ class MainWindow(QMainWindow):
         self.krea.w.dockWidget.setVisible(False)
         self.prompt_fetcher.w.dockWidget.setVisible(False)
         self.model_download_ui.w.dockWidget.setVisible(False)
+        self.widgets[self.current_widget].w.cleanup_memory.setVisible(False)
+        self.widgets[self.current_widget].w.normalized_prompts.setVisible(False)
 
         if self.widgets[self.current_widget].samHidden == False:
             self.widgets[self.current_widget].hideSampler_anim()
@@ -631,7 +633,8 @@ class MainWindow(QMainWindow):
             self.thumbs.w.dockWidget.setVisible(True)
             self.animKeyEditor.w.dockWidget.setVisible(True)
             self.model_download_ui.w.dockWidget.setVisible(True)
-
+            self.widgets[self.current_widget].w.cleanup_memory.setVisible(True)
+            self.widgets[self.current_widget].w.normalized_prompts.setVisible(True)
             self.default_hidden = False
         else:
             self.hide_default()

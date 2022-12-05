@@ -1,4 +1,10 @@
 import os
+import backend.settings as settings
+from backend.singleton import singleton
+gs = singleton
+settings.load_settings_json()
+os.makedirs(gs.system.cache_dir, exist_ok=True)
+os.environ['TRANSFORMERS_CACHE'] = gs.system.cache_dir
 import time
 import random
 from datetime import datetime
@@ -25,8 +31,7 @@ from backend.prompt_ai.prompt_gen import AiPrompt
 from frontend.ui_paint import PaintUI, spiralOrder, random_path
 from frontend.ui_classes import Thumbnails, SystemSetup, ThumbsUI, AnimKeyEditor
 from frontend.unicontrol import UniControl
-import backend.settings as settings
-from backend.singleton import singleton
+
 from frontend.ui_krea import Krea
 from frontend.ui_lexica import LexicArt
 from frontend.ui_model_download import ModelDownload, ModelDownload_UI
@@ -36,8 +41,6 @@ from backend.devices import choose_torch_device
 from frontend.ui_timeline import Timeline, KeyFrame
 
 
-gs = singleton
-settings.load_settings_json()
 
 # we had to load settings first before we can do this import
 from frontend.ui_prompt_fetcher import PromptFetcher_UI, FetchPrompts

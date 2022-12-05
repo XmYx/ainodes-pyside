@@ -52,7 +52,8 @@
     "gen_two_models": ["2.0"],
     "blip_model_file": "data/models/support/model_base_caption_capfilt_large.pth",
     "default_config_yaml_dir": "data/default_configs",
-    "vae_dir": "data/models/vae"
+    "vae_dir": "data/models/vae",
+    "cache_dir": "data/transformers_cache"
   },
   "diffusion": {
     "processType": 0,

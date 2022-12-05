@@ -6,6 +6,7 @@ import clip
 import numpy as np
 import pandas as pd
 import torch
+import safetensors.torch
 from PIL import ImageFilter
 from backend.devices import choose_torch_device
 from omegaconf import OmegaConf
@@ -134,6 +135,37 @@ class DeforumSix:
     def get_autoencoder_version(self):
         return "sd-v1" #TODO this will be different for different models
 
+
+
+
+    def transform_checkpoint_dict_key(self, k):
+        chckpoint_dict_replacements = {
+            'cond_stage_model.transformer.embeddings.': 'cond_stage_model.transformer.text_model.embeddings.',
+            'cond_stage_model.transformer.encoder.': 'cond_stage_model.transformer.text_model.encoder.',
+            'cond_stage_model.transformer.final_layer_norm.': 'cond_stage_model.transformer.text_model.final_layer_norm.',
+        }
+        for text, replacement in chckpoint_dict_replacements.items():
+            if k.startswith(text):
+                k = replacement + k[len(text):]
+
+        return k
+
+    def get_state_dict_from_checkpoint(self, pl_sd):
+        pl_sd = pl_sd.pop("state_dict", pl_sd)
+        pl_sd.pop("state_dict", None)
+
+        sd = {}
+        for k, v in pl_sd.items():
+            new_key = self.transform_checkpoint_dict_key(k)
+
+            if new_key is not None:
+                sd[new_key] = v
+
+        pl_sd.clear()
+        pl_sd.update(sd)
+
+        return pl_sd
+
     def load_model_from_config(self, config=None, ckpt=None, verbose=False):
 
         if ckpt is None:
@@ -182,12 +214,18 @@ class DeforumSix:
             #gs.model_version = config.model_version
             if verbose:
                 print(gs.model_version)
-
-
-            pl_sd = torch.load(ckpt, map_location="cpu")
+            checkpoint_file = ckpt
+            _, extension = os.path.splitext(checkpoint_file)
+            map_location="cpu"
+            if extension.lower() == ".safetensors":
+                pl_sd = safetensors.torch.load_file(checkpoint_file, device=map_location)
+            else:
+                pl_sd = torch.load(checkpoint_file, map_location=map_location)
+            #pl_sd = torch.load(ckpt, map_location="cpu")
             if "global_step" in pl_sd:
                 print(f"Global Step: {pl_sd['global_step']}")
-            sd = pl_sd["state_dict"]
+            sd = self.get_state_dict_from_checkpoint(pl_sd)
+            #sd = pl_sd["state_dict"]
 
             model = instantiate_from_config(config.model)
             m, u = model.load_state_dict(sd, strict=False)

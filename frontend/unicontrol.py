@@ -164,13 +164,13 @@ class UniControl(QObject):
         files = [f for f in files if os.path.isfile(gs.system.models_path+'/'+f)] #Filtering only the files.
         model_items = files
         for model in files:
-            if '.ckpt' in model:
+            if '.ckpt' in model or 'safetensors' in model:
                 self.w.model_list.addItem(model)
         files = os.listdir(gs.system.customModels)
         files = [f for f in files if os.path.isfile(gs.system.customModels+'/'+f)] #Filtering only the files.
         model_items.append(files)
         for model in files:
-            if '.ckpt' in model:
+            if '.ckpt' in model or 'safetensors' in model:
                 self.w.model_list.addItem('custom/' + model)
         item_count = self.w.model_list.count()
         model_items = []

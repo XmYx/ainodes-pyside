@@ -124,6 +124,7 @@ class Canvas(QGraphicsView):
         self.maintimer = QtCore.QTimer()
         self.maintimer.timeout.connect(self.set_new)
         self.running = False
+        self.setAcceptDrops(True)
         #self.start_main_clock()
     @Slot()
     def start_main_clock(self):
@@ -364,11 +365,13 @@ class Canvas(QGraphicsView):
         #self.update()
 
     def save_canvas(self):
+        self.redraw(transparent=True)
         timestring = time.strftime('%Y-%m-%d-%H-%S')
         filename = f"output/canvas/canvas_{timestring}.png"
         os.makedirs('output/canvas', exist_ok=True)
         file = QFile(filename)
         self.pixmap.save(file, "PNG")
+        self.redraw()
     def first_rectangle(self):
         self.hoverCheck()
         if self.hover_item is None:
@@ -746,8 +749,8 @@ class Canvas(QGraphicsView):
                                     #self.addrect()
                     if i.id == x.id:
                         print(f"setting render index to:{self.rectlist.index(i)}")
-                        self.parent.parent.params = x.params
-                        self.parent.parent.params.advanced = True
+                        #self.parent.parent.params = x.params
+                        #self.parent.parent.params.advanced = True
                         self.parent.parent.render_index = self.rectlist.index(i)
         outpaintimage.save("outpaint.png")
         #outpainter.end()
@@ -807,7 +810,7 @@ class Canvas(QGraphicsView):
         self.outpaintsource = "outpaint.png"
         self.redo = True
         self.render_item = self.selected_item
-        #self.signals.update_params.emit(id)
+        self.signals.update_params.emit(id)
         # = render_index
         self.signals.outpaint_signal.emit()
 
@@ -1185,6 +1188,7 @@ class Canvas(QGraphicsView):
     def outpaint_mousePressEvent(self, event):
         if self.scene.pos is not None:
             self.addrect()
+            self.signals.update_selected.emit()
             self.redraw()
             if self.ctrlmodifier == True:
                 self.reusable_outpaint(self.selected_item)
@@ -1218,6 +1222,11 @@ class Canvas(QGraphicsView):
         #if self.tempbatch is not None and self.gridenabled == True:
         #    self.draw_tempBatch(self.tempbatch)
 
+    def dragEnterEvent(self, event):
+        event.acceptProposedAction()
+        print(event.mimeData())
+        #if event.mimeData().hasFormat("text/plain"):
+
 
 class PaintUI(QDockWidget):
 
@@ -1228,7 +1237,6 @@ class PaintUI(QDockWidget):
             self.setObjectName(u"Outpaint")
         self.setAccessibleName(u'outpaintCanvas')
         self.parent = parent
-
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1304,8 +1312,10 @@ class PaintUI(QDockWidget):
         self.W.valueChanged.connect(self.update_spinners)
         self.H_spinbox.valueChanged.connect(self.update_sliders)
         self.W_spinbox.valueChanged.connect(self.update_sliders)
-
-
+        self.setAcceptDrops(True)
+        self.canvas.setAcceptDrops(True)
+    def dropEvent(self, event):
+        print(event.mimeData())
     def update_spinners(self):
         self.H_spinbox.setValue(self.H.value())
         self.W_spinbox.setValue(self.W.value())

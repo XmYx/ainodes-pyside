@@ -155,7 +155,7 @@
     "clamp_stop" : 0,
     "grad_inject_timing" : 1,
     "cond_uncond_sync" : false,
-    "negative_prompts" : false,
+    "toggle_negative_prompt" : false,
     "hires" : false,
     "recons_blur" : 10,
     "mask_overlay_blur" : 10,

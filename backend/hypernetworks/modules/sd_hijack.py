@@ -376,7 +376,7 @@ class FrozenCLIPEmbedderWithCustomWords(torch.nn.Module):
             z = outputs.hidden_states[-gs.CLIP_stop_at_last_layers]
             z = self.wrapped.transformer.text_model.final_layer_norm(z)
         else:
-            z = outputs.last_hidden_state
+            z = outputs[0]
 
         # restoring original mean is likely not correct, but it seems to work well to prevent artifacts that happen otherwise
         batch_multipliers_of_same_length = [x + [1.0] * (75 - len(x)) for x in batch_multipliers]

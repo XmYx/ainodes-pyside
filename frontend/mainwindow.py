@@ -661,6 +661,7 @@ class MainWindow(QMainWindow):
 
 
     def image_preview_signal(self, image, *args, **kwargs):
+        print(f"FUCKFUCKFUKCUFKFUCKCKLKFKU")
         while self.callbackbusy == True:
             time.sleep(0.3)
         self.image = image
@@ -671,6 +672,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def image_preview_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
+        print("callback...")
         self.callbackbusy = True
         x = 0
         y = 0

@@ -112,7 +112,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                 print(f"Batch {batch_index+1} of {args.n_batch}")
 
                 for image in init_array: # iterates the init images
-                    if not gs.stop_all:
+                    if gs.stop_all == False:
                         args.init_image = image
                         if args.hires == True:
                             args.use_init = False
@@ -154,11 +154,13 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                             args.init_sample = None
                             args.strength = 0
                             args.use_init = gs.diffusion.use_init
-                        else:
+                        elif args.hires == False:
                             if args.lowmem == True:
                                 results = generate_lowmem(args, root, step_callback=step_callback)
                             else:
-                                results = generate(args, root, step_callback=step_callback,)
+                                results = generate(args, root, step_callback=step_callback)
+                    print(f"debug save samples: {args.save_samples}")
+                    print(results)
                     if results is not None:
                         for image in results:
                             if args.make_grid:
@@ -172,7 +174,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                                 if gs.system.pathmode == "subfolders":
                                     outfolder = os.path.join(args.outdir, f'{args.timestring}_{sanitize(prompt)[:120]}')
                                 else:
-                                    outfolder = os.path.join(args.outdir, datetime.now().strftime("%Y%m%d"))
+                                    outfolder = os.path.join(args.outdir, f'{args.timestring}_{sanitize(prompt)[:120]}')
                                 os.makedirs(outfolder, exist_ok=True)
                                 outpath = os.path.join(outfolder, filename)
                                 gs.temppath = outpath

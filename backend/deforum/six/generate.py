@@ -543,9 +543,8 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
 
                     if return_sample:
                         results.append(x_samples.clone())
-                    if return_latent == False and return_sample == True:
+                    if return_latent == False:
                         x_samples = torch.clamp((x_samples + 1.0) / 2.0, min=0.0, max=1.0)
-
                         if return_c:
                             results.append(c.clone())
                         if not return_latent:

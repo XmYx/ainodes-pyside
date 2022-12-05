@@ -114,6 +114,7 @@ class Deforum_UI(QObject):
     def run_deforum_six_txt2img(self, progress_callback=None, plotting=True):
         gs.stop_all = False
         id = None
+        index = 0
         if self.parent.canvas.canvas.rectlist != []:
             for i in self.parent.canvas.canvas.rectlist:
                 try:

@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
         self.system_setup = SystemSetup()
         self.sessionparams.add_state_to_history()
         self.update_ui_from_params()
-
+        self.update_ui_from_system_params()
         self.currentFrames = []
         self.renderedFrames = 0
 
@@ -118,7 +118,7 @@ class MainWindow(QMainWindow):
         self.model_download_ui = self.model_download.model_download
         #self.model_chooser = ModelChooser_UI(self)
         self.widgets[self.current_widget].w.dockWidget.setWindowTitle("Parameters")
-        self.system_setup.w.dockWidget.setWindowTitle("Model / Paths")
+        self.system_setup.w.dockWidget.setWindowTitle("System Settings")
         self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
         self.lexicart.w.dockWidget.setWindowTitle("Lexica Art")
         self.krea.w.dockWidget.setWindowTitle("Krea")
@@ -265,6 +265,9 @@ class MainWindow(QMainWindow):
 
         self.thumbs.w.thumbnails.itemClicked.connect(self.select_outpaint_image)
 
+        self.system_setup.w.ok.clicked.connect(self.sessionparams.update_system_params)
+        self.system_setup.w.cancel.clicked.connect(self.update_ui_from_system_params)
+
     def task_switcher(self):
         gs.stop_all = False
         save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(), self.widgets[self.current_widget].w.prompts.toPlainText())
@@ -275,33 +278,6 @@ class MainWindow(QMainWindow):
             self.deforum_ui.deforum_outpaint_thread()
         else:
             self.deforum_six_txt2img_thread()
-
-    def path_setup_temp(self):
-        self.system_setup.w.out_dir.setText(gs.system.out_dir)
-        self.system_setup.w.txt2img_out_dir.setText(gs.system.txt2img_out_dir)
-        self.system_setup.w.img2img_tmp_dir.setText(gs.system.img2img_tmp_dir)
-        self.system_setup.w.img2img_out_dir.setText(gs.system.img2img_out_dir)
-        self.system_setup.w.txt2vid_single_frame_dir.setText(gs.system.txt2vid_single_frame_dir)
-        self.system_setup.w.txt2vid_out_dir.setText(gs.system.txt2vid_out_dir)
-        self.system_setup.w.vid2vid_tmp_dir.setText(gs.system.vid2vid_tmp_dir)
-        self.system_setup.w.vid2vid_single_frame_dir.setText(gs.system.vid2vid_single_frame_dir)
-        self.system_setup.w.vid2vid_out_dir.setText(gs.system.vid2vid_out_dir)
-        self.system_setup.w.adabins_model_file.setText(gs.system.adabins_model_file)
-        self.system_setup.w.midas_model_file.setText(gs.system.midas_model_file)
-        self.system_setup.w.sd_clip_model_file.setText(gs.system.sd_clip_model_file)
-        self.system_setup.w.sd_model_file.setText(gs.system.sd_model_file)
-        self.system_setup.w.v1_inference_yaml_file.setText(gs.system.v1_inference_yaml_file)
-        self.system_setup.w.v2_inference_yaml_file.setText(gs.system.v2_inference_yaml_file)
-        self.system_setup.w.gfpgan_dir.setText(gs.system.gfpgan_dir)
-        self.system_setup.w.realesrgan_dir.setText(gs.system.realesrgan_dir)
-        self.system_setup.w.realesrgan_anime_model_file.setText(gs.system.realesrgan_anime_model_file)
-        self.system_setup.w.ffmpeg_file.setText(gs.system.ffmpeg_file)
-        self.system_setup.w.settingsPath.setText(gs.system.settingsPath)
-        self.system_setup.w.gfpgan_cpu.setChecked(gs.system.gfpgan_cpu)
-        self.system_setup.w.realesrgan_cpu.setChecked(gs.system.realesrgan_cpu)
-        self.system_setup.w.extra_models_cpu.setChecked(gs.system.extra_models_cpu)
-        self.system_setup.w.extra_models_gpu.setChecked(gs.system.extra_models_gpu)
-        self.system_setup.w.gpu.setText(str(gs.system.gpu))
 
     def still_mode(self):
         pass
@@ -458,6 +434,7 @@ class MainWindow(QMainWindow):
                 print(e)
                 continue
 
+    def update_ui_from_system_params(self):
         for key, value in self.sessionparams.system_params.items():
             try:
                 current_widget = self.system_setup.w
@@ -503,6 +480,7 @@ class MainWindow(QMainWindow):
         skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'Help', self)
         skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'Help', self)
 
+
         self.toolbar.addAction(still_mode)
         #self.toolbar.addAction(anim_mode)
         #self.toolbar.addAction(node_mode)
@@ -512,8 +490,11 @@ class MainWindow(QMainWindow):
         self.toolbar.addAction(skip_back)
         self.toolbar.addAction(skip_forward)
 
+
         skip_back.triggered.connect(self.canvas.canvas.skip_back)
         skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
+
+
 
     def create_secondary_toolbar(self):
         self.secondary_toolbar = QToolBar('Outpaint Tools')
@@ -662,6 +643,11 @@ class MainWindow(QMainWindow):
         self.thumbsShow.setEndValue(self.cheight() / 4)
         self.thumbsShow.setEasingCurve(QEasingCurve.Linear)
         self.thumbsShow.start()
+
+
+    def show_system_settings(self):
+        self.system_setup.w.show()
+
 
     def load_last_prompt(self):
         data = ''

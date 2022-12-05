@@ -684,7 +684,7 @@ class DeforumSix:
             anim_args.max_frames = 1
         elif anim_args.animation_mode == 'Video Input':
             args.use_init = True
-
+        args.timestring = datetime.now().strftime("%Y%m%d-%H%M%S")
         # clean up unused memory
         torch_gc()
 

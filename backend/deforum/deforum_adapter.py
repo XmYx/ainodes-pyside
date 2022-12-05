@@ -710,7 +710,7 @@ class DeforumSix:
         fps = 12  # @param {type:"number"}
         # @markdown **Manual Settings**
         use_manual_settings = False  # @param {type:"boolean"}
-        image_path = gs.system.img2img_single_frame_dir  # @param {type:"string"}
+        image_path = gs.system.txt2vid_single_frame_dir  # @param {type:"string"}
         mp4_path = gs.system.txt2vid_out_dir  # @param {type:"string"}
         render_steps = False  # @param {type: 'boolean'}
         path_name_modifier = "x0_pred"  # @param ["x0_pred","x"]

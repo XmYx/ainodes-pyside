@@ -13,7 +13,7 @@ gs.models = {}
 
 def load_gfpgan():
     model_name = 'GFPGANv1.3'
-    model_path = os.path.join(gs.system.gfpgan_dir, gs.system.gfpgan_model_file)
+    model_path = os.path.join(gs.system.gfpgan_model_file)
     if not os.path.isfile(model_path):
         raise Exception("GFPGAN model not found at path " + model_path)
 

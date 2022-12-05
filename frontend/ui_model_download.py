@@ -190,7 +190,7 @@ NSFW: {model_info['item']['nsfw']}
 
         if model_info['item']['type'] == 'TextualInversion':
             model_name = filename + '.pt'
-            model_outpath = os.path.join(gs.system.embeddings_dir, model_name)
+            model_outpath = os.path.join(gs.system.textual_inversion_dir, model_name)
 
         if model_info['item']['type'] == 'Hypernetwork':
             model_name = filename + '.pt'

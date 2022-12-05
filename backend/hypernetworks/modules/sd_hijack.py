@@ -82,7 +82,7 @@ class StableDiffusionModelHijack:
     circular_enabled = False
     clip = None
 
-    embedding_db = backend.hypernetworks.modules.textual_inversion.textual_inversion.EmbeddingDatabase(gs.system.embeddings_dir)
+    embedding_db = backend.hypernetworks.modules.textual_inversion.textual_inversion.EmbeddingDatabase(gs.system.textual_inversion_dir)
 
     def hijack(self, m):
 

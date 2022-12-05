@@ -94,8 +94,8 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.imageLab.w.startUpscale.clicked.connect(self.signal_start_upscale)
         self.imageLab.w.startImgToTxt.clicked.connect(self.signal_start_img_to_txt)
         self.imageLab.w.startWaterMark.clicked.connect(self.signal_start_watermark)
-        self.imageLab.w.selectA.clicked.connect(self.select_model_a)
-        self.imageLab.w.selectB.clicked.connect(self.select_model_b)
+        self.imageLab.w.selectA.clicked.connect(self.selected_model_a)
+        self.imageLab.w.selectB.clicked.connect(self.selected_model_b)
         self.imageLab.w.Merge.clicked.connect(self.start_merge)
         self.imageLab.w.MergeEBL.clicked.connect(self.start_ebl_merge)
         self.imageLab.w.run_aestetic_prediction.clicked.connect(self.aestetic_prediction)
@@ -104,7 +104,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.imageLab.w.alphaNew.valueChanged.connect(self.update_alpha)
         self.imageLab.w.select_interrogation_output_folder.clicked.connect(self.set_interrogation_output_folder)
         self.imageLab.w.run_interrogation.clicked.connect(self.signal_run_interrogation)
-        self.imageLab.w.select_model.clicked.connect(self.select_accel_model)
+        self.imageLab.w.selected_model.clicked.connect(self.select_accel_model)
         self.imageLab.w.run_volta_accel.clicked.connect(self.signal_run_volta_accel)
         self.imageLab.w.upscale_20.clicked.connect(self.run_upscale_20)
 
@@ -263,7 +263,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
         print('Aestetics calculation finished')
 
 
-    def select_model_a(self):
+    def selected_model_a(self):
         self.modela = list(QFileDialog.getOpenFileName())
         print(list(self.modela))
         print(type(self.modela))
@@ -276,7 +276,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
         # Use the selected directory...
         print('selected_directory:', selected_directory)
 
-    def select_model_b(self):
+    def selected_model_b(self):
         self.modelb = list(QFileDialog.getOpenFileName())
         self.imageLab.w.modelBpath.setText(self.modelb[0])
 

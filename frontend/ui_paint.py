@@ -72,11 +72,20 @@ class Rectangle(object):
 
 
     def iterate(self):
-        self.image = self.images[self.render_index]
-        self.render_index = (self.render_index + 1) % len(self.images)
         if self.render_index == len(self.images):
             self.render_index = 0
-        ##print(self.render_index)
+        print(self.render_index)
+        self.image = self.images[self.render_index]
+        self.render_index = (self.render_index + 1) % len(self.images)
+        if self.running == False:
+            self.parent.redraw()
+    def iterate_back(self):
+        if self.render_index == -1:
+            self.render_index = len(self.images)
+        self.image = self.images[self.render_index]
+        self.render_index = (self.render_index - 1) % len(self.images)
+        if self.running == False:
+            self.parent.redraw()
 
 
     def stop(self):
@@ -160,6 +169,20 @@ class Canvas(QGraphicsView):
                 if i.id == self.selected_item:
                     if i.running == True:
                         i.stop()
+    def skip_forward(self):
+        if self.selected_item is not None:
+            for i in self.rectlist:
+                if i.id == self.selected_item:
+                    if i.running == True:
+                        i.stop()
+                    i.iterate()
+    def skip_back(self):
+        if self.selected_item is not None:
+            for i in self.rectlist:
+                if i.id == self.selected_item:
+                    if i.running == True:
+                        i.stop()
+                    i.iterate_back()
     def resize_canvas(self, w, h):
         self.pixmap = QPixmap(w, h)
         self.bgitem.setPixmap(self.pixmap)

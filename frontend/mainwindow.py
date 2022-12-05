@@ -485,14 +485,20 @@ class MainWindow(QMainWindow):
         gallery_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Gallery', self)
         settings_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Settings', self)
         help_mode = QAction(QIcon_from_svg('frontend/icons/help-circle.svg'), 'Help', self)
+        skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'Help', self)
+        skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'Help', self)
 
         self.toolbar.addAction(still_mode)
-        self.toolbar.addAction(anim_mode)
-        self.toolbar.addAction(node_mode)
-        self.toolbar.addAction(gallery_mode)
-        self.toolbar.addAction(settings_mode)
+        #self.toolbar.addAction(anim_mode)
+        #self.toolbar.addAction(node_mode)
+        #self.toolbar.addAction(gallery_mode)
+        #self.toolbar.addAction(settings_mode)
         self.toolbar.addAction(help_mode)
+        self.toolbar.addAction(skip_back)
+        self.toolbar.addAction(skip_forward)
 
+        skip_back.triggered.connect(self.canvas.canvas.skip_back)
+        skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
     def create_secondary_toolbar(self):
         self.secondary_toolbar = QToolBar('Outpaint Tools')
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.secondary_toolbar)
@@ -748,13 +754,14 @@ class MainWindow(QMainWindow):
             for i in self.canvas.canvas.rectlist:
                 if i.id == self.canvas.canvas.render_item:
                     if i.id == self.canvas.canvas.render_item:
-                        x = i.x + w + 20
+                        w = self.canvas.canvas.rectlist[self.canvas.canvas.rectlist.index(i)].w
+                        x = self.canvas.canvas.rectlist[self.canvas.canvas.rectlist.index(i)].x + w + 20
+                        print(f"w, x: {w}, {x}")
                         y = i.y
                         #print(i.x + w, i.y, self.cheight, self.w, self.stopwidth)
                         if x > 3000:
                             x = 0
                             y = self.cheight + 25
-
                             if self.stopwidth == False:
                                 self.stopwidth = True
                         if self.stopwidth == False:

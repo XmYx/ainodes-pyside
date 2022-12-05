@@ -132,7 +132,7 @@ class SessionParams():
         clamp_grad_threshold = self.parent.widgets[widget].w.clamp_grad_threshold.value()
         clamp_start = self.parent.widgets[widget].w.clamp_start.value()
         clamp_stop = self.parent.widgets[widget].w.clamp_stop.value()
-        grad_inject_timing = 1  if self.parent.widgets[widget].w.grad_inject_timing.text() == '' else self.parent.widgets[widget].w.grad_inject_timing.text() #it is a float an int or a list of floats
+        grad_inject_timing = 1 if self.parent.widgets[widget].w.grad_inject_timing.text() == '' else int(self.parent.widgets[widget].w.grad_inject_timing.text()) #it is a float an int or a list of floats
         cond_uncond_sync = self.parent.widgets[widget].w.cond_uncond_sync.isChecked()
         negative_prompts = negative_prompts
         prompts = self.parent.widgets[widget].w.prompts.toPlainText()

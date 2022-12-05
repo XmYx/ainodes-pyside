@@ -36,10 +36,10 @@ class UniControl(QObject):
         self.w.update_hyper.clicked.connect(self.update_hypernetworks_list)
         self.w.update_aesthetics.clicked.connect(self.update_aesthetics_list)
         self.w.stop_dream.clicked.connect(self.stop_all)
-        self.w.select_model.currentIndexChanged.connect(self.select_new_model)
-        self.w.select_vae.currentIndexChanged.connect(self.select_new_vae)
-        self.w.select_hypernetwork.currentIndexChanged.connect(self.select_new_hypernetwork)
-        self.w.select_aesthetic_embedding.currentIndexChanged.connect(self.select_new_aesthetic_embedding)
+        self.w.selected_model.currentIndexChanged.connect(self.select_new_model)
+        self.w.selected_vae.currentIndexChanged.connect(self.select_new_vae)
+        self.w.selected_hypernetwork.currentIndexChanged.connect(self.select_new_hypernetwork)
+        self.w.selected_aesthetic_embedding.currentIndexChanged.connect(self.select_new_aesthetic_embedding)
         self.w.negative_prompts.setVisible(False)
         self.init_anims()
         self.initAnim.start()
@@ -52,48 +52,48 @@ class UniControl(QObject):
     def add_to_model_list(self, models):
         for model in models:
             if '.ckpt' in model:
-                self.w.select_model.addItem(model)
+                self.w.selected_model.addItem(model)
 
     def update_vae_list(self):
-        item_count = self.w.select_vae.count()
+        item_count = self.w.selected_vae.count()
         model_items = []
         current_vae = None
         if item_count > 0:
-            current_text = self.w.select_vae.currentText()
+            current_text = self.w.selected_vae.currentText()
             current_vae = current_text if current_text != '' else None
         files = os.listdir(gs.system.vae_dir)
-        self.w.select_vae.clear()
-        self.w.select_vae.addItem('None')
+        self.w.selected_vae.clear()
+        self.w.selected_vae.addItem('None')
         for model in files:
             if '.ckpt' in model:
-                self.w.select_vae.addItem(model)
-        item_count = self.w.select_vae.count()
+                self.w.selected_vae.addItem(model)
+        item_count = self.w.selected_vae.count()
         model_items = []
         for i in range(0, item_count-1):
-            model_items.append(self.w.select_vae.itemText(i))
+            model_items.append(self.w.selected_vae.itemText(i))
         print(item_count)
         current_vae = 'None' if current_vae == None else current_vae
         if current_vae != 'None':
-            self.w.select_vae.setCurrentIndex(model_items.index(current_vae))
+            self.w.selected_vae.setCurrentIndex(model_items.index(current_vae))
         else:
-            self.w.select_vae.setCurrentIndex(0)
+            self.w.selected_vae.setCurrentIndex(0)
 
     def select_new_vae(self):
-        current_text = self.w.select_vae.currentText()
+        current_text = self.w.selected_vae.currentText()
         new_vae = 'None'
         if current_text != 'None':
             new_vae = os.path.join(gs.system.vae_path, current_text)
         gs.diffusion.selected_vae = new_vae
 
     def select_new_hypernetwork(self):
-        current_text = self.w.select_hypernetwork.currentText()
+        current_text = self.w.selected_hypernetwork.currentText()
         new_hyper_net = 'None'
         if current_text != 'None':
             new_hyper_net = os.path.join(gs.system.hypernetwork_dir, current_text)
         gs.diffusion.selected_hypernetwork = new_hyper_net
 
     def select_new_aesthetic_embedding(self):
-        current_text = self.w.select_aesthetic_embedding.currentText()
+        current_text = self.w.selected_aesthetic_embedding.currentText()
         new_aesthetic_embedding = 'None'
         if current_text != 'None':
             new_aesthetic_embedding = os.path.join(gs.system.aesthetic_gradients, current_text)
@@ -102,50 +102,50 @@ class UniControl(QObject):
 
 
     def update_hypernetworks_list(self):
-        item_count = self.w.select_hypernetwork.count()
+        item_count = self.w.selected_hypernetwork.count()
         model_items = []
         current_hypernet = None
         if item_count > 0:
-            current_text = self.w.select_hypernetwork.currentText()
+            current_text = self.w.selected_hypernetwork.currentText()
             current_hypernet = current_text if current_text != '' else None
         files = os.listdir(gs.system.hypernetwork_dir)
-        self.w.select_hypernetwork.clear()
-        self.w.select_hypernetwork.addItem('None')
+        self.w.selected_hypernetwork.clear()
+        self.w.selected_hypernetwork.addItem('None')
         for model in files:
             if '.pt' in model:
-                self.w.select_hypernetwork.addItem(model)
-        item_count = self.w.select_hypernetwork.count()
+                self.w.selected_hypernetwork.addItem(model)
+        item_count = self.w.selected_hypernetwork.count()
         model_items = []
         for i in range(0, item_count-1):
-            model_items.append(self.w.select_hypernetwork.itemText(i))
+            model_items.append(self.w.selected_hypernetwork.itemText(i))
         current_hypernet = 'None' if current_hypernet == None else current_hypernet
         if current_hypernet != 'None':
-            self.w.select_hypernetwork.setCurrentIndex(model_items.index(current_hypernet))
+            self.w.selected_hypernetwork.setCurrentIndex(model_items.index(current_hypernet))
         else:
-            self.w.select_hypernetwork.setCurrentIndex(0)
+            self.w.selected_hypernetwork.setCurrentIndex(0)
 
     def update_aesthetics_list(self):
-        item_count = self.w.select_aesthetic_embedding.count()
+        item_count = self.w.selected_aesthetic_embedding.count()
         model_items = []
         current_aesthetic_embedding = None
         if item_count > 0:
-            current_text = self.w.select_aesthetic_embedding.currentText()
+            current_text = self.w.selected_aesthetic_embedding.currentText()
             current_aesthetic_embedding = current_text if current_text != '' else None
         files = os.listdir(gs.system.aesthetic_gradients_dir)
-        self.w.select_aesthetic_embedding.clear()
-        self.w.select_aesthetic_embedding.addItem('None')
+        self.w.selected_aesthetic_embedding.clear()
+        self.w.selected_aesthetic_embedding.addItem('None')
         for model in files:
             if '.pt' in model:
-                self.w.select_aesthetic_embedding.addItem(model)
-        item_count = self.w.select_aesthetic_embedding.count()
+                self.w.selected_aesthetic_embedding.addItem(model)
+        item_count = self.w.selected_aesthetic_embedding.count()
         model_items = []
         for i in range(0, item_count-1):
-            model_items.append(self.w.select_aesthetic_embedding.itemText(i))
+            model_items.append(self.w.selected_aesthetic_embedding.itemText(i))
         current_aesthetic_embedding = 'None' if current_aesthetic_embedding == None else current_aesthetic_embedding
         if current_aesthetic_embedding != 'None':
-            self.w.select_aesthetic_embedding.setCurrentIndex(model_items.index(current_aesthetic_embedding))
+            self.w.selected_aesthetic_embedding.setCurrentIndex(model_items.index(current_aesthetic_embedding))
         else:
-            self.w.select_aesthetic_embedding.setCurrentIndex(0)
+            self.w.selected_aesthetic_embedding.setCurrentIndex(0)
 
 
 
@@ -159,40 +159,40 @@ class UniControl(QObject):
             else:
                 target_model = os.path.basename(gs.system.sd_model_file)
 
-        self.w.select_model.clear()
+        self.w.selected_model.clear()
         files = os.listdir(gs.system.models_path)
         files = [f for f in files if os.path.isfile(gs.system.models_path+'/'+f)] #Filtering only the files.
         model_items = files
         for model in files:
             if '.ckpt' in model or 'safetensors' in model:
-                self.w.select_model.addItem(model)
+                self.w.selected_model.addItem(model)
         files = os.listdir(gs.system.custom_models_dir)
         files = [f for f in files if os.path.isfile(gs.system.custom_models_dir + '/' +f)] #Filtering only the files.
         model_items.append(files)
         for model in files:
             if '.ckpt' in model or 'safetensors' in model:
-                self.w.select_model.addItem('custom/' + model)
-        item_count = self.w.select_model.count()
+                self.w.selected_model.addItem('custom/' + model)
+        item_count = self.w.selected_model.count()
         model_items = []
         for i in range(0, item_count-1):
-            model_items.append(self.w.select_model.itemText(i))
+            model_items.append(self.w.selected_model.itemText(i))
         if target_model is None:
             if item_count > 0:
                 print('model from config does not exist therefore we choose first model from the loaded list')
-                self.w.select_model.setCurrentIndex(0)
+                self.w.selected_model.setCurrentIndex(0)
             else:
                 print(f'you have no models installed in {gs.system.models_path} please install any model before you run this software, you can try to download a model using the download feature')
 
         else:
 
             if item_count > 0:
-                self.w.select_model.setCurrentIndex(model_items.index(target_model))
+                self.w.selected_model.setCurrentIndex(model_items.index(target_model))
             else:
-                self.w.select_model.setCurrentIndex(0)
+                self.w.selected_model.setCurrentIndex(0)
 
 
     def select_new_model(self):
-        new_model = os.path.join(gs.system.models_path,self.w.select_model.currentText())
+        new_model = os.path.join(gs.system.models_path,self.w.selected_model.currentText())
         gs.system.sd_model_file = new_model
         if 'sd' in gs.models:
             del gs.models['sd']

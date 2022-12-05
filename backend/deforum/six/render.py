@@ -1,9 +1,12 @@
+import pickle
 import time
 from datetime import datetime
 import os
 import json
 
 import random
+from json import JSONEncoder
+
 from torchvision.utils import make_grid
 from einops import rearrange
 import pandas as pd
@@ -23,7 +26,7 @@ from .display_emu import display
 
 from backend.singleton import singleton
 from ...devices import choose_torch_device
-
+import yaml
 gs = singleton
 def next_seed(args):
     print(type(args.seed))
@@ -229,7 +232,7 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
     if args.save_settings == True:
         with open(settings_filename, "w+", encoding="utf-8") as f:
             s = {**dict(args.__dict__), **dict(anim_args.__dict__)}
-            json.dump(s, f, ensure_ascii=False, indent=4)
+            yaml.dump(s)
         
     # resume from timestring
     if anim_args.resume_from_timestring:

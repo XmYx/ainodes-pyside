@@ -211,7 +211,7 @@ class MainWindow(QMainWindow):
         #self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
         self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_six_txt2img_thread)
 
-        self.widgets[self.current_widget].w.dream.clicked.connect(self.taskswitcher)
+        self.widgets[self.current_widget].w.dream.clicked.connect(self.task_switcher)
         self.widgets[self.current_widget].w.H.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
         self.widgets[self.current_widget].w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
         self.widgets[self.current_widget].w.lucky.clicked.connect(self.show_default)
@@ -263,7 +263,7 @@ class MainWindow(QMainWindow):
         self.model_download.signals.startDownload.connect(self.download_model_thread)
 
         self.thumbs.w.thumbnails.itemClicked.connect(self.select_outpaint_image)
-    def taskswitcher(self):
+    def task_switcher(self):
         gs.stop_all = False
         save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(), self.widgets[self.current_widget].w.prompts.toPlainText())
         if self.widgets[self.current_widget].w.use_inpaint.isChecked() == True:
@@ -350,12 +350,12 @@ class MainWindow(QMainWindow):
     @Slot()
     def use_prompt(self):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
-        self.prompt.w.textEdit.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
+        self.widgets[self.current_widget].w.prompts.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
     @Slot()
     def dream_prompt(self):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
-        self.prompt.w.textEdit.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
-        self.taskSwitcher()
+        self.widgets[self.current_widget].w.prompts.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
+        self.task_switcher()
 
     @Slot()
     def get_lexica_prompts_thread(self):

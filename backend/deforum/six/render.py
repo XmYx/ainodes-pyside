@@ -104,8 +104,8 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
             args.clip_prompt = prompt
 
             all_images = []
-
-            for batch_index in range(args.n_batch):
+            print('args.n_batch', type(args.n_batch))
+            for batch_index in range(int(args.n_batch)):
                 #no display here
                 #if clear_between_batches and batch_index % 32 == 0:
                 #    display.clear_output(wait=True)
@@ -206,7 +206,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                     grid_image.save(os.path.join(args.outdir, filename))
                     display.clear_output(wait=True)
                     display.display(grid_image)
-        return paths
+    return paths
 
 
 def render_animation(args, anim_args, animation_prompts, root, image_callback=None, step_callback=None,

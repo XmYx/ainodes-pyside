@@ -89,7 +89,7 @@ def DeforumArgs(attr):
     log_weighted_subprompts = attr.log_weighted_subprompts #@param {type:"boolean"}
 
     #@markdown **Batch Settings**
-    n_batch = attr.n_batch #@param
+    n_batch = int(attr.n_batch) #@param
     batch_name = attr.batch_name #@param {type:"string"}
     filename_format = attr.filename_format #@param ["{timestring}_{index}_{seed}.png","{timestring}_{index}_{prompt}.png"]
     seed_behavior = attr.seed_behavior #@param ["iter","fixed","random"]
@@ -153,7 +153,7 @@ def DeforumArgs(attr):
     #@markdown **Speed vs VRAM Settings**
     cond_uncond_sync = attr.cond_uncond_sync #@param {type:"boolean"}
 
-    n_samples = attr.n_samples # doesnt do anything
+    n_samples = int(attr.n_samples) # doesnt do anything
     precision = attr.precision
     C = 4
     f = 8

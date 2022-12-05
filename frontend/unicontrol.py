@@ -116,7 +116,7 @@ class UniControl(QObject):
                 self.w.selected_hypernetwork.addItem(model)
         item_count = self.w.selected_hypernetwork.count()
         model_items = []
-        for i in range(0, item_count-1):
+        for i in range(0, item_count):
             model_items.append(self.w.selected_hypernetwork.itemText(i))
         current_hypernet = 'None' if current_hypernet == None else current_hypernet
         if current_hypernet != 'None':
@@ -139,7 +139,7 @@ class UniControl(QObject):
                 self.w.selected_aesthetic_embedding.addItem(model)
         item_count = self.w.selected_aesthetic_embedding.count()
         model_items = []
-        for i in range(0, item_count-1):
+        for i in range(0, item_count):
             model_items.append(self.w.selected_aesthetic_embedding.itemText(i))
         current_aesthetic_embedding = 'None' if current_aesthetic_embedding == None else current_aesthetic_embedding
         if current_aesthetic_embedding != 'None':
@@ -174,7 +174,7 @@ class UniControl(QObject):
                 self.w.selected_model.addItem('custom/' + model)
         item_count = self.w.selected_model.count()
         model_items = []
-        for i in range(0, item_count-1):
+        for i in range(0, item_count):
             model_items.append(self.w.selected_model.itemText(i))
         if target_model is None:
             if item_count > 0:
@@ -520,119 +520,3 @@ class UniControl_UI:
     def __init__(self, parent):
         self.parent = parent
         self.unicontrol = self.parent
-        self.connections()
-
-    def connections(self):
-        return
-
-
-
-        self.unicontrol.w.scale_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.scale.valueChanged.connect(self.update_float_scale_values)
-        self.unicontrol.w.strength_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.strength.valueChanged.connect(self.update_float_scale_values)
-        self.unicontrol.w.ddim_eta_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.ddim_eta.valueChanged.connect(self.update_float_scale_values)
-
-        #self.unicontrol.w.mask_blur_slider.valueChanged.connect(self.update_float_values)
-        #self.unicontrol.w.mask_blur.valueChanged.connect(self.update_float_scale_values)
-        #self.unicontrol.w.reconstruction_blur_slider.valueChanged.connect(self.update_float_values)
-        #self.unicontrol.w.reconstruction_blur.valueChanged.connect(self.update_float_scale_values)
-
-        self.unicontrol.w.gradient_steps_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.gradient_steps.valueChanged.connect(self.update_float_scale_values)
-        self.unicontrol.w.gradient_scale_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.gradient_scale.valueChanged.connect(self.update_float_scale_values)
-
-        self.unicontrol.w.clip_scale_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.clip_scale.valueChanged.connect(self.update_float_scale_values)
-        self.unicontrol.w.aesthetics_scale_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.aesthetics_scale.valueChanged.connect(self.update_float_scale_values)
-
-        self.unicontrol.w.mean_scale_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.mean_scale.valueChanged.connect(self.update_float_scale_values)
-        self.unicontrol.w.var_scale_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.var_scale.valueChanged.connect(self.update_float_scale_values)
-
-        self.unicontrol.w.exposure_scale_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.exposure_scale.valueChanged.connect(self.update_float_scale_values)
-        self.unicontrol.w.exposure_target_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.exposure_target.valueChanged.connect(self.update_float_scale_values)
-
-
-        self.unicontrol.w.colormatch_scale_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.colormatch_scale.valueChanged.connect(self.update_float_scale_values)
-        self.unicontrol.w.ignore_sat_weight_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.ignore_sat_weight.valueChanged.connect(self.update_float_scale_values)
-
-        self.unicontrol.w.cut_pow_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.cut_pow.valueChanged.connect(self.update_float_scale_values)
-        self.unicontrol.w.clamp_grad_threshold_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.clamp_grad_threshold.valueChanged.connect(self.update_float_scale_values)
-
-        self.unicontrol.w.clamp_start_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.clamp_start.valueChanged.connect(self.update_float_scale_values)
-        self.unicontrol.w.clamp_stop_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.clamp_stop.valueChanged.connect(self.update_float_scale_values)
-
-        self.unicontrol.w.mask_contrast_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.mask_contrast.valueChanged.connect(self.update_float_scale_values)
-
-        self.unicontrol.w.mask_brightness_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.mask_brightness.valueChanged.connect(self.update_float_scale_values)
-        self.unicontrol.w.mask_overlay_blur_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.mask_overlay_blur.valueChanged.connect(self.update_float_scale_values)
-
-        self.unicontrol.w.midas_weight_slider.valueChanged.connect(self.update_float_values)
-        self.unicontrol.w.midas_weight.valueChanged.connect(self.update_float_scale_values)
-
-    def update_float_values(self):
-
-        self.unicontrol.w.scale.setValue(self.unicontrol.w.scale_slider.value()/10)
-        self.unicontrol.w.strength.setValue(self.unicontrol.w.strength_slider.value()/100)
-        self.unicontrol.w.ddim_eta.setValue(self.unicontrol.w.ddim_eta_slider.value()/10)
-        #self.unicontrol.w.mask_blur.setValue(self.unicontrol.w.mask_blur_slider.value())
-        #self.unicontrol.w.reconstruction_blur.setValue(self.unicontrol.w.reconstruction_blur_slider.value())
-        self.unicontrol.w.gradient_steps.setValue(self.unicontrol.w.gradient_steps_slider.value())
-        self.unicontrol.w.gradient_scale.setValue(self.unicontrol.w.gradient_scale_slider.value() / 10000000)
-        self.unicontrol.w.clip_scale.setValue(self.unicontrol.w.clip_scale_slider.value()/10)
-        self.unicontrol.w.aesthetics_scale.setValue( self.unicontrol.w.aesthetics_scale_slider.value())
-        self.unicontrol.w.mean_scale.setValue(self.unicontrol.w.mean_scale_slider.value()/10)
-        self.unicontrol.w.var_scale.setValue(self.unicontrol.w.var_scale_slider.value())
-        self.unicontrol.w.exposure_scale.setValue(self.unicontrol.w.exposure_scale_slider.value()/10)
-        self.unicontrol.w.exposure_target.setValue(self.unicontrol.w.exposure_target_slider.value()/10)
-        self.unicontrol.w.colormatch_scale.setValue(self.unicontrol.w.colormatch_scale_slider.value())
-        self.unicontrol.w.ignore_sat_weight.setValue(self.unicontrol.w.ignore_sat_weight_slider.value()/10)
-        self.unicontrol.w.cut_pow.setValue(self.unicontrol.w.cut_pow_slider.value()/1000)
-        self.unicontrol.w.clamp_grad_threshold.setValue(self.unicontrol.w.clamp_grad_threshold_slider.value())
-        self.unicontrol.w.clamp_start.setValue(self.unicontrol.w.clamp_start_slider.value()/10)
-        self.unicontrol.w.clamp_stop.setValue(self.unicontrol.w.clamp_stop_slider.value()/100)
-        self.unicontrol.w.mask_contrast.setValue(self.unicontrol.w.mask_contrast_slider.value())
-        self.unicontrol.w.mask_brightness.setValue(self.unicontrol.w.mask_brightness_slider.value())
-        self.unicontrol.w.mask_overlay_blur.setValue(self.unicontrol.w.mask_overlay_blur_slider.value())
-        self.unicontrol.w.midas_weight.setValue(self.unicontrol.w.midas_weight_slider.value())
-
-    def update_float_scale_values(self):
-        self.unicontrol.w.scale_slider.setValue(int(self.unicontrol.w.scale.value()*10))
-        self.unicontrol.w.strength_slider.setValue(int(self.unicontrol.w.strength.value()*100))
-        self.unicontrol.w.ddim_eta_slider.setValue(int(self.unicontrol.w.ddim_eta.value()*10))
-        #self.unicontrol.w.mask_blur_slider.setValue(int(self.unicontrol.w.mask_blur_slider.value()))
-        #self.unicontrol.w.reconstruction_blur_slider.setValue(int(self.unicontrol.w.reconstruction_blur_slider.value()))
-        self.unicontrol.w.gradient_steps_slider.setValue(int(self.unicontrol.w.gradient_steps.value()))
-        self.unicontrol.w.gradient_scale_slider.setValue(int(self.unicontrol.w.gradient_scale.value() * 10000000))
-        self.unicontrol.w.clip_scale_slider.setValue(int(self.unicontrol.w.clip_scale.value()*10))
-        self.unicontrol.w.aesthetics_scale_slider.setValue( int(self.unicontrol.w.aesthetics_scale.value()))
-        self.unicontrol.w.mean_scale_slider.setValue(int(self.unicontrol.w.mean_scale.value()*10))
-        self.unicontrol.w.var_scale_slider.setValue(int(self.unicontrol.w.var_scale.value()))
-        self.unicontrol.w.exposure_scale_slider.setValue(int(self.unicontrol.w.exposure_scale.value()*10))
-        self.unicontrol.w.exposure_target_slider.setValue(int(self.unicontrol.w.exposure_target.value()*10))
-        self.unicontrol.w.colormatch_scale_slider.setValue(int(self.unicontrol.w.colormatch_scale.value()))
-        self.unicontrol.w.ignore_sat_weight_slider.setValue(int(self.unicontrol.w.ignore_sat_weight.value()*10))
-        self.unicontrol.w.cut_pow_slider.setValue(int(self.unicontrol.w.cut_pow.value()*1000))
-        self.unicontrol.w.clamp_grad_threshold_slider.setValue(int(self.unicontrol.w.clamp_grad_threshold.value()))
-        self.unicontrol.w.clamp_start_slider.setValue(int(self.unicontrol.w.clamp_start.value()*10))
-        self.unicontrol.w.clamp_stop_slider.setValue(int(self.unicontrol.w.clamp_stop.value()*100))
-        self.unicontrol.w.mask_contrast_slider.setValue(int(self.unicontrol.w.mask_contrast.value()))
-        self.unicontrol.w.mask_brightness_slider.setValue(int(self.unicontrol.w.mask_brightness.value()))
-        self.unicontrol.w.mask_overlay_blur_slider.setValue(int(self.unicontrol.w.mask_overlay_blur.value()))
-        self.unicontrol.w.midas_weight_slider.setValue(int(self.unicontrol.w.midas_weight.value()))

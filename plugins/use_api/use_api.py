@@ -70,11 +70,11 @@ class aiNodesPlugin():
         self.layout.addWidget(self.parent.urledit)
         ui_model_chooser.ModelChooser_UI.set_model = self.parent.ui_deforum.set_model
         try:
-            self.parent.path_setup.w.activateModel.disconnect()
+            self.parent.system_setup.w.activateModel.disconnect()
         except:
             pass
-        self.parent.path_setup.w.activateModel.clicked.connect(self.parent.ui_deforum.set_model)
-        #self.parent.path_setup.w.reloadModelList.clicked.connect(self.load_folder_content)
+        self.parent.system_setup.w.activateModel.clicked.connect(self.parent.ui_deforum.set_model)
+        #self.parent.system_setup.w.reloadModelList.clicked.connect(self.load_folder_content)
 
         self.widget.show()
         #self.parent.ui_deforum = Deforum_UI(self.parent)

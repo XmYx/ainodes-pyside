@@ -114,6 +114,9 @@ class Deforum_UI(QObject):
     def run_deforum_six_txt2img(self, progress_callback=None, plotting=True):
         gs.stop_all = False
         id = None
+        self.params = self.parent.sessionparams.update_params()
+        self.parent.params = self.params
+
         if self.parent.canvas.canvas.rectlist != []:
             for i in self.parent.canvas.canvas.rectlist:
                 try:
@@ -122,14 +125,15 @@ class Deforum_UI(QObject):
                     pass
                 id = i.id
                 index = self.parent.canvas.canvas.rectlist.index(i)
+        else:
+            index = 0
+            self.parent.params.advanced = False
         self.parent.canvas.canvas.stop_main_clock()
 
         if id is not None:
             self.parent.canvas.canvas.render_item = id
 
         gs.karras = self.parent.widgets[self.parent.current_widget].w.karras.isChecked()
-        self.params = self.parent.sessionparams.update_params()
-        self.parent.params = self.params
 
         ##print(self.params.translation_x)
         ##print(f"updated parameters to: {params}")
@@ -284,7 +288,6 @@ class Deforum_UI(QObject):
         if params == None:
             params = self.parent.sessionparams.update_params()
             self.parent.params = self.parent.sessionparams.update_params()
-        self.deforum_six = DeforumSix(self)
         self.progress = 0.0
         self.parent.update = 0
         self.onePercent = 100 / params.steps

@@ -510,6 +510,7 @@ class MainWindow(QMainWindow):
         drag_mode = QAction(QIcon_from_svg('frontend/icons/wind.svg'), 'Drag', self)
         add_mode = QAction(QIcon_from_svg('frontend/icons/plus.svg'), 'Outpaint', self)
         inpaint_mode = QAction(QIcon_from_svg('frontend/icons/edit.svg'), 'Inpaint', self)
+        inpaint_current = QAction(QIcon_from_svg('frontend/icons/edit.svg'), 'Inpaint Current Frame', self)
         move_mode = QAction(QIcon_from_svg('frontend/icons/move.svg'), 'Move', self)
         save_canvas = QAction(QIcon_from_svg('frontend/icons/file-text.svg'), 'Save as Json', self)
         save_canvas_png = QAction(QIcon_from_svg('frontend/icons/save.svg'), 'Save as PNG', self)
@@ -523,6 +524,7 @@ class MainWindow(QMainWindow):
         self.secondary_toolbar.addAction(drag_mode)
         self.secondary_toolbar.addAction(add_mode)
         self.secondary_toolbar.addAction(inpaint_mode)
+        self.secondary_toolbar.addAction(inpaint_current)
         self.secondary_toolbar.addAction(move_mode)
         self.secondary_toolbar.addSeparator()
         self.secondary_toolbar.addAction(save_canvas)
@@ -538,6 +540,7 @@ class MainWindow(QMainWindow):
         drag_mode.triggered.connect(self.canvas.canvas.drag_mode)
         add_mode.triggered.connect(self.canvas.canvas.add_mode)
         inpaint_mode.triggered.connect(self.canvas.canvas.inpaint_mode)
+        inpaint_current.triggered.connect(self.canvas.canvas.inpaint_current_frame)
         move_mode.triggered.connect(self.canvas.canvas.move_mode)
         save_canvas.triggered.connect(self.canvas.canvas.save_rects_as_json)
         load_canvas.triggered.connect(self.canvas.canvas.load_rects_from_json)
@@ -688,7 +691,6 @@ class MainWindow(QMainWindow):
         img = self.image
         if self.params.advanced == True:
             if self.canvas.canvas.rectlist != []:
-
                 if img is not None:
                     if self.canvas.canvas.rectlist[self.render_index].images is not None:
                         templist = self.canvas.canvas.rectlist[self.render_index].images
@@ -697,13 +699,19 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.rectlist[self.render_index].PILImage = img
                     qimage = ImageQt(img.convert("RGBA"))
                     pixmap = QPixmap.fromImage(qimage)
+                    print(self.canvas.canvas.rectlist[self.render_index].render_index)
                     self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap), f"{self.canvas.canvas.rectlist[self.render_index].render_index}"))
-                    templist.append(qimage)
+
+                    if self.canvas.canvas.anim_inpaint == True:
+                        templist[self.canvas.canvas.rectlist[self.render_index].render_index] = qimage
+                        self.canvas.canvas.anim_inpaint = False
+                    elif self.canvas.canvas.anim_inpaint == False:
+                        templist.append(qimage)
+                        if self.canvas.canvas.rectlist[self.render_index].render_index == None:
+                            self.canvas.canvas.rectlist[self.render_index].render_index = 0
+                        else:
+                            self.canvas.canvas.rectlist[self.render_index].render_index += 1
                     self.canvas.canvas.rectlist[self.render_index].images = templist
-                    if self.canvas.canvas.rectlist[self.render_index].render_index == None:
-                        self.canvas.canvas.rectlist[self.render_index].render_index = 0
-                    else:
-                        self.canvas.canvas.rectlist[self.render_index].render_index += 1
                     self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
                     self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
                     self.canvas.canvas.rectlist[self.render_index].img_path = gs.temppath

@@ -646,7 +646,7 @@ class MainWindow(QMainWindow):
         except:
             pass
         gs.diffusion.prompt = data
-        #self.prompt.w.textEdit.setHtml(data)
+        self.widgets[self.current_widget].w.prompts.setHtml(data)
 
     def deforum_six_txt2img_thread(self):
         self.update = 0
@@ -661,34 +661,22 @@ class MainWindow(QMainWindow):
 
 
     def image_preview_signal(self, image, *args, **kwargs):
-        print(f"FUCKFUCKFUKCUFKFUCKCKLKFKU")
         while self.callbackbusy == True:
             time.sleep(0.3)
         self.image = image
         self.deforum_ui.signals.add_image_to_thumbnail_signal.emit(image)
         self.deforum_ui.signals.txt2img_image_cb.emit()
-        #self.currentFrames.append(image)
-        #self.renderedFrames += 1
 
     @Slot()
     def image_preview_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
-        print("callback...")
         self.callbackbusy = True
         x = 0
         y = 0
         img = self.image
-        #print(self.params.advanced)
-        #print(f"rectlist: {self.canvas.canvas.rectlist}")
-        #print(self.canvas.canvas.rectlist)
         if self.params.advanced == True:
-            #print("advanced callback")
             if self.canvas.canvas.rectlist != []:
 
                 if img is not None:
-                    #print(f"Rendering image into index: {self.render_index}")
-                    #for items in self.canvas.canvas.rectlist:
-                    #    if items.id == self.canvas.canvas.render_item:
-                            #if items.id == self.canvas.canvas.render_item:
                     if self.canvas.canvas.rectlist[self.render_index].images is not None:
                         templist = self.canvas.canvas.rectlist[self.render_index].images
                     else:
@@ -841,8 +829,8 @@ class MainWindow(QMainWindow):
                   "strength": self.widgets[self.current_widget].w.strength.value(),
                   "scale":self.widgets[self.current_widget].w.scale.value(),
                   "mask_blur":int(self.widgets[self.current_widget].w.mask_blur.value()),
-                  "reconstruction_blur":int(self.widgets[self.current_widget].w.reconstruction_blur.value()),
-                  "use_inpaint":self.widgets[self.current_widget].w.use_inpaint.isChecked(),
+                  "reconstruction_blur":int(self.widgets[self.current_widget].w.recons_blur.value()),
+                  "with_inpaint":self.widgets[self.current_widget].w.with_inpaint.isChecked(),
                   "mask_offset":self.widgets[self.current_widget].w.mask_offset.value(),
                   "steps":self.widgets[self.current_widget].w.steps.value(),
                   "H":self.widgets[self.current_widget].w.H.value(),

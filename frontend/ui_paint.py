@@ -699,7 +699,7 @@ class Canvas(QGraphicsView):
         self.render_item = self.selected_item
         self.outpaintsource = "outpaint.png"
         self.busy = False
-        self.parent.parent.widgets[self.parent.parent.current_widget].w.reconstruction_blur.setValue(0)
+        self.parent.parent.widgets[self.parent.parent.current_widget].w.recons_blur.setValue(0)
         self.signals.outpaint_signal.emit()
 
 

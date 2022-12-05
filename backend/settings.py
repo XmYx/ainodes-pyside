@@ -54,6 +54,7 @@ def save_settings_json():
 
 
 
+
 def load_windows_settings():
     filename = "configs/ainodes/windows_views.json"
     if path.exists(filename):

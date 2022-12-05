@@ -1,6 +1,6 @@
 import random
 from types import SimpleNamespace
-
+from backend.settings import save_settings_json
 from backend.singleton import singleton
 
 gs = singleton
@@ -66,8 +66,15 @@ class SessionParams():
                     self.system_params[key] = getattr(current_widget, key).text()
                 elif 'QCheckBox' in type:
                     self.system_params[key] = getattr(current_widget, key).isChecked()
+                elif 'QComboBox' in type:
+                    self.system_params[key] = getattr(current_widget, key).currentText()
             except Exception as e:
                 continue
+            try:
+                gs.system.__dict__[key] = value
+            except:
+                pass
+        save_settings_json()
 
     def update_params(self):
         mode = ""

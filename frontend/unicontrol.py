@@ -116,7 +116,7 @@ class UniControl(QObject):
                 self.w.selected_hypernetwork.addItem(model)
         item_count = self.w.selected_hypernetwork.count()
         model_items = []
-        for i in range(0, item_count-1):
+        for i in range(0, item_count):
             model_items.append(self.w.selected_hypernetwork.itemText(i))
         current_hypernet = 'None' if current_hypernet == None else current_hypernet
         if current_hypernet != 'None':
@@ -139,7 +139,7 @@ class UniControl(QObject):
                 self.w.selected_aesthetic_embedding.addItem(model)
         item_count = self.w.selected_aesthetic_embedding.count()
         model_items = []
-        for i in range(0, item_count-1):
+        for i in range(0, item_count):
             model_items.append(self.w.selected_aesthetic_embedding.itemText(i))
         current_aesthetic_embedding = 'None' if current_aesthetic_embedding == None else current_aesthetic_embedding
         if current_aesthetic_embedding != 'None':
@@ -174,7 +174,7 @@ class UniControl(QObject):
                 self.w.selected_model.addItem('custom/' + model)
         item_count = self.w.selected_model.count()
         model_items = []
-        for i in range(0, item_count-1):
+        for i in range(0, item_count):
             model_items.append(self.w.selected_model.itemText(i))
         if target_model is None:
             if item_count > 0:

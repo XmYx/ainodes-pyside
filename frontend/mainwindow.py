@@ -431,7 +431,7 @@ class MainWindow(QMainWindow):
                         getattr(self.widgets[self.current_widget].w, key).setCheckState(QtCore.Qt.Checked)
 
             except Exception as e:
-                print(e)
+                print('setting still to be fixed ', e)
                 continue
 
     def update_ui_from_system_params(self):
@@ -447,6 +447,15 @@ class MainWindow(QMainWindow):
                 elif 'QCheckBox' in type:
                     if value == True:
                         getattr(current_widget, key).setCheckState(QtCore.Qt.Checked)
+                elif 'QComboBox' in type:
+                    item_count = getattr(current_widget, key).count()
+                    items = []
+                    for i in range(0, item_count):
+                       items.append(getattr(current_widget, key).itemText(i))
+                    if item_count > 0:
+                        getattr(current_widget, key).setCurrentIndex(items.index(value))
+                    else:
+                        getattr(current_widget, key).setCurrentIndex(0)
 
             except Exception as e:
                 continue

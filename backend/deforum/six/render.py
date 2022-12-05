@@ -93,7 +93,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
     clear_between_batches = args.n_batch >= 32
     fpW = args.W
     fpH = args.H
-    args.timestring = datetime.now().strftime("%Y%m%d-%H%M%S")
+
     paths = []
     for iprompt, prompt in enumerate(prompts):
         #prevent empty prompts from gernerating images
@@ -232,7 +232,7 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
     if args.save_settings == True:
         with open(settings_filename, "w+", encoding="utf-8") as f:
             s = {**dict(args.__dict__), **dict(anim_args.__dict__)}
-            yaml.dump(s)
+            yaml.dump(s, f)
         
     # resume from timestring
     if anim_args.resume_from_timestring:

@@ -188,7 +188,7 @@ class MainWindow(QMainWindow):
         os.makedirs(gs.system.custom_models_dir, exist_ok=True)
         os.makedirs(gs.system.default_config_yaml_dir, exist_ok=True)
         os.makedirs(gs.system.vae_dir, exist_ok=True)
-        os.makedirs(gs.system.hypernetwork_base_dir, exist_ok=True)
+        os.makedirs(gs.system.textual_inversion_dir, exist_ok=True)
         os.makedirs(gs.system.hypernetwork_dir, exist_ok=True)
         os.makedirs(gs.system.aesthetic_gradients_dir, exist_ok=True)
 

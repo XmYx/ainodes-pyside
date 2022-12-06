@@ -95,10 +95,13 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
     fpH = args.H
 
     paths = []
+
+
     for iprompt, prompt in enumerate(prompts):
-        #prevent empty prompts from gernerating images
-        #if gs.stop_all:
-        #    return paths
+        print(prompt)
+
+        if gs.stop_all:
+            return paths
         if prompt != '':
             args.prompt = prompt
             args.clip_prompt = prompt

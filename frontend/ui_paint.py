@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 from datetime import datetime
@@ -306,11 +307,13 @@ class Canvas(QGraphicsView):
         rect = {}
         uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
         prompt = ""
-        rect[uid] = Rectangle(self, prompt, self.scene.scenePos.x() - self.w / 2, self.scene.scenePos.y() - self.h / 2, self.w, self.h, uid)
+        if dummy == False:
+            rect[uid] = Rectangle(self, prompt, self.scene.scenePos.x() - self.w / 2, self.scene.scenePos.y() - self.h / 2, self.w, self.h, uid, params=self.parent.parent.sessionparams.update_params())
+        else:
+            rect[uid] = Rectangle(self, prompt, 0, 0, 1, 1, 1)
         #rect[uid].signals.set_new_signal.connect(self.set_new)
         self.selected_item = uid
         self.rectlist.append(rect[uid])
-
         if dummy == True:
             self.rectlist.remove(rect[uid])
 
@@ -689,8 +692,8 @@ class Canvas(QGraphicsView):
 
         if matchfound == False:
             if params == None:
-                params = self.parent.parent.params
-            rect[uid] = Rectangle(self, prompt, x, y, self.w, self.h, uid, order = order, image=image, render_index=None, params=params)
+                params = self.parent.parent.sessionparams.update_params()
+            rect[uid] = Rectangle(self, prompt, x, y, self.w, self.h, uid, order = order, image=image, render_index=None, params=copy.deepcopy(params))
             print(f"adding rect with seed {params.seed}")
             self.selected_item = uid
             if self.rectlist == []:
@@ -1189,7 +1192,7 @@ class Canvas(QGraphicsView):
         elif e.button() == Qt.RightButton:
             self.mode = "inpaint"
             self.setDragMode(QGraphicsView.DragMode.NoDrag)
-            id = self.addrect_atpos(x=self.scene.scenePos.x() - self.w / 2, y=self.scene.scenePos.y() - self.h / 2)
+            id = self.addrect_atpos(x=self.scene.scenePos.x() - self.w / 2, y=self.scene.scenePos.y() - self.h / 2, params=copy.deepcopy(self.parent.parent.params))
             self.reusable_inpaint(id)
 
     def inpaint_mouseMoveEvent(self, e):

@@ -28,6 +28,7 @@ from .display_emu import display
 from backend.singleton import singleton
 from ...devices import choose_torch_device
 import yaml
+import copy
 
 gs = singleton
 
@@ -54,7 +55,12 @@ def save_settings(args, outfolder, prompt, index):
         filename = os.path.join(outfolder, f"{args.timestring}_{index:05}_{sanitize(prompt)[:160]}_settings.txt")
         args.actual_prompt = prompt
         with open(filename, "w+", encoding="utf-8") as f:
-            json.dump(dict(args.__dict__), f, ensure_ascii=False, indent=4)
+            print(args.__dict__)
+            to_dump = copy.deepcopy(args)
+            del to_dump.clamp_schedule
+            del to_dump.prompts
+            del to_dump.axis
+            json.dump(dict(to_dump.__dict__), f, ensure_ascii=False, indent=4)
         del args.actual_prompt
 
 
@@ -194,7 +200,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                 grid_image.save(os.path.join(args.outdir, filename))
                 display.clear_output(wait=True)
                 display.display(grid_image)
-        return paths
+    return paths
 
 
 def render_animation(args, anim_args, animation_prompts, root, image_callback=None, step_callback=None,

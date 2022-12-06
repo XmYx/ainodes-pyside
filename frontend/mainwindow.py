@@ -508,6 +508,7 @@ class MainWindow(QMainWindow):
         help_mode = QAction(QIcon_from_svg('frontend/icons/help-circle.svg'), 'Help', self)
         skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'Help', self)
         skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'Help', self)
+        test_mode = QAction(QIcon_from_svg('frontend/icons/alert-octagon.svg'), 'Run Self Test - It will take a while', self)
 
 
         self.toolbar.addAction(still_mode)
@@ -522,7 +523,7 @@ class MainWindow(QMainWindow):
 
         skip_back.triggered.connect(self.canvas.canvas.skip_back)
         skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
-
+        test_mode.triggered.connect(self.selftest)
 
 
     def create_secondary_toolbar(self):

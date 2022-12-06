@@ -53,15 +53,15 @@ def save_settings(args, outfolder, prompt, index):
     # save settings for the batch
     if args.save_settings:
         filename = os.path.join(outfolder, f"{args.timestring}_{index:05}_{sanitize(prompt)[:160]}_settings.txt")
-        args.actual_prompt = prompt
-        with open(filename, "w+", encoding="utf-8") as f:
-            print(args.__dict__)
-            to_dump = copy.deepcopy(args)
-            del to_dump.clamp_schedule
-            del to_dump.prompts
-            del to_dump.axis
-            json.dump(dict(to_dump.__dict__), f, ensure_ascii=False, indent=4)
-        del args.actual_prompt
+        output_data = copy.deepcopy(args.__dict__)
+        output_data['actual_prompt'] = prompt
+        del output_data['axis']
+        del output_data['prompts'] # we dont need to have the full list of prompts here, we just need the actual prompt used to create that image
+        json_data = json.dumps(output_data, default=lambda o: o.__dict__,  ensure_ascii=False, indent=4)
+        f = open(filename, "w", encoding="utf-8")
+        f.write(json_data)
+        f.close()
+        del output_data
 
 
 def render_image_batch(args, prompts, root, image_callback=None, step_callback=None):

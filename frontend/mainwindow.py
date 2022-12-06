@@ -179,6 +179,22 @@ class MainWindow(QMainWindow):
         ], dtype=torch.float, device='cuda')
 
         self.params = self.sessionparams.update_params()
+    def selftest(self):  #TODO Lets extend this function with everything we have and has to work
+        self.params = self.sessionparams.update_params()
+        gs.stop_all = False
+        self.task_switcher()
+        self.params.max_frames = 5
+        self.task_switcher()
+        self.params.max_frames = 1
+        self.add_next_rect()
+        self.params.advanced = True
+        self.task_switcher()
+        self.params.advanced = False
+        self.task_switcher()
+        self.widgets[self.current_widget].w.with_inpaint.setCheckState(Qt.Checked)
+        self.canvas.canvas.addrect_atpos(prompt="", x=1750, y=0, w=512, h=512, params=copy.deepcopy(self.params))
+        self.task_switcher()
+
 
     def create_sys_folders(self):
         os.makedirs(gs.system.out_dir, exist_ok=True)
@@ -892,8 +908,7 @@ class MainWindow(QMainWindow):
     def create_params(self, uid=None):
         for i in self.canvas.canvas.rectlist:
             if i.id == uid:
-                params = self.prep_rect_params()
-                i.params = params
+                i.params = copy.deepcopy(self.params)
 
 
     def get_params(self):
@@ -1206,8 +1221,6 @@ class MainWindow(QMainWindow):
         while self.canvas.canvas.busy == True:
             time.sleep(0.25)
             self.sleepytime += 0.25
-        #params = self.canvas.canvas.rectlist[x].params
-        print(self.canvas.canvas.rectlist[self.render_index].params.seed)
         self.deforum_ui.run_deforum_outpaint(self.canvas.canvas.rectlist[x].params)
         while self.callbackbusy == True:
             time.sleep(0.25)

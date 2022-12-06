@@ -185,7 +185,7 @@ NSFW: {model_info['item']['nsfw']}
             else:
                 model_name = filename + '.safetensors'
 
-            model_outpath = os.path.join(gs.system.customModels, model_name)
+            model_outpath = os.path.join(gs.system.custom_models_dir, model_name)
 
 
         if model_info['item']['type'] == 'TextualInversion':

@@ -1394,13 +1394,14 @@ class Canvas(QGraphicsView):
                 self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Checked)
             self.rubberBand.hide()
             if self.startpoint is not None:
-                if event.pos().x() > self.startpoint.x() or event.pos().y() > self.startpoint.y():
-                    print("normal case")
-                    x = self.startpoint.x()
-                    y = self.startpoint.y()
-                else:
-                    x = event.pos().x()
-                    y = event.pos().y()
+                #if event.pos().x() > self.startpoint.x() or event.pos().y() > self.startpoint.y():
+                #    print("normal case")
+                x = self.startpoint.x()
+                y = self.startpoint.y()
+                #else:
+                #    pass
+                    #x = event.pos().x()
+                    #y = event.pos().y()
             absw = abs(self.scene.scenePos.x() - x)
             absh = abs(self.scene.scenePos.y() - y)
             w = self.scene.scenePos.x() - x

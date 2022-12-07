@@ -130,6 +130,7 @@ class MyProxyWidget(QGraphicsProxyWidget):
         self.moving = False
         self.uid = self.parent.uid
         self.widget.loadbutton.clicked.connect(self.load_img)
+        self.subwidgets = {}
     def proxy_task(self):
         #print(self.parent.parent.widgets['unicontrol'].w.prompts.setText('11123'))
         text = self.widget.prompts.toPlainText()
@@ -1393,6 +1394,8 @@ class Canvas(QGraphicsView):
     def rubberband_mousePressEvent(self, event):
         self.parent.parent.widgets[self.parent.parent.current_widget].w.hires.setCheckState(Qt.CheckState.Unchecked)
         self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Unchecked)
+        self.parent.parent.params.with_inpaint = False
+
         #self.hoverCheck()
         #if self.hover_item is not None:
         #    self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Checked)
@@ -1484,7 +1487,7 @@ class Canvas(QGraphicsView):
             self.proxies[uid].widget.dreambutton.clicked.connect(self.proxies[uid].proxy_task)
             self.drag_mode()
             self.draw_rects()
-            if self.parent.parent.widgets['unicontrol'].w.with_inpaint.isChecked() == True:
+            if self.parent.parent.params.with_inpaint == True:
                 w, h = map(lambda x: x - x % 64, (w, h))
                 self.rectlist[len(self.rectlist) - 1].w = w
                 self.rectlist[len(self.rectlist) - 1].h = h
@@ -1497,8 +1500,6 @@ class Canvas(QGraphicsView):
         self.scene.removeItem(self.proxies[self.uid])
 
     def check_for_frame_overlap(self):
-        self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(
-            Qt.CheckState.Unchecked)
         for x in self.rectlist:
             if x.id == self.selected_item:
                 # x.image = None
@@ -1507,8 +1508,8 @@ class Canvas(QGraphicsView):
                     if x.y >= i.y - i.h and x.x >= i.x - i.w:
                         if x.y <= i.y + i.h and x.x <= i.x + i.w:
                             if i.id != x.id:
-                                self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(
-                                    Qt.CheckState.Checked)
+
+                                self.parent.parent.params.with_inpaint = True
         print(f"inpaint: {self.parent.parent.widgets['unicontrol'].w.with_inpaint.isChecked()}")
 
     def proxy_task(self):

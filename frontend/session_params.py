@@ -169,7 +169,10 @@ class SessionParams():
         elif self.parent.widgets[widget].w.grad_inject_timing.text() == 'None':
             grad_inject_timing = None
         else:
-            grad_inject_timing = int(self.parent.widgets[widget].w.grad_inject_timing.text())
+            try:
+                grad_inject_timing = int(self.parent.widgets[widget].w.grad_inject_timing.text())
+            except:
+                grad_inject_timing = 1
 
         #grad_inject_timing = 1 if self.parent.widgets[widget].w.grad_inject_timing.text() == '' else self.parent.widgets[widget].w.grad_inject_timing.text() #it is a float an int or a list of floats
         #grad_inject_timing = None if grad_inject_timing == 'None' else grad_inject_timing

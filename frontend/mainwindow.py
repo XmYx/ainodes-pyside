@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw
 from PIL.ImageQt import ImageQt, QImage
 from PySide6.QtCore import QFile, QIODevice, QEasingCurve, Slot, QRect, QThreadPool, QDir, Signal, QObject, QPoint
 from PySide6.QtWidgets import QMainWindow, QToolBar, QPushButton, QGraphicsColorizeEffect, QListWidgetItem, QFileDialog, \
-    QLabel, QSlider, QFrame, QDockWidget, QWidget
+    QLabel, QSlider, QFrame, QDockWidget, QWidget, QGraphicsOpacityEffect
 from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt
 from PySide6 import QtCore, QtWidgets, QtGui
 from backend.deforum.six.animation import check_is_number
@@ -29,7 +29,7 @@ from frontend import plugin_loader
 #from frontend.ui_model_chooser import ModelChooser_UI
 
 from backend.prompt_ai.prompt_gen import AiPrompt
-from frontend.ui_paint import PaintUI, spiralOrder, random_path
+from frontend.ui_paint import PaintUI, spiralOrder, random_path, MyProxyWidget
 from frontend.ui_classes import Thumbnails, SystemSetup, ThumbsUI, AnimKeyEditor
 from frontend.unicontrol import UniControl
 
@@ -69,19 +69,18 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.signals = Callbacks()
-
         self.thumbs = ThumbsUI()
-        self.canvas = PaintUI(self)
-        self.setCentralWidget(self.canvas)
-        self.setWindowTitle("aiNodes - Still Mode")
         self.timeline = Timeline(self)
         self.animKeyEditor = AnimKeyEditor()
-
-        self.resize(1280, 800)
-        
         self.widgets = {}
         self.current_widget = 'unicontrol'
         self.widgets[self.current_widget] = UniControl(self)
+        self.canvas = PaintUI(self)
+        self.setCentralWidget(self.canvas)
+        self.setWindowTitle("aiNodes - Still Mode")
+
+        self.resize(1280, 800)
+        
         self.load_last_prompt()
 
         self.sessionparams = SessionParams(self)
@@ -96,6 +95,7 @@ class MainWindow(QMainWindow):
         self.create_secondary_toolbar()
         self.system_setup = SystemSetup()
         self.sessionparams.add_state_to_history()
+        self.params = self.sessionparams.update_params()
         self.update_ui_from_params()
         self.update_ui_from_system_params()
         self.currentFrames = []
@@ -121,37 +121,11 @@ class MainWindow(QMainWindow):
         self.model_download = ModelDownload(self)
         self.model_download_ui = self.model_download.model_download
         #self.model_chooser = ModelChooser_UI(self)
-        self.widgets[self.current_widget].w.dockWidget.setWindowTitle("Parameters")
-        self.system_setup.w.dockWidget.setWindowTitle("System Settings")
-        self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
-        self.lexicart.w.dockWidget.setWindowTitle("Lexica Art")
-        self.krea.w.dockWidget.setWindowTitle("Krea")
-        self.prompt_fetcher.w.dockWidget.setWindowTitle("Prompt Fetcher")
-        self.model_download_ui.w.dockWidget.setWindowTitle("Model Download")
-        self.timeline.setWindowTitle("Timeline")
-        self.thumbs.w.dockWidget.setWindowTitle("History")
 
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.model_download_ui.w.dockWidget)
-        self.model_download_ui.w.dockWidget.setMaximumHeight(self.height())
-
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.image_lab_ui.w.dockWidget)
-        self.image_lab_ui.w.dockWidget.setMaximumHeight(self.height())
-        self.tabifyDockWidget(self.model_download_ui.w.dockWidget, self.image_lab_ui.w.dockWidget)
-
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.system_setup.w.dockWidget)
-        self.system_setup.w.dockWidget.setMaximumHeight(self.height())
-        self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.system_setup.w.dockWidget)
-
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.lexicart.w.dockWidget)
-        self.lexicart.w.dockWidget.setMaximumHeight(self.height())
-        self.tabifyDockWidget(self.system_setup.w.dockWidget, self.lexicart.w.dockWidget)
-
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.krea.w.dockWidget)
-        self.krea.w.dockWidget.setMaximumHeight(self.height())
-        self.tabifyDockWidget(self.lexicart.w.dockWidget, self.krea.w.dockWidget)
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.prompt_fetcher.w.dockWidget)
-        self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
-        self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.widgets[self.current_widget].w.dockWidget)
+        self.setup_widget_names()
+        self.add_dock_widgets()
+        #self.add_proxy_widgets()
+        self.canvas.canvas.select_mode()
 
         self.hide_default()
         self.mode = 'txt2img'
@@ -179,6 +153,48 @@ class MainWindow(QMainWindow):
         ], dtype=torch.float, device='cuda')
 
         self.params = self.sessionparams.update_params()
+
+
+    def setup_widget_names(self):
+        self.widgets[self.current_widget].w.dockWidget.setWindowTitle("Parameters")
+        self.system_setup.w.dockWidget.setWindowTitle("System Settings")
+        self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
+        self.lexicart.w.dockWidget.setWindowTitle("Lexica Art")
+        self.krea.w.dockWidget.setWindowTitle("Krea")
+        self.prompt_fetcher.w.dockWidget.setWindowTitle("Prompt Fetcher")
+        self.model_download_ui.w.dockWidget.setWindowTitle("Model Download")
+        self.timeline.setWindowTitle("Timeline")
+        self.thumbs.w.dockWidget.setWindowTitle("History")
+    def add_proxy_widgets(self):
+
+        self.proxy = MyProxyWidget(self.widgets[self.current_widget].w)
+        self.canvas.canvas.scene.addItem(self.proxy)
+        self.proxy.setFocusPolicy(Qt.StrongFocus)
+        #self.widgets[self.current_widget].w.dream.clicked.connect(self.task_switcher)
+
+
+    def add_dock_widgets(self):
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.model_download_ui.w.dockWidget)
+        self.model_download_ui.w.dockWidget.setMaximumHeight(self.height())
+
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.image_lab_ui.w.dockWidget)
+        self.image_lab_ui.w.dockWidget.setMaximumHeight(self.height())
+        self.tabifyDockWidget(self.model_download_ui.w.dockWidget, self.image_lab_ui.w.dockWidget)
+
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.system_setup.w.dockWidget)
+        self.system_setup.w.dockWidget.setMaximumHeight(self.height())
+        self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.system_setup.w.dockWidget)
+
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.lexicart.w.dockWidget)
+        self.lexicart.w.dockWidget.setMaximumHeight(self.height())
+        self.tabifyDockWidget(self.system_setup.w.dockWidget, self.lexicart.w.dockWidget)
+
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.krea.w.dockWidget)
+        self.krea.w.dockWidget.setMaximumHeight(self.height())
+        self.tabifyDockWidget(self.lexicart.w.dockWidget, self.krea.w.dockWidget)
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.prompt_fetcher.w.dockWidget)
+        self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
+        self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.widgets[self.current_widget].w.dockWidget)
     def selftest(self):  #TODO Lets extend this function with everything we have and has to work
 
         self.canvas.canvas.reset
@@ -291,6 +307,7 @@ class MainWindow(QMainWindow):
         self.system_setup.w.cancel.clicked.connect(self.update_ui_from_system_params)
 
     def task_switcher(self):
+        print("taskswitcher")
         gs.stop_all = False
         save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(), self.widgets[self.current_widget].w.prompts.toPlainText())
         if self.widgets[self.current_widget].w.with_inpaint.isChecked() == True:
@@ -437,8 +454,7 @@ class MainWindow(QMainWindow):
 
 
     def update_ui_from_params(self):
-
-        for key, value in self.sessionparams.params.items():
+        for key, value in self.params.__dict__.items():
             try:
                 #We have to add check for Animation Mode as thats a radio checkbox with values 'anim2d', 'anim3d', 'animVid'
                 #add colormatch_image (it will be with a fancy preview)
@@ -446,6 +462,7 @@ class MainWindow(QMainWindow):
 
                 if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
                     getattr(self.widgets[self.current_widget].w, key).setValue(value)
+                    print(value)
                 elif  'QTextEdit' in type or 'QLineEdit' in type:
                     getattr(self.widgets[self.current_widget].w, key).setText(str(value))
                 elif 'QCheckBox' in type:
@@ -506,7 +523,7 @@ class MainWindow(QMainWindow):
         anim_mode = QAction(QIcon_from_svg('frontend/icons/film.svg'), 'Anim', self)
         node_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Nodes', self)
         gallery_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Gallery', self)
-        settings_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Settings', self)
+        settings_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Rubberband', self)
         help_mode = QAction(QIcon_from_svg('frontend/icons/help-circle.svg'), 'Help', self)
         skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'Help', self)
         skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'Help', self)
@@ -517,7 +534,7 @@ class MainWindow(QMainWindow):
         #self.toolbar.addAction(anim_mode)
         #self.toolbar.addAction(node_mode)
         #self.toolbar.addAction(gallery_mode)
-        #self.toolbar.addAction(settings_mode)
+        self.toolbar.addAction(settings_mode)
         self.toolbar.addAction(help_mode)
         self.toolbar.addAction(skip_back)
         self.toolbar.addAction(skip_forward)
@@ -527,6 +544,7 @@ class MainWindow(QMainWindow):
         skip_back.triggered.connect(self.canvas.canvas.skip_back)
         skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
         test_mode.triggered.connect(self.selftest)
+        settings_mode.triggered.connect(self.canvas.canvas.rubberband_mode)
 
 
     def create_secondary_toolbar(self):
@@ -992,7 +1010,7 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.newimage = True
         self.canvas.canvas.selected_item = None
         self.canvas.canvas.update()
-        #self.canvas.canvas.draw_rects()
+        self.canvas.canvas.draw_rects()
         self.thumbs.w.thumbnails.clear()
 
 

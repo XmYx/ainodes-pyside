@@ -126,6 +126,14 @@ class LexicArt(QObject):
             self.w.results.setGridSize(QSize(size, size))
             self.w.results.setIconSize(QSize(size, size))
 
+class SimplePrompt(QObject):
+
+    def __init__(self, *args, **kwargs):
+        loader = QtUiTools.QUiLoader()
+        file = QFile("frontend/ui/simple_prompt.ui")
+        file.open(QFile.ReadOnly)
+        self.w = loader.load(file)
+        file.close()
 class Hypernetwork(QObject):
 
     def __init__(self, *args, **kwargs):

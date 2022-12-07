@@ -139,7 +139,7 @@ class Deforum_UI(QObject):
 
         ##print(self.params.translation_x)
         ##print(f"updated parameters to: {params}")
-        model_killer(keep='sd')
+        #model_killer(keep='sd')
         #print(gs.models)
         #if "inpaint" in gs.models:
         #    del gs.models["inpaint"]

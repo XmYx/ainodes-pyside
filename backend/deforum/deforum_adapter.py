@@ -1,3 +1,4 @@
+import copy
 import gc, os, random, sys, time, traceback
 from contextlib import nullcontext
 from datetime import datetime
@@ -241,7 +242,7 @@ class DeforumSix:
                 print("unexpected keys:")
                 print(u)
             model.half()
-            gs.models["sd"] = model
+            gs.models["sd"] = copy.deepcopy(model)
             gs.models["sd"].cond_stage_model.device = self.device
             #gs.models["sd"].embedding_manager = EmbeddingManager(gs.models["sd"].cond_stage_model)
             #embedding_path = '001glitch-core.pt'
@@ -368,7 +369,7 @@ class DeforumSix:
             model.load_state_dict(torch.load(weights)["state_dict"], strict=False)
 
             device = self.device
-            gs.models["inpaint"] = model.half()
+            gs.models["inpaint"] = copy.deepcopy(model.half())
             del model
             return
 
@@ -594,10 +595,10 @@ class DeforumSix:
                 del gs.models["modelCS"]
             if "modelFS" in gs.models:
                 del gs.models["modelFS"]
-            check = self.load_model_from_config(config=None, ckpt=None)
+            #check = self.load_model_from_config(config=None, ckpt=None)
             gs.models["sd"].to('cuda')
-            if check == -1:
-                return check
+            #if check == -1:
+            #    return check
 
 
 
@@ -1046,19 +1047,24 @@ class DeforumSix:
 
         elif with_inpaint == True:
             torch_gc()
-            if "inpaint" not in gs.models:
-                self.load_inpaint_model()
+            #if "inpaint" not in gs.models:
+            #    self.load_inpaint_model()
             gs.models["inpaint"].to('cuda')
             sampler = DDIMSampler(gs.models["inpaint"])
             image_guide = image_path_to_torch(init_image, self.device)
             [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(self.device, blend_mask,
                                                                                             blur=mask_blur,
                                                                                             recons_blur=recons_blur)
-            #image_guide = resizeright.resize(image_guide, scale_factors=None,
-            #                             out_shape=[image_guide.shape[0], image_guide.shape[1], height, width],
-            #                             interp_method=interp_methods.lanczos3, support_sz=None,
-            #                             antialiasing=False, by_convs=False, scale_tolerance=5,
-            #                             max_numerator=25, pad_mode='reflect')
+            image_guide = resizeright.resize(image_guide, scale_factors=None,
+                                         out_shape=[image_guide.shape[0], image_guide.shape[1], height, width],
+                                         interp_method=interp_methods.lanczos3, support_sz=None,
+                                         antialiasing=False, by_convs=False, scale_tolerance=5,
+                                         max_numerator=25, pad_mode='reflect')
+            mask_for_reconstruction = resizeright.resize(mask_for_reconstruction, scale_factors=None,
+                                         out_shape=[mask_for_reconstruction.shape[0], mask_for_reconstruction.shape[1], height, width],
+                                         interp_method=interp_methods.lanczos3, support_sz=None,
+                                         antialiasing=False, by_convs=False, scale_tolerance=5,
+                                         max_numerator=25, pad_mode='reflect')
 
             masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]
 
@@ -1117,7 +1123,7 @@ class DeforumSix:
                                         generation_time=generated_time - tic
                                         ))
 
-        gs.models["inpaint"].to('cuda')
+        gs.models["inpaint"].to('cpu')
 
         torch_gc()
 def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, mask_for_reconstruction, masked_image_for_blend, num_samples=1, w=512, h=512, callback=None):
@@ -1179,6 +1185,11 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, mask_
             #                             max_numerator=10, pad_mode='reflect')
 
             if masked_image_for_blend is not None:
+                x_samples = resizeright.resize(x_samples, scale_factors=None,
+                                                 out_shape=[x_samples.shape[0], x_samples.shape[1], h, w],
+                                                 interp_method=interp_methods.lanczos3, support_sz=None,
+                                                 antialiasing=False, by_convs=False, scale_tolerance=5,
+                                                 max_numerator=25, pad_mode='reflect')
                 x_samples = mask_for_reconstruction * x_samples + masked_image_for_blend
 
             all_samples.append(x_samples)

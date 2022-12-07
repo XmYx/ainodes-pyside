@@ -123,7 +123,7 @@ class MainWindow(QMainWindow):
         #self.model_chooser = ModelChooser_UI(self)
 
         self.setup_widget_names()
-        #self.add_dock_widgets()
+        self.add_dock_widgets()
         #self.add_proxy_widgets()
         self.canvas.canvas.select_mode()
 
@@ -154,6 +154,8 @@ class MainWindow(QMainWindow):
 
         self.params = self.sessionparams.update_params()
         self.toolbar.setVisible(True)
+        self.deforum_ui.deforum_six.load_inpaint_model()
+        self.deforum_ui.deforum_six.load_model_from_config()
 
 
     def setup_widget_names(self):
@@ -306,8 +308,6 @@ class MainWindow(QMainWindow):
 
         self.system_setup.w.ok.clicked.connect(self.sessionparams.update_system_params)
         self.system_setup.w.cancel.clicked.connect(self.update_ui_from_system_params)
-        self.deforum_ui.deforum_six.load_inpaint_model()
-        self.deforum_ui.deforum_six.load_model_from_config()
 
     def task_switcher(self):
         print("taskswitcher")

@@ -125,18 +125,43 @@ class MyProxyWidget(QGraphicsProxyWidget):
     def __init__(self, widget, parent):
         super(MyProxyWidget, self).__init__()
         self.parent = parent
+        self.render_index = len(self.parent.rectlist) - 1
         self.widget = widget.w
         self.setWidget(self.widget)
         self.moving = False
-        self.uid = self.parent.uid
+        self.uid = copy.deepcopy(self.parent.uid)
         self.widget.loadbutton.clicked.connect(self.load_img)
         self.subwidgets = {}
     def proxy_task(self):
+        self.parent.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Unchecked)
+        for i in gs.models:
+            print(i)
         #print(self.parent.parent.widgets['unicontrol'].w.prompts.setText('11123'))
         text = self.widget.prompts.toPlainText()
-        self.parent.parent.parent.widgets['unicontrol'].w.prompts.setText(str(text))
+        self.parent.parent.parent.widgets['unicontrol'].w.show_sample_per_step.setCheckState(Qt.CheckState.Checked)
+        self.parent.selected_item = self.uid
+        self.parent.render_item = self.uid
+        #for i in self.parent.rectlist:
+        #    if i.id == self.uid:
+        #        self.parent.parent.parent.render_index = self.parent.rectlist.index(i)
+        self.parent.parent.parent.render_index = self.render_index
 
+        self.parent.parent.parent.widgets['unicontrol'].w.prompts.setText(str(text))
+        with_inpaint = self.parent.check_for_frame_overlap()
+        if with_inpaint == True:
+            #print("initiating inpaint")
+            i = self.parent.parent.parent.render_index
+            #self.parent.rectlist[i].w, self.parent.rectlist[i].h = map(lambda x: x - x % 64, (self.parent.rectlist[i].w, self.parent.rectlist[i].h))
+            self.parent.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Checked)
+            self.parent.w = self.parent.rectlist[i].w
+            self.parent.h = self.parent.rectlist[i].h
+            self.parent.change_rect_resolutions()
+            self.parent.reusable_outpaint(self.uid)
+            self.parent.parent.parent.sessionparams.params.with_inpaint = True
+            #self.parent.parent.parent.update_ui_from_params()
+            #self.parent.signals.outpaint_signal.emit()
         self.parent.parent.parent.task_switcher()
+        #self.parent.parent.parent.update_ui_from_params()
         self.prompt_destroy()
     def prompt_destroy(self):
         self.prompt_destroy_action()
@@ -310,7 +335,7 @@ class Canvas(QGraphicsView):
         self.rectlist = []
         self.selected_item = None
         self.render_item = None
-        self.signals.update_selected.emit()
+        #self.signals.update_selected.emit()
         self.parent.parent.render_index = 0
         self.parent.parent.thumbs.w.thumbnails.clear()
     def reset(self):
@@ -1053,6 +1078,8 @@ class Canvas(QGraphicsView):
 
 
     def mousePressEvent(self, e):
+        if e.button() == Qt.MiddleButton:
+            self.drag_mode()
         fn = getattr(self, "%s_mousePressEvent" % self.mode, None)
         if fn:
             fn(e)
@@ -1066,6 +1093,9 @@ class Canvas(QGraphicsView):
             super(Canvas, self).mouseMoveEvent(e)
 
     def mouseReleaseEvent(self, e):
+        if e.button() == Qt.MiddleButton:
+            self.select_mode()
+
         fn = getattr(self, "%s_mouseReleaseEvent" % self.mode, None)
         if fn:
             fn(e)
@@ -1219,7 +1249,30 @@ class Canvas(QGraphicsView):
         self.redraw(transparent=True)
     def keyPressEvent(self, e):
         super(Canvas, self).keyPressEvent(e)
-        ##print(f"key pressed: {e.key()}")
+        if e.key() == 16777248:
+            if e.isAutoRepeat():
+                pass
+            else:
+                self.shiftmodifier = True
+        elif e.key() == 16777249:
+            if e.isAutoRepeat():
+                pass
+            else:
+                self.ctrlmodifier = True
+        elif e.key() == 32:
+            if e.isAutoRepeat():
+                print("Key is being held down")
+                print(self.mode)
+                if self.mode != "drag":
+                    self.drag_mode()
+            else:
+                if self.mode != "drag":
+                    self.drag_mode()
+                print("Key was pressed")
+        elif e.key() == 16777223:
+            self.parent.parent.delete_outpaint_frame()
+
+        print(f"key pressed: {e.key(), self.shiftmodifier, self.ctrlmodifier}")
         """if e.key() == 67:
             self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
             self.mode = "drag"
@@ -1239,12 +1292,19 @@ class Canvas(QGraphicsView):
             self.setDragMode(QGraphicsView.DragMode.NoDrag)
         elif e.key() == 90 and self.ctrlmodifier == True:
             self.undoEvent()
-        elif e.key() == 16777249:
+        if e.key() == 16777249:
             self.ctrlmodifier = True
         else:
             self.ctrlmodifier = None"""
     def keyReleaseEvent(self, e):
-        self.ctrlmodifier = False
+        self.ctrlmodifier = None
+        self.shiftmodifier = None
+        if e.key() == 32:
+            if e.isAutoRepeat():
+                print("release autorepear")
+            else:
+                print("release key")
+                self.select_mode()
         super(Canvas, self).keyReleaseEvent(e)
 
     def select_mousePressEvent(self, e):
@@ -1264,7 +1324,7 @@ class Canvas(QGraphicsView):
             for i in self.rectlist:
                 if i.id == self.selected_item:
                     self.parent.parent.render_index = self.rectlist.index(i)
-            self.signals.update_selected.emit()
+            #self.signals.update_selected.emit()
             #if self.rectlist[self.render_index].running == True:
             #    self.rectlist[self.render_index].stop()
             #else:
@@ -1302,6 +1362,7 @@ class Canvas(QGraphicsView):
         self.last_x = None
         self.last_y = None
     def drag_mouseMoveEvent(self, e):
+        super(Canvas, self).mouseMoveEvent(e)
         return
     def drag_mouseReleaseEvent(self, event):
         return
@@ -1373,7 +1434,7 @@ class Canvas(QGraphicsView):
     def outpaint_mousePressEvent(self, event):
         if self.scene.pos is not None:
             self.addrect()
-            self.signals.update_selected.emit()
+            #self.signals.update_selected.emit()
             self.redraw()
             if self.ctrlmodifier == True:
                 self.reusable_outpaint(self.selected_item)
@@ -1410,7 +1471,7 @@ class Canvas(QGraphicsView):
     def rubberband_mouseMoveEvent(self, event):
         if not self.origin.isNull():
             self.rubberBand.setGeometry(
-                QRect(self.origin, event.pos()).normalized()
+                QRect(self.origin, event.position().toPoint()).normalized()
             )
 
     def rubberband_mouseReleaseEvent(self, event):
@@ -1433,7 +1494,7 @@ class Canvas(QGraphicsView):
             absh = abs(self.scene.scenePos.y() - y)
             w = abs(self.scene.scenePos.x() - x)
             h = abs(self.scene.scenePos.y() - y)
-            #w, h = map(lambda x: x - x % 64, (w, h))
+            w, h = map(lambda x: x - x % 64, (w, h))
             if w > 704:
                 self.parent.parent.widgets[self.parent.parent.current_widget].w.hires.setCheckState(Qt.CheckState.Checked)
             if h > 704:
@@ -1463,12 +1524,13 @@ class Canvas(QGraphicsView):
             self.selected_item = uid
             self.render_item = uid
             self.rectlist.append(rect[uid])
-            self.check_for_frame_overlap()
+
             self.draw_rects()
             self.parent.parent.params.W = w
             self.parent.parent.params.H = h
-            self.parent.parent.update_ui_from_params()
+
             prompt = SimplePrompt()
+
             self.proxies[uid] = MyProxyWidget(prompt, self)
 
             #self.proxies[uid].setWidget(self.prompt.w)
@@ -1503,8 +1565,11 @@ class Canvas(QGraphicsView):
                 self.rectlist[len(self.rectlist) - 1].h = h
                 self.parent.parent.params.W = w
                 self.parent.parent.params.H = h
-                self.parent.parent.update_ui_from_params()
+                #self.parent.parent.update_ui_from_params()
                 self.change_resolution()
+            self.parent.parent.widgets[self.parent.parent.current_widget].w.W.setValue(w)
+            self.parent.parent.widgets[self.parent.parent.current_widget].w.H.setValue(h)
+
 
     def removeitem_by_uid_from_scene(self):
         self.scene.removeItem(self.proxies[self.uid])
@@ -1518,9 +1583,12 @@ class Canvas(QGraphicsView):
                     if x.y >= i.y - i.h and x.x >= i.x - i.w:
                         if x.y <= i.y + i.h and x.x <= i.x + i.w:
                             if i.id != x.id:
-
                                 self.parent.parent.params.with_inpaint = True
-        print(f"inpaint: {self.parent.parent.widgets['unicontrol'].w.with_inpaint.isChecked()}")
+
+        if self.parent.parent.params.with_inpaint == True:
+            return True
+        else:
+            return False
 
     def proxy_task(self):
         #print(self.parent.parent.widgets['unicontrol'].w.prompts.setText('11123'))
@@ -1555,14 +1623,27 @@ class Canvas(QGraphicsView):
 
 
     def wheelEvent(self, event):
-
         x = event.angleDelta().y() / 120
-        if x > 0:
-            self.zoom *= 1.05
-            self.updateView()
-        elif x < 0:
-            self.zoom /= 1.05
-            self.updateView()
+        if self.ctrlmodifier is None and self.shiftmodifier is None:
+            if x > 0:
+                self.zoom *= 1.05
+                self.updateView()
+            elif x < 0:
+                self.zoom /= 1.05
+                self.updateView()
+        elif self.ctrlmodifier is not None:
+            W = self.parent.parent.widgets['unicontrol'].w.W.value()
+            if x > 0:
+                self.parent.parent.widgets['unicontrol'].w.W.setValue(W + 64)
+            elif x < 0:
+                self.parent.parent.widgets['unicontrol'].w.W.setValue(W - 64)
+        elif self.shiftmodifier is not None:
+            H = self.parent.parent.widgets['unicontrol'].w.H.value()
+            if x > 0:
+                self.parent.parent.widgets['unicontrol'].w.H.setValue(H + 64)
+            elif x < 0:
+                self.parent.parent.widgets['unicontrol'].w.H.setValue(H - 64)
+
         #if self.gridenabled == True:
 
 

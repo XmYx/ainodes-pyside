@@ -17,6 +17,9 @@
    <string notr="true">QWidget{background: transparent}
 QTextEdit {background-color: #262626; border-radius: 25px ; color: white}
 QPushButton {background-color: #009900; border-radius: 8px ; color: white}
+QDoubleSpinBox::up-button {  background-color:red }
+QDoubleSpinBox::down-button {  background-color:red }
+
 
 
 
@@ -39,83 +42,7 @@ QPushButton {background-color: #009900; border-radius: 8px ; color: white}
     <number>3</number>
    </property>
    <item>
-    <widget class="QTextEdit" name="prompts">
-     <property name="cursor" stdset="0">
-      <cursorShape>IBeamCursor</cursorShape>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QTextEdit {
-    margin-top: 5px;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    margin-left: 5px;
-}</string>
-     </property>
-     <property name="autoFormatting">
-      <set>QTextEdit::AutoBulletList</set>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QPushButton" name="delbutton">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: red</string>
-       </property>
-       <property name="text">
-        <string>DEL</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="dreambutton">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>DREAM</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="loadbutton">
-       <property name="minimumSize">
-        <size>
-         <width>50</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: blue</string>
-       </property>
-       <property name="text">
-        <string>LOAD</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
    </item>
   </layout>
  </widget>

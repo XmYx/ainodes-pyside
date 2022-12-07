@@ -84,8 +84,8 @@ class Rectangle(object):
         if self.running == False:
             self.parent.newimage = True
             self.parent.update()
-        print(self.render_index)
-        print(len(self.images))
+        #print(self.render_index)
+        #(len(self.images))
     def iterate_back(self):
         self.render_index = (self.render_index - 1) % len(self.images)
         if self.render_index == -1:
@@ -94,7 +94,7 @@ class Rectangle(object):
         if self.running == False:
             self.parent.newimage = True
             self.parent.update()
-        print(self.render_index)
+        #print(self.render_index)
 
     def stop(self):
         self.timer.stop()
@@ -267,7 +267,7 @@ class Canvas(QGraphicsView):
         self.currentWidth = w
         self.currentHeight = h
         self.temprects = None
-        self.pixmap.fill(__backgroudColor__)
+        self.pixmap.fill(Qt.transparent)
         self.bgitem = QGraphicsPixmapItem()
         self.rectItem = QGraphicsRectItem(0, 0, 512, 512)
         self.parent.parent.w = w
@@ -291,11 +291,6 @@ class Canvas(QGraphicsView):
         self.signals.update_selected.emit()
         self.parent.parent.render_index = 0
         self.parent.parent.thumbs.w.thumbnails.clear()
-        painter = QPainter(self.pixmap)
-        rect = self.pixmap.rect()
-        mgridsize = 102
-
-        self.draw_grid_(painter, rect, mgridsize)
     def reset(self):
         self.zoom = 1
         self.rotate = 0
@@ -312,7 +307,7 @@ class Canvas(QGraphicsView):
 
         self.last_x, self.last_y = None, None
         self.pen_color = QColor('#000000')
-        self.mode = 'drag'
+        #self.mode = 'drag'
         self.setMouseTracking(True)
         self.painter = QPainter()
 
@@ -407,11 +402,12 @@ class Canvas(QGraphicsView):
                 for i in self.rectlist:
                     if i.id == self.selected_item:
                         ###print(i)
+                        self.rectItem.show()
                         pen = QPen(Qt.green, 3, Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
                         self.rectItem.setPen(pen)
                         self.rectItem.setRect(i.x, i.y, self.w, self.h)
         if self.selected_item is None:
-            self.rectItem.setRect(0, 0, 5, 5)
+            self.rectItem.hide()
         self.bgitem.setPixmap(self.pixmap)
         self.update()
 
@@ -491,7 +487,7 @@ class Canvas(QGraphicsView):
                 #print(item[key])
                 #print(value)
 
-            print(item)
+            #print(item)
             templist.append(item)
         if filename != False:
             data = filename
@@ -550,10 +546,10 @@ class Canvas(QGraphicsView):
                 json_object = json.load(openfile)
             x = 0
             for key in json_object:
-                print(key)
+                #print(key)
                 rect = {}
                 for w, x in key.items():
-                    print(w, x)
+                    #print(w, x)
                     rect[w] = x
                     ###print(x['x'])
                     #rect = {}
@@ -664,34 +660,50 @@ class Canvas(QGraphicsView):
                     x += 1
 
     def draw_rects(self):
+        painter = QPainter(self.pixmap)
+        rect = self.sceneRect()
+        mgridsize = 128
+        self.draw_grid_(painter, rect, mgridsize)
 
-        self.rectsdrawn = False
-        if self.rectsdrawn == False:
-            self.rectsdrawn = True
-            #self.pixmap.fill(__backgroudColor__)
-            self.pen = QPen(Qt.red, int(3 / self.zoom), Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
-            x = 0
-            for i in self.rectlist:
-                ###print(self.rectlist[x].order)
-                ###print(i.order, x)
-                self.draw_tempRects(i.x, i.y, i.w, i.h, i.order, x)
-                self.rectsdrawn = True
-                x += 1
 
         # Set pen color to black and line width to 1
 
     def draw_grid_(self, painter, rect, mgridsize):
-        mgridsize = int(mgridsize)
-        left = int(rect.left()) - (int(rect.left()) % mgridsize)
-        top = int(rect.top()) - (int(rect.top()) % mgridsize)
+        rows = self.h / mgridsize
+        cols = self.w / mgridsize
+
+
+        penHLines = QPen(QColor(75, 75, 75), 4, Qt.SolidLine, Qt.FlatCap, Qt.RoundJoin)
+        painter.setPen(penHLines)
+        for i in range(0, self.pixmap.width(), 64):
+            painter.drawLine(i, 0, i, self.pixmap.height())
+        for i in range(0, self.pixmap.height(), 64):
+            painter.drawLine(0, i, self.pixmap.width(), i)
+
+        painter.setPen(QPen(QColor(100, 100, 100), 10, Qt.SolidLine, Qt.FlatCap, Qt.RoundJoin))
+        for i in range(0, self.pixmap.width(), 512):
+            painter.drawLine(i, 0, i, self.pixmap.height())
+        for i in range(0, self.pixmap.height(), 512):
+            painter.drawLine(0, i, self.pixmap.width(), i)
+        #self.pixmap.fill(__backgroudColor__)
+        self.pen = QPen(Qt.red, int(3 / self.zoom), Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
+        painter.setPen(self.pen)
+        x = 0
+        for i in self.rectlist:
+            ###print(self.rectlist[x].order)
+            ###print(i.order, x)
+            painter.drawRect(i.x, i.y, i.w, i.h)
+            x += 1
+        """mgridsize = int(mgridsize)
         left = int(rect.left())
         top = int(rect.top())
 
         lines = []
-        print(left, rect.right())
+        #print(left, int(rect.right()) + 1, mgridsize)
         for x in range(left, int(rect.right()), mgridsize):
+            print(x, rect.top(), x, rect.bottom())
             lines.append(QLineF(x, rect.top(), x, rect.bottom()))
-        for y in range(top, int(rect.bottom()), mgridsize):
+        for y in range(top, int(rect.bottom()) + 1, mgridsize):
             lines.append(QLineF(rect.left(), y, rect.right(), y))
 
         thickLines = []
@@ -706,11 +718,11 @@ class Canvas(QGraphicsView):
         #painter.setPen(myPen)
         #painter.drawRect(rect)
 
-        penHLines = QPen(QColor(75, 75, 75), 1, Qt.SolidLine, Qt.FlatCap, Qt.RoundJoin)
+        penHLines = QPen(QColor(75, 75, 75), 2, Qt.SolidLine, Qt.FlatCap, Qt.RoundJoin)
         painter.setPen(penHLines)
         painter.drawLines(lines)
 
-        painter.setPen(QPen(QColor(100, 100, 100), 2, Qt.SolidLine, Qt.FlatCap, Qt.RoundJoin))
+        painter.setPen(QPen(QColor(100, 100, 100), 4, Qt.SolidLine, Qt.FlatCap, Qt.RoundJoin))
         painter.drawLines(thickLines)
 
         painter.setPen(Qt.blue)
@@ -721,9 +733,15 @@ class Canvas(QGraphicsView):
                 points.append(QPointF(x, y))
         painter.drawPoints(points)
 
-
+        w = 0
+        # Draw time
+        scale = self.getXScale()
+        while w <= self.w:
+            print(w, 0, 100, 100, 15, str(w))
+            painter.drawText(w - 128, 0, 100, 100, 15, str(w))
+            w += 128"""
     def draw_tempRects(self, x, y, width, height, order, value):
-        self.painter.begin(self.pixmap)
+        #self.painter.begin(self.pixmap)
         self.painter.setPen(self.pen)
         rect = QRect(x, y, width, height)
         font = QFont("Segoe UI Black")
@@ -731,8 +749,8 @@ class Canvas(QGraphicsView):
         self.painter.drawRect(rect)
         self.painter.setFont(font)
         #self.painter.drawText(x - 25 + width / 2, y  + 25 + width / 2, f"{order} / {value}")
-        self.painter.end()
-        self.bgitem.setPixmap(self.pixmap)
+        #self.painter.end()
+        #self.bgitem.setPixmap(self.pixmap)
 
     def visualize_rects(self, overlays=False):
         self.painter.begin(self.pixmap)
@@ -819,7 +837,7 @@ class Canvas(QGraphicsView):
         for items in self.rectlist:
             if items.id == id:
                 self.parent.parent.render_index = self.rectlist.index(items)
-                print(items.render_index)
+                #print(items.render_index)
                 rect = QRect(items.x, items.y, self.w, self.h)
                 image = self.pixmap.toImage()
                 newimage = image.copy(rect)
@@ -1376,11 +1394,17 @@ class Canvas(QGraphicsView):
                 self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Checked)
             self.rubberBand.hide()
             if self.startpoint is not None:
-                x = self.startpoint.x()
-                y = self.startpoint.y()
+                if event.pos().x() > self.startpoint.x() or event.pos().y() > self.startpoint.y():
+                    print("normal case")
+                    x = self.startpoint.x()
+                    y = self.startpoint.y()
+                else:
+                    x = event.pos().x()
+                    y = event.pos().y()
+            absw = abs(self.scene.scenePos.x() - x)
+            absh = abs(self.scene.scenePos.y() - y)
             w = self.scene.scenePos.x() - x
             h = self.scene.scenePos.y() - y
-            print(w, h)
             uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4)
             rect = {}
             rect[uid] = Rectangle(self, "", x, y, w, h, uid)
@@ -1388,14 +1412,15 @@ class Canvas(QGraphicsView):
             self.render_item = uid
             self.rectlist.append(rect[uid])
             self.draw_rects()
-            self.parent.parent.params.W = w
-            self.parent.parent.params.H = h
+            self.parent.parent.params.W = absw
+            self.parent.parent.params.H = absh
             self.parent.parent.update_ui_from_params()
             self.proxy = QGraphicsProxyWidget()
             self.prompt = SimplePrompt()
             self.proxy.setWidget(self.prompt.w)
             self.fx = QGraphicsOpacityEffect()
             self.proxy.setGraphicsEffect(self.fx)
+
             self.updateView()
             self.scene.addItem(self.proxy)
             self.fx.setOpacity(0)
@@ -1405,21 +1430,19 @@ class Canvas(QGraphicsView):
             self.animation.setStartValue(0)
             self.animation.setEndValue(1)
             self.animation.start()
-            self.startpoint.setX(self.startpoint.x() + w)
+            self.startpoint.setX(self.startpoint.x() + absw)
             self.proxy.setPos (self.startpoint)
             self.prompt.w.delbutton.clicked.connect(self.prompt_destroy_with_frame)
-            #self.backup = self.parent.parent.widgets[self.parent.parent.current_widget].w.prompts
-            #self.parent.parent.widgets[self.parent.parent.current_widget].w.prompts = self.prompt.w.prompts
             try:
                 self.parent.parent.widgets[self.parent.parent.current_widget].w.dreambutton.disconnect()
             except:
                 pass
             self.prompt.w.dreambutton.clicked.connect(self.proxy_task)
             self.drag_mode()
-            #self.update()
+            self.draw_rects()
 
     def proxy_task(self):
-        print(self.parent.parent.widgets['unicontrol'].w.prompts.setText('11123'))
+        #print(self.parent.parent.widgets['unicontrol'].w.prompts.setText('11123'))
         text = self.prompt.w.prompts.toPlainText()
         self.parent.parent.widgets['unicontrol'].w.prompts.setText(str(text))
         self.prompt_destroy()
@@ -1465,14 +1488,14 @@ class Canvas(QGraphicsView):
     def updateView(self):
         self.setTransform(QTransform().scale(self.zoom, self.zoom).rotate(self.rotate))
         if self.proxy is not None:
-            self.proxy.setScale(self.getXScale() / self.zoom)
-            print(self.getXScale() * self.zoom)
+            self.proxy.setScale((self.getXScale() / self.zoom) * 2)
+            #print(self.getXScale() * self.zoom)
         #if self.tempbatch is not None and self.gridenabled == True:
         #    self.draw_tempBatch(self.tempbatch)
 
     def dragEnterEvent(self, event):
         event.acceptProposedAction()
-        print(event.mimeData())
+        #print(event.mimeData())
         #if event.mimeData().hasFormat("text/plain"):
 
 

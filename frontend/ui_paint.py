@@ -1415,8 +1415,8 @@ class Canvas(QGraphicsView):
             except:
                 pass
             self.prompt.w.dreambutton.clicked.connect(self.proxy_task)
-            self.select_mode()
-            self.update()
+            self.drag_mode()
+            #self.update()
 
     def proxy_task(self):
         print(self.parent.parent.widgets['unicontrol'].w.prompts.setText('11123'))

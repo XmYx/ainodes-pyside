@@ -8,7 +8,7 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ldm.modules.diffusionmodules.util import (
+from plugins.dreambooth.ldm_db.modules.diffusionmodules.util import (
     checkpoint,
     conv_nd,
     linear,
@@ -17,7 +17,7 @@ from ldm.modules.diffusionmodules.util import (
     normalization,
     timestep_embedding,
 )
-from ldm.modules.attention import SpatialTransformer
+from plugins.dreambooth.ldm_db.modules.attention import SpatialTransformer
 
 
 # dummy replace
@@ -958,4 +958,3 @@ class EncoderUNetModel(nn.Module):
         else:
             h = h.type(x.dtype)
             return self.out(h)
-

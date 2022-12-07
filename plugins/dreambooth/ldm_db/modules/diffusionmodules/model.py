@@ -5,8 +5,8 @@ import torch.nn as nn
 import numpy as np
 from einops import rearrange
 
-from ldm.util import instantiate_from_config
-from ldm.modules.attention import LinearAttention
+from plugins.dreambooth.ldm_db.util import instantiate_from_config
+from plugins.dreambooth.ldm_db.modules.attention import LinearAttention
 
 
 def get_timestep_embedding(timesteps, embedding_dim):
@@ -832,4 +832,3 @@ class FirstStagePostProcessor(nn.Module):
         if self.do_reshape:
             z = rearrange(z,'b c h w -> b (h w) c')
         return z
-

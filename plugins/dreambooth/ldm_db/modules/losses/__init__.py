@@ -1,1 +1,1 @@
-from ldm.modules.losses.contperceptual import LPIPSWithDiscriminator
+from plugins.dreambooth.ldm_db.modules.losses.contperceptual import LPIPSWithDiscriminator

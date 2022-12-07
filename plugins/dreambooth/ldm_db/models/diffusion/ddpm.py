@@ -20,12 +20,12 @@ from tqdm import tqdm
 from torchvision.utils import make_grid
 from pytorch_lightning.utilities.distributed import rank_zero_only
 
-from ldm.util import log_txt_as_img, exists, default, ismap, isimage, mean_flat, count_params, instantiate_from_config
-from ldm.modules.ema import LitEma
-from ldm.modules.distributions.distributions import normal_kl, DiagonalGaussianDistribution
-from ldm.models.autoencoder import VQModelInterface, IdentityFirstStage, AutoencoderKL
-from ldm.modules.diffusionmodules.util import make_beta_schedule, extract_into_tensor, noise_like
-from ldm.models.diffusion.ddim import DDIMSampler
+from plugins.dreambooth.ldm_db.util import log_txt_as_img, exists, default, ismap, isimage, mean_flat, count_params, instantiate_from_config
+from plugins.dreambooth.ldm_db.modules.ema import LitEma
+from plugins.dreambooth.ldm_db.modules.distributions.distributions import normal_kl, DiagonalGaussianDistribution
+from plugins.dreambooth.ldm_db.models.autoencoder import VQModelInterface, IdentityFirstStage, AutoencoderKL
+from plugins.dreambooth.ldm_db.modules.diffusionmodules.util import make_beta_schedule, extract_into_tensor, noise_like
+from plugins.dreambooth.ldm_db.models.diffusion.ddim import DDIMSampler
 
 
 __conditioning_keys__ = {'concat': 'c_concat',

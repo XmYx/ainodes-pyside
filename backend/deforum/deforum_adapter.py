@@ -1051,11 +1051,11 @@ class DeforumSix:
             [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(self.device, blend_mask,
                                                                                             blur=mask_blur,
                                                                                             recons_blur=recons_blur)
-            image_guide = resizeright.resize(image_guide, scale_factors=None,
-                                         out_shape=[image_guide.shape[0], image_guide.shape[1], height, width],
-                                         interp_method=interp_methods.lanczos3, support_sz=None,
-                                         antialiasing=True, by_convs=True, scale_tolerance=None,
-                                         max_numerator=10, pad_mode='reflect')
+            #image_guide = resizeright.resize(image_guide, scale_factors=None,
+            #                             out_shape=[image_guide.shape[0], image_guide.shape[1], height, width],
+            #                             interp_method=interp_methods.lanczos3, support_sz=None,
+            #                             antialiasing=False, by_convs=False, scale_tolerance=5,
+            #                             max_numerator=25, pad_mode='reflect')
 
             masked_image_for_blend = (1 - mask_for_reconstruction) * image_guide[0]
 
@@ -1168,11 +1168,11 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, mask_
             x_samples = encoded_to_torch_image(
                 gs.models["inpaint"], samples_cfg)  # [1, 3, 512, 512]
             all_samples = []
-            x_samples = resizeright.resize(x_samples, scale_factors=None,
-                                         out_shape=[x_samples.shape[0], x_samples.shape[1], h, w],
-                                         interp_method=interp_methods.lanczos3, support_sz=None,
-                                         antialiasing=True, by_convs=True, scale_tolerance=None,
-                                         max_numerator=10, pad_mode='reflect')
+            #x_samples = resizeright.resize(x_samples, scale_factors=None,
+            #                             out_shape=[x_samples.shape[0], x_samples.shape[1], h, w],
+            #                             interp_method=interp_methods.lanczos3, support_sz=None,
+            #                             antialiasing=True, by_convs=True, scale_tolerance=None,
+            #                             max_numerator=10, pad_mode='reflect')
 
             if masked_image_for_blend is not None:
                 x_samples = mask_for_reconstruction * x_samples + masked_image_for_blend

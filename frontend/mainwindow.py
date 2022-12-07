@@ -123,7 +123,7 @@ class MainWindow(QMainWindow):
         #self.model_chooser = ModelChooser_UI(self)
 
         self.setup_widget_names()
-        self.add_dock_widgets()
+        #self.add_dock_widgets()
         #self.add_proxy_widgets()
         self.canvas.canvas.select_mode()
 
@@ -153,6 +153,7 @@ class MainWindow(QMainWindow):
         ], dtype=torch.float, device='cuda')
 
         self.params = self.sessionparams.update_params()
+        self.toolbar.setVisible(True)
 
 
     def setup_widget_names(self):
@@ -197,7 +198,7 @@ class MainWindow(QMainWindow):
         self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.widgets[self.current_widget].w.dockWidget)
     def selftest(self):  #TODO Lets extend this function with everything we have and has to work
 
-        self.canvas.canvas.reset
+        self.canvas.canvas.reset()
         self.params = self.sessionparams.update_params()
         gs.stop_all = False
         self.task_switcher()
@@ -462,7 +463,6 @@ class MainWindow(QMainWindow):
 
                 if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
                     getattr(self.widgets[self.current_widget].w, key).setValue(value)
-                    print(value)
                 elif  'QTextEdit' in type or 'QLineEdit' in type:
                     getattr(self.widgets[self.current_widget].w, key).setText(str(value))
                 elif 'QCheckBox' in type:
@@ -523,27 +523,27 @@ class MainWindow(QMainWindow):
         anim_mode = QAction(QIcon_from_svg('frontend/icons/film.svg'), 'Anim', self)
         node_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Nodes', self)
         gallery_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Gallery', self)
-        settings_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Rubberband', self)
+        settings_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'New Image', self)
         help_mode = QAction(QIcon_from_svg('frontend/icons/help-circle.svg'), 'Help', self)
         skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'Help', self)
         skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'Help', self)
         test_mode = QAction(QIcon_from_svg('frontend/icons/alert-octagon.svg'), 'Run Self Test - It will take a while', self)
 
 
-        self.toolbar.addAction(still_mode)
+        #self.toolbar.addAction(still_mode)
         #self.toolbar.addAction(anim_mode)
         #self.toolbar.addAction(node_mode)
         #self.toolbar.addAction(gallery_mode)
         self.toolbar.addAction(settings_mode)
-        self.toolbar.addAction(help_mode)
-        self.toolbar.addAction(skip_back)
-        self.toolbar.addAction(skip_forward)
-        self.toolbar.addAction(test_mode)
+        #self.toolbar.addAction(help_mode)
+        #self.toolbar.addAction(skip_back)
+        #self.toolbar.addAction(skip_forward)
+        #self.toolbar.addAction(test_mode)
 
 
-        skip_back.triggered.connect(self.canvas.canvas.skip_back)
-        skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
-        test_mode.triggered.connect(self.selftest)
+        #skip_back.triggered.connect(self.canvas.canvas.skip_back)
+        #skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
+        #test_mode.triggered.connect(self.selftest)
         settings_mode.triggered.connect(self.canvas.canvas.rubberband_mode)
 
 

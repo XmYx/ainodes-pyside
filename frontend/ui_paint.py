@@ -122,32 +122,52 @@ class Scene(QGraphicsScene):
         self.gridenabled = False
 
 class MyProxyWidget(QGraphicsProxyWidget):
-    def __init__(self, widget):
+    def __init__(self, widget, parent):
         super(MyProxyWidget, self).__init__()
-        self.widget = widget
+        self.parent = parent
+        self.widget = widget.w
         self.setWidget(self.widget)
         self.moving = False
-    def mousePressEvent(self, event):
+        self.uid = self.parent.uid
+        self.widget.loadbutton.clicked.connect(self.load_img)
+    def proxy_task(self):
+        #print(self.parent.parent.widgets['unicontrol'].w.prompts.setText('11123'))
+        text = self.widget.prompts.toPlainText()
+        self.parent.parent.parent.widgets['unicontrol'].w.prompts.setText(str(text))
 
-        if event.button() == Qt.MiddleButton:
-            self.setCursor(QtCore.Qt.ClosedHandCursor)
-            self.last_pos = event.pos()
-            self.moving = True
-        else:
-            self.last_pos = None
-            super(MyProxyWidget, self).mouseMoveEvent(event)
-    def mouseMoveEvent(self, event):
-        if self.last_pos is not None:
-            dx = event.pos().x() - self.last_pos.x()
-            dy = event.pos().y() - self.last_pos.y()
-            self.setPos(self.x() + dx, self.y() + dy)
-            self.last_pos = event.pos()
+        self.parent.parent.parent.task_switcher()
+        self.prompt_destroy()
+    def prompt_destroy(self):
+        self.prompt_destroy_action()
+    def prompt_destroy_action(self):
+        try:
+            self.widget.w.delbutton.disconnect()
+        except:
+            pass
+        #self.parent.parent.widgets[self.parent.parent.current_widget].w.prompts = self.backup
+        self.animation = QtCore.QPropertyAnimation(self.fx, b"opacity")
+        self.animation.setDuration(250)
+        self.animation.setStartValue(1)
+        self.animation.setEndValue(0)
+        self.animation.start()
+        QtCore.QTimer.singleShot(500, self.finish_prompt_destroy)
+    def finish_prompt_destroy(self):
+        self.parent.uid = self.uid
+        self.parent.removeitem_by_uid_from_scene()
+        #self.parent.scene.removeItem(self.proxy)
+        self.proxy = None
+        self.prompt = None
+        self.widget.destroy()
+        #self.parent.parent.delete_outpaint_frame()
+    def prompt_destroy_with_frame(self):
+        self.parent.selected_item = self.uid
+        self.parent.parent.parent.delete_outpaint_frame()
+        self.prompt_destroy_action()
+    def load_img(self):
+        self.parent.selected_item = self.uid
+        self.parent.load_img_into_rect()
+        self.prompt_destroy()
 
-    def mouseReleaseEvent(self, event):
-        self.setCursor(QtCore.Qt.ArrowCursor)
-        if self.moving == True:
-            self.moving = False
-        self.last_pos = None
 class Canvas(QGraphicsView):
 
     def __init__(self, parent=None):
@@ -173,7 +193,8 @@ class Canvas(QGraphicsView):
         self.anim_inpaint = False
         self.origin = QPoint()
         self.rubberBand = QRubberBand(QRubberBand.Rectangle, self)
-
+        self.proxies = {}
+        self.uids = []
         #self.animkeyeditor = AnimKeyEditor()
         #self.proxy = MyProxyWidget(self.animkeyeditor.w)
         #self.proxy.setWidget(self.animkeyeditor.w)
@@ -397,7 +418,7 @@ class Canvas(QGraphicsView):
             pen = QPen(Qt.GlobalColor.blue, 3, Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
             self.rectItem.setPen(pen)
             self.rectItem.setRect(x, y, self.w, self.h)
-        elif self.mode == "select":
+        elif self.mode == "select_":
             if self.selected_item is not None:
                 for i in self.rectlist:
                     if i.id == self.selected_item:
@@ -1302,6 +1323,8 @@ class Canvas(QGraphicsView):
                 if i.id == self.selected_item:
                     i.x = self.scene.scenePos.x() - i.w / 2
                     i.y = self.scene.scenePos.y() - i.h / 2
+                    if self.proxies[i.id] is not None:
+                        self.proxies[i.id].setPos(i.x, i.y)
                     self.newimage = True
                     self.update()
     def inpaint_mousePressEvent(self, e):
@@ -1368,11 +1391,11 @@ class Canvas(QGraphicsView):
         return
 
     def rubberband_mousePressEvent(self, event):
-
+        self.parent.parent.widgets[self.parent.parent.current_widget].w.hires.setCheckState(Qt.CheckState.Unchecked)
         self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Unchecked)
-        self.hoverCheck()
-        if self.hover_item is not None:
-            self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Checked)
+        #self.hoverCheck()
+        #if self.hover_item is not None:
+        #    self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Checked)
         self.startpoint = self.scene.scenePos
         if event.button() == Qt.LeftButton:
             self.origin = QPoint(event.pos())
@@ -1389,9 +1412,10 @@ class Canvas(QGraphicsView):
 
     def rubberband_mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.hoverCheck()
-            if self.hover_item is not None:
-                self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Checked)
+            self.parent.parent.widgets[self.parent.parent.current_widget].w.mode.setCurrentText('advanced')
+            #self.hoverCheck()
+            #if self.hover_item is not None:
+            #    self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Checked)
             self.rubberBand.hide()
             if self.startpoint is not None:
                 #if event.pos().x() > self.startpoint.x() or event.pos().y() > self.startpoint.y():
@@ -1404,43 +1428,88 @@ class Canvas(QGraphicsView):
                     #y = event.pos().y()
             absw = abs(self.scene.scenePos.x() - x)
             absh = abs(self.scene.scenePos.y() - y)
-            w = self.scene.scenePos.x() - x
-            h = self.scene.scenePos.y() - y
+            w = abs(self.scene.scenePos.x() - x)
+            h = abs(self.scene.scenePos.y() - y)
+            #w, h = map(lambda x: x - x % 64, (w, h))
+            if w > 704:
+                self.parent.parent.widgets[self.parent.parent.current_widget].w.hires.setCheckState(Qt.CheckState.Checked)
+            if h > 704:
+                self.parent.parent.widgets[self.parent.parent.current_widget].w.hires.setCheckState(Qt.CheckState.Checked)
+
+            if self.scene.scenePos.x() < self.startpoint.x():
+                x = self.scene.scenePos.x()
+            if event.pos().y() < self.startpoint.y():
+                y = self.scene.scenePos.y()
+            #if event.pos().y() < self.startpoint.y():
+            #    y = event.pos().y()
             uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4)
+            self.uid = uid
             rect = {}
             rect[uid] = Rectangle(self, "", x, y, w, h, uid)
+            print(f"Rubberband added a rect at: {x, y, w, h}")
             self.selected_item = uid
             self.render_item = uid
             self.rectlist.append(rect[uid])
+            self.check_for_frame_overlap()
             self.draw_rects()
-            self.parent.parent.params.W = absw
-            self.parent.parent.params.H = absh
+            self.parent.parent.params.W = w
+            self.parent.parent.params.H = h
             self.parent.parent.update_ui_from_params()
-            self.proxy = QGraphicsProxyWidget()
-            self.prompt = SimplePrompt()
-            self.proxy.setWidget(self.prompt.w)
-            self.fx = QGraphicsOpacityEffect()
-            self.proxy.setGraphicsEffect(self.fx)
+            prompt = SimplePrompt()
+            self.proxies[uid] = MyProxyWidget(prompt, self)
 
-            self.updateView()
-            self.scene.addItem(self.proxy)
-            self.fx.setOpacity(0)
-            self.fx.setEnabled(True)
-            self.animation = QtCore.QPropertyAnimation(self.fx, b"opacity")
+            #self.proxies[uid].setWidget(self.prompt.w)
+            self.proxies[uid].fx = QGraphicsOpacityEffect()
+            self.proxies[uid].setGraphicsEffect(self.proxies[uid].fx)
+            self.proxies[uid].setGeometry(x, y, w, h)
+            #self.proxies[uid].resize(w, h)
+            self.scene.addItem(self.proxies[uid])
+            self.proxies[uid].fx.setOpacity(0)
+            self.proxies[uid].fx.setEnabled(True)
+            self.animation = QtCore.QPropertyAnimation(self.proxies[uid].fx, b"opacity")
             self.animation.setDuration(200)
             self.animation.setStartValue(0)
             self.animation.setEndValue(1)
             self.animation.start()
-            self.startpoint.setX(self.startpoint.x() + absw)
-            self.proxy.setPos (self.startpoint)
-            self.prompt.w.delbutton.clicked.connect(self.prompt_destroy_with_frame)
+            self.proxies[uid].widget.prompts.setViewportMargins(10, 10, 10, 10)
+            #self.startpoint.setX(self.startpoint.x() + self.w)
+            #p = QPointF(x, y)
+            #self.proxies[uid].setPos(p)
+
+            self.proxies[uid].widget.delbutton.clicked.connect(self.proxies[uid].prompt_destroy_with_frame)
             try:
                 self.parent.parent.widgets[self.parent.parent.current_widget].w.dreambutton.disconnect()
             except:
                 pass
-            self.prompt.w.dreambutton.clicked.connect(self.proxy_task)
+            self.proxies[uid].widget.dreambutton.clicked.connect(self.proxies[uid].proxy_task)
             self.drag_mode()
             self.draw_rects()
+            if self.parent.parent.widgets['unicontrol'].w.with_inpaint.isChecked() == True:
+                w, h = map(lambda x: x - x % 64, (w, h))
+                self.rectlist[len(self.rectlist) - 1].w = w
+                self.rectlist[len(self.rectlist) - 1].h = h
+                self.parent.parent.params.W = w
+                self.parent.parent.params.H = h
+                self.parent.parent.update_ui_from_params()
+                self.change_resolution()
+
+    def removeitem_by_uid_from_scene(self):
+        self.scene.removeItem(self.proxies[self.uid])
+
+    def check_for_frame_overlap(self):
+        self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(
+            Qt.CheckState.Unchecked)
+        for x in self.rectlist:
+            if x.id == self.selected_item:
+                # x.image = None
+                # self.update()
+                for i in self.rectlist:
+                    if x.y >= i.y - i.h and x.x >= i.x - i.w:
+                        if x.y <= i.y + i.h and x.x <= i.x + i.w:
+                            if i.id != x.id:
+                                self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(
+                                    Qt.CheckState.Checked)
+        print(f"inpaint: {self.parent.parent.widgets['unicontrol'].w.with_inpaint.isChecked()}")
 
     def proxy_task(self):
         #print(self.parent.parent.widgets['unicontrol'].w.prompts.setText('11123'))
@@ -1488,8 +1557,8 @@ class Canvas(QGraphicsView):
 
     def updateView(self):
         self.setTransform(QTransform().scale(self.zoom, self.zoom).rotate(self.rotate))
-        if self.proxy is not None:
-            self.proxy.setScale((self.getXScale() / self.zoom) * 2)
+        #if self.proxy is not None:
+        #    self.proxy.setScale((self.getXScale() / self.zoom))
             #print(self.getXScale() * self.zoom)
         #if self.tempbatch is not None and self.gridenabled == True:
         #    self.draw_tempBatch(self.tempbatch)

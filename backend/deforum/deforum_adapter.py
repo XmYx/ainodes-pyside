@@ -270,7 +270,7 @@ class DeforumSix:
             gs.models["sd"].eval()
 
             # todo make this 'cuda' a parameter
-            gs.models["sd"].to(self.device)
+            #gs.models["sd"].to(self.device)
             # todo why we do this here?
             from backend.aesthetics import modules
             if gs.diffusion.selected_vae != 'None':
@@ -349,10 +349,11 @@ class DeforumSix:
     def load_inpaint_model(self):
         if "sd" in gs.models:
             gs.models["sd"].to('cpu')
-            del gs.models["sd"]
+            #del gs.models["sd"]
             torch_gc()
         if "custom_model_name" in gs.models:
-            del gs.models["custom_model_name"]
+            gs.models["custom_model_name"].to("cpu")
+            #del gs.models["custom_model_name"]
             torch_gc()
         """Load and initialize the model from configuration variables passed at object creation time"""
         if "inpaint" not in gs.models:
@@ -367,7 +368,7 @@ class DeforumSix:
             model.load_state_dict(torch.load(weights)["state_dict"], strict=False)
 
             device = self.device
-            gs.models["inpaint"] = model.half().to(device)
+            gs.models["inpaint"] = model.half()
             del model
             return
 
@@ -594,6 +595,7 @@ class DeforumSix:
             if "modelFS" in gs.models:
                 del gs.models["modelFS"]
             check = self.load_model_from_config(config=None, ckpt=None)
+            gs.models["sd"].to('cuda')
             if check == -1:
                 return check
 
@@ -799,7 +801,7 @@ class DeforumSix:
             del gs.models["model"]
             del gs.models["modelCS"]
             del gs.models["modelFS"]
-
+        gs.models["sd"].to('cpu')
         torch_gc()
         return paths # this gets images via colab api
 
@@ -1046,6 +1048,7 @@ class DeforumSix:
             torch_gc()
             if "inpaint" not in gs.models:
                 self.load_inpaint_model()
+            gs.models["inpaint"].to('cuda')
             sampler = DDIMSampler(gs.models["inpaint"])
             image_guide = image_path_to_torch(init_image, self.device)
             [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(self.device, blend_mask,
@@ -1114,6 +1117,7 @@ class DeforumSix:
                                         generation_time=generated_time - tic
                                         ))
 
+        gs.models["inpaint"].to('cuda')
 
         torch_gc()
 def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, mask_for_reconstruction, masked_image_for_blend, num_samples=1, w=512, h=512, callback=None):

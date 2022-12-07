@@ -1439,12 +1439,22 @@ class Canvas(QGraphicsView):
             if h > 704:
                 self.parent.parent.widgets[self.parent.parent.current_widget].w.hires.setCheckState(Qt.CheckState.Checked)
 
-            if self.scene.scenePos.x() < self.startpoint.x():
-                x = self.scene.scenePos.x()
-            if event.pos().y() < self.startpoint.y():
+            print(self.scene.scenePos.x(), self.startpoint.x())
+            if self.scene.scenePos.x() < self.startpoint.x() and self.scene.scenePos.y() < self.startpoint.y():
                 y = self.scene.scenePos.y()
+                x = self.scene.scenePos.x()
+            elif self.scene.scenePos.x() < self.startpoint.x() and self.scene.scenePos.y() > self.startpoint.y():
+                y = self.scene.scenePos.y() - h
+                x = self.scene.scenePos.x()
+            elif self.scene.scenePos.x() > self.startpoint.x() and self.scene.scenePos.y() > self.startpoint.y():
+                x = self.startpoint.x()
+                y = self.startpoint.y()
+            elif self.scene.scenePos.x() > self.startpoint.x() and self.scene.scenePos.y() < self.startpoint.y():
+                y = self.scene.scenePos.y()
+                x = self.scene.scenePos.x() - w
+                print("1")
             #if event.pos().y() < self.startpoint.y():
-            #    y = event.pos().y()
+            #    y = self.scene.scenePos.pos().y()
             uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4)
             self.uid = uid
             rect = {}

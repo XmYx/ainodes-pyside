@@ -117,9 +117,8 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
             all_images = []
 
             for batch_index in range(args.n_batch):
-                #no display here
-                #if clear_between_batches and batch_index % 32 == 0:
-                #    display.clear_output(wait=True)
+                if gs.stop_all:
+                    return paths
                 print(f"Batch {batch_index+1} of {args.n_batch}")
 
                 for image in init_array: # iterates the init images

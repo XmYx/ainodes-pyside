@@ -389,6 +389,11 @@ class MainWindow(QMainWindow):
         self.signals.setStatusBar.emit(f"Upscaled {str(num)} image(s)...")
 
     @Slot()
+    def plugin_thread(self, thread_call):
+        worker = Worker(thread_call)
+        self.threadpool.start(worker)
+
+    @Slot()
     def upscale_thread(self):
         worker = Worker(self.image_lab.run_upscale)
         self.threadpool.start(worker)

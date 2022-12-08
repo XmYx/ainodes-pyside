@@ -1,0 +1,4 @@
+prompt,ddim_steps,n_iter,batch_size,Height,Width,scale,ddim_eta,unet_bs,device,seed,outdir,img_format,turbo,full_precision,sampler,C,f,start_code
+"Portrait of Grace Kelly, detailed, concept art, Trending on Artstation",20,1,1,768,768,7.5,0,1,cuda,3548447855,data/output/txt2img,PNG,False,True,euler_a,4,8,
+"Portrait of Grace Kelly, detailed, concept art, Trending on Artstation",20,1,1,512,512,7.5,0,1,cuda,304171988,data/output/txt2img,PNG,False,True,euler_a,4,8,
+"Portrait of Grace Kelly, detailed, concept art, Trending on Artstation",20,1,1,512,512,7.5,0,1,cuda,1552706951,data/output/txt2img,PNG,False,True,euler_a,4,8,

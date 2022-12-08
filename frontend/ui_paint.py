@@ -21,7 +21,7 @@ from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockW
 from PySide6 import QtCore, QtGui
 from backend.singleton import singleton
 
-from frontend.ui_classes import AnimKeyEditor, SimplePrompt
+from frontend.ui_classes import AnimKeyEditor, SimplePrompt, SimplePromptDisplay
 from frontend.unicontrol import UniControl
 
 gs = singleton
@@ -68,8 +68,8 @@ class Rectangle(object):
         #self.signals = RectangleCallbacks()
         self.timer = QtCore.QTimer()
         self.subwidgets = {}
-        self.subwidgets['prompt'] = QLabel()
-        self.subwidgets['prompt'].setAlignment(QtCore.Qt.AlignCenter)
+        self.subwidgets['prompt'] = SimplePromptDisplay()
+        self.subwidgets['prompt'].w.prompts.setAlignment(QtCore.Qt.AlignCenter)
         self.prompt_visible = None
         #self.show_prompt()
 
@@ -108,54 +108,55 @@ class Rectangle(object):
         self.running = False
 
     def show_prompt(self):
-        print("showing..")
+        if self.image is not None:
+            print("showing..")
 
-        self.subwidgets['prompt'].setStyleSheet(
-            """
-            QLabel {
-                font: 36pt 'Segoe UI Italic';
-                background-color: rgba(55, 55, 55, 0.5);
-                color: white;
-                border-radius: 20px;
-                padding: 10px;
-            }
-            """
-        )
-        self.parent.scene.addWidget(self.subwidgets['prompt'])
-        #self.subwidgets['prompt'].setGeometry(self.widget.w.rect())
-        self.subwidgets['prompt'].setText(self.prompt)
-        self.subwidgets['prompt'].setWordWrap(True)
-        shadow = QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(10)
-        shadow.setColor(QtGui.QColor(0, 0, 0))
-        shadow.setOffset(25, 25)
+            self.subwidgets['prompt'].w.setStyleSheet(
+                """
+                QLabel {
+                    font: 36pt 'Segoe UI Italic';
+                    background-color: rgba(55, 55, 55, 0.5);
+                    border-radius: 20px;
+                    padding: 10px;
+                }
+                """
+            )
+            self.parent.scene.addWidget(self.subwidgets['prompt'].w)
+            #self.subwidgets['prompt'].setGeometry(self.widget.w.rect())
+            self.subwidgets['prompt'].w.prompts.setText(self.prompt)
+            #self.subwidgets['prompt'].w.prompts.setWordWrap(True)
+            shadow = QGraphicsDropShadowEffect()
+            shadow.setBlurRadius(10)
+            shadow.setColor(QtGui.QColor(0, 0, 0))
+            shadow.setOffset(25, 25)
 
-        # Apply the effect to the label
-        self.subwidgets['prompt'].setGraphicsEffect(shadow)
+            # Apply the effect to the label
+            self.subwidgets['prompt'].w.setGraphicsEffect(shadow)
 
-        #self.subwidgets['prompt'].setWindowOpacity(0)
-        self.subwidgets['prompt'].setGeometry(self.x, self.y, self.w, self.h)
-        self.subwidgets['prompt'].show()
-        self.animation = QtCore.QPropertyAnimation(
-            self.subwidgets['prompt'], b"windowOpacity"
-        )
-        self.animation.setDuration(250)
-        self.animation.setStartValue(0)
-        self.animation.setEndValue(1)
-        self.animation.start()
-        self.prompt_visible = True
+            #self.subwidgets['prompt'].setWindowOpacity(0)
+            self.subwidgets['prompt'].w.setGeometry(self.x, self.y, self.w, self.h)
+            self.subwidgets['prompt'].w.show()
+            self.animation = QtCore.QPropertyAnimation(
+                self.subwidgets['prompt'].w, b"windowOpacity"
+            )
+            self.animation.setDuration(250)
+            self.animation.setStartValue(0)
+            self.animation.setEndValue(1)
+            self.animation.start()
+            self.prompt_visible = True
 
     def hide_prompt(self):
-        print("hiding..")
-        #self.subwidgets['prompt'].hide()
-        self.animation = QtCore.QPropertyAnimation(
-            self.subwidgets['prompt'], b"windowOpacity"
-        )
-        self.animation.setDuration(250)
-        self.animation.setStartValue(self.subwidgets['prompt'].windowOpacity())
-        self.animation.setEndValue(0)
-        self.animation.start()
-        self.prompt_visible = None
+        if self.image is not None:
+            print("hiding..")
+            #self.subwidgets['prompt'].hide()
+            self.animation = QtCore.QPropertyAnimation(
+                self.subwidgets['prompt'].w, b"windowOpacity"
+            )
+            self.animation.setDuration(250)
+            self.animation.setStartValue(self.subwidgets['prompt'].w.windowOpacity())
+            self.animation.setEndValue(0)
+            self.animation.start()
+            self.prompt_visible = None
 
 
 
@@ -257,7 +258,14 @@ class MyProxyWidget(QGraphicsProxyWidget):
         self.parent.selected_item = self.uid
         self.parent.load_img_into_rect()
         self.prompt_destroy()
-
+    def keyPressEvent(self, e):
+        super(MyProxyWidget, self).keyPressEvent(e)
+        if e.key() == 32:
+            if e.isAutoRepeat():
+                pass
+            else:
+                self.parent.parent.parent.prompt_fetcher.w.input.setText(self.widget.prompts.toPlainText())
+                self.parent.parent.parent.prompt_fetcher_ui.run_get_krea_prompts()
 class Canvas(QGraphicsView):
 
     def __init__(self, parent=None):
@@ -1634,8 +1642,8 @@ class Canvas(QGraphicsView):
             prompt = SimplePrompt()
 
             self.proxies[uid] = MyProxyWidget(prompt, self)
-            rect[uid].subwidgets['prompt'].setGeometry(x, y, w, h)
-            rect[uid].subwidgets['prompt'].setStyleSheet("background-color: transparent")
+            rect[uid].subwidgets['prompt'].w.setGeometry(x, y, w, h)
+            rect[uid].subwidgets['prompt'].w.setStyleSheet("background-color: transparent")
 
             #self.proxies[uid].setWidget(self.prompt.w)
             self.proxies[uid].fx = QGraphicsOpacityEffect()

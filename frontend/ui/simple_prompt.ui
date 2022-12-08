@@ -93,7 +93,8 @@ QPushButton {background-color: #009900; border-radius: 8px ; color: white}
         <string/>
        </property>
        <property name="icon">
-        <iconset theme="dialog-error"/>
+        <iconset theme="dialog-error">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -139,6 +140,30 @@ QPushButton {background-color: #009900; border-radius: 8px ; color: white}
        </property>
        <property name="text">
         <string>LOAD</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>75</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>20</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>MENU</string>
        </property>
       </widget>
      </item>

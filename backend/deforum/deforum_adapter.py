@@ -360,6 +360,8 @@ class DeforumSix:
         if "inpaint" not in gs.models:
             weights = gs.system.sd_inpaint_model_file
             config = 'configs/stable-diffusion/inpaint.yaml'
+            weights = 'data/models/512-inpainting-ema.ckpt'
+            config = 'data/models/512-inpainting-ema.yaml'
             embedding_path = None
 
             config = OmegaConf.load(config)

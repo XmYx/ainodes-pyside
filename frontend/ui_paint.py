@@ -16,10 +16,11 @@ from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockWidget, QMenu, QGraphicsScene, \
     QGraphicsView, QGraphicsItem, QGraphicsWidget, QLabel, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsRectItem, \
     QGraphicsTextItem, QScrollArea, QHBoxLayout, QLayout, QAbstractScrollArea, QFileDialog, QSpinBox, \
-    QGraphicsProxyWidget, QRubberBand, QGraphicsOpacityEffect
+    QGraphicsProxyWidget, QRubberBand, QGraphicsOpacityEffect, QPushButton
 
 from PySide6 import QtCore, QtGui
 from backend.singleton import singleton
+
 from frontend.ui_classes import AnimKeyEditor, SimplePrompt
 from frontend.unicontrol import UniControl
 
@@ -148,13 +149,16 @@ class MyProxyWidget(QGraphicsProxyWidget):
 
         self.parent.parent.parent.widgets['unicontrol'].w.prompts.setText(str(text))
         with_inpaint = self.parent.check_for_frame_overlap()
+        i = self.parent.parent.parent.render_index
+        self.parent.rectlist[i].prompt = text
         if with_inpaint == True:
             #print("initiating inpaint")
-            i = self.parent.parent.parent.render_index
+
             #self.parent.rectlist[i].w, self.parent.rectlist[i].h = map(lambda x: x - x % 64, (self.parent.rectlist[i].w, self.parent.rectlist[i].h))
             self.parent.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Checked)
             self.parent.w = self.parent.rectlist[i].w
             self.parent.h = self.parent.rectlist[i].h
+
             self.parent.change_rect_resolutions()
             self.parent.reusable_outpaint(self.uid)
             self.parent.parent.parent.sessionparams.params.with_inpaint = True
@@ -221,6 +225,8 @@ class Canvas(QGraphicsView):
         self.rubberBand = QRubberBand(QRubberBand.Rectangle, self)
         self.proxies = {}
         self.uids = []
+        self.textshown = None
+        self.hover_item = None
         #self.animkeyeditor = AnimKeyEditor()
         #self.proxy = MyProxyWidget(self.animkeyeditor.w)
         #self.proxy.setWidget(self.animkeyeditor.w)
@@ -462,28 +468,42 @@ class Canvas(QGraphicsView):
         #self.gridenabled = False
         #self.gridenabled = True
         ###print(self.rectlist)
-        self.hover_item = None
-        self.sub_hover_item = None
+        #self.sub_hover_item = None
         matchFound = False
-
+        self.hover_item = None
         for i in self.rectlist:
-            ###print(i.id)
             if i.x <= self.scene.scenePos.x() <= i.x + i.w and i.y <= self.scene.scenePos.y() <= i.y + i.h:
-                ###print(f"found{id}")
+                #print(i.id)
                 #i.color = __selColor__
                 #self.update()
-                if self.hover_item is not None:
-                    self.sub_hover_item = i.id
-                if self.sub_hover_item is None:
-                    self.hover_item = i.id
-                    self.render_index = self.rectlist.index(i)
-                matchFound = True
+                self.hover_item = i.id
+                #if self.sub_hover_item is None:
+                #    self.hover_item = i.id
+                #    self.render_index = self.rectlist.index(i)
             else:
                 i.color = __idleColor__
+
                 #self.update()
-            if not matchFound:
-                self.hover_item = None
-        #self.update()
+        #print(self.hover_item)
+        if self.hover_item is not None and self.textshown is None:
+            #print("redrawing")
+            self.redraw()
+            self.textshown = True
+        elif self.hover_item is None and self.textshown is not None:
+            self.redraw()
+            self.textshown = None
+            #print(self.hover_item)
+        #if self.hover_item is not None:
+        """painter = QPainter()
+        painter.begin(self.pixmap)
+        x = self.rectlist[self.render_index].x
+        y = self.rectlist[self.render_index].y
+        w = self.rectlist[self.render_index].w
+        h = self.rectlist[self.render_index].h
+        painter.drawText(x, y, w, h, 15, str(self.rectlist[self.render_index].prompt))
+        #else:
+        #    self.redraw()
+        self.update()"""
 
     def save_canvas(self):
         self.redraw(transparent=True)
@@ -1119,9 +1139,13 @@ class Canvas(QGraphicsView):
             self.draw_rects()
         self.painter.begin(self.pixmap)
         self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+        text_render_index = None
         if self.rectlist is not [] and self.rectlist is not None:
             #self.rectlist.sort(reverse=False, key=self.sortRects)
             for i in self.rectlist:
+                if self.hover_item is not None:
+                    if i.id == self.hover_item:
+                        text_render_index = self.rectlist.index(i)
                 if i.image is not None and i.active == True:
                     #rect = QRect(i.x, i.y, i.w, i.h)
                     pic = i.image.copy(0, 0, i.image.width(), i.image.height())
@@ -1134,6 +1158,27 @@ class Canvas(QGraphicsView):
                             elif i.running is False:
                                 pixmap = QPixmap('frontend/icons/play.svg')
                             self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
+        if text_render_index is not None:
+            #print(text_render_index)
+            x = self.rectlist[text_render_index].x
+            y = self.rectlist[text_render_index].y
+            w = self.rectlist[text_render_index].w
+            h = self.rectlist[text_render_index].h
+            self.painter.setPen(QColor(Qt.GlobalColor.darkGreen))
+            self.painter.setBrush(QColor(Qt.GlobalColor.darkGray))
+            font = QFont("Segoe UI Black")
+            font.setPointSize(52)
+            self.painter.setFont(font)
+            self.painter.setCompositionMode(QPainter.CompositionMode_Overlay)
+            self.painter.drawRect(x, y, w, h)
+            self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+            self.painter.setPen(Qt.black)
+            self.painter.drawText(x + 10, y + 10, w, h, Qt.TextWordWrap, self.rectlist[text_render_index].prompt)
+            self.painter.setPen(Qt.white)
+            self.painter.drawText(x, y, w, h, Qt.TextWordWrap, self.rectlist[text_render_index].prompt)
+
+
+
         self.painter.end()
         #self.bgitem.setX(0)
         self.bgitem.setPixmap(self.pixmap)
@@ -1725,16 +1770,28 @@ class PaintUI(QDockWidget):
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontal")
         self.horizontalLayout.setContentsMargins(5, 0, 5, 0)
+        from frontend.mainwindow import QIcon_from_svg
+        self.btnOne = MyQPushButton(text="Menu!", parent=self, )
 
+        #self.menu = QMenu(self)
+        #self.menu.addAction("First Item")
+        #self.menu.addAction("Second Item")
+        #self.menu.addAction("Third Item")
 
-        self.horizontalLayout.addWidget(self.W)
-        self.horizontalLayout.addWidget(self.W_spinbox)
+        #self.btnOne.setMenu(self.menu)
 
-        self.horizontalLayout.addWidget(self.H)
-        self.horizontalLayout.addWidget(self.H_spinbox)
+        #self.horizontalLayout.addWidget(self.W)
+        #self.horizontalLayout.addWidget(self.W_spinbox)
+
+        #self.horizontalLayout.addWidget(self.H)
+        #self.horizontalLayout.addWidget(self.H_spinbox)
 
         self.verticalLayout_2.addWidget(self.canvas)
-        self.verticalLayout_2.addWidget(self.widget_2)
+        self.canvas.scene.addWidget(self.btnOne)
+        #self.btnOne.setGeometry(0, 0, 250, 250)
+        self.btnOne.setStyleSheet("QPushButton{image: url(:/frontend/icons/activity.svg);border-radius: 1px;}"
+                      "QPushButton:hover{image: url(:frontend/icons/plus.svg);border-radius: 1px;}")
+        #self.verticalLayout_2.addWidget(self.widget_2)
 
         self.setWidget(self.dockWidgetContents)
         #self.canvas.setMouseTracking(True)  # Mouse events
@@ -1759,7 +1816,11 @@ class PaintUI(QDockWidget):
 
     def rectangleDraw(self):
         self.canvas.rectangle = QRect(self.pos.x(), self.pos.y(), 400, 400)
-
+class MyQPushButton(QPushButton):
+    def __init__(self, text, parent=None):
+        super(MyQPushButton, self).__init__(text, parent)
+        self.parent = parent
+        self.setText(text)
 def spiralOrder(matrix):
     ans = []
 

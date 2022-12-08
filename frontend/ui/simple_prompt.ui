@@ -40,6 +40,12 @@ QPushButton {background-color: #009900; border-radius: 8px ; color: white}
    </property>
    <item>
     <widget class="QTextEdit" name="prompts">
+     <property name="font">
+      <font>
+       <pointsize>26</pointsize>
+       <italic>true</italic>
+      </font>
+     </property>
      <property name="cursor" stdset="0">
       <cursorShape>IBeamCursor</cursorShape>
      </property>
@@ -54,6 +60,9 @@ QPushButton {background-color: #009900; border-radius: 8px ; color: white}
      <property name="autoFormatting">
       <set>QTextEdit::AutoBulletList</set>
      </property>
+     <property name="placeholderText">
+      <string>Prompt</string>
+     </property>
     </widget>
    </item>
    <item>
@@ -63,7 +72,7 @@ QPushButton {background-color: #009900; border-radius: 8px ; color: white}
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>20</height>
+         <height>75</height>
         </size>
        </property>
        <property name="maximumSize">
@@ -72,11 +81,19 @@ QPushButton {background-color: #009900; border-radius: 8px ; color: white}
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>36</pointsize>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">background-color: red</string>
        </property>
        <property name="text">
-        <string>DEL</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset theme="dialog-error"/>
        </property>
       </widget>
      </item>
@@ -85,8 +102,13 @@ QPushButton {background-color: #009900; border-radius: 8px ; color: white}
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>20</height>
+         <height>75</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>36</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>DREAM</string>
@@ -98,7 +120,7 @@ QPushButton {background-color: #009900; border-radius: 8px ; color: white}
        <property name="minimumSize">
         <size>
          <width>50</width>
-         <height>20</height>
+         <height>75</height>
         </size>
        </property>
        <property name="maximumSize">
@@ -106,6 +128,11 @@ QPushButton {background-color: #009900; border-radius: 8px ; color: white}
          <width>120</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>36</pointsize>
+        </font>
        </property>
        <property name="styleSheet">
         <string notr="true">background-color: blue</string>

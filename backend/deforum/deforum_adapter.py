@@ -596,6 +596,8 @@ class DeforumSix:
             if "modelFS" in gs.models:
                 del gs.models["modelFS"]
             #check = self.load_model_from_config(config=None, ckpt=None)
+            gs.models["inpaint"].to('cpu')
+            gs.models["sd"].cond_stage_model.to("cuda")
             gs.models["sd"].to('cuda')
             #if check == -1:
             #    return check
@@ -802,6 +804,8 @@ class DeforumSix:
             del gs.models["model"]
             del gs.models["modelCS"]
             del gs.models["modelFS"]
+        gs.models["sd"].cond_stage_model.to("cpu")
+
         gs.models["sd"].to('cpu')
         torch_gc()
         return paths # this gets images via colab api

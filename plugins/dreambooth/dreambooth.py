@@ -27,6 +27,7 @@ class Callbacks(QObject):
 class aiNodesPlugin:
     def __init__(self, parent):
         self.parent = parent
+        os.environ["PL_TORCH_DISTRIBUTED_BACKEND"] = "gloo"
         self.dreambooth = FineTune()
 
 

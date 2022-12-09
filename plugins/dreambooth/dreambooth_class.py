@@ -79,7 +79,7 @@ class DreamBooth:
                    logdir='output/ti/logs',
                    scale_lr=False,
                    datadir_in_name=True,
-                   actual_resume='data/models/sd-v1-4.ckpt',
+                   actual_resume='data/models/custom/Arcane_Diffusion_V3.ckpt',
                    data_root='data/input/testTraining/dog',
                    reg_data_root='data/input/regularization/images',
                    embedding_manager_ckpt='',

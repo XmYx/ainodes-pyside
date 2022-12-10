@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>preview_height</class>
+ <widget class="QWidget" name="preview_height">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>729</height>
+    <width>601</width>
+    <height>3274</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,6 +44,9 @@
        </property>
        <item>
         <widget class="QScrollArea" name="scrollArea">
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAsNeeded</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -52,64 +55,1102 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>398</width>
-            <height>703</height>
+            <width>599</width>
+            <height>3248</height>
            </rect>
           </property>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="4" column="0">
-            <widget class="QPushButton" name="logsFolder">
-             <property name="text">
-              <string>Select Logs Folder</string>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QFrame" name="Dreambooth">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
              </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <layout class="QGridLayout" name="gridLayout">
+                <item row="13" column="0">
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>Init Word</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="14" column="0" colspan="2">
+                 <widget class="QLineEdit" name="init_word"/>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QPushButton" name="pathInputImages">
+                  <property name="text">
+                   <string>Select path to input Images</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="12" column="0" colspan="2">
+                 <widget class="QLineEdit" name="placeholder_tokens">
+                  <property name="text">
+                   <string>'*'</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="16" column="0" colspan="2">
+                 <widget class="QPushButton" name="resumeModel">
+                  <property name="text">
+                   <string>Model to resume from</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="20" column="1">
+                 <widget class="QLCDNumber" name="steps_tuned"/>
+                </item>
+                <item row="9" column="0">
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>Finetune Config</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="15" column="0">
+                 <widget class="QCheckBox" name="train">
+                  <property name="text">
+                   <string>Train</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0" colspan="2">
+                 <widget class="QLineEdit" name="data_root">
+                  <property name="text">
+                   <string>data/input/images/out</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label">
+                  <property name="text">
+                   <string>Output Name</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="21" column="1">
+                 <widget class="QPushButton" name="Stop">
+                  <property name="text">
+                   <string>Stop finetuning</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="0" colspan="2">
+                 <widget class="QLineEdit" name="logdir">
+                  <property name="text">
+                   <string>data/output/ti/logs</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="11" column="0">
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>Placeholder Tokens</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_6">
+                  <property name="text">
+                   <string>Dreambooth Training</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="21" column="0">
+                 <widget class="QPushButton" name="Start">
+                  <property name="text">
+                   <string>Start finetuning</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="10" column="0" colspan="2">
+                 <widget class="QComboBox" name="base"/>
+                </item>
+                <item row="7" column="0">
+                 <widget class="QPushButton" name="initEmbeddingManager">
+                  <property name="text">
+                   <string>Init embedding manager from checkpoint</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="15" column="1">
+                 <widget class="QCheckBox" name="no_test">
+                  <property name="text">
+                   <string>No Test</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="19" column="1">
+                 <widget class="QLabel" name="label_5">
+                  <property name="text">
+                   <string>Steps tuned</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="8" column="0" colspan="2">
+                 <widget class="QLineEdit" name="init_embedding_manager_ckpt"/>
+                </item>
+                <item row="5" column="0">
+                 <widget class="QPushButton" name="logsFolder">
+                  <property name="text">
+                   <string>Select Logs Folder</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0" colspan="2">
+                 <widget class="QLineEdit" name="name">
+                  <property name="text">
+                   <string>TestProject</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="17" column="0" colspan="2">
+                 <widget class="QLineEdit" name="actual_resume">
+                  <property name="text">
+                   <string>data/models/sd-v1-4.ckpt</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </widget>
            </item>
-           <item row="7" column="0" colspan="2">
-            <widget class="QLineEdit" name="init_embedding_manager_ckpt"/>
-           </item>
-           <item row="6" column="0">
-            <widget class="QPushButton" name="initEmbeddingManager">
-             <property name="text">
-              <string>Init embedding manager from checkpoint</string>
+           <item>
+            <widget class="QFrame" name="hypernetworks">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
              </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <item>
+               <widget class="QTabWidget" name="tabWidget">
+                <property name="currentIndex">
+                 <number>4</number>
+                </property>
+                <widget class="QWidget" name="tab">
+                 <attribute name="title">
+                  <string>Create Hypernetwork</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_4">
+                  <item row="8" column="0">
+                   <widget class="QLabel" name="label_25">
+                    <property name="text">
+                     <string>Activation Function</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QCheckBox" name="size_768">
+                    <property name="text">
+                     <string>768</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0" colspan="2">
+                   <widget class="QLineEdit" name="layer_structure">
+                    <property name="text">
+                     <string>1, 2, 1</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="0" colspan="2">
+                   <widget class="QComboBox" name="activation_func"/>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="label_26">
+                    <property name="text">
+                     <string>Layer Structure</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="12" column="0">
+                   <widget class="QLabel" name="label_27">
+                    <property name="text">
+                     <string>Weight Init</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="16" column="0">
+                   <spacer name="verticalSpacer_2">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QCheckBox" name="size_320">
+                    <property name="text">
+                     <string>320</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QCheckBox" name="overwrite_old">
+                    <property name="text">
+                     <string>Overwrite Existing</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QCheckBox" name="size_640">
+                    <property name="text">
+                     <string>640</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="13" column="0" colspan="2">
+                   <widget class="QComboBox" name="weight_init">
+                    <item>
+                     <property name="text">
+                      <string>Normal</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>KaimingUniform</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>KaimingNormal</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>XavierUniform</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>XavierNormal</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_28">
+                    <property name="text">
+                     <string>Enable Sizes</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0" colspan="2">
+                   <widget class="QLineEdit" name="name_2"/>
+                  </item>
+                  <item row="14" column="1">
+                   <widget class="QCheckBox" name="use_dropout">
+                    <property name="text">
+                     <string>Use dropout</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="14" column="0">
+                   <widget class="QCheckBox" name="add_layer_norm">
+                    <property name="text">
+                     <string>Add layer normalization</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_29">
+                    <property name="text">
+                     <string>Name</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QCheckBox" name="size_1280">
+                    <property name="text">
+                     <string>1280</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="15" column="0">
+                   <widget class="QPushButton" name="create_network">
+                    <property name="text">
+                     <string>Create Hypernetwork</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_3">
+                 <attribute name="title">
+                  <string>Preprocess Input</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <item row="15" column="0">
+                   <widget class="QLabel" name="label_31">
+                    <property name="text">
+                     <string>Face weight</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="1">
+                   <widget class="QCheckBox" name="process_caption">
+                    <property name="text">
+                     <string>Auto Caption</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="2">
+                   <widget class="QCheckBox" name="style_caption">
+                    <property name="text">
+                     <string>Style Caption</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="19" column="0">
+                   <spacer name="verticalSpacer_5">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item row="16" column="0">
+                   <widget class="QLabel" name="label_32">
+                    <property name="text">
+                     <string>Entropy weight</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="13" column="0">
+                   <widget class="QLabel" name="label_36">
+                    <property name="text">
+                     <string>Split overlap</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QPushButton" name="procerss_destination_folder">
+                    <property name="text">
+                     <string>Destination</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QPushButton" name="process_input_files">
+                    <property name="text">
+                     <string>Input Files</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="14" column="0">
+                   <widget class="QCheckBox" name="process_focal_crop">
+                    <property name="text">
+                     <string>Focal point crop</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="3">
+                   <widget class="QCheckBox" name="process_caption_deepbooru">
+                    <property name="text">
+                     <string>Deepbooru caption</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="11" column="0">
+                   <widget class="QCheckBox" name="process_split">
+                    <property name="text">
+                     <string>Split Oversize</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="label_33">
+                    <property name="text">
+                     <string>Width</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="14" column="1">
+                   <widget class="QCheckBox" name="process_focal_crop_debug">
+                    <property name="text">
+                     <string>Debug Images</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="0" colspan="4">
+                   <widget class="QLabel" name="label_34">
+                    <property name="text">
+                     <string>Existing Caption Files</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="0">
+                   <widget class="QCheckBox" name="process_flip">
+                    <property name="text">
+                     <string>Flipped Copy</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="12" column="0">
+                   <widget class="QLabel" name="label_30">
+                    <property name="text">
+                     <string>Split threshold</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QLabel" name="label_37">
+                    <property name="text">
+                     <string>Height</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="17" column="0">
+                   <widget class="QLabel" name="label_35">
+                    <property name="text">
+                     <string>Edges weight</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="2">
+                   <widget class="QSpinBox" name="process_width"/>
+                  </item>
+                  <item row="6" column="2">
+                   <widget class="QSpinBox" name="process_height_2"/>
+                  </item>
+                  <item row="12" column="2">
+                   <widget class="QSpinBox" name="split_threshold"/>
+                  </item>
+                  <item row="13" column="2">
+                   <widget class="QSpinBox" name="overlap_ratio"/>
+                  </item>
+                  <item row="15" column="2">
+                   <widget class="QSpinBox" name="process_focal_crop_face_weight"/>
+                  </item>
+                  <item row="16" column="2">
+                   <widget class="QSpinBox" name="process_focal_crop_entropy_weight"/>
+                  </item>
+                  <item row="17" column="2">
+                   <widget class="QSpinBox" name="process_focal_crop_edges_weight"/>
+                  </item>
+                  <item row="18" column="0" colspan="4">
+                   <widget class="QPushButton" name="runPreprocess">
+                    <property name="text">
+                     <string>Run Preprocess</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="0" colspan="4">
+                   <widget class="QComboBox" name="preprocess_txt_action">
+                    <item>
+                     <property name="text">
+                      <string>ignore</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>copy</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>prepend</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>append</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="4" column="0" colspan="4">
+                   <widget class="QLineEdit" name="process_dst"/>
+                  </item>
+                  <item row="2" column="0" colspan="4">
+                   <widget class="QLineEdit" name="process_src"/>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="Hypernetwork">
+                 <attribute name="title">
+                  <string>Hypernetwork Training</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_6">
+                  <item row="6" column="0" colspan="2">
+                   <widget class="QLineEdit" name="learn_rate">
+                    <property name="text">
+                     <string>5e-5:100, 5e-6:1500, 5e-7:10000, 5e-8:20000</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="0" colspan="2">
+                   <widget class="QLineEdit" name="data_root_2">
+                    <property name="text">
+                     <string>data/input/images</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="0">
+                   <widget class="QPushButton" name="pathInputImages_2">
+                    <property name="text">
+                     <string>Select path to input Images</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="17" column="1">
+                   <widget class="QSpinBox" name="create_image_every"/>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_46">
+                    <property name="text">
+                     <string>CKPT to train on</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="11" column="0" colspan="2">
+                   <widget class="QLineEdit" name="log_directory">
+                    <property name="text">
+                     <string>data/hyper/output</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="18" column="1">
+                   <widget class="QSpinBox" name="save_hypernetwork_every"/>
+                  </item>
+                  <item row="16" column="0">
+                   <widget class="QLabel" name="label_39">
+                    <property name="text">
+                     <string>Steps</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QComboBox" name="hypernetwork_list"/>
+                  </item>
+                  <item row="15" column="1">
+                   <widget class="QSpinBox" name="training_height"/>
+                  </item>
+                  <item row="10" column="0">
+                   <widget class="QPushButton" name="logsFolder_2">
+                    <property name="text">
+                     <string>Select Logs Folder</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="14" column="1">
+                   <widget class="QSpinBox" name="training_width"/>
+                  </item>
+                  <item row="21" column="1">
+                   <widget class="QPushButton" name="Stop_2">
+                    <property name="text">
+                     <string>Stop Training</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QSpinBox" name="batch_size">
+                    <property name="maximum">
+                     <number>10</number>
+                    </property>
+                    <property name="value">
+                     <number>1</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="18" column="0">
+                   <widget class="QLabel" name="label_41">
+                    <property name="text">
+                     <string>Save Network any n Step</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="12" column="0">
+                   <widget class="QPushButton" name="promptTemplateFile">
+                    <property name="text">
+                     <string>Select Prompt template File</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="15" column="0">
+                   <widget class="QLabel" name="label_38">
+                    <property name="text">
+                     <string>Training Height</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="17" column="0">
+                   <widget class="QLabel" name="label_42">
+                    <property name="text">
+                     <string>Save Image any n Step</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="13" column="0" colspan="2">
+                   <widget class="QLineEdit" name="template_file">
+                    <property name="text">
+                     <string>data/hyper/templates/hypernetwork.txt</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="label_44">
+                    <property name="text">
+                     <string>Learn Rate</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="label_43">
+                    <property name="text">
+                     <string>Batch Size</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_40">
+                    <property name="text">
+                     <string>Hypernetwork Name</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="24" column="0">
+                   <spacer name="verticalSpacer_3">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QComboBox" name="ckpt_list"/>
+                  </item>
+                  <item row="16" column="1">
+                   <widget class="QSpinBox" name="steps"/>
+                  </item>
+                  <item row="14" column="0">
+                   <widget class="QLabel" name="label_45">
+                    <property name="text">
+                     <string>Training width</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="21" column="0">
+                   <widget class="QPushButton" name="train_hypernetwork">
+                    <property name="text">
+                     <string>Start Training</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_2">
+                 <attribute name="title">
+                  <string>Training Monitor</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_7">
+                  <item row="0" column="1">
+                   <widget class="QLCDNumber" name="lcdNumber"/>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_47">
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <spacer name="verticalSpacer_4">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="PreviewSamples">
+                 <attribute name="title">
+                  <string>Preview</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_8">
+                  <item row="1" column="1">
+                   <widget class="QSpinBox" name="preview_width"/>
+                  </item>
+                  <item row="10" column="1">
+                   <widget class="QSpinBox" name="preview_cfg_scale"/>
+                  </item>
+                  <item row="4" column="0" colspan="2">
+                   <widget class="QTextEdit" name="preview_prompt"/>
+                  </item>
+                  <item row="11" column="0">
+                   <widget class="QLabel" name="label_53">
+                    <property name="text">
+                     <string>Seed</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="0">
+                   <widget class="QLabel" name="label_49">
+                    <property name="text">
+                     <string>Steps</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_55">
+                    <property name="text">
+                     <string>Prompt</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="1">
+                   <widget class="QComboBox" name="preview_sampler_index"/>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QSpinBox" name="spinBox_7"/>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_54">
+                    <property name="text">
+                     <string>Height</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QCheckBox" name="preview_from_txt2img">
+                    <property name="text">
+                     <string>Preview from Text 2 Image Settings</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="11" column="1">
+                   <widget class="QLineEdit" name="preview_seed">
+                    <property name="text">
+                     <string>-1</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="label_51">
+                    <property name="text">
+                     <string>Negative Prompt</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_48">
+                    <property name="text">
+                     <string>Width</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="0">
+                   <widget class="QLabel" name="label_50">
+                    <property name="text">
+                     <string>Sampler</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="1">
+                   <widget class="QSpinBox" name="preview_steps"/>
+                  </item>
+                  <item row="6" column="0" colspan="2">
+                   <widget class="QTextEdit" name="preview_negative_prompt"/>
+                  </item>
+                  <item row="10" column="0">
+                   <widget class="QLabel" name="label_52">
+                    <property name="text">
+                     <string>Scale</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
-           <item row="14" column="1">
-            <widget class="QCheckBox" name="no_test">
-             <property name="text">
-              <string>No Test</string>
+           <item>
+            <widget class="QFrame" name="ckptToDiff">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
              </property>
-             <property name="checked">
-              <bool>true</bool>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
              </property>
+             <layout class="QGridLayout" name="gridLayout_2">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_10">
+                <property name="text">
+                 <string>CKPT to Diffuser</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="0">
+               <widget class="QCheckBox" name="checkBox">
+                <property name="text">
+                 <string>Extract EMA</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="0">
+               <widget class="QLabel" name="label_15">
+                <property name="text">
+                 <string>Image Size</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="0">
+               <widget class="QComboBox" name="comboBox_3"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLineEdit" name="lineEdit"/>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_13">
+                <property name="text">
+                 <string>Number in Channels</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="0">
+               <widget class="QComboBox" name="comboBox_4"/>
+              </item>
+              <item row="6" column="0">
+               <widget class="QSpinBox" name="spinBox"/>
+              </item>
+              <item row="11" column="0">
+               <widget class="QLabel" name="label_16">
+                <property name="text">
+                 <string>Prediction Type</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="pushButton">
+                <property name="text">
+                 <string>Checkpoint</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_14">
+                <property name="text">
+                 <string>Scheduler Type</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QComboBox" name="comboBox_2"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_12">
+                <property name="text">
+                 <string>Config</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QComboBox" name="comboBox"/>
+              </item>
+             </layout>
             </widget>
            </item>
-           <item row="19" column="1">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>Steps tuned</string>
+           <item>
+            <widget class="QFrame" name="LoraDreambooth">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
              </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="8" column="0" colspan="2">
+               <widget class="QLineEdit" name="lineEdit_5"/>
+              </item>
+              <item row="2" column="0" colspan="2">
+               <widget class="QLineEdit" name="lineEdit_2"/>
+              </item>
+              <item row="16" column="1">
+               <widget class="QComboBox" name="comboBox_6"/>
+              </item>
+              <item row="11" column="0">
+               <widget class="QLabel" name="label_19">
+                <property name="text">
+                 <string>Batchsize</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="1">
+               <widget class="QSpinBox" name="spinBox_3"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_7">
+                <property name="text">
+                 <string>Lora Dreamboot Training</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0" colspan="2">
+               <widget class="QLineEdit" name="lineEdit_4"/>
+              </item>
+              <item row="9" column="0">
+               <widget class="QLabel" name="label_18">
+                <property name="text">
+                 <string>Resolution</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QPushButton" name="pushButton_4">
+                <property name="text">
+                 <string>Output Dir</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_17">
+                <property name="text">
+                 <string>Prompt</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="0">
+               <widget class="QLabel" name="label_20">
+                <property name="text">
+                 <string>Gradient accumulation steps</string>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="1">
+               <widget class="QSpinBox" name="spinBox_2"/>
+              </item>
+              <item row="16" column="0">
+               <widget class="QLabel" name="label_22">
+                <property name="text">
+                 <string>Learning rate scheduler</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="pushButton_2">
+                <property name="text">
+                 <string>Diffuser Model Path</string>
+                </property>
+               </widget>
+              </item>
+              <item row="15" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+              </item>
+              <item row="18" column="0">
+               <widget class="QLabel" name="label_24">
+                <property name="text">
+                 <string>Max training steps</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0" colspan="2">
+               <widget class="QLineEdit" name="lineEdit_3"/>
+              </item>
+              <item row="15" column="0">
+               <widget class="QLabel" name="label_21">
+                <property name="text">
+                 <string>Learning rate</string>
+                </property>
+               </widget>
+              </item>
+              <item row="17" column="0">
+               <widget class="QLabel" name="label_23">
+                <property name="text">
+                 <string>Learning rate warmup</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QPushButton" name="pushButton_3">
+                <property name="text">
+                 <string>Training Images</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="1">
+               <widget class="QComboBox" name="comboBox_5"/>
+              </item>
+              <item row="17" column="1">
+               <widget class="QSpinBox" name="spinBox_4"/>
+              </item>
+              <item row="18" column="1">
+               <widget class="QSpinBox" name="spinBox_5"/>
+              </item>
+             </layout>
             </widget>
            </item>
-           <item row="15" column="0" colspan="2">
-            <widget class="QPushButton" name="resumeModel">
-             <property name="text">
-              <string>Model to resume from</string>
-             </property>
-            </widget>
-           </item>
-           <item row="20" column="1">
-            <widget class="QLCDNumber" name="steps_tuned"/>
-           </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="pathInputImages">
-             <property name="text">
-              <string>Select path to input Images</string>
-             </property>
-            </widget>
-           </item>
-           <item row="22" column="0">
-            <spacer name="verticalSpacer">
+           <item>
+            <spacer name="verticalSpacer_7">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
@@ -120,106 +1161,6 @@
               </size>
              </property>
             </spacer>
-           </item>
-           <item row="10" column="0">
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>Placeholder Tokens</string>
-             </property>
-            </widget>
-           </item>
-           <item row="21" column="1">
-            <widget class="QPushButton" name="Stop">
-             <property name="text">
-              <string>Stop finetuning</string>
-             </property>
-            </widget>
-           </item>
-           <item row="16" column="0" colspan="2">
-            <widget class="QLineEdit" name="actual_resume">
-             <property name="text">
-              <string>data/models/sd-v1-4.ckpt</string>
-             </property>
-            </widget>
-           </item>
-           <item row="13" column="0" colspan="2">
-            <widget class="QLineEdit" name="init_word"/>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QLineEdit" name="name">
-             <property name="text">
-              <string>TestProject</string>
-             </property>
-            </widget>
-           </item>
-           <item row="21" column="0">
-            <widget class="QPushButton" name="Start">
-             <property name="text">
-              <string>Start finetuning</string>
-             </property>
-            </widget>
-           </item>
-           <item row="14" column="0">
-            <widget class="QCheckBox" name="train">
-             <property name="text">
-              <string>Train</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Output Name</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0" colspan="2">
-            <widget class="QLineEdit" name="logdir">
-             <property name="text">
-              <string>data/output/ti/logs</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="0">
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>Finetune Config</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0" colspan="2">
-            <widget class="QLineEdit" name="data_root">
-             <property name="text">
-              <string>data/input/images/out</string>
-             </property>
-            </widget>
-           </item>
-           <item row="9" column="0" colspan="2">
-            <widget class="QComboBox" name="base"/>
-           </item>
-           <item row="17" column="0" colspan="2">
-            <widget class="Line" name="line">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="11" column="0" colspan="2">
-            <widget class="QLineEdit" name="placeholder_tokens">
-             <property name="text">
-              <string>'*'</string>
-             </property>
-            </widget>
-           </item>
-           <item row="12" column="0">
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Init Word</string>
-             </property>
-            </widget>
            </item>
           </layout>
          </widget>

@@ -294,7 +294,6 @@ class DreamBooth:
 
 
 
-
     def run_dreambooth(self, opt):
         now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
 
@@ -328,6 +327,10 @@ class DreamBooth:
             opt.resume_from_checkpoint = ckpt
             base_configs = sorted(glob.glob(os.path.join(logdir, "configs/*.yaml")))
             opt.base = base_configs + opt.base
+
+            print('opt.base', opt.base)
+            return
+
             _tmp = logdir.split("/")
             nowname = _tmp[-1]
         else:
@@ -360,17 +363,21 @@ class DreamBooth:
             #trainer_config = lightning_config.get("trainer", OmegaConf.create())
             trainer_config = self.get_trainer_config(opt)
             # default to ddp
-            trainer_config["accelerator"] = "ddp"
-            for k in nondefault_trainer_args(opt):
-                trainer_config[k] = getattr(opt, k)
+            #trainer_config["accelerator"] = "ddp"
+            #for k in nondefault_trainer_args(opt):
+            #    trainer_config[k] = getattr(opt, k)
+            trainer_config['gpus'] = '0,'
             if not "gpus" in trainer_config:
+                print('not "gpus" in trainer_config')
                 del trainer_config["accelerator"]
                 cpu = True
             else:
+                print('"gpus" in trainer_config')
                 gpuinfo = trainer_config["gpus"]
                 print(f"Running on GPUs {gpuinfo}")
                 cpu = False
             trainer_opt = argparse.Namespace(**trainer_config)
+            print('trainer_opt', trainer_opt)
             lightning_config.trainer = trainer_config
 
             # model
@@ -387,8 +394,10 @@ class DreamBooth:
             config.data.params.validation.params.placeholder_token = opt.class_word
 
             if opt.actual_resume:
+                print('opt.actual_resume')
                 model = load_model_from_config(config, opt.actual_resume)
             else:
+                print('not opt.actual_resume')
                 model = instantiate_from_config(config.model)
 
             # trainer and callbacks
@@ -415,8 +424,10 @@ class DreamBooth:
             }
             default_logger_cfg = default_logger_cfgs["testtube"]
             if "logger" in lightning_config:
+                print('"logger" in lightning_config')
                 logger_cfg = lightning_config.logger
             else:
+                print('"logger" not in lightning_config')
                 logger_cfg = OmegaConf.create()
             logger_cfg = OmegaConf.merge(default_logger_cfg, logger_cfg)
             trainer_kwargs["logger"] = instantiate_from_config(logger_cfg)
@@ -438,12 +449,15 @@ class DreamBooth:
                 default_modelckpt_cfg["params"]["save_top_k"] = 1
 
             if "modelcheckpoint" in lightning_config:
+                print('"modelcheckpoint" in lightning_config')
                 modelckpt_cfg = lightning_config.modelcheckpoint
             else:
+                print('"modelcheckpoint" not in lightning_config')
                 modelckpt_cfg =  OmegaConf.create()
             modelckpt_cfg = OmegaConf.merge(default_modelckpt_cfg, modelckpt_cfg)
             print(f"Merged modelckpt-cfg: \n{modelckpt_cfg}")
             if version.parse(pl.__version__) < version.parse('1.4.0'):
+                print('version < 1.4.0')
                 trainer_kwargs["checkpoint_callback"] = instantiate_from_config(modelckpt_cfg)
 
             # add callback which sets up log directory
@@ -465,7 +479,7 @@ class DreamBooth:
                     "params": {
                         "batch_frequency": 750,
                         "max_images": 4,
-                        "clamp": True
+                        "clamp": True,
                     }
                 },
                 "learning_rate_logger": {
@@ -480,11 +494,14 @@ class DreamBooth:
                 },
             }
             if version.parse(pl.__version__) >= version.parse('1.4.0'):
+                print('version > 1.4.0')
                 default_callbacks_cfg.update({'checkpoint_callback': modelckpt_cfg})
 
             if "callbacks" in lightning_config:
+                print(' "callbacks" in lightning_config')
                 callbacks_cfg = lightning_config.callbacks
             else:
+                print(' "callbacks" not in lightning_config')
                 callbacks_cfg = OmegaConf.create()
 
             if 'metrics_over_trainsteps_checkpoint' in callbacks_cfg:
@@ -504,18 +521,26 @@ class DreamBooth:
                          }
                 }
                 default_callbacks_cfg.update(default_metrics_over_trainsteps_ckpt_dict)
-
+            else:
+                print('not metrics_over_trainsteps_checkpoint')
             callbacks_cfg = OmegaConf.merge(default_callbacks_cfg, callbacks_cfg)
             if 'ignore_keys_callback' in callbacks_cfg and hasattr(trainer_opt, 'resume_from_checkpoint'):
+                print('ignore_keys_callback and resume_from_checkpoint')
                 callbacks_cfg.ignore_keys_callback.params['ckpt_path'] = trainer_opt.resume_from_checkpoint
             elif 'ignore_keys_callback' in callbacks_cfg:
+                print('ignore_keys_callback')
                 del callbacks_cfg['ignore_keys_callback']
 
             trainer_kwargs["callbacks"] = [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg]
             trainer_kwargs["max_steps"] = trainer_opt.max_steps
 
+            print('trainer_opt', trainer_opt)
+            print('trainer_kwargs', trainer_kwargs)
+
             self.trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
             self.trainer.logdir = logdir  ###
+
+            print('trainer', self.trainer)
 
             # data
             config.data.params.train.params.data_root = opt.data_root
@@ -571,6 +596,7 @@ class DreamBooth:
                     import pudb;
                     pudb.set_trace()
 
+            print(opt.__dict__)
 
             # run
             if opt.train:

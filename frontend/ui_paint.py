@@ -15,10 +15,13 @@ from PySide6.QtGui import Qt, QColor, QFont, QPalette, QPainter, QPen, QPolygon,
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockWidget, QMenu, QGraphicsScene, \
     QGraphicsView, QGraphicsItem, QGraphicsWidget, QLabel, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsRectItem, \
-    QGraphicsTextItem, QScrollArea, QHBoxLayout, QLayout, QAbstractScrollArea, QFileDialog, QSpinBox
+    QGraphicsTextItem, QScrollArea, QHBoxLayout, QLayout, QAbstractScrollArea, QFileDialog, QSpinBox, \
+    QGraphicsProxyWidget
 
 from PySide6 import QtCore, QtGui
 from backend.singleton import singleton
+from frontend.ui_classes import AnimKeyEditor
+
 gs = singleton
 from time import gmtime, strftime
 import time
@@ -116,7 +119,23 @@ class Scene(QGraphicsScene):
         self.scenePos = event.scenePos()
         self.gridenabled = False
 
+class MyProxyWidget(QGraphicsProxyWidget):
+    def __init__(self, widget):
+        super(MyProxyWidget, self).__init__()
+        self.setWidget(widget)
 
+    def mousePressEvent(self, event):
+        self.setCursor(QtCore.Qt.ClosedHandCursor)
+        self.last_pos = event.pos()
+
+    def mouseMoveEvent(self, event):
+        dx = event.pos().x() - self.last_pos.x()
+        dy = event.pos().y() - self.last_pos.y()
+        self.setPos(self.x() + dx, self.y() + dy)
+        self.last_pos = event.pos()
+
+    def mouseReleaseEvent(self, event):
+        self.setCursor(QtCore.Qt.ArrowCursor)
 class Canvas(QGraphicsView):
 
     def __init__(self, parent=None):
@@ -139,6 +158,12 @@ class Canvas(QGraphicsView):
         self.running = False
         self.setAcceptDrops(True)
         self.anim_inpaint = False
+
+        #self.animkeyeditor = AnimKeyEditor()
+        #self.proxy = MyProxyWidget(self.animkeyeditor.w)
+        #self.proxy.setWidget(self.animkeyeditor.w)
+        #self.scene.addItem(self.proxy)
+        #self.mouseMoveEvent = self.onMouse
         #self.start_main_clock()
     @Slot()
     def start_main_clock(self):

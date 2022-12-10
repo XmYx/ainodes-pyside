@@ -325,6 +325,7 @@ class Deforum_UI(QObject):
         W = int(params.W)
         seed = int(params.seed) if params.seed != "" else random.randint(0, 44444444)
         prompt = str(params.prompts)
+        print(prompt)
         strength = float(params.strength)
         mask_blur = float(params.mask_blur)
         reconstruction_blur = float(params.recons_blur)

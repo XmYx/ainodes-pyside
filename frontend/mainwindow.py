@@ -180,6 +180,8 @@ class MainWindow(QMainWindow):
 
         self.params = self.sessionparams.update_params()
     def selftest(self):  #TODO Lets extend this function with everything we have and has to work
+
+        self.canvas.canvas.reset
         self.params = self.sessionparams.update_params()
         gs.stop_all = False
         self.task_switcher()
@@ -513,6 +515,7 @@ class MainWindow(QMainWindow):
         help_mode = QAction(QIcon_from_svg('frontend/icons/help-circle.svg'), 'Help', self)
         skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'Help', self)
         skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'Help', self)
+        test_mode = QAction(QIcon_from_svg('frontend/icons/alert-octagon.svg'), 'Run Self Test - It will take a while', self)
 
 
         self.toolbar.addAction(still_mode)
@@ -523,11 +526,12 @@ class MainWindow(QMainWindow):
         self.toolbar.addAction(help_mode)
         self.toolbar.addAction(skip_back)
         self.toolbar.addAction(skip_forward)
+        self.toolbar.addAction(test_mode)
 
 
         skip_back.triggered.connect(self.canvas.canvas.skip_back)
         skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
-
+        test_mode.triggered.connect(self.selftest)
 
 
     def create_secondary_toolbar(self):

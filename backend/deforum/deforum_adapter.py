@@ -612,7 +612,10 @@ class DeforumSix:
         #print("Running Seamless sampling...")
         seamless = args.seamless
         seamless_axes = args.axis
-        configure_model_padding(gs.models["sd"], seamless, seamless_axes)
+        if lowmem == False:
+            configure_model_padding(gs.models["sd"], seamless, seamless_axes)
+        elif lowmem == True:
+            configure_model_padding(gs.models["model"], seamless, seamless_axes)
         #self.prev_seamless = True
         """
         for key, value in root.__dict__.items():

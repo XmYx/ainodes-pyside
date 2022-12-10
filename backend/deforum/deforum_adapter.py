@@ -241,7 +241,9 @@ class DeforumSix:
             if len(u) > 0 and verbose:
                 print("unexpected keys:")
                 print(u)
+
             model.half()
+            model = torch.compile(model)
             gs.models["sd"] = copy.deepcopy(model)
             gs.models["sd"].cond_stage_model.device = self.device
             #gs.models["sd"].embedding_manager = EmbeddingManager(gs.models["sd"].cond_stage_model)
@@ -597,12 +599,13 @@ class DeforumSix:
                 del gs.models["modelCS"]
             if "modelFS" in gs.models:
                 del gs.models["modelFS"]
-            #check = self.load_model_from_config(config=None, ckpt=None)
-            gs.models["inpaint"].to('cpu')
+            check = self.load_model_from_config(config=None, ckpt=None)
+            if 'inpaint' in gs.models:
+                gs.models["inpaint"].to('cpu')
             gs.models["sd"].cond_stage_model.to("cuda")
             gs.models["sd"].to('cuda')
-            #if check == -1:
-            #    return check
+            if check == -1:
+                return check
 
 
 
@@ -1053,8 +1056,8 @@ class DeforumSix:
 
         elif with_inpaint == True:
             torch_gc()
-            #if "inpaint" not in gs.models:
-            #    self.load_inpaint_model()
+            if "inpaint" not in gs.models:
+                self.load_inpaint_model()
             gs.models["inpaint"].to('cuda')
             sampler = DDIMSampler(gs.models["inpaint"])
             image_guide = image_path_to_torch(init_image, self.device)

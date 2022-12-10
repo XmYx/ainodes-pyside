@@ -21,7 +21,7 @@ from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockW
 from PySide6 import QtCore, QtGui
 from backend.singleton import singleton
 
-from frontend.ui_classes import AnimKeyEditor, SimplePrompt, SimplePromptDisplay
+from frontend.ui_classes import AnimKeyEditor, SimplePrompt, SimplePromptDisplay, SimpleKreaPrompts
 from frontend.unicontrol import UniControl
 
 gs = singleton
@@ -39,7 +39,59 @@ __idleColor__ = QColor(91, 48, 232)
 __selColor__ = QColor(255, 102, 102)
 
 
+class FlipWidget(QWidget):
+    def __init__(self, *args, **kwargs):
+        super(FlipWidget, self).__init__()
 
+        # Create the property animation
+        self.animation = QtCore.QPropertyAnimation(self, b"scale")
+        self.animation.setDuration(500)
+        self.animation.setStartValue(0)
+        self.animation.setEndValue(1)
+
+        # Create the flip button
+        self.flip_button = QPushButton("Flip")
+        self.flip_button.clicked.connect(self.animate)
+
+        # Set the initial scale to 1
+        #self.setScale(1)
+
+        # Create the layout
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.flip_button)
+        self.setLayout(self.layout)
+
+    def animate(self):
+        self.scale = 1
+        self.animation.start()
+
+        # Set the initial scale to 1
+
+
+    @QtCore.Property(float)
+    def scale(self):
+        return self._scale
+
+    @scale.setter
+    def scale(self, value):
+        self._scale = value
+        self.update()
+    def paintEvent(self, event):
+        # Get the size of the widget
+        width = self.width()
+        height = self.height()
+
+        # Create the painter
+        painter = QtGui.QPainter(self)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+
+        # Set the transformation origin to the center of the widget
+        painter.translate(width / 2, height / 2)
+        painter.scale(self._scale, self._scale)
+        painter.translate(-width / 2, -height / 2)
+
+        # Draw the content of the widget
+        painter.drawText(0, 0, width, height, QtCore.Qt.AlignCenter, "Flip me!")
 class Rectangle(object):
     def __init__(self, parent, prompt, x, y, w, h, id, order = None, img_path = None, image = None, render_index=None, params=None):
 
@@ -70,7 +122,11 @@ class Rectangle(object):
         self.subwidgets = {}
         self.subwidgets['prompt'] = SimplePromptDisplay()
         self.subwidgets['prompt'].w.prompts.setAlignment(QtCore.Qt.AlignCenter)
+        self.proxy = QGraphicsProxyWidget()
+        self.proxy.setWidget(self.subwidgets['prompt'].w)
         self.prompt_visible = None
+        self.event_filter = MyEventFilter()
+        self.subwidgets['prompt'].w.installEventFilter(self.event_filter)
         #self.show_prompt()
 
     def play(self):
@@ -108,6 +164,7 @@ class Rectangle(object):
         self.running = False
 
     def show_prompt(self):
+        pass
         if self.image is not None:
             print("showing..")
 
@@ -121,7 +178,8 @@ class Rectangle(object):
                 }
                 """
             )
-            self.parent.scene.addWidget(self.subwidgets['prompt'].w)
+
+            self.parent.scene.addItem(self.proxy)
             #self.subwidgets['prompt'].setGeometry(self.widget.w.rect())
             self.subwidgets['prompt'].w.prompts.setText(self.prompt)
             #self.subwidgets['prompt'].w.prompts.setWordWrap(True)
@@ -141,13 +199,22 @@ class Rectangle(object):
             )
             self.animation.setDuration(250)
             self.animation.setStartValue(0)
-            self.animation.setEndValue(1)
+            self.animation.setEndValue(0.75)
             self.animation.start()
             self.prompt_visible = True
+            self.subwidgets['prompt'].w.deletebutton.clicked.connect(self.annihilation)
+    def annihilation(self):
+        self.hide_prompt(destroy=True)
+        #self.parent.uid = self.id
+        #self.parent.removeitem_by_uid_from_scene()
+        #self.subwidgets['prompt'].w.destroy()
+        self.parent.parent.parent.delete_outpaint_frame()
 
-    def hide_prompt(self):
+    def hide_prompt(self, destroy=None):
         if self.image is not None:
             print("hiding..")
+            self.subwidgets['prompt'].w.deletebutton.clicked.disconnect()
+            self.parent.scene.removeItem(self.proxy)
             #self.subwidgets['prompt'].hide()
             self.animation = QtCore.QPropertyAnimation(
                 self.subwidgets['prompt'].w, b"windowOpacity"
@@ -157,8 +224,29 @@ class Rectangle(object):
             self.animation.setEndValue(0)
             self.animation.start()
             self.prompt_visible = None
+        if destroy:
+            QTimer.singleShot(250, self.finish_annihilation)
+    def finish_annihilation(self):
+        #self.parent.scene.removeItem(self.proxy)
+        self.subwidgets['prompt'].w.destroy()
+class MyEventFilter(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Enter:
+            # Handle the QEvent::Enter event here
+            gs.donthover = True
+            print("filtering")
+        elif event.type() == QEvent.Leave:
+            gs.donthover = None
 
-
+        # Return False to continue processing the event
+        return False
+class RectangleProxy(QGraphicsProxyWidget):
+    def __init__(self, widget, parent):
+        super(RectangleProxy, self).__init__()
+        self.widget = widget
+        self.parent = parent
+        self.event_filter = MyEventFilter()
+        self.installEventFilter(self.event_filter)
 
 class Callbacks(QObject):
     outpaint_signal = Signal()
@@ -183,6 +271,7 @@ class Scene(QGraphicsScene):
         self.gridenabled = False
 
 class MyProxyWidget(QGraphicsProxyWidget):
+
     def __init__(self, widget, parent):
         super(MyProxyWidget, self).__init__()
         self.parent = parent
@@ -192,8 +281,13 @@ class MyProxyWidget(QGraphicsProxyWidget):
         self.moving = False
         self.uid = copy.deepcopy(self.parent.uid)
         self.widget.loadbutton.clicked.connect(self.load_img)
-
-
+        self.setup_widgets()
+    def setup_widgets(self):
+        print("init method called")
+        rect = QRect(self.parent.rectlist[self.render_index].x,self.parent.rectlist[self.render_index].y,self.parent.rectlist[self.render_index].w,self.parent.rectlist[self.render_index].h,)
+        rect.translate(512, 0)
+        self.parent.krea.w.setGeometry(rect)
+        self.parent.krea.w.show()
     def proxy_task(self):
         self.parent.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Unchecked)
         for i in gs.models:
@@ -240,6 +334,11 @@ class MyProxyWidget(QGraphicsProxyWidget):
         self.animation.setDuration(250)
         self.animation.setStartValue(1)
         self.animation.setEndValue(0)
+        self.kreanimation = QtCore.QPropertyAnimation(self.parent.krea.w, b"windowOpacity")
+        self.kreanimation.setDuration(250)
+        self.kreanimation.setStartValue(self.parent.krea.w.windowOpacity())
+        self.kreanimation.setEndValue(0)
+        self.kreanimation.start()
         self.animation.start()
         QtCore.QTimer.singleShot(500, self.finish_prompt_destroy)
     def finish_prompt_destroy(self):
@@ -248,6 +347,7 @@ class MyProxyWidget(QGraphicsProxyWidget):
         #self.parent.scene.removeItem(self.proxy)
         self.proxy = None
         self.prompt = None
+        self.parent.krea.w.hide()
         #self.widget.destroy()
         #self.parent.parent.delete_outpaint_frame()
     def prompt_destroy_with_frame(self):
@@ -258,6 +358,45 @@ class MyProxyWidget(QGraphicsProxyWidget):
         self.parent.selected_item = self.uid
         self.parent.load_img_into_rect()
         self.prompt_destroy()
+    @Slot(str)
+    def got_krea_prompts(self, prompts):
+        #self.fx_2 = QGraphicsOpacityEffect()
+        #self.parent.krea.w.setGraphicsEffect(self.fx_2)
+        self.kreanimation = QtCore.QPropertyAnimation(self.parent.krea.w, b"windowOpacity")
+        self.kreanimation.setDuration(125)
+        self.kreanimation.setStartValue(self.parent.krea.w.windowOpacity())
+        self.kreanimation.setEndValue(0)
+        self.promptlist = prompts.split("\n\n")
+        self.kreanimation.start()
+        QTimer.singleShot(250, self.finish_got_krea_prompts)
+    def finish_got_krea_prompts(self):
+        x = 0
+        #while x < 5:
+        #    getattr(krea.w, f'krea_prompt_{x + 1}').setText(insert_newlines(promptlist[x], 64))
+        #    x += 1
+        try:
+            self.parent.krea.w.krea_prompt_1.setText(insert_newlines(self.promptlist[0], 64))
+            self.parent.krea.w.krea_prompt_1.setVisible(True)
+            self.parent.krea.w.krea_prompt_2.setText(insert_newlines(self.promptlist[1], 64))
+            self.parent.krea.w.krea_prompt_2.setVisible(True)
+
+            self.parent.krea.w.krea_prompt_3.setText(insert_newlines(self.promptlist[2], 64))
+            self.parent.krea.w.krea_prompt_3.setVisible(True)
+
+            self.parent.krea.w.krea_prompt_4.setText(insert_newlines(self.promptlist[3], 64))
+            self.parent.krea.w.krea_prompt_4.setVisible(True)
+
+            self.parent.krea.w.krea_prompt_5.setText(insert_newlines(self.promptlist[4], 64))
+            self.parent.krea.w.krea_prompt_5.setVisible(True)
+
+        except:
+            pass
+        self.kreanimation = QtCore.QPropertyAnimation(self.parent.krea.w, b"windowOpacity")
+        self.kreanimation.setDuration(125)
+        self.kreanimation.setStartValue(self.parent.krea.w.windowOpacity())
+        self.kreanimation.setEndValue(1)
+        self.kreanimation.start()
+
     def keyPressEvent(self, e):
         super(MyProxyWidget, self).keyPressEvent(e)
         if e.key() == 32:
@@ -265,6 +404,7 @@ class MyProxyWidget(QGraphicsProxyWidget):
                 pass
             else:
                 self.parent.parent.parent.prompt_fetcher.w.input.setText(self.widget.prompts.toPlainText())
+                self.parent.parent.parent.prompt_fetcher_ui.signals.got_krea_prompts.connect(self.got_krea_prompts)
                 self.parent.parent.parent.prompt_fetcher_ui.run_get_krea_prompts()
 class Canvas(QGraphicsView):
 
@@ -413,6 +553,24 @@ class Canvas(QGraphicsView):
         #self.signals.update_selected.emit()
         self.parent.parent.render_index = 0
         self.parent.parent.thumbs.w.thumbnails.clear()
+        self.krea = SimpleKreaPrompts()
+        self.scene.addWidget(self.krea.w)
+        self.krea.w.setWindowOpacity(0)
+        self.krea.w.krea_prompt_1.clicked.connect(self.set_to_krea_1)
+        self.krea.w.krea_prompt_2.clicked.connect(self.set_to_krea_2)
+        self.krea.w.krea_prompt_3.clicked.connect(self.set_to_krea_3)
+        self.krea.w.krea_prompt_4.clicked.connect(self.set_to_krea_4)
+        self.krea.w.krea_prompt_5.clicked.connect(self.set_to_krea_5)
+    def set_to_krea_1(self):
+        self.proxies[self.uid].widget.prompts.setText(self.proxies[self.uid].promptlist[0])
+    def set_to_krea_2(self):
+        self.proxies[self.uid].widget.prompts.setText(self.proxies[self.uid].promptlist[1])
+    def set_to_krea_3(self):
+        self.proxies[self.uid].widget.prompts.setText(self.proxies[self.uid].promptlist[2])
+    def set_to_krea_4(self):
+        self.proxies[self.uid].widget.prompts.setText(self.proxies[self.uid].promptlist[3])
+    def set_to_krea_5(self):
+        self.proxies[self.uid].widget.prompts.setText(self.proxies[self.uid].promptlist[4])
     def reset(self):
         self.zoom = 1
         self.rotate = 0
@@ -542,33 +700,34 @@ class Canvas(QGraphicsView):
         ###print(self.rectlist)
         #self.sub_hover_item = None
         matchFound = False
-        self.last_hover_item = self.hover_item
-        self.hover_item = None
+        if gs.donthover is None:
+            self.last_hover_item = self.hover_item
+            self.hover_item = None
 
-        #prev_index = self.last_index
-        for i in self.rectlist:
-            if i.x <= self.scene.scenePos.x() <= i.x + i.w and i.y <= self.scene.scenePos.y() <= i.y + i.h:
-                self.hover_item = i.id
-                index = self.rectlist.index(i)
-
-            else:
-                i.color = __idleColor__
-        if self.hover_item is not None:
-            if self.rectlist[index].prompt_visible is None:
-                self.rectlist[index].show_prompt()
-        if self.hover_item != self.last_hover_item:
+            #prev_index = self.last_index
             for i in self.rectlist:
-                if i.id == self.last_hover_item:
-                    if i.prompt_visible == True:
-                        i.hide_prompt()
+                if i.x <= self.scene.scenePos.x() <= i.x + i.w and i.y <= self.scene.scenePos.y() <= i.y + i.h:
+                    self.hover_item = i.id
+                    index = self.rectlist.index(i)
+
+                else:
+                    i.color = __idleColor__
+            if self.hover_item is not None:
+                if self.rectlist[index].prompt_visible is None:
+                    self.rectlist[index].show_prompt()
+            if self.hover_item != self.last_hover_item:
+                for i in self.rectlist:
+                    if i.id == self.last_hover_item:
+                        if i.prompt_visible == True:
+                            i.hide_prompt()
 
 
-        #elif self.hover_item is None:
-        #    #self.redraw()
-        #    for i in self.rectlist:
-        #        if i.prompt_visible is not None:
-        #            i.hide_prompt()
-        #            i.prompt_visible = None
+            #elif self.hover_item is None:
+            #    #self.redraw()
+            #    for i in self.rectlist:
+            #        if i.prompt_visible is not None:
+            #            i.hide_prompt()
+            #            i.prompt_visible = None
 
     def save_canvas(self):
         self.redraw(transparent=True)
@@ -1642,8 +1801,8 @@ class Canvas(QGraphicsView):
             prompt = SimplePrompt()
 
             self.proxies[uid] = MyProxyWidget(prompt, self)
-            rect[uid].subwidgets['prompt'].w.setGeometry(x, y, w, h)
-            rect[uid].subwidgets['prompt'].w.setStyleSheet("background-color: transparent")
+            #rect[uid].subwidgets['prompt'].w.setGeometry(x, y, w, h)
+            #rect[uid].subwidgets['prompt'].w.setStyleSheet("background-color: transparent")
 
             #self.proxies[uid].setWidget(self.prompt.w)
             self.proxies[uid].fx = QGraphicsOpacityEffect()
@@ -1681,11 +1840,11 @@ class Canvas(QGraphicsView):
                 self.change_resolution()
             self.parent.parent.widgets[self.parent.parent.current_widget].w.W.setValue(w)
             self.parent.parent.widgets[self.parent.parent.current_widget].w.H.setValue(h)
-
+            #self.flipwidget = FlipWidget()
+            #self.scene.addWidget(self.flipwidget)
 
     def removeitem_by_uid_from_scene(self):
         self.scene.removeItem(self.proxies[self.uid])
-
     def check_for_frame_overlap(self):
         for x in self.rectlist:
             if x.id == self.selected_item:
@@ -1979,3 +2138,9 @@ def random_path(order, columns):
         for x in i:
             x["order"] = newlist[i]
     return order
+
+def insert_newlines(string, every=64):
+    lines = []
+    for i in range(0, len(string), every):
+        lines.append(string[i:i+every])
+    return '\n'.join(lines)

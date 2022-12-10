@@ -142,6 +142,15 @@ class SimplePromptDisplay(QObject):
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
+
+class SimpleKreaPrompts(QObject):
+
+    def __init__(self, *args, **kwargs):
+        loader = QtUiTools.QUiLoader()
+        file = QFile("frontend/ui/simple_krea_prompts.ui")
+        file.open(QFile.ReadOnly)
+        self.w = loader.load(file)
+        file.close()
 class Hypernetwork(QObject):
 
     def __init__(self, *args, **kwargs):

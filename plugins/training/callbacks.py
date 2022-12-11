@@ -18,8 +18,8 @@ from pytorch_lightning.callbacks import ModelCheckpoint, Callback, LearningRateM
 from pytorch_lightning.utilities.distributed import rank_zero_only
 from pytorch_lightning.utilities import rank_zero_info
 
-from plugins.dreambooth.ldm_db.data.base import Txt2ImgIterableBaseDataset
-from plugins.dreambooth.ldm_db.util import instantiate_from_config
+from plugins.training.ldm_db.data.base import Txt2ImgIterableBaseDataset
+from plugins.training.ldm_db.util import instantiate_from_config
 
 
 

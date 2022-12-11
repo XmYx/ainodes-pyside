@@ -20,9 +20,9 @@ from pytorch_lightning.callbacks import ModelCheckpoint, Callback, LearningRateM
 from pytorch_lightning.utilities.distributed import rank_zero_only
 from pytorch_lightning.utilities import rank_zero_info
 
-from plugins.dreambooth.callbacks import *
-from plugins.dreambooth.ldm_db.data.base import Txt2ImgIterableBaseDataset
-from plugins.dreambooth.ldm_db.util import instantiate_from_config
+from plugins.training.callbacks import *
+from plugins.training.ldm_db.data.base import Txt2ImgIterableBaseDataset
+from plugins.training.ldm_db.util import instantiate_from_config
 from backend.singleton import singleton
 
 gs = singleton
@@ -127,7 +127,7 @@ class DreamBooth:
 
 
     def dreambooth(self,
-                   accelerator='ddp',                                    # Previously known as distributed_backend (dp, ddp, ddp2, etc...).
+                   accelerator='ddp',                                   # Previously known as distributed_backend (dp, ddp, ddp2, etc...).
                                                                         # Can also take in an accelerator object for custom hardware.
                    accumulate_grad_batches=None,                        # Accumulates grads every k batches or as set up in the dict.
                    amp_backend='native',                                # The mixed precision backend to use ("native" or "apex")
@@ -155,7 +155,7 @@ class DreamBooth:
 
 
                    benchmark=False,                                     # If true enables cudnn.benchmark.
-                   base=['plugins/dreambooth/configs/v1-finetune_unfrozen.yaml'],
+                   base=['plugins/training/configs/v1-finetune_unfrozen.yaml'],
                    callbacks=None,                                      # Add a callback or list of callbacks.
                    checkpoint_callback=False,                           # If ``True``, enable checkpointing.
                                                                         # It will configure a default ModelCheckpoint callback if there is no user-defined ModelCheckpoint in
@@ -449,7 +449,7 @@ class DreamBooth:
             # add callback which sets up log directory
             default_callbacks_cfg = {
                 "setup_callback": {
-                    "target": "plugins.dreambooth.callbacks.SetupCallback",
+                    "target": "plugins.training.callbacks.SetupCallback",
                     "params": {
                         "resume": opt.resume,
                         "now": now,
@@ -461,7 +461,7 @@ class DreamBooth:
                     }
                 },
                 "image_logger": {
-                    "target": "plugins.dreambooth.callbacks.ImageLogger",
+                    "target": "plugins.training.callbacks.ImageLogger",
                     "params": {
                         "batch_frequency": 750,
                         "max_images": 4,
@@ -469,14 +469,14 @@ class DreamBooth:
                     }
                 },
                 "learning_rate_logger": {
-                    "target": "plugins.dreambooth.callbacks.LearningRateMonitor",
+                    "target": "plugins.training.callbacks.LearningRateMonitor",
                     "params": {
                         "logging_interval": "step",
                         # "log_momentum": True
                     }
                 },
                 "cuda_callback": {
-                    "target": "plugins.dreambooth.callbacks.CUDACallback"
+                    "target": "plugins.training.callbacks.CUDACallback"
                 },
             }
             if version.parse(pl.__version__) >= version.parse('1.4.0'):

@@ -77,7 +77,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-1193</y>
+            <y>-1042</y>
             <width>564</width>
             <height>2907</height>
            </rect>
@@ -604,7 +604,7 @@
                </widget>
               </item>
               <item row="9" column="0">
-               <widget class="QPushButton" name="pushButton_8">
+               <widget class="QPushButton" name="ldb_select_logging_dir">
                 <property name="text">
                  <string>Logging Dir</string>
                 </property>
@@ -744,7 +744,7 @@
                   </widget>
                  </item>
                  <item row="2" column="0">
-                  <widget class="QPushButton" name="pushButton_7">
+                  <widget class="QPushButton" name="ldb_select_class_data_dir">
                    <property name="text">
                     <string>Class Images</string>
                    </property>
@@ -889,10 +889,10 @@
                </widget>
               </item>
               <item row="19" column="1">
-               <widget class="QSpinBox" name="spinBox"/>
+               <widget class="QSpinBox" name="sample_batch_size_2"/>
               </item>
               <item row="30" column="0">
-               <widget class="QPushButton" name="pushButton">
+               <widget class="QPushButton" name="start_lora_dreambooth">
                 <property name="text">
                  <string>Start Lora Dreambooth training</string>
                 </property>
@@ -928,7 +928,7 @@
                </widget>
               </item>
               <item row="7" column="0">
-               <widget class="QPushButton" name="pushButton_4">
+               <widget class="QPushButton" name="ldb_select_output_dir">
                 <property name="text">
                  <string>Output Dir</string>
                 </property>
@@ -956,7 +956,7 @@
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QPushButton" name="pushButton_2">
+               <widget class="QPushButton" name="ldb_select_pretrained_model_name_or_path">
                 <property name="text">
                  <string>Diffuser Model Path</string>
                 </property>
@@ -994,14 +994,14 @@
                </widget>
               </item>
               <item row="3" column="0">
-               <widget class="QPushButton" name="pushButton_3">
+               <widget class="QPushButton" name="ldb_select_instance_data_dir">
                 <property name="text">
                  <string>Instance Images</string>
                 </property>
                </widget>
               </item>
               <item row="17" column="1">
-               <widget class="QComboBox" name="comboBox_5">
+               <widget class="QComboBox" name="resolution">
                 <item>
                  <property name="text">
                   <string>512</string>
@@ -1055,7 +1055,7 @@
                 </property>
                </widget>
               </item>
-              <item row="12" column="0">
+              <item row="12" column="0" colspan="4">
                <widget class="QLineEdit" name="instance_prompt"/>
               </item>
              </layout>

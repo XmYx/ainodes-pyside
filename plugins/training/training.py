@@ -1,4 +1,5 @@
 import os
+from types import SimpleNamespace
 
 from PySide6 import QtCore, QtUiTools
 from PySide6.QtWidgets import QDockWidget, QFileDialog
@@ -9,6 +10,8 @@ gs = singleton
 
 from plugins.training.dreambooth_class import DreamBooth
 from plugins.training.sd_to_diffusers import run_translation
+from plugins.training.train_lora_dreambooth import run_lora_dreambooth
+
 
 class FineTune(QObject):
 
@@ -266,7 +269,80 @@ class aiNodesPlugin:
         self.training.w.toggle_hypernetwork.stateChanged.connect(self.hideHypernetwork_anim)
         self.training.w.toggle_prepare_input.stateChanged.connect(self.hidePrepareInput_anim)
 
+        self.training.w.ldb_select_pretrained_model_name_or_path.clicked.connect(self.ldb_select_pretrained_model_name_or_path)
+        self.training.w.ldb_select_instance_data_dir.clicked.connect(self.ldb_select_instance_data_dir)
+        self.training.w.ldb_select_output_dir.clicked.connect(self.ldb_select_output_dir)
+        self.training.w.ldb_select_logging_dir.clicked.connect(self.ldb_select_logging_dir)
+        self.training.w.ldb_select_class_data_dir.clicked.connect(self.ldb_select_class_data_dir)
+        self.training.w.start_lora_dreambooth.clicked.connect(self.start_lora_dreambooth)
 
+
+    def get_lora_dreambooth_args(self):
+        args = SimpleNamespace(**{})
+        args.pretrained_model_name_or_path = self.training.w.pretrained_model_name_or_path.text()
+        args.instance_data_dir = self.training.w.instance_data_dir.text()
+        args.output_dir = self.training.w.output_dir.text()
+        args.logging_dir = self.training.w.logging_dir.text()
+        args.instance_prompt = self.training.w.instance_prompt.text()
+        args.with_prior_preservation = self.training.w.with_prior_preservation.isChecked()
+        args.prior_loss_weight = self.training.w.prior_loss_weight.value()
+        args.class_data_dir = self.training.w.class_data_dir.text()
+        args.class_prompt = self.training.w.class_prompt.text()
+        args.num_class_images = self.training.w.num_class_images.value()
+        args.resolution = self.training.w.resolution.value()
+        args.train_batch_size = self.training.w.train_batch_size.value()
+        args.sample_batch_size = self.training.w.sample_batch_size.value()
+        args.learning_rate = self.training.w.learning_rate.value()
+        args.lr_scheduler = self.training.w.lr_scheduler.currentText()
+        args.adam_beta1 = self.training.w.adam_beta1.value()
+        args.adam_beta2 = self.training.w.adam_beta2.value()
+        args.lr_warmup_steps = self.training.w.lr_warmup_steps.value()
+        args.num_train_epochs = self.training.w.num_train_epochs.value()
+        args.max_train_steps = self.training.w.max_train_steps.value()
+        args.adam_epsilon = float(self.training.w.adam_epsilon.text())
+        args.seed = self.training.w.seed.text()
+        args.gradient_accumulation_steps = self.training.w.gradient_accumulation_steps.value()
+        args.max_grad_norm = self.training.w.max_grad_norm.value()
+        args.mixed_precision = self.training.w.mixed_precision.currentText()
+        args.center_crop = self.training.w.center_crop.isChecked()
+        args.train_text_encoder = self.training.w.train_text_encoder.isChecked()
+        args.gradient_checkpointing = self.training.w.gradient_checkpointing.isChecked()
+        args.scale_lr = self.training.w.scale_lr.isChecked()
+        args.use_8bit_adam = self.training.w.use_8bit_adam.isChecked()
+        return args
+
+    def start_lora_dreambooth(self):
+        self.parent.plugin_thread(self.start_lora_dreambooth_thread)
+
+
+    def start_lora_dreambooth_thread(self, progress_callback=None):
+        args = self.get_lora_dreambooth_args()
+        run_lora_dreambooth(args)
+
+    def ldb_select_class_data_dir(self):
+        filename = QFileDialog.getExistingDirectory(caption='Dir to class Images for training')
+        print(filename)
+        self.training.w.class_data_dir.setText(filename)
+
+    def ldb_select_logging_dir(self):
+        filename = QFileDialog.getExistingDirectory(caption='Logging Dir')
+        print(filename)
+        self.training.w.logging_dir.setText(filename)
+
+    def ldb_select_output_dir(self):
+        filename = QFileDialog.getExistingDirectory(caption='Dir to save output')
+        print(filename)
+        self.training.w.output_dir.setText(filename)
+
+    def ldb_select_pretrained_model_name_or_path(self):
+        filename = QFileDialog.getExistingDirectory(caption='Dir to diffuser model to be trained on')
+        print(filename)
+        self.training.w.pretrained_model_name_or_path.setText(filename)
+
+    def ldb_select_instance_data_dir(self):
+        filename = QFileDialog.getExistingDirectory(caption='Dir to Instance Images for training')
+        print(filename)
+        self.training.w.instance_data_dir.setText(filename)
 
     def load_folder_content(self):
         self.training.w.base.clear()

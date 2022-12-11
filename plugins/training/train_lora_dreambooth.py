@@ -30,7 +30,7 @@ from huggingface_hub import HfFolder, Repository, whoami
 from tqdm.auto import tqdm
 from transformers import CLIPTextModel, CLIPTokenizer
 
-from lora_diffusion import (
+from plugins.training.lora_diffusion import (
     inject_trainable_lora,
     save_lora_weight,
     extract_lora_ups_down,
@@ -527,7 +527,7 @@ def get_full_repo_name(
         return f"{organization}/{model_id}"
 
 
-def main(args):
+def run_lora_dreambooth(args):
 
     args.revision = None # hardcoded for now
     args.tokenizer_name = None
@@ -981,8 +981,3 @@ def main(args):
             )
 
     accelerator.end_training()
-
-
-if __name__ == "__main__":
-    args = parse_args()
-    main(args)

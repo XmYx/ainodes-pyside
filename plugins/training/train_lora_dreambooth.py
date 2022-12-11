@@ -528,6 +528,13 @@ def get_full_repo_name(
 
 
 def main(args):
+
+    args.revision = None # hardcoded for now
+    args.tokenizer_name = None
+    args.prior_loss_weight = 1.0
+    args.push_to_hub = False
+    args.local_rank = -1
+
     logging_dir = Path(args.output_dir, args.logging_dir)
 
     accelerator = Accelerator(

@@ -289,7 +289,7 @@ class aiNodesPlugin:
         args.class_data_dir = self.training.w.class_data_dir.text()
         args.class_prompt = self.training.w.class_prompt.text()
         args.num_class_images = self.training.w.num_class_images.value()
-        args.resolution = self.training.w.resolution.value()
+        args.resolution = int(self.training.w.resolution.currentText())
         args.train_batch_size = self.training.w.train_batch_size.value()
         args.sample_batch_size = self.training.w.sample_batch_size.value()
         args.learning_rate = self.training.w.learning_rate.value()
@@ -300,7 +300,11 @@ class aiNodesPlugin:
         args.num_train_epochs = self.training.w.num_train_epochs.value()
         args.max_train_steps = self.training.w.max_train_steps.value()
         args.adam_epsilon = float(self.training.w.adam_epsilon.text())
-        args.seed = self.training.w.seed.text()
+        seed = self.training.w.seed.text()
+        if seed == '':
+            args.seed = None
+        else:
+            args.seed = int(seed)
         args.gradient_accumulation_steps = self.training.w.gradient_accumulation_steps.value()
         args.max_grad_norm = self.training.w.max_grad_norm.value()
         args.mixed_precision = self.training.w.mixed_precision.currentText()
@@ -309,6 +313,8 @@ class aiNodesPlugin:
         args.gradient_checkpointing = self.training.w.gradient_checkpointing.isChecked()
         args.scale_lr = self.training.w.scale_lr.isChecked()
         args.use_8bit_adam = self.training.w.use_8bit_adam.isChecked()
+        args.adam_weight_decay = self.training.w.adam_weight_decay.value()
+        args.save_steps = self.training.w.save_steps.value()
         return args
 
     def start_lora_dreambooth(self):

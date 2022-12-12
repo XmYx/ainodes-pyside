@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>601</width>
-    <height>1577</height>
+    <height>501</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -54,7 +54,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-2382</y>
+            <y>-3007</y>
             <width>582</width>
             <height>3907</height>
            </rect>
@@ -2032,6 +2032,9 @@
                <widget class="QCheckBox" name="checkpoint_callback">
                 <property name="text">
                  <string>Checkpoint call back</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>

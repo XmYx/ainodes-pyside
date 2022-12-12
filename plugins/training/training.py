@@ -506,7 +506,7 @@ class aiNodesPlugin:
     def create_dreambooth(self, progress_callback=None):
         torch_gc()
         self.dreambooth_training.dreambooth(
-            accelerator=self.training.w.accelerator.currentText(),                                   # Previously known as distributed_backend (dp, ddp, ddp2, etc...).
+            accelerator=None if self.training.w.accelerator.currentText() == 'None' else self.training.w.accelerator.currentText(),                                   # Previously known as distributed_backend (dp, ddp, ddp2, etc...).
             # Can also take in an accelerator object for custom hardware.
             accumulate_grad_batches=0,                        # Accumulates grads every k batches or as set up in the dict.
             amp_backend=self.training.w.amp_backend.currentText(),                                # The mixed precision backend to use ("native" or "apex")

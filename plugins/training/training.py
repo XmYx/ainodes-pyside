@@ -128,9 +128,9 @@ class aiNodesPlugin:
 
     def init_anims(self):
         self.showPocAnim = QtCore.QPropertyAnimation(self.training.w.processCaption, b"maximumHeight")
-        self.showPocAnim.setDuration(1500)
-        self.showPocAnim.setStartValue(self.training.w.processCaption.height())
-        self.showPocAnim.setEndValue(self.training.w.height())
+        self.showPocAnim.setDuration(500)
+        self.showPocAnim.setStartValue(0)
+        self.showPocAnim.setEndValue(self.training.w.processCaption.height())
         self.showPocAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.hidePocAnim = QtCore.QPropertyAnimation(self.training.w.processCaption, b"maximumHeight")
@@ -140,9 +140,9 @@ class aiNodesPlugin:
         self.hidePocAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.showFpcAnim = QtCore.QPropertyAnimation(self.training.w.focalPointCrop, b"maximumHeight")
-        self.showFpcAnim.setDuration(1500)
-        self.showFpcAnim.setStartValue(self.training.w.focalPointCrop.height())
-        self.showFpcAnim.setEndValue(self.training.w.height())
+        self.showFpcAnim.setDuration(500)
+        self.showFpcAnim.setStartValue(0)
+        self.showFpcAnim.setEndValue(self.training.w.focalPointCrop.height())
         self.showFpcAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.hideFpcAnim = QtCore.QPropertyAnimation(self.training.w.focalPointCrop, b"maximumHeight")
@@ -152,9 +152,9 @@ class aiNodesPlugin:
         self.hideFpcAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.showAucAnim = QtCore.QPropertyAnimation(self.training.w.autoCrop, b"maximumHeight")
-        self.showAucAnim.setDuration(1500)
-        self.showAucAnim.setStartValue(self.training.w.autoCrop.height())
-        self.showAucAnim.setEndValue(self.training.w.height())
+        self.showAucAnim.setDuration(500)
+        self.showAucAnim.setStartValue(0)
+        self.showAucAnim.setEndValue(self.training.w.autoCrop.height())
         self.showAucAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.hideAucAnim = QtCore.QPropertyAnimation(self.training.w.autoCrop, b"maximumHeight")
@@ -164,9 +164,9 @@ class aiNodesPlugin:
         self.hideAucAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.showDrbAnim = QtCore.QPropertyAnimation(self.training.w.Dreambooth, b"maximumHeight")
-        self.showDrbAnim.setDuration(1500)
-        self.showDrbAnim.setStartValue(self.training.w.Dreambooth.height())
-        self.showDrbAnim.setEndValue(self.training.w.height())
+        self.showDrbAnim.setDuration(500)
+        self.showDrbAnim.setStartValue(0)
+        self.showDrbAnim.setEndValue(self.training.w.Dreambooth.height())
         self.showDrbAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.hideDrbAnim = QtCore.QPropertyAnimation(self.training.w.Dreambooth, b"maximumHeight")
@@ -176,9 +176,9 @@ class aiNodesPlugin:
         self.hideDrbAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.showLdbAnim = QtCore.QPropertyAnimation(self.training.w.LoraDreambooth, b"maximumHeight")
-        self.showLdbAnim.setDuration(1500)
-        self.showLdbAnim.setStartValue(self.training.w.LoraDreambooth.height())
-        self.showLdbAnim.setEndValue(self.training.w.height())
+        self.showLdbAnim.setDuration(500)
+        self.showLdbAnim.setStartValue(0)
+        self.showLdbAnim.setEndValue(self.training.w.LoraDreambooth.height())
         self.showLdbAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.hideLdbAnim = QtCore.QPropertyAnimation(self.training.w.LoraDreambooth, b"maximumHeight")
@@ -188,9 +188,9 @@ class aiNodesPlugin:
         self.hideLdbAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.showHpnAnim = QtCore.QPropertyAnimation(self.training.w.hypernetworks, b"maximumHeight")
-        self.showHpnAnim.setDuration(1500)
-        self.showHpnAnim.setStartValue(self.training.w.hypernetworks.height())
-        self.showHpnAnim.setEndValue(self.training.w.height())
+        self.showHpnAnim.setDuration(500)
+        self.showHpnAnim.setStartValue(0)
+        self.showHpnAnim.setEndValue(self.training.w.hypernetworks.height())
         self.showHpnAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.hideHpnAnim = QtCore.QPropertyAnimation(self.training.w.hypernetworks, b"maximumHeight")
@@ -200,9 +200,9 @@ class aiNodesPlugin:
         self.hideHpnAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.showPitAnim = QtCore.QPropertyAnimation(self.training.w.PrepareInput, b"maximumHeight")
-        self.showPitAnim.setDuration(1500)
-        self.showPitAnim.setStartValue(self.training.w.PrepareInput.height())
-        self.showPitAnim.setEndValue(self.training.w.height())
+        self.showPitAnim.setDuration(500)
+        self.showPitAnim.setStartValue(0)
+        self.showPitAnim.setEndValue(self.training.w.PrepareInput.height())
         self.showPitAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.hidePitAnim = QtCore.QPropertyAnimation(self.training.w.PrepareInput, b"maximumHeight")
@@ -212,9 +212,9 @@ class aiNodesPlugin:
         self.hidePitAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.showCpdAnim = QtCore.QPropertyAnimation(self.training.w.ckptToDiff, b"maximumHeight")
-        self.showCpdAnim.setDuration(1500)
-        self.showCpdAnim.setStartValue(self.training.w.ckptToDiff.height())
-        self.showCpdAnim.setEndValue(self.training.w.height())
+        self.showCpdAnim.setDuration(500)
+        self.showCpdAnim.setStartValue(0)
+        self.showCpdAnim.setEndValue(self.training.w.ckptToDiff.height())
         self.showCpdAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.hideCpdAnim = QtCore.QPropertyAnimation(self.training.w.ckptToDiff, b"maximumHeight")
@@ -224,9 +224,9 @@ class aiNodesPlugin:
         self.hideCpdAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.showLomAnim = QtCore.QPropertyAnimation(self.training.w.LoraMerge, b"maximumHeight")
-        self.showLomAnim.setDuration(1500)
-        self.showLomAnim.setStartValue(self.training.w.LoraMerge.height())
-        self.showLomAnim.setEndValue(self.training.w.height())
+        self.showLomAnim.setDuration(500)
+        self.showLomAnim.setStartValue(0)
+        self.showLomAnim.setEndValue(self.training.w.LoraMerge.height())
         self.showLomAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.hideLomAnim = QtCore.QPropertyAnimation(self.training.w.LoraMerge, b"maximumHeight")
@@ -508,7 +508,7 @@ class aiNodesPlugin:
         self.dreambooth_training.dreambooth(
             accelerator=None if self.training.w.accelerator.currentText() == 'None' else self.training.w.accelerator.currentText(),                                   # Previously known as distributed_backend (dp, ddp, ddp2, etc...).
             # Can also take in an accelerator object for custom hardware.
-            accumulate_grad_batches=0,                        # Accumulates grads every k batches or as set up in the dict.
+            accumulate_grad_batches=self.training.w.accumulate_grad_batches.value(),                        # Accumulates grads every k batches or as set up in the dict.
             amp_backend=self.training.w.amp_backend.currentText(),                                # The mixed precision backend to use ("native" or "apex")
             amp_level=None,                                      # The optimization level to use (O1, O2, etc...).
             auto_lr_find=self.training.w.auto_lr_find.isChecked(),                                  # If set to True, will make trainer.tune() run a learning rate finder,

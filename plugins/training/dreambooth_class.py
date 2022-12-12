@@ -71,8 +71,8 @@ class DreamBooth:
         trainer_config = {}
 
 
-        """trainer_config['accelerator'] = opt.accelerator
-        trainer_config['accumulate_grad_batches'] = opt.accumulate_grad_batches"""
+        trainer_config['accelerator'] = opt.accelerator
+        trainer_config['accumulate_grad_batches'] = opt.accumulate_grad_batches
         trainer_config['amp_backend'] = opt.amp_backend
         trainer_config['amp_level'] = opt.amp_level
         trainer_config['auto_lr_find'] = opt.auto_lr_find

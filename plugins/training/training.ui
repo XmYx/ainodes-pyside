@@ -54,9 +54,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-2434</y>
+            <y>-2382</y>
             <width>582</width>
-            <height>3987</height>
+            <height>3907</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -1731,7 +1731,7 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout">
-              <item row="17" column="0">
+              <item row="18" column="0">
                <widget class="QCheckBox" name="train">
                 <property name="text">
                  <string>Train</string>
@@ -1741,65 +1741,62 @@
                 </property>
                </widget>
               </item>
-              <item row="8" column="0" colspan="2">
-               <widget class="QLineEdit" name="init_embedding_manager_ckpt"/>
-              </item>
-              <item row="29" column="0">
+              <item row="30" column="0">
                <widget class="QLabel" name="label_75">
                 <property name="text">
                  <string>Grad Clip</string>
                 </property>
                </widget>
               </item>
-              <item row="34" column="0">
+              <item row="35" column="0">
                <widget class="QLabel" name="label_80">
                 <property name="text">
                  <string>Predict Batches</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="0" colspan="2">
+              <item row="9" column="0" colspan="2">
                <widget class="QLineEdit" name="logdir">
                 <property name="text">
                  <string>data/output/ti/logs</string>
                 </property>
                </widget>
               </item>
-              <item row="33" column="1">
-               <widget class="QDoubleSpinBox" name="limit_test_batches"/>
+              <item row="34" column="1">
+               <widget class="QDoubleSpinBox" name="limit_test_batches">
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
+                </property>
+               </widget>
               </item>
-              <item row="39" column="1">
+              <item row="40" column="1">
                <widget class="QSpinBox" name="min_steps"/>
               </item>
-              <item row="32" column="0">
+              <item row="33" column="0">
                <widget class="QLabel" name="label_78">
                 <property name="text">
                  <string>Val batches</string>
                 </property>
                </widget>
               </item>
-              <item row="9" column="0">
-               <widget class="QLabel" name="label_2">
-                <property name="text">
-                 <string>Finetune Config</string>
-                </property>
-               </widget>
-              </item>
-              <item row="20" column="0">
+              <item row="21" column="0">
                <widget class="QLabel" name="label_70">
                 <property name="text">
                  <string>Accelerator</string>
                 </property>
                </widget>
               </item>
-              <item row="42" column="0">
+              <item row="43" column="0">
                <widget class="QLabel" name="label_88">
                 <property name="text">
                  <string>Precission</string>
                 </property>
                </widget>
               </item>
-              <item row="38" column="1">
+              <item row="39" column="1">
                <widget class="QSpinBox" name="max_steps">
                 <property name="maximum">
                  <number>10000</number>
@@ -1809,33 +1806,44 @@
                 </property>
                </widget>
               </item>
-              <item row="10" column="0">
-               <widget class="QComboBox" name="base"/>
+              <item row="45" column="0">
+               <widget class="QLabel" name="label_90">
+                <property name="text">
+                 <string>Val check interval</string>
+                </property>
+               </widget>
               </item>
-              <item row="24" column="1">
+              <item row="25" column="1">
                <widget class="QCheckBox" name="deterministic">
                 <property name="text">
                  <string>Deterministic</string>
                 </property>
                </widget>
               </item>
-              <item row="37" column="1">
+              <item row="38" column="1">
                <widget class="QSpinBox" name="min_epochs"/>
               </item>
-              <item row="22" column="0">
+              <item row="19" column="0">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Finetune Config</string>
+                </property>
+               </widget>
+              </item>
+              <item row="23" column="0">
                <widget class="QCheckBox" name="auto_lr_find">
                 <property name="text">
                  <string>Auto LR find</string>
                 </property>
                </widget>
               </item>
-              <item row="41" column="1">
+              <item row="42" column="1">
                <widget class="QSpinBox" name="num_sanity_val_steps"/>
               </item>
-              <item row="46" column="1">
+              <item row="47" column="1">
                <widget class="QLCDNumber" name="steps_tuned"/>
               </item>
-              <item row="11" column="0">
+              <item row="12" column="0">
                <widget class="QLabel" name="label_3">
                 <property name="text">
                  <string>Placeholder Tokens</string>
@@ -1849,14 +1857,14 @@
                 </property>
                </widget>
               </item>
-              <item row="27" column="0">
+              <item row="28" column="0">
                <widget class="QLabel" name="label_72">
                 <property name="text">
                  <string>Check val every n epoch</string>
                 </property>
                </widget>
               </item>
-              <item row="30" column="1">
+              <item row="31" column="1">
                <widget class="QComboBox" name="comboBox">
                 <item>
                  <property name="text">
@@ -1870,28 +1878,28 @@
                 </item>
                </widget>
               </item>
-              <item row="23" column="1">
+              <item row="24" column="1">
                <widget class="QCheckBox" name="benchmark">
                 <property name="text">
                  <string>Benchmark</string>
                 </property>
                </widget>
               </item>
-              <item row="13" column="0">
+              <item row="14" column="0">
                <widget class="QLabel" name="label_4">
                 <property name="text">
                  <string>Init Word</string>
                 </property>
                </widget>
               </item>
-              <item row="22" column="1">
+              <item row="23" column="1">
                <widget class="QCheckBox" name="auto_scale_batch_size">
                 <property name="text">
                  <string>Auto scale batch</string>
                 </property>
                </widget>
               </item>
-              <item row="42" column="1">
+              <item row="43" column="1">
                <widget class="QComboBox" name="precision">
                 <item>
                  <property name="text">
@@ -1910,41 +1918,55 @@
                 </item>
                </widget>
               </item>
-              <item row="34" column="1">
-               <widget class="QDoubleSpinBox" name="limit_predict_batches"/>
+              <item row="35" column="1">
+               <widget class="QDoubleSpinBox" name="limit_predict_batches">
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
+                </property>
+               </widget>
               </item>
-              <item row="21" column="0">
+              <item row="22" column="0">
                <widget class="QLabel" name="label_71">
                 <property name="text">
                  <string>AMP Backend</string>
                 </property>
                </widget>
               </item>
-              <item row="47" column="0">
+              <item row="48" column="0">
                <widget class="QPushButton" name="Start">
                 <property name="text">
                  <string>Start Dreambooth training</string>
                 </property>
                </widget>
               </item>
-              <item row="40" column="1">
+              <item row="41" column="1">
                <widget class="QSpinBox" name="max_time"/>
               </item>
-              <item row="43" column="0">
+              <item row="44" column="0">
                <widget class="QLabel" name="label_89">
                 <property name="text">
                  <string>Reload dataloader every n epochs </string>
                 </property>
                </widget>
               </item>
-              <item row="25" column="0">
+              <item row="26" column="0">
                <widget class="QCheckBox" name="move_metrics_to_cpu">
                 <property name="text">
                  <string>Metrics to cpu</string>
                 </property>
                </widget>
               </item>
-              <item row="28" column="1">
+              <item row="4" column="0">
+               <widget class="QPushButton" name="resumeModel">
+                <property name="text">
+                 <string>Model to resume from</string>
+                </property>
+               </widget>
+              </item>
+              <item row="29" column="1">
                <widget class="QSpinBox" name="flush_logs_every_n_steps">
                 <property name="maximum">
                  <number>10000</number>
@@ -1954,28 +1976,28 @@
                 </property>
                </widget>
               </item>
-              <item row="25" column="1">
+              <item row="26" column="1">
                <widget class="QCheckBox" name="stochastic_weight_avg">
                 <property name="text">
                  <string>Stochastic weight avg</string>
                 </property>
                </widget>
               </item>
-              <item row="40" column="0">
+              <item row="45" column="1">
+               <widget class="QDoubleSpinBox" name="val_check_interval">
+                <property name="value">
+                 <double>1.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="41" column="0">
                <widget class="QLabel" name="label_84">
                 <property name="text">
                  <string>Max Time (sec) (0 = None)</string>
                 </property>
                </widget>
               </item>
-              <item row="19" column="0" colspan="2">
-               <widget class="QLineEdit" name="actual_resume">
-                <property name="text">
-                 <string>data/models/sd-v1-4.ckpt</string>
-                </property>
-               </widget>
-              </item>
-              <item row="21" column="1">
+              <item row="22" column="1">
                <widget class="QComboBox" name="amp_backend">
                 <item>
                  <property name="text">
@@ -1989,66 +2011,66 @@
                 </item>
                </widget>
               </item>
-              <item row="43" column="1">
+              <item row="44" column="1">
                <widget class="QSpinBox" name="reload_dataloaders_every_n_epochs"/>
               </item>
-              <item row="5" column="0">
+              <item row="8" column="0">
                <widget class="QPushButton" name="logsFolder">
                 <property name="text">
                  <string>Select Logs Folder</string>
                 </property>
                </widget>
               </item>
-              <item row="41" column="0">
+              <item row="42" column="0">
                <widget class="QLabel" name="label_87">
                 <property name="text">
                  <string>Num sanity val checks (0 = None, -1 all) </string>
                 </property>
                </widget>
               </item>
-              <item row="24" column="0">
+              <item row="25" column="0">
                <widget class="QCheckBox" name="checkpoint_callback">
                 <property name="text">
                  <string>Checkpoint call back</string>
                 </property>
                </widget>
               </item>
-              <item row="37" column="0">
+              <item row="38" column="0">
                <widget class="QLabel" name="label_83">
                 <property name="text">
                  <string>Min epochs (0 = None)</string>
                 </property>
                </widget>
               </item>
-              <item row="29" column="1">
+              <item row="30" column="1">
                <widget class="QSpinBox" name="gradient_clip_val">
                 <property name="maximum">
                  <number>100</number>
                 </property>
                </widget>
               </item>
-              <item row="18" column="0">
-               <widget class="QPushButton" name="resumeModel">
-                <property name="text">
-                 <string>Model to resume from</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0" colspan="2">
+              <item row="7" column="0" colspan="2">
                <widget class="QLineEdit" name="data_root">
                 <property name="text">
                  <string>data/input/images/out</string>
                 </property>
                </widget>
               </item>
-              <item row="30" column="0">
+              <item row="31" column="0">
                <widget class="QLabel" name="label_76">
                 <property name="text">
                  <string>Grad clip algorithm</string>
                 </property>
                </widget>
               </item>
-              <item row="27" column="1">
+              <item row="5" column="0" colspan="2">
+               <widget class="QLineEdit" name="actual_resume">
+                <property name="text">
+                 <string>data/models/sd-v1-4.ckpt</string>
+                </property>
+               </widget>
+              </item>
+              <item row="28" column="1">
                <widget class="QSpinBox" name="check_val_every_n_epoch">
                 <property name="maximum">
                  <number>10000</number>
@@ -2058,37 +2080,44 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="0">
-               <widget class="QPushButton" name="initEmbeddingManager">
-                <property name="text">
-                 <string>Init embedding manager from checkpoint</string>
+              <item row="33" column="1">
+               <widget class="QDoubleSpinBox" name="limit_val_batches">
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
                 </property>
                </widget>
               </item>
-              <item row="32" column="1">
-               <widget class="QDoubleSpinBox" name="limit_val_batches"/>
-              </item>
-              <item row="31" column="0">
+              <item row="32" column="0">
                <widget class="QLabel" name="label_77">
                 <property name="text">
                  <string>Train batches</string>
                 </property>
                </widget>
               </item>
-              <item row="12" column="0" colspan="2">
+              <item row="13" column="0" colspan="2">
                <widget class="QLineEdit" name="placeholder_tokens">
                 <property name="text">
                  <string>'*'</string>
                 </property>
                </widget>
               </item>
-              <item row="16" column="0" colspan="2">
+              <item row="17" column="0" colspan="2">
                <widget class="QLineEdit" name="class_word"/>
               </item>
-              <item row="31" column="1">
-               <widget class="QDoubleSpinBox" name="limit_train_batches"/>
+              <item row="32" column="1">
+               <widget class="QDoubleSpinBox" name="limit_train_batches">
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
+                </property>
+               </widget>
               </item>
-              <item row="20" column="1">
+              <item row="21" column="1">
                <widget class="QComboBox" name="accelerator">
                 <item>
                  <property name="text">
@@ -2107,38 +2136,41 @@
                 </item>
                </widget>
               </item>
-              <item row="23" column="0">
+              <item row="24" column="0">
                <widget class="QCheckBox" name="auto_select_gpus">
                 <property name="text">
                  <string>Auto select GPUs</string>
                 </property>
                </widget>
               </item>
-              <item row="3" column="0">
+              <item row="6" column="0">
                <widget class="QPushButton" name="pathInputImages">
                 <property name="text">
                  <string>Select path to input Images</string>
                 </property>
                </widget>
               </item>
-              <item row="36" column="0">
+              <item row="37" column="0">
                <widget class="QLabel" name="label_82">
                 <property name="text">
                  <string>Max epochs (0 = None)</string>
                 </property>
                </widget>
               </item>
-              <item row="36" column="1">
+              <item row="37" column="1">
                <widget class="QSpinBox" name="max_epochs"/>
               </item>
-              <item row="45" column="1">
+              <item row="46" column="1">
                <widget class="QLabel" name="label_5">
                 <property name="text">
                  <string>Steps tuned</string>
                 </property>
                </widget>
               </item>
-              <item row="17" column="1">
+              <item row="19" column="1">
+               <widget class="QComboBox" name="base"/>
+              </item>
+              <item row="18" column="1">
                <widget class="QCheckBox" name="no_test">
                 <property name="text">
                  <string>No Test</string>
@@ -2148,7 +2180,7 @@
                 </property>
                </widget>
               </item>
-              <item row="33" column="0">
+              <item row="34" column="0">
                <widget class="QLabel" name="label_79">
                 <property name="text">
                  <string>Test batches</string>
@@ -2162,31 +2194,31 @@
                 </property>
                </widget>
               </item>
-              <item row="14" column="0" colspan="2">
+              <item row="15" column="0" colspan="2">
                <widget class="QLineEdit" name="init_word"/>
               </item>
-              <item row="2" column="0" colspan="2">
+              <item row="3" column="0" colspan="2">
                <widget class="QLineEdit" name="name">
                 <property name="text">
                  <string>TestProject</string>
                 </property>
                </widget>
               </item>
-              <item row="47" column="1">
+              <item row="48" column="1">
                <widget class="QPushButton" name="Stop">
                 <property name="text">
                  <string>Stop training</string>
                 </property>
                </widget>
               </item>
-              <item row="39" column="0">
+              <item row="40" column="0">
                <widget class="QLabel" name="label_85">
                 <property name="text">
                  <string>Min steps (0 = None)</string>
                 </property>
                </widget>
               </item>
-              <item row="35" column="1">
+              <item row="36" column="1">
                <widget class="QComboBox" name="multiple_trainloader_mode">
                 <item>
                  <property name="text">
@@ -2200,52 +2232,38 @@
                 </item>
                </widget>
               </item>
-              <item row="15" column="0">
+              <item row="16" column="0">
                <widget class="QLabel" name="label_73">
                 <property name="text">
                  <string>Class word</string>
                 </property>
                </widget>
               </item>
-              <item row="26" column="0">
+              <item row="27" column="0">
                <widget class="QCheckBox" name="terminate_on_nan">
                 <property name="text">
                  <string>Terminate on NaN</string>
                 </property>
                </widget>
               </item>
-              <item row="38" column="0">
+              <item row="39" column="0">
                <widget class="QLabel" name="label_86">
                 <property name="text">
                  <string>Max steps</string>
                 </property>
                </widget>
               </item>
-              <item row="28" column="0">
+              <item row="29" column="0">
                <widget class="QLabel" name="label_74">
                 <property name="text">
                  <string>Flush logs every n steps</string>
                 </property>
                </widget>
               </item>
-              <item row="35" column="0">
+              <item row="36" column="0">
                <widget class="QLabel" name="label_81">
                 <property name="text">
                  <string>Multiple trainlopader mode</string>
-                </property>
-               </widget>
-              </item>
-              <item row="44" column="0">
-               <widget class="QLabel" name="label_90">
-                <property name="text">
-                 <string>Val check interval</string>
-                </property>
-               </widget>
-              </item>
-              <item row="44" column="1">
-               <widget class="QDoubleSpinBox" name="val_check_interval">
-                <property name="value">
-                 <double>1.000000000000000</double>
                 </property>
                </widget>
               </item>

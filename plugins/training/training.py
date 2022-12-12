@@ -280,7 +280,7 @@ class aiNodesPlugin:
         self.training.w.pathInputImages.clicked.connect(self.set_path_to_input_image)
         self.training.w.logsFolder.clicked.connect(self.set_path_to_logfiles)
         self.training.w.resumeModel.clicked.connect(self.set_path_to_resume_model)
-        self.training.w.initEmbeddingManager.clicked.connect(self.set_path_to_init_embedding_manager)
+        #self.training.w.initEmbeddingManager.clicked.connect(self.set_path_to_init_embedding_manager)
         self.training.w.Start.clicked.connect(self.start_dreambooth)
         self.training.w.Stop.clicked.connect(self.stop_dreambooth)
         self.training.w.ckpt2diff_start_process.clicked.connect(self.ckpt2diff_start_process)

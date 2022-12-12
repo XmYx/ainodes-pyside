@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>601</width>
-    <height>501</height>
+    <height>822</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -2122,6 +2122,11 @@
               </item>
               <item row="21" column="1">
                <widget class="QComboBox" name="accelerator">
+                <item>
+                 <property name="text">
+                  <string>None</string>
+                 </property>
+                </item>
                 <item>
                  <property name="text">
                   <string>ddp</string>

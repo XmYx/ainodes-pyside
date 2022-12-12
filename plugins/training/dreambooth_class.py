@@ -155,7 +155,7 @@ class DreamBooth:
 
 
                    benchmark=False,                                     # If true enables cudnn.benchmark.
-                   base=['plugins/training/configs/v1-finetune_unfrozen.yaml'],
+                   base=['plugins/training/configs/dreambooth/v1-finetune_unfrozen.yaml'],
                    callbacks=None,                                      # Add a callback or list of callbacks.
                    checkpoint_callback=False,                           # If ``True``, enable checkpointing.
                                                                         # It will configure a default ModelCheckpoint callback if there is no user-defined ModelCheckpoint in

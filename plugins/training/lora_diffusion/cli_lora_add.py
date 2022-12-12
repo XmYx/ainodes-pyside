@@ -7,7 +7,7 @@ import torch
 from .lora import tune_lora_scale, weight_apply_lora
 
 
-def add(
+def lom_merge_models(
     path_1: str,
     path_2: str,
     output_path: str = "./merged_lora.pt",

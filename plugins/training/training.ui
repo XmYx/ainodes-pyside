@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>601</width>
-    <height>695</height>
+    <height>1577</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,42 +30,19 @@
     <widget class="QDockWidget" name="dockWidget">
      <widget class="QWidget" name="dockWidgetContents">
       <layout class="QGridLayout" name="gridLayout_9">
-       <item row="0" column="0">
-        <widget class="QCheckBox" name="toggle_ckpt2diff">
-         <property name="text">
-          <string>CKPT2Diff</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QCheckBox" name="toggle_prepare_input">
-         <property name="text">
-          <string>Prepare Input</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QCheckBox" name="toggle_lora_dreambooth">
-         <property name="text">
-          <string>Lora Dreambooth</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QCheckBox" name="toggle_dreambooth">
-         <property name="text">
-          <string>Dreambooth</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="4">
-        <widget class="QCheckBox" name="toggle_hypernetwork">
-         <property name="text">
-          <string>Hypernetwork</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="5">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item row="1" column="0" colspan="6">
         <widget class="QScrollArea" name="scrollArea">
          <property name="verticalScrollBarPolicy">
           <enum>Qt::ScrollBarAsNeeded</enum>
@@ -77,12 +54,24 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-1146</y>
-            <width>564</width>
-            <height>2935</height>
+            <y>0</y>
+            <width>582</width>
+            <height>3247</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
+           <property name="leftMargin">
+            <number>3</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>3</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item>
             <widget class="QFrame" name="PrepareInput">
              <property name="frameShape">
@@ -581,6 +570,133 @@
             </widget>
            </item>
            <item>
+            <widget class="QFrame" name="LoraMerge">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_14">
+              <item row="2" column="0">
+               <widget class="QPushButton" name="lom_select_model_a_lora">
+                <property name="text">
+                 <string>Model A Lora</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0" colspan="2">
+               <widget class="QLineEdit" name="path_1"/>
+              </item>
+              <item row="9" column="0">
+               <widget class="QLabel" name="label_67">
+                <property name="text">
+                 <string>Alpha</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="0">
+               <widget class="QLabel" name="label_68">
+                <property name="text">
+                 <string>Mode</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QRadioButton" name="lora2diff">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Merge lora to diffuser</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QPushButton" name="lom_select_output_dir">
+                <property name="text">
+                 <string>Output Dir</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QRadioButton" name="lora2lora">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Merge lora to lora</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QPushButton" name="lom_select_model_b">
+                <property name="text">
+                 <string>Model B Lora</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_69">
+                <property name="text">
+                 <string>Lora Merge</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0" colspan="2">
+               <widget class="QLineEdit" name="output_path"/>
+              </item>
+              <item row="6" column="0" colspan="2">
+               <widget class="QLineEdit" name="path_2"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QPushButton" name="lom_select_model_a">
+                <property name="text">
+                 <string>Model A Diffuser</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="1">
+               <widget class="QDoubleSpinBox" name="alpha"/>
+              </item>
+              <item row="10" column="1">
+               <widget class="QComboBox" name="mode">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>upl</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>lpl</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="12" column="0">
+               <widget class="QPushButton" name="lom_start_merge">
+                <property name="text">
+                 <string>Start merge</string>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="0">
+               <widget class="QCheckBox" name="ckpt_half">
+                <property name="text">
+                 <string>CKPT half</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
             <widget class="QFrame" name="LoraDreambooth">
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
@@ -589,6 +705,18 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_3">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item row="22" column="0">
                <widget class="QLabel" name="label_21">
                 <property name="text">
@@ -718,6 +846,18 @@
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_13">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
                  <item row="4" column="0">
                   <widget class="QLabel" name="label_8">
                    <property name="text">
@@ -895,7 +1035,7 @@
                <widget class="QSpinBox" name="sample_batch_size_2"/>
               </item>
               <item row="31" column="0">
-               <widget class="QPushButton" name="start_lora_dreambooth">
+               <widget class="QPushButton" name="ldb_start_lora_dreambooth">
                 <property name="text">
                  <string>Start Lora Dreambooth training</string>
                 </property>
@@ -1087,6 +1227,18 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item>
                <widget class="QTabWidget" name="tabWidget">
                 <property name="currentIndex">
@@ -1748,6 +1900,48 @@
            </item>
           </layout>
          </widget>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="toggle_ckpt2diff">
+         <property name="text">
+          <string>CKPT2Diff</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="toggle_prepare_input">
+         <property name="text">
+          <string>Prepare Input</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QCheckBox" name="toggle_hypernetwork">
+         <property name="text">
+          <string>Hypernetwork</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QCheckBox" name="toggle_lora_dreambooth">
+         <property name="text">
+          <string>Lora Dreambooth</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QCheckBox" name="toggle_dreambooth">
+         <property name="text">
+          <string>Dreambooth</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QCheckBox" name="toggle_lora_merge">
+         <property name="text">
+          <string>Lora Merge</string>
+         </property>
         </widget>
        </item>
       </layout>

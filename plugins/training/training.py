@@ -1,4 +1,5 @@
 import os
+import shutil
 from types import SimpleNamespace
 
 from PySide6 import QtCore, QtUiTools
@@ -11,6 +12,8 @@ gs = singleton
 from plugins.training.dreambooth_class import DreamBooth
 from plugins.training.sd_to_diffusers import run_translation
 from plugins.training.train_lora_dreambooth import run_lora_dreambooth
+from plugins.training.lora_diffusion.cli_lora_add import lom_merge_models
+from plugins.training.diffuser_to_sd import diff2sd
 
 
 class FineTune(QObject):
@@ -47,6 +50,7 @@ class aiNodesPlugin:
         self.showAll = False
         self.show_hide_all_anim()
         self.training.w.show()
+        self.training.w.lom_select_model_a_lora.setVisible(False)
 
 
 
@@ -112,6 +116,13 @@ class aiNodesPlugin:
         else:
             self.hideCpdAnim.start()
         self.cpdHidden = not self.cpdHidden
+
+    def hideLoraMerge_anim(self):
+        if self.lomHidden is True:
+            self.showLomAnim.start()
+        else:
+            self.hideLomAnim.start()
+        self.lomHidden = not self.lomHidden
 
     def init_anims(self):
         self.showPocAnim = QtCore.QPropertyAnimation(self.training.w.processCaption, b"maximumHeight")
@@ -210,6 +221,18 @@ class aiNodesPlugin:
         self.hideCpdAnim.setEndValue(0)
         self.hideCpdAnim.setEasingCurve(QEasingCurve.Linear)
 
+        self.showLomAnim = QtCore.QPropertyAnimation(self.training.w.LoraMerge, b"maximumHeight")
+        self.showLomAnim.setDuration(1500)
+        self.showLomAnim.setStartValue(self.training.w.LoraMerge.height())
+        self.showLomAnim.setEndValue(self.training.w.height())
+        self.showLomAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hideLomAnim = QtCore.QPropertyAnimation(self.training.w.LoraMerge, b"maximumHeight")
+        self.hideLomAnim.setDuration(500)
+        self.hideLomAnim.setStartValue(self.training.w.LoraMerge.height())
+        self.hideLomAnim.setEndValue(0)
+        self.hideLomAnim.setEasingCurve(QEasingCurve.Linear)
+
     def show_hide_all_anim(self):
         print(self.showAll)
         if self.showAll == False:
@@ -229,6 +252,8 @@ class aiNodesPlugin:
             self.ldbHidden = True
             self.hideHpnAnim.start()
             self.hpnHidden = True
+            self.hideLomAnim.start()
+            self.lomHidden = True
             self.showAll = True
         elif self.showAll == True:
             self.showCpdAnim.start()
@@ -247,6 +272,8 @@ class aiNodesPlugin:
             self.ldbHidden = False
             self.showHpnAnim.start()
             self.hpnHidden = False
+            self.showLomAnim.start()
+            self.lomHidden = False
             self.showAll = False
 
     def connections(self):
@@ -268,13 +295,69 @@ class aiNodesPlugin:
         self.training.w.toggle_lora_dreambooth.stateChanged.connect(self.hideLoraDreambooth_anim)
         self.training.w.toggle_hypernetwork.stateChanged.connect(self.hideHypernetwork_anim)
         self.training.w.toggle_prepare_input.stateChanged.connect(self.hidePrepareInput_anim)
-
+        self.training.w.toggle_lora_merge.stateChanged.connect(self.hideLoraMerge_anim)
         self.training.w.ldb_select_pretrained_model_name_or_path.clicked.connect(self.ldb_select_pretrained_model_name_or_path)
         self.training.w.ldb_select_instance_data_dir.clicked.connect(self.ldb_select_instance_data_dir)
         self.training.w.ldb_select_output_dir.clicked.connect(self.ldb_select_output_dir)
         self.training.w.ldb_select_logging_dir.clicked.connect(self.ldb_select_logging_dir)
         self.training.w.ldb_select_class_data_dir.clicked.connect(self.ldb_select_class_data_dir)
-        self.training.w.start_lora_dreambooth.clicked.connect(self.start_lora_dreambooth)
+        self.training.w.ldb_start_lora_dreambooth.clicked.connect(self.ldb_start_lora_dreambooth)
+        self.training.w.lom_select_model_a.clicked.connect(self.lom_select_model_a)
+        self.training.w.lom_select_model_a_lora.clicked.connect(self.lom_select_model_a_lora)
+        self.training.w.lom_select_model_b.clicked.connect(self.lom_select_model_b)
+        self.training.w.lom_select_output_dir.clicked.connect(self.lom_select_output_dir)
+        self.training.w.lom_start_merge.clicked.connect(self.lom_start_merge)
+        self.training.w.lora2diff.toggled.connect(self.lom_set_model_select_buttons)
+
+
+    def lom_set_model_select_buttons(self):
+        if self.training.w.lora2diff.isChecked():
+            self.training.w.lom_select_model_a_lora.setVisible(False)
+            self.training.w.lom_select_model_a.setVisible(True)
+        else:
+            self.training.w.lom_select_model_a_lora.setVisible(True)
+            self.training.w.lom_select_model_a.setVisible(False)
+
+    def lom_start_merge(self):
+        self.parent.plugin_thread(self.lom_start_merge_thread)
+
+
+    def lom_start_merge_thread(self, progress_callback=None):
+        print('merge started')
+        lom_output_type = 'pt'
+        lom_output_type = 'ckpt' if 'ckpt' in self.training.w.path_1.text() else lom_output_type
+        lom_output_type = 'ckpt' if 'ckpt' in self.training.w.path_2.text() else lom_output_type
+
+        lom_merge_models(
+            path_1=self.training.w.path_1.text(),
+            path_2=self.training.w.path_2.text(),
+            output_path=os.path.join(self.training.w.output_path.text(),'merged_lora.' + lom_output_type ),
+            alpha=self.training.w.alpha.value(),
+            mode=self.training.w.mode.currentText()
+        )
+        args = SimpleNamespace(**{})
+        args.model_path = os.path.join(self.training.w.output_path.text(),'merged_lora')
+        args.checkpoint_path = os.path.join(self.training.w.output_path.text(),'merged_lora.ckpt')
+        args.half=self.training.w.ckpt_half.isChecked()
+        diff2sd(args)
+        shutil.rmtree(args.model_path)
+        print('merge finished')
+
+    def lom_select_model_a(self):
+        filename = QFileDialog.getExistingDirectory(caption='Model A to merge')
+        self.training.w.path_1.setText(filename)
+
+    def lom_select_model_a_lora(self):
+        filename = QFileDialog.getOpenFileName(caption='Lora Model A to merge', filter='Model (*.pt)')
+        self.training.w.path_1.setText(filename[0])
+
+    def lom_select_model_b(self):
+        filename = QFileDialog.getOpenFileName(caption='Model B to merge', filter='Model (*.pt)')
+        self.training.w.path_2.setText(filename[0])
+
+    def lom_select_output_dir(self):
+        filename = QFileDialog.getExistingDirectory(caption='Dir to output merged model')
+        self.training.w.output_path.setText(filename)
 
 
     def get_lora_dreambooth_args(self):
@@ -317,37 +400,32 @@ class aiNodesPlugin:
         args.save_steps = self.training.w.save_steps.value()
         return args
 
-    def start_lora_dreambooth(self):
-        self.parent.plugin_thread(self.start_lora_dreambooth_thread)
+    def ldb_start_lora_dreambooth(self):
+        self.parent.plugin_thread(self.ldb_start_lora_dreambooth_thread)
 
 
-    def start_lora_dreambooth_thread(self, progress_callback=None):
+    def ldb_start_lora_dreambooth_thread(self, progress_callback=None):
         args = self.get_lora_dreambooth_args()
         run_lora_dreambooth(args)
 
     def ldb_select_class_data_dir(self):
         filename = QFileDialog.getExistingDirectory(caption='Dir to class Images for training')
-        print(filename)
         self.training.w.class_data_dir.setText(filename)
 
     def ldb_select_logging_dir(self):
         filename = QFileDialog.getExistingDirectory(caption='Logging Dir')
-        print(filename)
         self.training.w.logging_dir.setText(filename)
 
     def ldb_select_output_dir(self):
         filename = QFileDialog.getExistingDirectory(caption='Dir to save output')
-        print(filename)
         self.training.w.output_dir.setText(filename)
 
     def ldb_select_pretrained_model_name_or_path(self):
         filename = QFileDialog.getExistingDirectory(caption='Dir to diffuser model to be trained on')
-        print(filename)
         self.training.w.pretrained_model_name_or_path.setText(filename)
 
     def ldb_select_instance_data_dir(self):
         filename = QFileDialog.getExistingDirectory(caption='Dir to Instance Images for training')
-        print(filename)
         self.training.w.instance_data_dir.setText(filename)
 
     def load_folder_content(self):
@@ -361,26 +439,22 @@ class aiNodesPlugin:
     @Slot()
     def ckpt2diff_select_source(self):
         filename = QFileDialog.getOpenFileName(caption='CKPT to translate to diffuser', filter='Checkpoint (*.ckpt)')
-        print(filename)
         self.training.w.checkpoint_path.setText(filename[0])
 
     @Slot()
     def ckpt2diff_select_destination(self):
         filename = QFileDialog.getExistingDirectory(caption='Path save diffuser model')
-        print(filename)
         self.training.w.dump_path.setText(filename)
 
 
     @Slot()
     def set_path_to_input_image(self):
         filename = QFileDialog.getExistingDirectory(caption='Path to input Images')
-        print(filename)
         self.training.w.data_root.setText(filename)
 
     @Slot()
     def set_path_to_logfiles(self):
         filename = QFileDialog.getExistingDirectory(caption='Logfile Path')
-        print(filename)
         self.training.w.logdir.setText(filename)
 
     @Slot()

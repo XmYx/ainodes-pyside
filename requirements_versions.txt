@@ -125,3 +125,4 @@ safetensors~=0.2.5
 test-tube
 diffusers~=0.10.2
 accelerate
+fire

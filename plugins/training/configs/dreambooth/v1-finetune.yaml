@@ -1,6 +1,6 @@
 model:
   base_learning_rate: 5.0e-03
-  target: plugins.dreambooth.ldm_db.models.diffusion.ddpm.LatentDiffusion
+  target: plugins.training.ldm_db.models.diffusion.ddpm.LatentDiffusion
   params:
     linear_start: 0.00085
     linear_end: 0.0120
@@ -21,7 +21,7 @@ model:
     model_lr: 0.0
 
     personalization_config:
-      target: plugins.dreambooth.ldm_db.modules.embedding_manager.EmbeddingManager
+      target: plugins.training.ldm_db.modules.embedding_manager.EmbeddingManager
       params:
         placeholder_strings: ["*"]
         initializer_words: ["sculpture"]
@@ -30,7 +30,7 @@ model:
         progressive_words: False
 
     unet_config:
-      target: plugins.dreambooth.ldm_db.modules.diffusionmodules.openaimodel.UNetModel
+      target: plugins.training.ldm_db.modules.diffusionmodules.openaimodel.UNetModel
       params:
         image_size: 32 # unused
         in_channels: 4
@@ -47,7 +47,7 @@ model:
         legacy: False
 
     first_stage_config:
-      target: plugins.dreambooth.ldm_db.models.autoencoder.AutoencoderKL
+      target: plugins.training.ldm_db.models.autoencoder.AutoencoderKL
       params:
         embed_dim: 4
         monitor: val/rec_loss
@@ -70,7 +70,7 @@ model:
           target: torch.nn.Identity
 
     cond_stage_config:
-      target: plugins.dreambooth.ldm_db.modules.encoders.modules.FrozenCLIPEmbedder
+      target: plugins.training.ldm_db.modules.encoders.modules.FrozenCLIPEmbedder
 
 data:
   target: main.DataModuleFromConfig
@@ -79,14 +79,14 @@ data:
     num_workers: 2
     wrap: false
     train:
-      target: plugins.dreambooth.ldm_db.data.personalized.PersonalizedBase
+      target: plugins.training.ldm_db.data.personalized.PersonalizedBase
       params:
         size: 512
         set: train
         per_image_tokens: false
         repeats: 100
     validation:
-      target: plugins.dreambooth.ldm_db.data.personalized.PersonalizedBase
+      target: plugins.training.ldm_db.data.personalized.PersonalizedBase
       params:
         size: 512
         set: val

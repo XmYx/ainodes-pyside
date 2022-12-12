@@ -121,6 +121,8 @@ fastapi
 uvicorn
 pydantic
 transformers~=4.24.0
-diffusers~=0.9.0
 safetensors~=0.2.5
 test-tube
+diffusers~=0.10.2
+accelerate
+fire

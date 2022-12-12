@@ -117,9 +117,8 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
             all_images = []
 
             for batch_index in range(args.n_batch):
-                #no display here
-                #if clear_between_batches and batch_index % 32 == 0:
-                #    display.clear_output(wait=True)
+                if gs.stop_all:
+                    return paths
                 print(f"Batch {batch_index+1} of {args.n_batch}")
 
                 for image in init_array: # iterates the init images
@@ -183,9 +182,9 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                             else:
                                 outfolder = os.path.join(args.outdir, datetime.now().strftime("%Y%m%d"))
                             os.makedirs(outfolder, exist_ok=True)
-                            outpath = os.path.join(outfolder, filename)
-                            paths.append(outpath)
-                            image.save(outpath)
+                            gs.temppath = os.path.join(outfolder, filename)
+                            paths.append(gs.temppath)
+                            image.save(gs.temppath)
                             args.init_sample = None
                             if args.save_settings == True:
                                 save_settings(args, outfolder, prompt, index)
@@ -557,7 +556,8 @@ def render_interpolation(args, anim_args, animation_prompts, root, image_callbac
                 if image_callback is not None:
                     image_callback(image)
                 filename = f"{args.timestring}_{frame_idx:05}.png"
-                image.save(os.path.join(args.outdir, filename))
+                gs.temppath = os.path.join(args.outdir, filename)
+                image.save(gs.temppath)
                 frame_idx += 1
 
                 display.clear_output(wait=True)
@@ -573,7 +573,8 @@ def render_interpolation(args, anim_args, animation_prompts, root, image_callbac
     if image_callback is not None:
         image_callback(image)
     filename = f"{args.timestring}_{frame_idx:05}.png"
-    image.save(os.path.join(args.outdir, filename))
+    gs.temppath = os.path.join(args.outdir, filename)
+    image.save(gs.temppath)
 
     display.clear_output(wait=True)
     display.display(image)

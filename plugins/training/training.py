@@ -5,6 +5,8 @@ from types import SimpleNamespace
 from PySide6 import QtCore, QtUiTools
 from PySide6.QtWidgets import QDockWidget, QFileDialog
 from PySide6.QtCore import Slot, Signal, QObject, QFile, QEasingCurve
+
+from backend.torch_gc import torch_gc
 from backend.singleton import singleton
 
 gs = singleton
@@ -319,7 +321,9 @@ class aiNodesPlugin:
             self.training.w.lom_select_model_a.setVisible(False)
 
     def lom_start_merge(self):
+        torch_gc()
         self.parent.plugin_thread(self.lom_start_merge_thread)
+
 
 
     def lom_start_merge_thread(self, progress_callback=None):
@@ -342,6 +346,7 @@ class aiNodesPlugin:
         diff2sd(args)
         shutil.rmtree(args.model_path)
         print('merge finished')
+        torch_gc()
 
     def lom_select_model_a(self):
         filename = QFileDialog.getExistingDirectory(caption='Model A to merge')
@@ -401,12 +406,14 @@ class aiNodesPlugin:
         return args
 
     def ldb_start_lora_dreambooth(self):
+        torch_gc()
         self.parent.plugin_thread(self.ldb_start_lora_dreambooth_thread)
 
 
     def ldb_start_lora_dreambooth_thread(self, progress_callback=None):
         args = self.get_lora_dreambooth_args()
         run_lora_dreambooth(args)
+        torch_gc()
 
     def ldb_select_class_data_dir(self):
         filename = QFileDialog.getExistingDirectory(caption='Dir to class Images for training')
@@ -497,10 +504,11 @@ class aiNodesPlugin:
 
 
     def create_dreambooth(self, progress_callback=None):
+        torch_gc()
         self.dreambooth_training.dreambooth(
             accelerator=self.training.w.accelerator.currentText(),                                   # Previously known as distributed_backend (dp, ddp, ddp2, etc...).
             # Can also take in an accelerator object for custom hardware.
-            accumulate_grad_batches=None,                        # Accumulates grads every k batches or as set up in the dict.
+            accumulate_grad_batches=0,                        # Accumulates grads every k batches or as set up in the dict.
             amp_backend=self.training.w.amp_backend.currentText(),                                # The mixed precision backend to use ("native" or "apex")
             amp_level=None,                                      # The optimization level to use (O1, O2, etc...).
             auto_lr_find=self.training.w.auto_lr_find.isChecked(),                                  # If set to True, will make trainer.tune() run a learning rate finder,
@@ -526,7 +534,7 @@ class aiNodesPlugin:
 
 
             benchmark=self.training.w.benchmark.isChecked(),                                     # If true enables cudnn.benchmark.
-            base=['plugins/training/configs/v1-finetune_unfrozen.yaml'],
+            base=['plugins/training/configs/dreambooth/v1-finetune_unfrozen.yaml'],
             callbacks=None,                                      # Add a callback or list of callbacks.
             checkpoint_callback=self.training.w.checkpoint_callback.isChecked(),                           # If ``True``, enable checkpointing.
             # It will configure a default ModelCheckpoint callback if there is no user-defined ModelCheckpoint in
@@ -595,7 +603,7 @@ class aiNodesPlugin:
             name=self.training.w.name.text(),
             num_nodes=1,                                         # number of GPU nodes for distributed training.
             num_processes=1,                                     # number of processes for distributed training with distributed_backend="ddp_cpu"
-            num_sanity_val_steps=None if self.training.w.num_sanity_val_steps.value() == 0 else self.training.w.num_sanity_val_steps.value(),                           # Sanity check runs n validation batches before starting the training routine.
+            num_sanity_val_steps=self.training.w.num_sanity_val_steps.value(),                           # Sanity check runs n validation batches before starting the training routine.
             # Set it to `-1` to run all batches in all validation dataloaders.
 
             no_test=False,

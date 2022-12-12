@@ -21,8 +21,10 @@ from pytorch_lightning.utilities.distributed import rank_zero_only
 from pytorch_lightning.utilities import rank_zero_info
 
 from plugins.training.callbacks import *
-from plugins.training.ldm_db.data.base import Txt2ImgIterableBaseDataset
-from plugins.training.ldm_db.util import instantiate_from_config
+from ldm.data.base import Txt2ImgIterableBaseDataset
+from ldm.util import instantiate_from_config
+
+from backend.torch_gc import torch_gc
 from backend.singleton import singleton
 
 gs = singleton
@@ -67,8 +69,10 @@ class DreamBooth:
 
     def get_trainer_config(self, opt):
         trainer_config = {}
-        trainer_config['accelerator'] = opt.accelerator
-        trainer_config['accumulate_grad_batches'] = opt.accumulate_grad_batches
+
+
+        """trainer_config['accelerator'] = opt.accelerator
+        trainer_config['accumulate_grad_batches'] = opt.accumulate_grad_batches"""
         trainer_config['amp_backend'] = opt.amp_backend
         trainer_config['amp_level'] = opt.amp_level
         trainer_config['auto_lr_find'] = opt.auto_lr_find
@@ -626,3 +630,4 @@ class DreamBooth:
                 os.rename(logdir, dst)
             if self.trainer.global_rank == 0:
                 print(self.trainer.profiler.summary())
+            torch_gc()

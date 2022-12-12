@@ -462,12 +462,6 @@ class aiNodesPlugin:
         filename = QFileDialog.getOpenFileName(caption='Model to resume from', filter='Checkpoint (*.ckpt)')
         self.training.w.actual_resume.setText(filename[0])
 
-    @Slot()
-    def set_path_to_init_embedding_manager(self):
-        filename = QFileDialog.getOpenFileName(caption='Initialize embedding manager from a checkpoint', filter='Checkpoint (*.ckpt)')
-        self.training.w.init_embedding_manager_ckpt.setText(filename[0])
-
-
     def ckpt2diff_start_process(self):
         gs.ti_grad_flag_switch = True
         self.parent.plugin_thread(self.ckpt2diff_start_process_thread)
@@ -503,7 +497,161 @@ class aiNodesPlugin:
 
 
     def create_dreambooth(self, progress_callback=None):
-        self.dreambooth_training.dreambooth()
+        self.dreambooth_training.dreambooth(
+            accelerator=self.training.w.accelerator.currentText(),                                   # Previously known as distributed_backend (dp, ddp, ddp2, etc...).
+            # Can also take in an accelerator object for custom hardware.
+            accumulate_grad_batches=None,                        # Accumulates grads every k batches or as set up in the dict.
+            amp_backend=self.training.w.amp_backend.currentText(),                                # The mixed precision backend to use ("native" or "apex")
+            amp_level=None,                                      # The optimization level to use (O1, O2, etc...).
+            auto_lr_find=self.training.w.auto_lr_find.isChecked(),                                  # If set to True, will make trainer.tune() run a learning rate finder,
+            # trying to optimize initial learning for faster convergence. trainer.tune() method will
+            # set the suggested learning rate in self.lr or self.learning_rate in the LightningModule.
+            # To use a different key set a string instead of True with the key name.
+            auto_scale_batch_size=self.training.w.auto_scale_batch_size.isChecked(),                         # If set to True, will `initially` run a batch size
+            # finder trying to find the largest batch size that fits into memory.
+            # The result will be stored in self.batch_size in the LightningModule.
+            # Additionally, can be set to either `power` that estimates the batch size through
+            # a power search or `binsearch` that estimates the batch size through a binary search.
+            auto_select_gpus=self.training.w.auto_select_gpus.isChecked(),                              # If enabled and `gpus` is an integer, pick available
+            # gpus automatically. This is especially useful when
+            # GPUs are configured to be in "exclusive mode", such
+            # that only one process at a time can access them.
+
+            actual_resume=self.training.w.actual_resume.text(),
+
+
+
+
+
+
+
+            benchmark=self.training.w.benchmark.isChecked(),                                     # If true enables cudnn.benchmark.
+            base=['plugins/training/configs/v1-finetune_unfrozen.yaml'],
+            callbacks=None,                                      # Add a callback or list of callbacks.
+            checkpoint_callback=self.training.w.checkpoint_callback.isChecked(),                           # If ``True``, enable checkpointing.
+            # It will configure a default ModelCheckpoint callback if there is no user-defined ModelCheckpoint in
+            # :paramref:`~pytorch_lightning.trainer.trainer.Trainer.callbacks`.
+            check_val_every_n_epoch=self.training.w.check_val_every_n_epoch.value(),                           # Check val every n train epochs.
+            class_word='<xxx>',
+            default_root_dir=None,                               # Default path for logs and weights when no logger/ckpt_callback passed.
+            # Default: ``os.getcwd()``.
+            # Can be remote file paths such as `s3://mybucket/path` or 'hdfs://path/'
+            deterministic=self.training.w.deterministic.isChecked(),                                 # If true enables cudnn.deterministic.
+            devices=None,                                        # Will be mapped to either `gpus`, `tpu_cores`, `num_processes` or `ipus`,
+            # based on the accelerator type.
+            debug=False,
+            datadir_in_name=True,
+            data_root=self.training.w.data_root.text(),
+            detect_anomaly=False,
+            enable_checkpointing=True,
+            enable_model_summary=True,
+            enable_progress_bar=True,
+            embedding_manager_ckpt='',
+
+
+
+
+            fast_dev_run=False,                                  # runs n if set to ``n`` (int) else 1 if set to ``True`` batch(es)
+            # of train, val and test to find any bugs (ie: a sort of unit test).
+            flush_logs_every_n_steps=self.training.w.flush_logs_every_n_steps.value(),                        # How often to flush logs to disk (defaults to every 100 steps).
+            gpus='0,',                                           # number of gpus to train on (int) or which GPUs to train on (list or str) applied per node
+            gradient_clip_val=self.training.w.gradient_clip_val.value(),                                 # 0 means don't clip.
+            gradient_clip_algorithm=self.training.w.gradient_clip_algorithm.currentText(),                      # 'value' means clip_by_value, 'norm' means clip_by_norm. Default: 'norm'
+            ipus=None,                                           # How many IPUs to train on.
+            init_word=self.training.w.init_word.text(),
+
+            limit_train_batches=self.training.w.limit_train_batches.value(),                             # How much of training dataset to check (float = fraction, int = num_batches)
+            limit_val_batches=self.training.w.limit_val_batches.value(),                               # How much of validation dataset to check (float = fraction, int = num_batches)
+            limit_test_batches=self.training.w.limit_test_batches.value(),                              # How much of test dataset to check (float = fraction, int = num_batches)
+            limit_predict_batches=self.training.w.limit_predict_batches.value(),                           # How much of prediction dataset to check (float = fraction, int = num_batches)
+
+
+
+            logger=True,                                         # Logger (or iterable collection of loggers) for experiment tracking. A ``True`` value uses
+            # the default ``TensorBoardLogger``. ``False`` will disable logging. If multiple loggers are
+            # provided and the `save_dir` property of that logger is not set, local files (checkpoints,
+            # profiler traces, etc.) are saved in ``default_root_dir`` rather than in the ``log_dir`` of any
+            # of the individual loggers.
+            log_gpu_memory=None,                                 # 'min_max', 'all'. Might slow performance
+
+            log_every_n_steps=50,                                # How often to log within steps (defaults to every 50 steps).
+            logdir=self.training.w.logdir.text(),
+            move_metrics_to_cpu=self.training.w.move_metrics_to_cpu.isChecked(),                           # Whether to force internal logged metrics to be moved to cpu.
+            # This can save some gpu memory, but can make training slower. Use with attention.
+            multiple_trainloader_mode=self.training.w.multiple_trainloader_mode.currentText(),          # How to loop over the datasets when there are multiple train loaders.
+            # In 'max_size_cycle' mode, the trainer ends one epoch when the largest dataset is traversed,
+            # and smaller datasets reload when running out of their data. In 'min_size' mode, all the datasets
+            # reload when reaching the minimum length of datasets.
+            max_epochs=None if self.training.w.max_epochs.value() == 0 else self.training.w.max_epochs.value(),                                     # Stop training once this number of epochs is reached. Disabled by default (None).
+            # If both max_epochs and max_steps are not specified, defaults to ``max_epochs`` = 1000.
+            min_epochs=None if self.training.w.min_epochs.value() == 0 else self.training.w.min_epochs.value(),                                     # Force training for at least these many epochs. Disabled by default (None).
+            # If both min_epochs and min_steps are not specified, defaults to ``min_epochs`` = 1.
+            max_steps=self.training.w.max_steps.value(),                                        # Stop training after this number of steps. Disabled by default (None).
+            min_steps=None if self.training.w.min_steps.value() == 0 else self.training.w.min_steps.value(),                                      # Force training for at least these number of steps. Disabled by default (None).
+            max_time=None if self.training.w.max_time.value() == 0 else self.training.w.max_time.value(),                                       # Stop training after this amount of time has passed. Disabled by default (None).
+            # The time duration can be specified in the format DD:HH:MM:SS (days, hours, minutes seconds), as a
+            # :class:`datetime.timedelta`, or a dictionary with keys that will be passed to
+            # :class:`datetime.timedelta`.
+            name=self.training.w.name.text(),
+            num_nodes=1,                                         # number of GPU nodes for distributed training.
+            num_processes=1,                                     # number of processes for distributed training with distributed_backend="ddp_cpu"
+            num_sanity_val_steps=None if self.training.w.num_sanity_val_steps.value() == 0 else self.training.w.num_sanity_val_steps.value(),                           # Sanity check runs n validation batches before starting the training routine.
+            # Set it to `-1` to run all batches in all validation dataloaders.
+
+            no_test=False,
+            overfit_batches=0.0,                                 # Overfit a fraction of training data (float) or a set number of batches (int).
+            project=None,
+            postfix='',
+
+            prepare_data_per_node=None,                          # If True, each LOCAL_RANK=0 will call prepare data.
+            # Otherwise only NODE_RANK=0, LOCAL_RANK=0 will prepare data
+            process_position=0,                                  # orders the progress bar when running multiple models on same machine.
+            progress_bar_refresh_rate=None,                      # How often to refresh progress bar (in steps). Value ``0`` disables progress bar.
+            # Ignored when a custom progress bar is passed to :paramref:`~Trainer.callbacks`. Default: None, means
+            # a suitable value will be chosen based on the environment (terminal, Google COLAB, etc.).
+            profiler=None,                                       # To profile individual steps during training and assist in identifying bottlenecks.
+
+            plugins=None,                                        # Plugins allow modification of core behavior like ddp and amp, and enable custom lightning plugins.
+            progress_callback=None,
+
+            precision=int(self.training.w.precision.currentText()),                                        # Double precision (64), full precision (32) or half precision (16). Can be used on CPU, GPU or
+            # TPUs.
+
+            reload_dataloaders_every_n_epochs=self.training.w.reload_dataloaders_every_n_epochs.value(),                 # Set to a non-negative integer to reload dataloaders every n epochs.
+            # Default: 0
+
+            resume_from_checkpoint=None,                         # Path/URL of the checkpoint from which training is resumed. If there is
+            # no checkpoint file at the path, start from scratch. If resuming from mid-epoch checkpoint,
+            # training will start from the beginning of the next epoch.
+            replace_sampler_ddp=True,                            # Explicitly enables or disables sampler replacement. If not specified this
+            # will toggled automatically when DDP is used. By default it will add ``shuffle=True`` for
+            # train sampler and ``shuffle=False`` for val/test sampler. If you want to customize it,
+            # you can set ``replace_sampler_ddp=False`` and add your own distributed sampler.
+            resume='',
+            reg_data_root='data/input/regularization/images',
+            stochastic_weight_avg=self.training.w.stochastic_weight_avg.isChecked(),                         # Whether to use `Stochastic Weight Averaging (SWA)
+            # <https://pytorch.org/blog/pytorch-1.6-now-includes-stochastic-weight-averaging/>_
+            strategy=None,
+            seed=23,
+            scale_lr=False,
+            sync_batchnorm=False,                                # Synchronize batch norm layers between process groups/whole world.
+            terminate_on_nan=self.training.w.stochastic_weight_avg.isChecked(),                               # If set to True, will terminate training (by raising a `ValueError`) at the
+            # end of each training batch, if any of the parameters or the loss are NaN or +/-inf.
+            tpu_cores=None,                                      # How many TPU cores to train on (1 or 8) / Single TPU to train on [1]
+
+            track_grad_norm=-1,                                  # -1 no tracking. Otherwise tracks that p-norm. May be set to 'inf' infinity-norm.
+
+            train=True,
+
+            weights_summary='top',                               # Prints a summary of the weights when training begins.
+            weights_save_path=None,                              # Where to save weights if specified. Will override default_root_dir
+            # for checkpoints only. Use this if for whatever reason you need the checkpoints
+            # stored in a different place than the logs written in `default_root_dir`.
+            # Can be remote file paths such as `s3://mybucket/path` or 'hdfs://path/'
+            # Defaults to `default_root_dir`.
+            val_check_interval=self.training.w.val_check_interval.value()                               # How often to check the validation set. Use float to check within a training epoch,
+            # use int to check every n steps (batches).
+        )
         """
         self.parent.ti.create_txt_inv(
             name=self.training.w.name.text(),

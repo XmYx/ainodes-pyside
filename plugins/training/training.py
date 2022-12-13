@@ -14,7 +14,7 @@ gs = singleton
 from plugins.training.dreambooth_class import DreamBooth
 from plugins.training.sd_to_diffusers import run_translation
 from plugins.training.train_lora_dreambooth import run_lora_dreambooth
-from plugins.training.lora_diffusion.cli_lora_add import lom_merge_models
+from plugins.training.lora_diffusion.cli_lora_add import add as lom_merge_models
 from plugins.training.diffuser_to_sd import diff2sd
 
 
@@ -332,19 +332,24 @@ class aiNodesPlugin:
         lom_output_type = 'ckpt' if 'ckpt' in self.training.w.path_1.text() else lom_output_type
         lom_output_type = 'ckpt' if 'ckpt' in self.training.w.path_2.text() else lom_output_type
 
+        mode = self.training.w.mode.currentText()
+
         lom_merge_models(
             path_1=self.training.w.path_1.text(),
             path_2=self.training.w.path_2.text(),
             output_path=os.path.join(self.training.w.output_path.text(),'merged_lora.' + lom_output_type ),
             alpha=self.training.w.alpha.value(),
-            mode=self.training.w.mode.currentText()
+            mode=mode,
+            with_text_lora= self.training.w.with_text_lora.isChecked(),
+            half = self.training.w.ckpt_half.isChecked()
         )
         args = SimpleNamespace(**{})
         args.model_path = os.path.join(self.training.w.output_path.text(),'merged_lora')
         args.checkpoint_path = os.path.join(self.training.w.output_path.text(),'merged_lora.ckpt')
         args.half=self.training.w.ckpt_half.isChecked()
-        diff2sd(args)
-        shutil.rmtree(args.model_path)
+        if mode != "upl-ckpt-v2":
+            diff2sd(args)
+            shutil.rmtree(args.model_path)
         print('merge finished')
         torch_gc()
 
@@ -403,6 +408,12 @@ class aiNodesPlugin:
         args.use_8bit_adam = self.training.w.use_8bit_adam.isChecked()
         args.adam_weight_decay = self.training.w.adam_weight_decay.value()
         args.save_steps = self.training.w.save_steps.value()
+        args.color_jitter = self.training.w.color_jitter.isChecked()
+        args.learning_rate_text = self.training.w.learning_rate_text.value()
+
+
+
+
         return args
 
     def ldb_start_lora_dreambooth(self):

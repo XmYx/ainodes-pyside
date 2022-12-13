@@ -514,7 +514,6 @@ def parse_args(input_args=None):
 
     return args
 
-
 def get_full_repo_name(
     model_id: str, organization: Optional[str] = None, token: Optional[str] = None
 ):
@@ -526,15 +525,7 @@ def get_full_repo_name(
     else:
         return f"{organization}/{model_id}"
 
-
-def run_lora_dreambooth(args):
-
-    args.revision = None # hardcoded for now
-    args.tokenizer_name = None
-    args.prior_loss_weight = 1.0
-    args.push_to_hub = False
-    args.local_rank = -1
-
+def main(args):
     logging_dir = Path(args.output_dir, args.logging_dir)
 
     accelerator = Accelerator(
@@ -549,9 +540,9 @@ def run_lora_dreambooth(args):
     # This will be enabled soon in accelerate. For now, we don't allow gradient accumulation when training two models.
     # TODO (patil-suraj): Remove this check when gradient accumulation with two models is enabled in accelerate.
     if (
-        args.train_text_encoder
-        and args.gradient_accumulation_steps > 1
-        and accelerator.num_processes > 1
+            args.train_text_encoder
+            and args.gradient_accumulation_steps > 1
+            and accelerator.num_processes > 1
     ):
         raise ValueError(
             "Gradient accumulation is not supported when training the text encoder in distributed training. "
@@ -591,17 +582,17 @@ def run_lora_dreambooth(args):
             pipeline.to(accelerator.device)
 
             for example in tqdm(
-                sample_dataloader,
-                desc="Generating class images",
-                disable=not accelerator.is_local_main_process,
+                    sample_dataloader,
+                    desc="Generating class images",
+                    disable=not accelerator.is_local_main_process,
             ):
                 images = pipeline(example["prompt"]).images
 
                 for i, image in enumerate(images):
                     hash_image = hashlib.sha1(image.tobytes()).hexdigest()
                     image_filename = (
-                        class_images_dir
-                        / f"{example['index'][i] + cur_class_images}-{hash_image}.jpg"
+                            class_images_dir
+                            / f"{example['index'][i] + cur_class_images}-{hash_image}.jpg"
                     )
                     image.save(image_filename)
 
@@ -658,16 +649,28 @@ def run_lora_dreambooth(args):
         revision=args.revision,
     )
     unet.requires_grad_(False)
-    unet_lora_params, train_names = inject_trainable_lora(unet)
+    unet_lora_params, _ = inject_trainable_lora(unet)
 
     for _up, _down in extract_lora_ups_down(unet):
-        print(_up.weight)
-        print(_down.weight)
+        print("Before training: Unet First Layer lora up", _up.weight.data)
+        print("Before training: Unet First Layer lora down", _down.weight.data)
         break
 
     vae.requires_grad_(False)
-    if not args.train_text_encoder:
-        text_encoder.requires_grad_(False)
+    text_encoder.requires_grad_(False)
+
+    if args.train_text_encoder:
+        text_encoder_lora_params, _ = inject_trainable_lora(
+            text_encoder, target_replace_module=["CLIPAttention"]
+        )
+        for _up, _down in extract_lora_ups_down(
+                text_encoder, target_replace_module=["CLIPAttention"]
+        ):
+            print("Before training: text encoder First Layer lora up", _up.weight.data)
+            print(
+                "Before training: text encoder First Layer lora down", _down.weight.data
+            )
+            break
 
     if args.gradient_checkpointing:
         unet.enable_gradient_checkpointing()
@@ -676,10 +679,10 @@ def run_lora_dreambooth(args):
 
     if args.scale_lr:
         args.learning_rate = (
-            args.learning_rate
-            * args.gradient_accumulation_steps
-            * args.train_batch_size
-            * accelerator.num_processes
+                args.learning_rate
+                * args.gradient_accumulation_steps
+                * args.train_batch_size
+                * accelerator.num_processes
         )
 
     # Use 8-bit Adam for lower memory usage or to fine-tune the model in 16GB GPUs
@@ -695,8 +698,20 @@ def run_lora_dreambooth(args):
     else:
         optimizer_class = torch.optim.AdamW
 
+    text_lr = (
+        args.learning_rate
+        if args.learning_rate_text is None
+        else args.learning_rate_text
+    )
+
     params_to_optimize = (
-        itertools.chain(*unet_lora_params, text_encoder.parameters())
+        [
+            {"params": itertools.chain(*unet_lora_params), "lr": args.learning_rate},
+            {
+                "params": itertools.chain(*text_encoder_lora_params),
+                "lr": text_lr,
+            },
+        ]
         if args.train_text_encoder
         else itertools.chain(*unet_lora_params)
     )
@@ -720,6 +735,7 @@ def run_lora_dreambooth(args):
         tokenizer=tokenizer,
         size=args.resolution,
         center_crop=args.center_crop,
+        color_jitter=args.color_jitter,
     )
 
     def collate_fn(examples):
@@ -819,9 +835,9 @@ def run_lora_dreambooth(args):
 
     # Train!
     total_batch_size = (
-        args.train_batch_size
-        * accelerator.num_processes
-        * args.gradient_accumulation_steps
+            args.train_batch_size
+            * accelerator.num_processes
+            * args.gradient_accumulation_steps
     )
 
     print("***** Running training *****")
@@ -879,7 +895,7 @@ def run_lora_dreambooth(args):
             # Get the target for loss depending on the prediction type
             if noise_scheduler.config.prediction_type == "epsilon":
                 target = noise
-            elif noise_scheduler.config.prediction_type == "v-prediction":
+            elif noise_scheduler.config.prediction_type == "v_prediction":
                 target = noise_scheduler.get_velocity(latents, noise, timesteps)
             else:
                 raise ValueError(
@@ -934,17 +950,52 @@ def run_lora_dreambooth(args):
                     accepts_keep_fp32_wrapper = "keep_fp32_wrapper" in set(
                         inspect.signature(accelerator.unwrap_model).parameters.keys()
                     )
-                    extra_args = {"keep_fp32_wrapper": True} if accepts_keep_fp32_wrapper else {}
+                    extra_args = (
+                        {"keep_fp32_wrapper": True} if accepts_keep_fp32_wrapper else {}
+                    )
                     pipeline = StableDiffusionPipeline.from_pretrained(
                         args.pretrained_model_name_or_path,
                         unet=accelerator.unwrap_model(unet, **extra_args),
-                        text_encoder=accelerator.unwrap_model(text_encoder, **extra_args),
+                        text_encoder=accelerator.unwrap_model(
+                            text_encoder, **extra_args
+                        ),
                         revision=args.revision,
                     )
 
-                    filename = f"{args.output_dir}/lora_weight_e{epoch}_s{global_step}.pt"
-                    print(f"save weights {filename}")
-                    save_lora_weight(pipeline.unet, filename)
+                    filename_unet = (
+                        f"{args.output_dir}/lora_weight_e{epoch}_s{global_step}.pt"
+                    )
+                    filename_text_encoder = f"{args.output_dir}/lora_weight_e{epoch}_s{global_step}.text_encoder.pt"
+                    print(f"save weights {filename_unet}, {filename_text_encoder}")
+                    save_lora_weight(pipeline.unet, filename_unet)
+                    if args.train_text_encoder:
+                        save_lora_weight(
+                            pipeline.text_encoder,
+                            filename_text_encoder,
+                            target_replace_module=["CLIPAttention"],
+                        )
+
+                    for _up, _down in extract_lora_ups_down(pipeline.unet):
+                        print("First Unet Layer's Up Weight is now : ", _up.weight.data)
+                        print(
+                            "First Unet Layer's Down Weight is now : ",
+                            _down.weight.data,
+                        )
+                        break
+                    if args.train_text_encoder:
+                        for _up, _down in extract_lora_ups_down(
+                                pipeline.text_encoder,
+                                target_replace_module=["CLIPAttention"],
+                        ):
+                            print(
+                                "First Text Encoder Layer's Up Weight is now : ",
+                                _up.weight.data,
+                            )
+                            print(
+                                "First Text Encoder Layer's Down Weight is now : ",
+                                _down.weight.data,
+                            )
+                            break
 
                     last_save = global_step
 
@@ -969,11 +1020,12 @@ def run_lora_dreambooth(args):
         print("\n\nLora TRAINING DONE!\n\n")
 
         save_lora_weight(pipeline.unet, args.output_dir + "/lora_weight.pt")
-
-        for _up, _down in extract_lora_ups_down(pipeline.unet):
-            print("First Layer's Up Weight is now : ", _up.weight)
-            print("First Layer's Down Weight is now : ", _down.weight)
-            break
+        if args.train_text_encoder:
+            save_lora_weight(
+                pipeline.text_encoder,
+                args.output_dir + "/lora_weight.text_encoder.pt",
+                target_replace_module=["CLIPAttention"],
+                )
 
         if args.push_to_hub:
             repo.push_to_hub(
@@ -981,3 +1033,6 @@ def run_lora_dreambooth(args):
             )
 
     accelerator.end_training()
+
+def run_lora_dreambooth(args):
+    main(args)

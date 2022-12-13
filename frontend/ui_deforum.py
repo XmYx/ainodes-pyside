@@ -196,6 +196,8 @@ class Deforum_UI(QObject):
                     if attrib1 == 'lr': gs.lr = float(i)
                     if attrib2 == 'T': gs.T = int(j)
                     if attrib2 == 'lr': gs.lr = float(j)
+                    if attrib1 == 'aesthetic_weight': gs.aesthetic_weight = float(j)
+                    if attrib2 == 'aesthetic_weight': gs.aesthetic_weight = float(j)
                 if self.params.init_image is not None:
                     if os.path.isdir(self.params.init_image) and self.params.animation_mode == 'None':
                         print('Batch Directory found')

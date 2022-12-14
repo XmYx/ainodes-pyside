@@ -726,5 +726,3 @@ if __name__ == '__main__':
 		                        interpolation=0)
 		img_concat = np.concatenate([lq_bicubic_nearest, lq_nearest, util.single2uint(img_hq)], axis=1)
 		util.imsave(img_concat, str(i) + '.png')
-
-

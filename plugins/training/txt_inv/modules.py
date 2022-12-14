@@ -12,7 +12,7 @@ import kornia
 from backend.torch_gc import torch_gc
 from backend.singleton import singleton
 gs = singleton
-from backend.dream.devices import choose_torch_device
+from plugins.training.txt_inv.devices import choose_torch_device
 
 from ldm.modules.x_transformer import (
     Encoder,

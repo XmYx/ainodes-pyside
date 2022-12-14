@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>601</width>
-    <height>4781</height>
+    <width>616</width>
+    <height>582</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,13 +15,13 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <property name="topMargin">
     <number>0</number>
    </property>
    <property name="rightMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <property name="bottomMargin">
     <number>0</number>
@@ -42,27 +42,6 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <item row="2" column="2">
-        <widget class="QCheckBox" name="toggle_hypernetwork">
-         <property name="text">
-          <string>Hypernetwork</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QCheckBox" name="toggle_dreambooth">
-         <property name="text">
-          <string>Dreambooth</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QCheckBox" name="textInv">
-         <property name="text">
-          <string>Textual Inversion</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="0">
         <widget class="QCheckBox" name="toggle_prepare_input">
          <property name="text">
@@ -70,28 +49,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QCheckBox" name="toggle_lora_dreambooth">
-         <property name="text">
-          <string>Lora Dreambooth</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="toggle_ckpt2diff">
-         <property name="text">
-          <string>CKPT2Diff</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QCheckBox" name="toggle_lora_merge">
-         <property name="text">
-          <string>Lora Merge</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0" colspan="6">
+       <item row="6" column="0" colspan="6">
         <widget class="QScrollArea" name="scrollArea">
          <property name="verticalScrollBarPolicy">
           <enum>Qt::ScrollBarAsNeeded</enum>
@@ -103,12 +61,27 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
-            <width>599</width>
-            <height>4677</height>
+            <y>-3713</y>
+            <width>591</width>
+            <height>4191</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item>
             <widget class="QFrame" name="PrepareInput">
              <property name="frameShape">
@@ -2370,61 +2343,8 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_15">
-              <item row="33" column="2">
-               <widget class="QCheckBox" name="ti_stochastic_weight_avg">
-                <property name="text">
-                 <string>Stochastic weight avg</string>
-                </property>
-               </widget>
-              </item>
-              <item row="16" column="0">
-               <widget class="QLabel" name="label_104">
-                <property name="text">
-                 <string>Track grad norm</string>
-                </property>
-               </widget>
-              </item>
-              <item row="30" column="3">
-               <widget class="QCheckBox" name="ti_debug">
-                <property name="text">
-                 <string>Debug</string>
-                </property>
-               </widget>
-              </item>
-              <item row="31" column="1">
-               <widget class="QCheckBox" name="ti_datadir_in_name">
-                <property name="text">
-                 <string>Datadir in name</string>
-                </property>
-               </widget>
-              </item>
-              <item row="27" column="0">
-               <widget class="QLabel" name="label_115">
-                <property name="text">
-                 <string>Reload dataloader every n epochs</string>
-                </property>
-               </widget>
-              </item>
-              <item row="26" column="0">
-               <widget class="QLabel" name="label_114">
-                <property name="text">
-                 <string>Limit predict batches</string>
-                </property>
-               </widget>
-              </item>
-              <item row="16" column="2">
-               <widget class="QLabel" name="label_108">
-                <property name="text">
-                 <string>Min epochs (0=None)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="15" column="2">
-               <widget class="QLabel" name="label_107">
-                <property name="text">
-                 <string>Max epochs (0=None)</string>
-                </property>
-               </widget>
+              <item row="6" column="1" colspan="3">
+               <widget class="QLineEdit" name="ti_actual_resume"/>
               </item>
               <item row="11" column="0">
                <widget class="QLabel" name="label_100">
@@ -2433,23 +2353,97 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="1" colspan="3">
-               <widget class="QLineEdit" name="ti_data_root"/>
-              </item>
-              <item row="3" column="1" colspan="3">
-               <widget class="QLineEdit" name="ti_logdir"/>
-              </item>
-              <item row="13" column="0">
-               <widget class="QLabel" name="label_102">
+              <item row="29" column="2">
+               <widget class="QLabel" name="label_123">
                 <property name="text">
-                 <string>GPUs</string>
+                 <string>AMP level</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="ti_name"/>
+              <item row="14" column="1">
+               <widget class="QComboBox" name="ti_accelerator">
+                <item>
+                 <property name="text">
+                  <string>None</string>
+                 </property>
+                </item>
+               </widget>
               </item>
-              <item row="26" column="1">
+              <item row="24" column="1">
+               <widget class="QDoubleSpinBox" name="ti_limit_train_batches">
+                <property name="maximum">
+                 <double>10000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="26" column="0">
+               <widget class="QLabel" name="label_113">
+                <property name="text">
+                 <string>Limit test batches</string>
+                </property>
+               </widget>
+              </item>
+              <item row="28" column="1">
+               <widget class="QSpinBox" name="ti_reload_dataloaders_every_n_epochs">
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="1">
+               <widget class="QLineEdit" name="ti_gpus">
+                <property name="text">
+                 <string>0,</string>
+                </property>
+               </widget>
+              </item>
+              <item row="14" column="3">
+               <widget class="QComboBox" name="ti_precision">
+                <item>
+                 <property name="text">
+                  <string>32</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>16</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>64</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QPushButton" name="ti_select_log_dir">
+                <property name="text">
+                 <string>Log Dir</string>
+                </property>
+               </widget>
+              </item>
+              <item row="34" column="1">
+               <widget class="QCheckBox" name="ti_move_metrics_to_cpu">
+                <property name="text">
+                 <string>Metrics on CPU</string>
+                </property>
+               </widget>
+              </item>
+              <item row="32" column="0">
+               <widget class="QCheckBox" name="ti_scale_lr">
+                <property name="text">
+                 <string>Scale learning rate</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="1" colspan="3">
+               <widget class="QLineEdit" name="ti_default_root_dir"/>
+              </item>
+              <item row="27" column="1">
                <widget class="QDoubleSpinBox" name="ti_limit_predict_batches">
                 <property name="maximum">
                  <double>10000.000000000000000</double>
@@ -2459,18 +2453,60 @@
                 </property>
                </widget>
               </item>
-              <item row="5" column="1" colspan="3">
-               <widget class="QLineEdit" name="ti_reg_data_root"/>
-              </item>
-              <item row="27" column="1">
-               <widget class="QSpinBox" name="ti_reload_dataloaders_every_n_epochs">
-                <property name="maximum">
-                 <number>1000</number>
+              <item row="26" column="2">
+               <widget class="QLabel" name="label_118">
+                <property name="text">
+                 <string>Log every n steps</string>
                 </property>
                </widget>
               </item>
-              <item row="9" column="1" colspan="3">
-               <widget class="QLineEdit" name="ti_init_word"/>
+              <item row="18" column="0">
+               <widget class="QLabel" name="label_125">
+                <property name="text">
+                 <string>Check val interval</string>
+                </property>
+               </widget>
+              </item>
+              <item row="15" column="0">
+               <widget class="QLabel" name="label_103">
+                <property name="text">
+                 <string>Overfit batches</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="ti_config"/>
+              </item>
+              <item row="31" column="0">
+               <widget class="QCheckBox" name="ti_train">
+                <property name="text">
+                 <string>Train</string>
+                </property>
+               </widget>
+              </item>
+              <item row="32" column="1">
+               <widget class="QCheckBox" name="ti_datadir_in_name">
+                <property name="text">
+                 <string>Datadir in name</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1" colspan="3">
+               <widget class="QLineEdit" name="ti_placeholder_tokens"/>
+              </item>
+              <item row="28" column="2" colspan="2">
+               <widget class="QCheckBox" name="ti_reload_dataloaders_every_epoch">
+                <property name="text">
+                 <string>Reload dataloader every epoch</string>
+                </property>
+               </widget>
+              </item>
+              <item row="25" column="2">
+               <widget class="QLabel" name="label_117">
+                <property name="text">
+                 <string>Flush logs every n steps</string>
+                </property>
+               </widget>
               </item>
               <item row="17" column="0">
                <widget class="QLabel" name="label_105">
@@ -2479,73 +2515,31 @@
                 </property>
                </widget>
               </item>
-              <item row="10" column="0">
-               <widget class="QLabel" name="label_99">
+              <item row="19" column="2">
+               <widget class="QLabel" name="label_110">
                 <property name="text">
-                 <string>Default root dir</string>
+                 <string>Min steps (0=None)</string>
                 </property>
                </widget>
               </item>
-              <item row="25" column="1">
-               <widget class="QDoubleSpinBox" name="ti_limit_test_batches">
-                <property name="maximum">
-                 <double>10000.000000000000000</double>
-                </property>
-                <property name="value">
-                 <double>1.000000000000000</double>
-                </property>
-               </widget>
+              <item row="0" column="3">
+               <widget class="QLineEdit" name="ti_seed"/>
               </item>
-              <item row="8" column="0">
-               <widget class="QLabel" name="label_96">
+              <item row="14" column="2">
+               <widget class="QLabel" name="label_122">
                 <property name="text">
-                 <string>Placeholder tokens</string>
+                 <string>Precision</string>
                 </property>
                </widget>
               </item>
-              <item row="1" column="2">
-               <widget class="QLabel" name="label_97">
+              <item row="17" column="2">
+               <widget class="QLabel" name="label_109">
                 <property name="text">
-                 <string>Embedding manager</string>
+                 <string>Max steps (0=None)</string>
                 </property>
                </widget>
               </item>
-              <item row="23" column="2">
-               <widget class="QLabel" name="label_116">
-                <property name="text">
-                 <string>Max Time (0=None)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_94">
-                <property name="text">
-                 <string>Config</string>
-                </property>
-               </widget>
-              </item>
-              <item row="29" column="0">
-               <widget class="QLabel" name="label_124">
-                <property name="text">
-                 <string>Multiple trainer mode</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="QPushButton" name="pushButton_3">
-                <property name="text">
-                 <string>Regularization Dir</string>
-                </property>
-               </widget>
-              </item>
-              <item row="25" column="2">
-               <widget class="QLabel" name="label_118">
-                <property name="text">
-                 <string>Log every n steps</string>
-                </property>
-               </widget>
-              </item>
-              <item row="28" column="3">
+              <item row="29" column="3">
                <widget class="QComboBox" name="ti_amp_level">
                 <item>
                  <property name="text">
@@ -2574,135 +2568,91 @@
                 </item>
                </widget>
               </item>
-              <item row="0" column="3">
-               <widget class="QLineEdit" name="ti_seed"/>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="ti_name"/>
               </item>
-              <item row="14" column="1">
-               <widget class="QComboBox" name="ti_accelerator">
-                <item>
-                 <property name="text">
-                  <string>None</string>
-                 </property>
-                </item>
+              <item row="33" column="1">
+               <widget class="QCheckBox" name="ti_replace_sampler_ddp">
+                <property name="text">
+                 <string>Replace sampler ddp</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_93">
+              <item row="5" column="0">
+               <widget class="QPushButton" name="ti_select_regularization_dir">
                 <property name="text">
-                 <string>Name</string>
+                 <string>Regularization Dir</string>
                 </property>
                </widget>
               </item>
               <item row="17" column="3">
                <widget class="QSpinBox" name="ti_max_steps"/>
               </item>
-              <item row="23" column="0">
-               <widget class="QLabel" name="label_111">
-                <property name="text">
-                 <string>Limit train batches</string>
+              <item row="12" column="1">
+               <widget class="QComboBox" name="ti_gradient_clip_algorithm"/>
+              </item>
+              <item row="18" column="1">
+               <widget class="QDoubleSpinBox" name="ti_val_check_interval">
+                <property name="value">
+                 <double>1.000000000000000</double>
                 </property>
                </widget>
               </item>
-              <item row="24" column="2">
-               <widget class="QLabel" name="label_117">
+              <item row="27" column="0">
+               <widget class="QLabel" name="label_114">
                 <property name="text">
-                 <string>Flush logs every n steps</string>
+                 <string>Limit predict batches</string>
                 </property>
                </widget>
               </item>
-              <item row="10" column="1" colspan="3">
-               <widget class="QLineEdit" name="ti_default_root_dir"/>
+              <item row="19" column="3">
+               <widget class="QSpinBox" name="ti_min_steps"/>
               </item>
-              <item row="16" column="3">
-               <widget class="QSpinBox" name="ti_min_epochs"/>
-              </item>
-              <item row="6" column="1" colspan="3">
-               <widget class="QLineEdit" name="ti_actual_resume"/>
-              </item>
-              <item row="30" column="1">
-               <widget class="QCheckBox" name="ti_no_test">
+              <item row="16" column="2">
+               <widget class="QLabel" name="label_108">
                 <property name="text">
-                 <string>No test</string>
+                 <string>Min epochs (0=None)</string>
                 </property>
                </widget>
               </item>
-              <item row="24" column="3">
-               <widget class="QSpinBox" name="ti_flush_logs_every_n_steps">
+              <item row="19" column="1">
+               <widget class="QSpinBox" name="ti_accumulate_grad_batches">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
                 <property name="maximum">
                  <number>10000</number>
                 </property>
-                <property name="value">
-                 <number>100</number>
-                </property>
                </widget>
               </item>
-              <item row="14" column="3">
-               <widget class="QComboBox" name="ti_precision">
-                <item>
-                 <property name="text">
-                  <string>32</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>16</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>64</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="27" column="2" colspan="2">
-               <widget class="QCheckBox" name="ti_reload_dataloaders_every_epoch">
+              <item row="13" column="0">
+               <widget class="QLabel" name="label_102">
                 <property name="text">
-                 <string>Reload dataloader every epoch</string>
+                 <string>GPUs</string>
                 </property>
                </widget>
               </item>
               <item row="11" column="1">
                <widget class="QDoubleSpinBox" name="ti_gradient_clip_val"/>
               </item>
-              <item row="18" column="3">
-               <widget class="QSpinBox" name="ti_min_steps"/>
-              </item>
-              <item row="1" column="1">
-               <widget class="QComboBox" name="ti_config"/>
-              </item>
-              <item row="15" column="1">
-               <widget class="QDoubleSpinBox" name="ti_overfit_batches"/>
-              </item>
-              <item row="4" column="0">
-               <widget class="QPushButton" name="pushButton_2">
+              <item row="29" column="0">
+               <widget class="QLabel" name="label_120">
                 <property name="text">
-                 <string>Image Dir</string>
+                 <string>AMP Backend</string>
                 </property>
                </widget>
               </item>
-              <item row="14" column="2">
-               <widget class="QLabel" name="label_122">
+              <item row="31" column="1">
+               <widget class="QCheckBox" name="ti_no_test">
                 <property name="text">
-                 <string>Precision</string>
+                 <string>No test</string>
                 </property>
                </widget>
               </item>
-              <item row="15" column="0">
-               <widget class="QLabel" name="label_103">
-                <property name="text">
-                 <string>Overfit batches</string>
-                </property>
-               </widget>
-              </item>
-              <item row="31" column="3">
-               <widget class="QCheckBox" name="ti_deterministic">
-                <property name="text">
-                 <string>Deterministic</string>
-                </property>
-               </widget>
-              </item>
-              <item row="28" column="1">
+              <item row="29" column="1">
                <widget class="QComboBox" name="ti_amp_backend">
                 <item>
                  <property name="text">
@@ -2711,63 +2661,53 @@
                 </item>
                </widget>
               </item>
-              <item row="23" column="3">
-               <widget class="QSpinBox" name="ti_max_time"/>
-              </item>
-              <item row="33" column="0">
-               <widget class="QCheckBox" name="ti_auto_scale_batch_size">
-                <property name="text">
-                 <string>Auto scale batch size</string>
-                </property>
-               </widget>
-              </item>
-              <item row="17" column="2">
-               <widget class="QLabel" name="label_109">
-                <property name="text">
-                 <string>Max steps (0=None)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="26" column="2">
-               <widget class="QLabel" name="label_119">
-                <property name="text">
-                 <string>Num sanity val steps</string>
-                </property>
-               </widget>
-              </item>
-              <item row="31" column="2">
-               <widget class="QCheckBox" name="ti_benchmark">
-                <property name="text">
-                 <string>Benchmark</string>
-                </property>
-               </widget>
-              </item>
               <item row="6" column="0">
-               <widget class="QPushButton" name="pushButton_4">
+               <widget class="QPushButton" name="ti_select_model">
                 <property name="text">
                  <string>Model</string>
                 </property>
                </widget>
               </item>
-              <item row="12" column="1">
-               <widget class="QComboBox" name="ti_gradient_clip_algorithm"/>
-              </item>
-              <item row="32" column="2">
-               <widget class="QCheckBox" name="ti_terminate_on_nan">
+              <item row="34" column="2">
+               <widget class="QCheckBox" name="ti_stochastic_weight_avg">
                 <property name="text">
-                 <string>Terminate on NaN</string>
+                 <string>Stochastic weight avg</string>
                 </property>
                </widget>
               </item>
-              <item row="28" column="0">
-               <widget class="QLabel" name="label_120">
+              <item row="33" column="0">
+               <widget class="QCheckBox" name="ti_auto_lr_find">
                 <property name="text">
-                 <string>AMP Backend</string>
+                 <string>Auto learning rate find</string>
+                </property>
+               </widget>
+              </item>
+              <item row="16" column="0">
+               <widget class="QLabel" name="label_104">
+                <property name="text">
+                 <string>Track grad norm</string>
                 </property>
                </widget>
               </item>
               <item row="15" column="3">
                <widget class="QSpinBox" name="ti_max_epochs"/>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="label_96">
+                <property name="text">
+                 <string>Placeholder tokens</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QComboBox" name="embedding_manager_ckpt"/>
+              </item>
+              <item row="36" column="0" colspan="2">
+               <widget class="QPushButton" name="ti_start_textual_inversion">
+                <property name="text">
+                 <string>Start textual inversion</string>
+                </property>
+               </widget>
               </item>
               <item row="9" column="0">
                <widget class="QLabel" name="label_98">
@@ -2776,51 +2716,23 @@
                 </property>
                </widget>
               </item>
-              <item row="26" column="3">
-               <widget class="QSpinBox" name="ti_num_sanity_val_steps">
-                <property name="maximum">
-                 <number>10000</number>
-                </property>
-                <property name="value">
-                 <number>1</number>
-                </property>
-               </widget>
-              </item>
-              <item row="23" column="1">
-               <widget class="QDoubleSpinBox" name="ti_limit_train_batches">
-                <property name="maximum">
-                 <double>10000.000000000000000</double>
-                </property>
-                <property name="value">
-                 <double>1.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="25" column="3">
-               <widget class="QSpinBox" name="ti_log_every_n_steps">
-                <property name="maximum">
-                 <number>100000</number>
-                </property>
-                <property name="value">
-                 <number>50</number>
-                </property>
-               </widget>
-              </item>
-              <item row="28" column="2">
-               <widget class="QLabel" name="label_123">
+              <item row="10" column="0">
+               <widget class="QLabel" name="label_99">
                 <property name="text">
-                 <string>AMP level</string>
+                 <string>Default root dir</string>
                 </property>
                </widget>
               </item>
-              <item row="24" column="1">
-               <widget class="QDoubleSpinBox" name="ti_limit_val_batches">
-                <property name="maximum">
-                 <double>100000.000000000000000</double>
-                </property>
-                <property name="value">
-                 <double>1.000000000000000</double>
-                </property>
+              <item row="5" column="1" colspan="3">
+               <widget class="QLineEdit" name="ti_reg_data_root"/>
+              </item>
+              <item row="30" column="1">
+               <widget class="QComboBox" name="ti_multiple_trainloader_mode">
+                <item>
+                 <property name="text">
+                  <string>max_size_cycle</string>
+                 </property>
+                </item>
                </widget>
               </item>
               <item row="13" column="2">
@@ -2830,27 +2742,40 @@
                 </property>
                </widget>
               </item>
-              <item row="18" column="0">
-               <widget class="QLabel" name="label_106">
-                <property name="text">
-                 <string>Accumulate grad batches</string>
+              <item row="25" column="1">
+               <widget class="QDoubleSpinBox" name="ti_limit_val_batches">
+                <property name="maximum">
+                 <double>100000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
                 </property>
                </widget>
               </item>
-              <item row="31" column="0">
-               <widget class="QCheckBox" name="ti_scale_lr">
+              <item row="12" column="0">
+               <widget class="QLabel" name="label_101">
                 <property name="text">
-                 <string>Scale learning rate</string>
+                 <string>Gradient clip algorithm</string>
                 </property>
                </widget>
               </item>
-              <item row="1" column="3">
-               <widget class="QComboBox" name="embedding_manager_ckpt"/>
+              <item row="3" column="1" colspan="3">
+               <widget class="QLineEdit" name="ti_logdir"/>
               </item>
-              <item row="33" column="1">
-               <widget class="QCheckBox" name="ti_move_metrics_to_cpu">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_93">
                 <property name="text">
-                 <string>Metrics on CPU</string>
+                 <string>Name</string>
+                </property>
+               </widget>
+              </item>
+              <item row="25" column="3">
+               <widget class="QSpinBox" name="ti_flush_logs_every_n_steps">
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+                <property name="value">
+                 <number>100</number>
                 </property>
                </widget>
               </item>
@@ -2864,44 +2789,6 @@
                 </property>
                </widget>
               </item>
-              <item row="16" column="1">
-               <widget class="QSpinBox" name="ti_track_grad_norm">
-                <property name="minimum">
-                 <number>-1</number>
-                </property>
-                <property name="value">
-                 <number>-1</number>
-                </property>
-               </widget>
-              </item>
-              <item row="30" column="2">
-               <widget class="QCheckBox" name="ti_checkpoint_callback">
-                <property name="text">
-                 <string>Checkpint callback</string>
-                </property>
-               </widget>
-              </item>
-              <item row="25" column="0">
-               <widget class="QLabel" name="label_113">
-                <property name="text">
-                 <string>Limit test batches</string>
-                </property>
-               </widget>
-              </item>
-              <item row="13" column="1">
-               <widget class="QLineEdit" name="ti_gpus">
-                <property name="text">
-                 <string>0,</string>
-                </property>
-               </widget>
-              </item>
-              <item row="30" column="0">
-               <widget class="QCheckBox" name="ti_train">
-                <property name="text">
-                 <string>Train</string>
-                </property>
-               </widget>
-              </item>
               <item row="14" column="0">
                <widget class="QLabel" name="label_121">
                 <property name="text">
@@ -2909,47 +2796,17 @@
                 </property>
                </widget>
               </item>
-              <item row="18" column="2">
-               <widget class="QLabel" name="label_110">
-                <property name="text">
-                 <string>Min steps (0=None)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="24" column="0">
+              <item row="25" column="0">
                <widget class="QLabel" name="label_112">
                 <property name="text">
                  <string>LImit val batches</string>
                 </property>
                </widget>
               </item>
-              <item row="8" column="1" colspan="3">
-               <widget class="QLineEdit" name="ti_placeholder_tokens"/>
-              </item>
-              <item row="32" column="1">
-               <widget class="QCheckBox" name="ti_replace_sampler_ddp">
+              <item row="36" column="2" colspan="2">
+               <widget class="QPushButton" name="ti_stop_textual_inversion">
                 <property name="text">
-                 <string>Replace sampler ddp</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="32" column="0">
-               <widget class="QCheckBox" name="ti_auto_lr_find">
-                <property name="text">
-                 <string>Auto learning rate find</string>
-                </property>
-               </widget>
-              </item>
-              <item row="18" column="1">
-               <widget class="QSpinBox" name="ti_accumulate_grad_batches">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>10000</number>
+                 <string>Stop textual inversion</string>
                 </property>
                </widget>
               </item>
@@ -2960,40 +2817,177 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="0">
-               <widget class="QPushButton" name="pushButton">
+              <item row="9" column="1" colspan="3">
+               <widget class="QLineEdit" name="ti_init_word"/>
+              </item>
+              <item row="15" column="2">
+               <widget class="QLabel" name="label_107">
                 <property name="text">
-                 <string>Log Dir</string>
+                 <string>Max epochs (0=None)</string>
                 </property>
                </widget>
               </item>
-              <item row="12" column="0">
-               <widget class="QLabel" name="label_101">
+              <item row="15" column="1">
+               <widget class="QDoubleSpinBox" name="ti_overfit_batches"/>
+              </item>
+              <item row="4" column="0">
+               <widget class="QPushButton" name="ti_select_image_dir">
                 <property name="text">
-                 <string>Gradient clip algorithm</string>
+                 <string>Image Dir</string>
                 </property>
                </widget>
               </item>
-              <item row="29" column="1">
-               <widget class="QComboBox" name="ti_multiple_trainloader_mode">
-                <item>
-                 <property name="text">
-                  <string>max_size_cycle</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="34" column="0" colspan="2">
-               <widget class="QPushButton" name="pushButton_7">
+              <item row="1" column="2">
+               <widget class="QLabel" name="label_97">
                 <property name="text">
-                 <string>Start textual inversion</string>
+                 <string>Embedding manager</string>
                 </property>
                </widget>
               </item>
-              <item row="34" column="2" colspan="2">
-               <widget class="QPushButton" name="pushButton_8">
+              <item row="32" column="2">
+               <widget class="QCheckBox" name="ti_benchmark">
                 <property name="text">
-                 <string>Stop textual inversion</string>
+                 <string>Benchmark</string>
+                </property>
+               </widget>
+              </item>
+              <item row="31" column="2">
+               <widget class="QCheckBox" name="ti_checkpoint_callback">
+                <property name="text">
+                 <string>Checkpint callback</string>
+                </property>
+               </widget>
+              </item>
+              <item row="26" column="1">
+               <widget class="QDoubleSpinBox" name="ti_limit_test_batches">
+                <property name="maximum">
+                 <double>10000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="26" column="3">
+               <widget class="QSpinBox" name="ti_log_every_n_steps">
+                <property name="maximum">
+                 <number>100000</number>
+                </property>
+                <property name="value">
+                 <number>50</number>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1" colspan="3">
+               <widget class="QLineEdit" name="ti_data_root"/>
+              </item>
+              <item row="24" column="0">
+               <widget class="QLabel" name="label_111">
+                <property name="text">
+                 <string>Limit train batches</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_94">
+                <property name="text">
+                 <string>Config</string>
+                </property>
+               </widget>
+              </item>
+              <item row="24" column="3">
+               <widget class="QSpinBox" name="ti_max_time"/>
+              </item>
+              <item row="16" column="3">
+               <widget class="QSpinBox" name="ti_min_epochs"/>
+              </item>
+              <item row="28" column="0">
+               <widget class="QLabel" name="label_115">
+                <property name="text">
+                 <string>Reload dataloader every n epochs</string>
+                </property>
+               </widget>
+              </item>
+              <item row="19" column="0">
+               <widget class="QLabel" name="label_106">
+                <property name="text">
+                 <string>Accumulate grad batches</string>
+                </property>
+               </widget>
+              </item>
+              <item row="27" column="3">
+               <widget class="QSpinBox" name="ti_num_sanity_val_steps">
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+                <property name="value">
+                 <number>1</number>
+                </property>
+               </widget>
+              </item>
+              <item row="34" column="0">
+               <widget class="QCheckBox" name="ti_auto_scale_batch_size">
+                <property name="text">
+                 <string>Auto scale batch size</string>
+                </property>
+               </widget>
+              </item>
+              <item row="30" column="0">
+               <widget class="QLabel" name="label_124">
+                <property name="text">
+                 <string>Multiple trainer mode</string>
+                </property>
+               </widget>
+              </item>
+              <item row="27" column="2">
+               <widget class="QLabel" name="label_119">
+                <property name="text">
+                 <string>Num sanity val steps</string>
+                </property>
+               </widget>
+              </item>
+              <item row="16" column="1">
+               <widget class="QSpinBox" name="ti_track_grad_norm">
+                <property name="minimum">
+                 <number>-1</number>
+                </property>
+                <property name="value">
+                 <number>-1</number>
+                </property>
+               </widget>
+              </item>
+              <item row="24" column="2">
+               <widget class="QLabel" name="label_116">
+                <property name="text">
+                 <string>Max Time (0=None)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="33" column="2">
+               <widget class="QCheckBox" name="ti_terminate_on_nan">
+                <property name="text">
+                 <string>Terminate on NaN</string>
+                </property>
+               </widget>
+              </item>
+              <item row="35" column="0">
+               <widget class="QCheckBox" name="ti_sync_batchnorm">
+                <property name="text">
+                 <string>Sync batchnorm</string>
+                </property>
+               </widget>
+              </item>
+              <item row="35" column="2">
+               <widget class="QCheckBox" name="ti_debug">
+                <property name="text">
+                 <string>Debug</string>
+                </property>
+               </widget>
+              </item>
+              <item row="35" column="1">
+               <widget class="QCheckBox" name="ti_deterministic">
+                <property name="text">
+                 <string>Deterministic</string>
                 </property>
                </widget>
               </item>
@@ -3015,6 +3009,48 @@
            </item>
           </layout>
          </widget>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="toggle_lora_merge">
+         <property name="text">
+          <string>Lora Merge</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="toggle_ckpt2diff">
+         <property name="text">
+          <string>CKPT2Diff</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QCheckBox" name="toggle_lora_dreambooth">
+         <property name="text">
+          <string>Lora Dreambooth</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QCheckBox" name="toggle_dreambooth">
+         <property name="text">
+          <string>Dreambooth</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QCheckBox" name="toggle_textual_inversion">
+         <property name="text">
+          <string>Textual Inversion</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QCheckBox" name="toggle_hypernetwork">
+         <property name="text">
+          <string>Hypernetwork</string>
+         </property>
         </widget>
        </item>
       </layout>

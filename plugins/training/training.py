@@ -36,6 +36,7 @@ class Callbacks(QObject):
 
 class aiNodesPlugin:
     def __init__(self, parent):
+        self.txt_invers = TI()
         self.parent = parent
         os.environ["PL_TORCH_DISTRIBUTED_BACKEND"] = "gloo"
         self.training = FineTune()
@@ -125,6 +126,13 @@ class aiNodesPlugin:
         else:
             self.hideLomAnim.start()
         self.lomHidden = not self.lomHidden
+
+    def hideTextInvers_anim(self):
+        if self.txiHidden is True:
+            self.showTxiAnim.start()
+        else:
+            self.hideTxiAnim.start()
+        self.txiHidden = not self.txiHidden
 
     def init_anims(self):
         self.showPocAnim = QtCore.QPropertyAnimation(self.training.w.processCaption, b"maximumHeight")
@@ -235,9 +243,23 @@ class aiNodesPlugin:
         self.hideLomAnim.setEndValue(0)
         self.hideLomAnim.setEasingCurve(QEasingCurve.Linear)
 
+        self.showTxiAnim = QtCore.QPropertyAnimation(self.training.w.textInvers, b"maximumHeight")
+        self.showTxiAnim.setDuration(500)
+        self.showTxiAnim.setStartValue(0)
+        self.showTxiAnim.setEndValue(self.training.w.textInvers.height())
+        self.showTxiAnim.setEasingCurve(QEasingCurve.Linear)
+
+        self.hideTxiAnim = QtCore.QPropertyAnimation(self.training.w.textInvers, b"maximumHeight")
+        self.hideTxiAnim.setDuration(500)
+        self.hideTxiAnim.setStartValue(self.training.w.textInvers.height())
+        self.hideTxiAnim.setEndValue(0)
+        self.hideTxiAnim.setEasingCurve(QEasingCurve.Linear)
+
     def show_hide_all_anim(self):
         print(self.showAll)
         if self.showAll == False:
+            self.hideTxiAnim.start()
+            self.txiHidden = True
             self.hideCpdAnim.start()
             self.cpdHidden = True
             self.hidePitAnim.start()
@@ -258,6 +280,8 @@ class aiNodesPlugin:
             self.lomHidden = True
             self.showAll = True
         elif self.showAll == True:
+            self.showTxiAnim.start()
+            self.txiHidden = False
             self.showCpdAnim.start()
             self.cpdHidden = False
             self.showPitAnim.start()
@@ -298,6 +322,8 @@ class aiNodesPlugin:
         self.training.w.toggle_hypernetwork.stateChanged.connect(self.hideHypernetwork_anim)
         self.training.w.toggle_prepare_input.stateChanged.connect(self.hidePrepareInput_anim)
         self.training.w.toggle_lora_merge.stateChanged.connect(self.hideLoraMerge_anim)
+        self.training.w.toggle_textual_inversion.stateChanged.connect(self.hideTextInvers_anim)
+
         self.training.w.ldb_select_pretrained_model_name_or_path.clicked.connect(self.ldb_select_pretrained_model_name_or_path)
         self.training.w.ldb_select_instance_data_dir.clicked.connect(self.ldb_select_instance_data_dir)
         self.training.w.ldb_select_output_dir.clicked.connect(self.ldb_select_output_dir)
@@ -312,6 +338,30 @@ class aiNodesPlugin:
         self.training.w.lora2diff.toggled.connect(self.lom_set_model_select_buttons)
 
         self.training.w.ti_start_textual_inversion.clicked.connect(self.create_textual_inversion)
+        self.training.w.ti_stop_textual_inversion.clicked.connect(self.ti_stop_textual_inversion)
+        self.training.w.ti_select_log_dir.clicked.connect(self.ti_select_log_dir)
+        self.training.w.ti_select_image_dir.clicked.connect(self.ti_select_image_dir)
+        self.training.w.ti_select_regularization_dir.clicked.connect(self.ti_select_regularization_dir)
+        self.training.w.ti_select_model.clicked.connect(self.ti_select_model)
+
+    def ti_select_log_dir(self):
+        filename = QFileDialog.getExistingDirectory(caption='Path to store logs')
+        self.training.w.ti_logdir.setText(filename)
+
+    def ti_select_image_dir(self):
+        filename = QFileDialog.getExistingDirectory(caption='Path to training images')
+        self.training.w.ti_data_root.setText(filename)
+
+    def ti_select_regularization_dir(self):
+        filename = QFileDialog.getExistingDirectory(caption='Path to reqularization images')
+        self.training.w.ti_reg_data_root.setText(filename)
+
+    def ti_select_model(self):
+        filename = QFileDialog.getOpenFileName(caption='Select model', filter='Checkpoint (*.ckpt)')
+        self.training.w.ti_actual_resume.setText(filename[0])
+
+    def ti_stop_textual_inversion(self):
+        self.txt_invers.stop_textual_inversion()
 
     def lom_set_model_select_buttons(self):
         if self.training.w.lora2diff.isChecked():
@@ -363,7 +413,7 @@ class aiNodesPlugin:
         self.training.w.path_1.setText(filename[0])
 
     def lom_select_model_b(self):
-        filename = QFileDialog.getOpenFileName(caption='Model B to merge', filter='Model (*.pt)')
+        filename = QFileDialog.c(caption='Model B to merge', filter='Model (*.pt)')
         self.training.w.path_2.setText(filename[0])
 
     def lom_select_output_dir(self):
@@ -690,10 +740,11 @@ class aiNodesPlugin:
         self.parent.plugin_thread(self.create_textual_inversion_thread)
 
     def create_textual_inversion_thread(self, progress_callback=None):
-        txt_invers = TI()
-        txt_invers.create_txt_inv(name=self.training.w.ti_name.text(),
+        print('Textual Inversion training started')
+        self.txt_invers = TI()
+        self.txt_invers.create_txt_inv(name=self.training.w.ti_name.text(),
                            resume='',
-                           base=self.training.w.ti_config.currentText(),
+                           base=['plugins/training/configs/ti/v1-finetune.yaml'], # self.training.w.ti_config.currentText(),
                            train=self.training.w.ti_train.isChecked(),
                            no_test=self.training.w.ti_no_test.isChecked(),
                            project=None,
@@ -741,7 +792,7 @@ class aiNodesPlugin:
                            val_check_interval=self.training.w.ti_val_check_interval.value(),
                            flush_logs_every_n_steps=self.training.w.ti_flush_logs_every_n_steps.value(),
                            log_every_n_steps=self.training.w.ti_log_every_n_steps.value(),
-                           accelerator=None if self.training.w.ti_accelerator.text() == 'None' else self.training.w.ti_accelerator.text(),
+                           accelerator=None if self.training.w.ti_accelerator.currentText() == 'None' else self.training.w.ti_accelerator.currentText(),
                            sync_batchnorm=self.training.w.ti_sync_batchnorm.isChecked(),
                            precision=int(self.training.w.ti_precision.currentText()),  #32
                            weights_summary='top',
@@ -767,3 +818,4 @@ class aiNodesPlugin:
                            multiple_trainloader_mode=self.training.w.ti_multiple_trainloader_mode.currentText(),
                            stochastic_weight_avg=self.training.w.ti_stochastic_weight_avg.isChecked(),
                            progress_callback=None)
+        print('Textual Inversion training finished')

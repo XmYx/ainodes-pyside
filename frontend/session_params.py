@@ -248,7 +248,7 @@ class SessionParams():
             axis = {'y'}
         elif self.parent.widgets[widget].w.axis.currentText() == 'Both':
             axis = {'x', 'y'}
-        plotting = self.parent.widgets[widget].w.plotting.isChecked()
+        plotting = self.parent.widgets[widget].w.toggle_plotting.isChecked()
         plotX = self.parent.widgets[widget].w.plotX.currentText()
         plotY = self.parent.widgets[widget].w.plotY.currentText()
         plotXLine = self.parent.widgets[widget].w.plotXLine.text()

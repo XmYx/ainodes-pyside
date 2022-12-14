@@ -16,7 +16,7 @@ from plugins.training.sd_to_diffusers import run_translation
 from plugins.training.train_lora_dreambooth import run_lora_dreambooth
 from plugins.training.lora_diffusion.cli_lora_add import add as lom_merge_models
 from plugins.training.diffuser_to_sd import diff2sd
-
+from plugins.training.txt_inv.textual_iversion import TI
 
 class FineTune(QObject):
 
@@ -311,6 +311,7 @@ class aiNodesPlugin:
         self.training.w.lom_start_merge.clicked.connect(self.lom_start_merge)
         self.training.w.lora2diff.toggled.connect(self.lom_set_model_select_buttons)
 
+        self.training.w.ti_start_textual_inversion.clicked.connect(self.create_textual_inversion)
 
     def lom_set_model_select_buttons(self):
         if self.training.w.lora2diff.isChecked():
@@ -410,9 +411,9 @@ class aiNodesPlugin:
         args.save_steps = self.training.w.save_steps.value()
         args.color_jitter = self.training.w.color_jitter.isChecked()
         args.learning_rate_text = self.training.w.learning_rate_text.value()
-
-
-
+        args.push_to_hub = False
+        args.hub_token = None
+        args.hub_model_id = None
 
         return args
 
@@ -500,7 +501,7 @@ class aiNodesPlugin:
 
     def start_dreambooth(self):
         gs.ti_grad_flag_switch = True
-        self.parent.plugin_thread(self.create_dreambooth)
+        self.parent.plugin_thread(self.create_dreambooth_thread)
 
     def stop_dreambooth(self):
         self.signals.dreambooth_stop_signal.emit()
@@ -514,7 +515,7 @@ class aiNodesPlugin:
         self.parent.w.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, self.training.w.dockWidget)
 
 
-    def create_dreambooth(self, progress_callback=None):
+    def create_dreambooth_thread(self, progress_callback=None):
         torch_gc()
         self.dreambooth_training.dreambooth(
             accelerator=None if self.training.w.accelerator.currentText() == 'None' else self.training.w.accelerator.currentText(),                                   # Previously known as distributed_backend (dp, ddp, ddp2, etc...).
@@ -683,3 +684,86 @@ class aiNodesPlugin:
             no_test=self.training.w.no_test.isChecked(),
             train=self.training.w.train.isChecked()
         )"""
+
+    def create_textual_inversion(self):
+        gs.ti_grad_flag_switch = True
+        self.parent.plugin_thread(self.create_textual_inversion_thread)
+
+    def create_textual_inversion_thread(self, progress_callback=None):
+        txt_invers = TI()
+        txt_invers.create_txt_inv(name=self.training.w.ti_name.text(),
+                           resume='',
+                           base=self.training.w.ti_config.currentText(),
+                           train=self.training.w.ti_train.isChecked(),
+                           no_test=self.training.w.ti_no_test.isChecked(),
+                           project=None,
+                           debug=self.training.w.ti_debug.isChecked(),
+                           seed=self.training.w.ti_seed.text(),
+                           postfix='',
+                           logdir=self.training.w.ti_logdir.text(),
+                           scale_lr=True,
+                           datadir_in_name=True,
+                           actual_resume='',
+                           data_root=self.training.w.ti_data_root.text(),
+                           reg_data_root=self.training.w.ti_reg_data_root.text(),
+                           embedding_manager_ckpt='',
+                           placeholder_tokens=self.training.w.ti_reg_data_root.text().split(','),
+                           init_word=self.training.w.ti_init_word.text(),
+                           logger=True,
+                           checkpoint_callback=self.training.w.ti_checkpoint_callback.isChecked(),
+                           default_root_dir=None if self.training.w.ti_default_root_dir.text() == '' else self.training.w.ti_default_root_dir.text(),
+                           gradient_clip_val=self.training.w.ti_gradient_clip_val.value()    ,
+                           gradient_clip_algorithm=self.training.w.ti_gradient_clip_algorithm.currentText(),
+                           process_position=0,
+                           num_nodes=1,
+                           num_processes=1,
+                           devices=None,
+                           gpus=self.training.w.ti_gpus.text(),
+                           auto_select_gpus=self.training.w.ti_auto_select_gpus.isChecked(),
+                           tpu_cores=None,
+                           ipus=None,
+                           log_gpu_memory=None,
+                           progress_bar_refresh_rate=None,
+                           overfit_batches=self.training.w.ti_overfit_batches.value(),
+                           track_grad_norm=self.training.w.ti_track_grad_norm.value(),
+                           check_val_every_n_epoch=self.training.w.ti_check_val_every_n_epoch.value(),
+                           fast_dev_run=False,
+                           accumulate_grad_batches=self.training.w.ti_accumulate_grad_batches.value(),
+                           max_epochs=None if self.training.w.ti_max_epochs.value() == 0 else self.training.w.ti_max_epochs.value(),
+                           min_epochs=None if self.training.w.ti_min_epochs.value() == 0 else self.training.w.ti_min_epochs.value(),
+                           max_steps=None if self.training.w.ti_max_steps.value() == 0 else self.training.w.ti_max_steps.value(),
+                           min_steps=None if self.training.w.ti_min_steps.value() == 0 else self.training.w.ti_min_steps.value(),
+                           max_time=None if self.training.w.ti_max_time.value() == 0 else self.training.w.ti_max_time.value(),
+                           limit_train_batches=self.training.w.ti_limit_train_batches.value(),
+                           limit_val_batches=self.training.w.ti_limit_val_batches.value(),
+                           limit_test_batches=self.training.w.ti_limit_test_batches.value(),
+                           limit_predict_batches=self.training.w.ti_limit_predict_batches.value(),
+                           val_check_interval=self.training.w.ti_val_check_interval.value(),
+                           flush_logs_every_n_steps=self.training.w.ti_flush_logs_every_n_steps.value(),
+                           log_every_n_steps=self.training.w.ti_log_every_n_steps.value(),
+                           accelerator=None if self.training.w.ti_accelerator.text() == 'None' else self.training.w.ti_accelerator.text(),
+                           sync_batchnorm=self.training.w.ti_sync_batchnorm.isChecked(),
+                           precision=int(self.training.w.ti_precision.currentText()),  #32
+                           weights_summary='top',
+                           weights_save_path=None,
+                           num_sanity_val_steps=self.training.w.ti_num_sanity_val_steps.value(),
+                           truncated_bptt_steps=None,
+                           resume_from_checkpoint=None,
+                           profiler=None,
+                           benchmark=self.training.w.ti_benchmark.isChecked(),
+                           deterministic=self.training.w.ti_deterministic.isChecked(),
+                           reload_dataloaders_every_n_epochs=self.training.w.ti_reload_dataloaders_every_n_epochs.value(),
+                           reload_dataloaders_every_epoch=self.training.w.ti_reload_dataloaders_every_epoch.isChecked(),
+                           auto_lr_find=self.training.w.ti_auto_lr_find.isChecked(),
+                           replace_sampler_ddp=self.training.w.ti_replace_sampler_ddp.isChecked(),
+                           terminate_on_nan=self.training.w.ti_terminate_on_nan.isChecked(),
+                           auto_scale_batch_size=self.training.w.ti_auto_scale_batch_size.isChecked(),
+                           prepare_data_per_node=True,
+                           plugins=None,
+                           amp_backend=self.training.w.ti_amp_backend.currentText(),
+                           amp_level=self.training.w.ti_amp_level.currentText(),
+                           distributed_backend=None,
+                           move_metrics_to_cpu=self.training.w.ti_move_metrics_to_cpu.isChecked(),
+                           multiple_trainloader_mode=self.training.w.ti_multiple_trainloader_mode.currentText(),
+                           stochastic_weight_avg=self.training.w.ti_stochastic_weight_avg.isChecked(),
+                           progress_callback=None)

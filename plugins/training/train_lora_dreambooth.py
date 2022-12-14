@@ -331,7 +331,10 @@ def parse_args(input_args=None):
         help="The output directory where the model predictions and checkpoints will be written.",
     )
     parser.add_argument(
-        "--seed", type=int, default=None, help="A seed for reproducible training."
+        "--seed",
+        type=int,
+        default=None,
+        help="A seed for reproducible training."
     )
     parser.add_argument(
         "--resolution",

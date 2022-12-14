@@ -96,7 +96,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-1307</y>
+            <y>-636</y>
             <width>715</width>
             <height>2900</height>
            </rect>
@@ -2974,7 +2974,7 @@
                  <item row="10" column="2">
                   <widget class="QLabel" name="label_76">
                    <property name="text">
-                    <string>Aesthetic Weight</string>
+                    <string>Aesthetic weight</string>
                    </property>
                   </widget>
                  </item>
@@ -2997,7 +2997,7 @@
                  <item row="8" column="2">
                   <widget class="QLabel" name="label_18">
                    <property name="text">
-                    <string>Gradient Scale</string>
+                    <string>Gradient learning rate</string>
                    </property>
                   </widget>
                  </item>
@@ -3014,7 +3014,7 @@
                  <item row="9" column="2">
                   <widget class="QLabel" name="lable">
                    <property name="text">
-                    <string>Slerp Angle</string>
+                    <string>Slerp angle</string>
                    </property>
                   </widget>
                  </item>

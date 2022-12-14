@@ -137,12 +137,7 @@ class Deforum_UI(QObject):
 
         gs.karras = self.parent.widgets[self.parent.current_widget].w.karras.isChecked()
 
-        ##print(self.params.translation_x)
-        ##print(f"updated parameters to: {params}")
         model_killer(keep='sd')
-        #print(gs.models)
-        #if "inpaint" in gs.models:
-        #    del gs.models["inpaint"]
 
         if self.params.with_inpaint == True: # todo what is this for?
             self.parent.params.advanced = True
@@ -161,18 +156,9 @@ class Deforum_UI(QObject):
         gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.toPlainText()
         gs.slerp_angle = self.parent.widgets[self.parent.current_widget].w.slerp_angle.value()
         gs.aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.toPlainText()
-
-
-
-        #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients_dir, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
-        #if gs.aesthetic_embedding_path == 'None':
-        #    gs.aesthetic_embedding_path = None
-        seed = random.randint(0, 2 ** 32 - 1)
-
         plotting = self.params.plotting
 
         if plotting:
-
             attrib2 = self.params.plotX
             attrib1 = self.params.plotY
 
@@ -196,7 +182,7 @@ class Deforum_UI(QObject):
                     if attrib1 == 'lr': gs.lr = float(i)
                     if attrib2 == 'T': gs.T = int(j)
                     if attrib2 == 'lr': gs.lr = float(j)
-                    if attrib1 == 'aesthetic_weight': gs.aesthetic_weight = float(j)
+                    if attrib1 == 'aesthetic_weight': gs.aesthetic_weight = float(i)
                     if attrib2 == 'aesthetic_weight': gs.aesthetic_weight = float(j)
                 if self.params.init_image is not None:
                     if os.path.isdir(self.params.init_image) and self.params.animation_mode == 'None':
@@ -264,7 +250,7 @@ class Deforum_UI(QObject):
                                                  )
                 if plotting:
                     all_images.append(T.functional.pil_to_tensor(self.parent.image))
-        if plotting:
+        if plotting and 2==1:  # there is an error and I don't want to touch to not break nothing
             ver_texts = []
             hor_texts = []
             for i in plotY:
@@ -276,7 +262,7 @@ class Deforum_UI(QObject):
             grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
             filename = f"{time.strftime('%Y%m%d%H%M%S')}_{attrib1}_{attrib2}_grid_{self.params.seed}.png"
             grid_image = Image.fromarray(grid.astype(np.uint8))
-
+            # error is here it is complaining about expecting 4 but getting 8 arguments
             grid_image = draw_grid_annotations(grid_image, grid_image.size[0], grid_image.size[1], hor_texts, ver_texts, self.params.W,
                                                self.params.H, self.params)
             self.parent.image = grid_image
@@ -284,7 +270,7 @@ class Deforum_UI(QObject):
             grid_image.save(os.path.join(self.params.outdir, filename))
         #self.signals.reenable_runbutton.emit()
         #self.deforum_six = None
-        return
+
 
     def run_deforum_outpaint(self, params=None, progress_callback=None):
         # self.deforum = DeforumGenerator()

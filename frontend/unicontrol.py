@@ -96,7 +96,7 @@ class UniControl(QObject):
         current_text = self.w.selected_aesthetic_embedding.currentText()
         new_aesthetic_embedding = 'None'
         if current_text != 'None':
-            new_aesthetic_embedding = os.path.join(gs.system.aesthetic_gradients, current_text)
+            new_aesthetic_embedding = os.path.join(gs.system.aesthetic_gradients_dir, current_text)
         gs.diffusion.selected_aesthetic_embedding = new_aesthetic_embedding
 
 

@@ -190,7 +190,7 @@ class Deforum_UI(QObject):
                         self.params.max_frames = 2
                 self.deforum_six.run_deforum_six(W=int(self.params.W),
                                                  H=int(self.params.H),
-                                                 seed=int(self.params.seed) if self.params.seed != '' else seed,
+                                                 seed=int(self.params.seed) if self.params.seed != '' else self.params.seed,
                                                  sampler=str(self.params.sampler),
                                                  steps=int(self.params.steps),
                                                  scale=float(self.params.scale),

@@ -68,7 +68,6 @@ class DeforumSix:
         self.root = None
         self.args = None
         self.anim_args = None
-        # self.parent = parent
         self.device = choose_torch_device()
         self.full_precision = False
         self.prev_seamless = False

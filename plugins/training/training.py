@@ -17,6 +17,7 @@ from plugins.training.train_lora_dreambooth import run_lora_dreambooth
 from plugins.training.lora_diffusion.cli_lora_add import add as lom_merge_models
 from plugins.training.diffuser_to_sd import diff2sd
 from plugins.training.txt_inv.textual_inversion import create_txt_inv
+from plugins.training.preprocess.preprocess import preprocess
 
 class FineTune(QObject):
 
@@ -138,36 +139,36 @@ class aiNodesPlugin:
         self.showPocAnim = QtCore.QPropertyAnimation(self.training.w.processCaption, b"maximumHeight")
         self.showPocAnim.setDuration(500)
         self.showPocAnim.setStartValue(0)
-        self.showPocAnim.setEndValue(self.training.w.processCaption.height())
+        self.showPocAnim.setEndValue(100)
         self.showPocAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.hidePocAnim = QtCore.QPropertyAnimation(self.training.w.processCaption, b"maximumHeight")
         self.hidePocAnim.setDuration(500)
-        self.hidePocAnim.setStartValue(self.training.w.processCaption.height())
+        self.hidePocAnim.setStartValue(100)
         self.hidePocAnim.setEndValue(0)
         self.hidePocAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.showFpcAnim = QtCore.QPropertyAnimation(self.training.w.focalPointCrop, b"maximumHeight")
         self.showFpcAnim.setDuration(500)
         self.showFpcAnim.setStartValue(0)
-        self.showFpcAnim.setEndValue(self.training.w.focalPointCrop.height())
+        self.showFpcAnim.setEndValue(250)
         self.showFpcAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.hideFpcAnim = QtCore.QPropertyAnimation(self.training.w.focalPointCrop, b"maximumHeight")
         self.hideFpcAnim.setDuration(500)
-        self.hideFpcAnim.setStartValue(self.training.w.focalPointCrop.height())
+        self.hideFpcAnim.setStartValue(250)
         self.hideFpcAnim.setEndValue(0)
         self.hideFpcAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.showAucAnim = QtCore.QPropertyAnimation(self.training.w.autoCrop, b"maximumHeight")
         self.showAucAnim.setDuration(500)
         self.showAucAnim.setStartValue(0)
-        self.showAucAnim.setEndValue(self.training.w.autoCrop.height())
+        self.showAucAnim.setEndValue(100)
         self.showAucAnim.setEasingCurve(QEasingCurve.Linear)
 
         self.hideAucAnim = QtCore.QPropertyAnimation(self.training.w.autoCrop, b"maximumHeight")
         self.hideAucAnim.setDuration(500)
-        self.hideAucAnim.setStartValue(self.training.w.autoCrop.height())
+        self.hideAucAnim.setStartValue(100)
         self.hideAucAnim.setEndValue(0)
         self.hideAucAnim.setEasingCurve(QEasingCurve.Linear)
 
@@ -343,6 +344,47 @@ class aiNodesPlugin:
         self.training.w.ti_select_image_dir.clicked.connect(self.ti_select_image_dir)
         self.training.w.ti_select_output_dir.clicked.connect(self.ti_select_output_dir)
         self.training.w.ti_select_model.clicked.connect(self.ti_select_model)
+
+        self.training.w.select_process_input_files.clicked.connect(self.select_process_input_files)
+        self.training.w.select_procerss_destination_folder.clicked.connect(self.select_procerss_destination_folder)
+        self.training.w.runPreprocess.clicked.connect(self.start_preprocess)
+
+
+    @Slot()
+    def select_process_input_files(self):
+        filename = QFileDialog.getExistingDirectory(caption='Input Images Path')
+        self.training.w.process_src.setText(filename)
+
+    @Slot()
+    def select_procerss_destination_folder(self):
+        filename = QFileDialog.getExistingDirectory(caption='Output Images Path')
+        self.training.w.process_dst.setText(filename)
+
+    def start_preprocess(self):
+        torch_gc()
+        self.parent.plugin_thread(self.run_preprocess)
+
+    def run_preprocess(self, progress_callback=False):
+        gs.state.interrupted = False
+        preprocess(
+            process_src=self.training.w.process_src.text(),
+            process_dst=self.training.w.process_dst.text(),
+            process_width=self.training.w.process_width.value(),
+            process_height=self.training.w.process_height.value(),
+            preprocess_txt_action=self.training.w.preprocess_txt_action.currentText(),
+            process_flip=self.training.w.process_flip.isChecked(),
+            process_split=self.training.w.toggle_split_oversize.isChecked(),
+            process_caption=self.training.w.process_caption.isChecked(),
+            process_caption_deepbooru=self.training.w.process_caption_deepbooru.isChecked(),
+            split_threshold=self.training.w.split_threshold.value()/100,
+            overlap_ratio=self.training.w.overlap_ratio.value()/100,
+            process_focal_crop=self.training.w.toggle_focal_crop.isChecked(),
+            process_focal_crop_face_weight=self.training.w.process_focal_crop_face_weight.value()/10,
+            process_focal_crop_entropy_weight=self.training.w.process_focal_crop_entropy_weight.value()/10,
+            process_focal_crop_edges_weight=self.training.w.process_focal_crop_edges_weight.value()/10,
+            process_focal_crop_debug=self.training.w.process_focal_crop_debug.isChecked(),
+            style_caption=self.training.w.style_caption.isChecked())
+
 
     def ti_select_log_dir(self):
         filename = QFileDialog.getExistingDirectory(caption='Path to store logs')

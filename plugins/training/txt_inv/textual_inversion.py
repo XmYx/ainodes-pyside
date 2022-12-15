@@ -369,8 +369,8 @@ def freeze_params(params):
         param.requires_grad = False
 
 
-def main():
-    args = parse_args()
+def main(args):
+    #args = parse_args()
     logging_dir = os.path.join(args.output_dir, args.logging_dir)
 
     accelerator = Accelerator(
@@ -683,4 +683,5 @@ def create_txt_inv(name='myProjectName2',
 
 
 if __name__ == "__main__":
+    print(torch.cuda.is_available())
     main()

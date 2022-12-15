@@ -4,6 +4,7 @@ import math
 import os
 import random
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Optional
 
 import numpy as np
@@ -368,8 +369,8 @@ def freeze_params(params):
         param.requires_grad = False
 
 
-def main():
-    args = parse_args()
+def main(args):
+    #args = parse_args()
     logging_dir = os.path.join(args.output_dir, args.logging_dir)
 
     accelerator = Accelerator(
@@ -405,6 +406,9 @@ def main():
         tokenizer = CLIPTokenizer.from_pretrained(args.tokenizer_name)
     elif args.pretrained_model_name_or_path:
         tokenizer = CLIPTokenizer.from_pretrained(args.pretrained_model_name_or_path, subfolder="tokenizer")
+
+
+    print('args.placeholder_token', args.placeholder_token)
 
     # Add the placeholder token in tokenizer
     num_added_tokens = tokenizer.add_tokens(args.placeholder_token)
@@ -643,6 +647,36 @@ def main():
 
     accelerator.end_training()
 
-
-if __name__ == "__main__":
-    main()
+def create_txt_inv(name='myProjectName2',
+                   save_steps=500,
+                   only_save_embeds=False,
+                    pretrained_model_name_or_path=None,
+                   revision=None,
+                   tokenizer_name=None,
+                   train_data_dir=None,
+                   placeholder_token=None,
+                   initializer_token=None,
+                   learnable_property='object',
+                   repeats=100,
+                   output_dir='text-inversion-model',
+                    seed=23,
+                   resolution=512,
+                   center_crop=False,
+                   train_batch_size=16,
+                   num_train_epochs=100,
+                   max_train_steps=5000,
+                   gradient_accumulation_steps=1,
+                   learning_rate=0.0001,
+                   scale_lr=True,
+                   lr_scheduler='constant',
+                   lr_warmup_steps=500,
+                   adam_beta1=0.9,
+                   adam_beta2=0.999,
+                   adam_weight_decay=0.01,
+                   adam_epsilon=0.00000001,
+                   push_to_hub=False,
+                   logging_dir='logs',
+                   mixed_precision='no',
+                   local_rank=-1):
+    args=SimpleNamespace(**locals())
+    main(args)

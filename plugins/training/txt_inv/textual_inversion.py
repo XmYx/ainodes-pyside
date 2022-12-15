@@ -369,8 +369,8 @@ def freeze_params(params):
         param.requires_grad = False
 
 
-def main(args):
-    #args = parse_args()
+def main():
+    args = parse_args()
     logging_dir = os.path.join(args.output_dir, args.logging_dir)
 
     accelerator = Accelerator(
@@ -680,3 +680,7 @@ def create_txt_inv(name='myProjectName2',
                    local_rank=-1):
     args=SimpleNamespace(**locals())
     main(args)
+
+
+if __name__ == "__main__":
+    main()

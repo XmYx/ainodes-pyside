@@ -98,7 +98,7 @@
             <x>0</x>
             <y>0</y>
             <width>715</width>
-            <height>2900</height>
+            <height>2874</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -147,6 +147,38 @@
               <property name="bottomMargin">
                <number>3</number>
               </property>
+              <item row="0" column="1" colspan="6">
+               <widget class="QTextEdit" name="prompts">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="placeholderText">
+                 <string>Prompt comes here, start each in a new line</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="cfglabel">
+                <property name="text">
+                 <string>CFG</string>
+                </property>
+               </widget>
+              </item>
               <item row="21" column="0" colspan="7">
                <widget class="QFrame" name="plugin_values">
                 <property name="frameShape">
@@ -183,6 +215,34 @@
                 </layout>
                </widget>
               </item>
+              <item row="12" column="2">
+               <widget class="QCheckBox" name="toggle_plotting">
+                <property name="text">
+                 <string>Plotting</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="4">
+               <widget class="QComboBox" name="mode">
+                <item>
+                 <property name="text">
+                  <string>basic</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>advanced</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="12" column="3">
+               <widget class="QCheckBox" name="toggle_aesthetics">
+                <property name="text">
+                 <string>Aesthetics</string>
+                </property>
+               </widget>
+              </item>
               <item row="6" column="1">
                <widget class="QDoubleSpinBox" name="scale">
                 <property name="decimals">
@@ -199,276 +259,56 @@
                 </property>
                </widget>
               </item>
-              <item row="13" column="0" colspan="7">
-               <widget class="QFrame" name="outpaint_values">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout">
-                 <property name="leftMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>3</number>
-                 </property>
-                 <item row="0" column="0">
-                  <widget class="QPushButton" name="delete_2">
-                   <property name="text">
-                    <string>Delete</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="0">
-                  <widget class="QLabel" name="label_7">
-                   <property name="text">
-                    <string>Batch Columns</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QPushButton" name="prep_hires">
-                   <property name="text">
-                    <string>Prep Hires</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="11" column="0">
-                  <widget class="QLabel" name="label_17">
-                   <property name="text">
-                    <string>Reconstruction Blur</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="8" column="0">
-                  <widget class="QLabel" name="label_8">
-                   <property name="text">
-                    <string>Start Offset X</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="0">
-                  <widget class="QLabel" name="label_5">
-                   <property name="text">
-                    <string>Batch Outpaint Overlap</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="9" column="0">
-                  <widget class="QLabel" name="label_9">
-                   <property name="text">
-                    <string>Start Offset Y</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="6" column="0">
-                  <widget class="QLabel" name="label_6">
-                   <property name="text">
-                    <string>Batch Rows</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_4">
-                   <property name="text">
-                    <string>Outpaint Mask Offset</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="3">
-                  <widget class="QPushButton" name="run_batch">
-                   <property name="text">
-                    <string>Run Batch</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="10" column="0">
-                  <widget class="QLabel" name="label_11">
-                   <property name="text">
-                    <string>Mask Blur</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="1">
-                  <widget class="QSpinBox" name="mask_offset">
-                   <property name="minimum">
-                    <number>-128</number>
-                   </property>
-                   <property name="maximum">
-                    <number>128</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="1">
-                  <widget class="QSpinBox" name="rect_overlap">
-                   <property name="maximum">
-                    <number>1024</number>
-                   </property>
-                   <property name="value">
-                    <number>128</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="6" column="1">
-                  <widget class="QSpinBox" name="batch_rows">
-                   <property name="maximum">
-                    <number>32</number>
-                   </property>
-                   <property name="value">
-                    <number>3</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="1">
-                  <widget class="QSpinBox" name="batch_columns">
-                   <property name="maximum">
-                    <number>32</number>
-                   </property>
-                   <property name="value">
-                    <number>3</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="8" column="1">
-                  <widget class="QSpinBox" name="start_offset_x">
-                   <property name="maximum">
-                    <number>8192</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="9" column="1">
-                  <widget class="QSpinBox" name="start_offset_y">
-                   <property name="maximum">
-                    <number>8192</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="10" column="1">
-                  <widget class="QSpinBox" name="mask_blur">
-                   <property name="maximum">
-                    <number>20</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="11" column="1">
-                  <widget class="QSpinBox" name="recons_blur">
-                   <property name="maximum">
-                    <number>200</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="2">
-                  <widget class="QCheckBox" name="randomize">
-                   <property name="text">
-                    <string>Randomize</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="3">
-                  <widget class="QCheckBox" name="reverse">
-                   <property name="text">
-                    <string>Reverse</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="2">
-                  <widget class="QCheckBox" name="spiral">
-                   <property name="text">
-                    <string>Spiral Batch</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="3">
-                  <widget class="QCheckBox" name="enable_overlap">
-                   <property name="text">
-                    <string>Enable Overlap</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="6" column="2">
-                  <widget class="QCheckBox" name="with_inpaint">
-                   <property name="text">
-                    <string>With inpaint</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="2">
-                  <widget class="QPushButton" name="load_inpaint_model">
-                   <property name="text">
-                    <string>PreLoad Inpaint Model</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QPushButton" name="redo">
-                   <property name="text">
-                    <string>Redo</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QPushButton" name="preview_batch">
-                   <property name="text">
-                    <string>Preview Batch</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="3">
-                  <widget class="QPushButton" name="update_params">
-                   <property name="text">
-                    <string>Update Params</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="3">
-                  <widget class="QPushButton" name="run_hires">
-                   <property name="text">
-                    <string>Run Hires</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QPushButton" name="prepare_batch">
-                   <property name="text">
-                    <string>Prepare Batch</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="6" column="0">
-               <widget class="QLabel" name="cfglabel">
+              <item row="12" column="0">
+               <widget class="QCheckBox" name="toggle_outpaint">
                 <property name="text">
-                 <string>CFG</string>
+                 <string>Outpaint Settings</string>
                 </property>
                </widget>
               </item>
-              <item row="7" column="0" colspan="2">
-               <widget class="QCheckBox" name="toggle_negative_prompt">
+              <item row="3" column="0">
+               <widget class="QLabel" name="widthlabel">
+                <property name="text">
+                 <string>Width</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1" colspan="6">
+               <widget class="QTextEdit" name="negative_prompts">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
-                  <width>155</width>
+                  <width>0</width>
                   <height>0</height>
                  </size>
                 </property>
-                <property name="text">
-                 <string>Negative prompt</string>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="placeholderText">
+                 <string>Negative Prompts</string>
                 </property>
                </widget>
               </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="stepslabel">
+              <item row="12" column="4">
+               <widget class="QCheckBox" name="toggle_embeddings">
                 <property name="text">
-                 <string>Steps</string>
+                 <string>Aes. Gradient</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="1">
+               <widget class="QCheckBox" name="toggle_animations">
+                <property name="text">
+                 <string>Animation Settings</string>
                 </property>
                </widget>
               </item>
@@ -1018,446 +858,6 @@
                   </widget>
                  </item>
                 </layout>
-               </widget>
-              </item>
-              <item row="3" column="4">
-               <widget class="QComboBox" name="mode">
-                <item>
-                 <property name="text">
-                  <string>basic</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>advanced</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="20" column="0" colspan="7">
-               <widget class="QFrame" name="plotting_frame">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_12">
-                 <property name="leftMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>3</number>
-                 </property>
-                 <item row="4" column="1" colspan="4">
-                  <widget class="QLineEdit" name="plotYLine"/>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QComboBox" name="plotX">
-                   <item>
-                    <property name="text">
-                     <string>seed</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>sampler</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>steps</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>ddim_eta</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>strength</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>mean_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>var_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>exposure_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>exposure_target</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>colormatch_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>colormatch_image</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>colormatch_n_colors</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>ignore_sat_weight</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clip_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>aesthetics_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>cutn</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>cut_pow</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>init_mse_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>init_mse_image</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>blue_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>gradient_wrt</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>gradient_add_to</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>decode_method</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>grad_threshold_type</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clamp_grad_threshold</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clamp_start</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clamp_stop</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>grad_inject_timing</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>T</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>lr</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QComboBox" name="plotY">
-                   <item>
-                    <property name="text">
-                     <string>seed</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>sampler</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>steps</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>ddim_eta</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>strength</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>mean_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>var_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>exposure_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>exposure_target</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>colormatch_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>colormatch_image</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>colormatch_n_colors</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>ignore_sat_weight</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clip_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>aesthetics_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>cutn</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>cut_pow</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>init_mse_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>init_mse_image</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>blue_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>gradient_wrt</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>gradient_add_to</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>decode_method</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>grad_threshold_type</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clamp_grad_threshold</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clamp_start</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clamp_stop</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>grad_inject_timing</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>T</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>lr</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="3" column="1" colspan="4">
-                  <widget class="QLineEdit" name="plotXLine"/>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_71">
-                   <property name="text">
-                    <string>Grid Setup</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QSpinBox" name="H">
-                <property name="minimum">
-                 <number>256</number>
-                </property>
-                <property name="maximum">
-                 <number>2048</number>
-                </property>
-                <property name="singleStep">
-                 <number>64</number>
-                </property>
-                <property name="value">
-                 <number>512</number>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="heightlabel">
-                <property name="text">
-                 <string>Heigth</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <widget class="QSpinBox" name="steps">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>300</number>
-                </property>
-                <property name="value">
-                 <number>20</number>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="5">
-               <widget class="QCheckBox" name="toggle_plugins">
-                <property name="text">
-                 <string>Plugins</string>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="0" colspan="2">
-               <widget class="QCheckBox" name="toggle_sampler">
-                <property name="text">
-                 <string>Sampler</string>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="3">
-               <widget class="QCheckBox" name="toggle_aesthetics">
-                <property name="text">
-                 <string>Aesthetics</string>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="2">
-               <widget class="QCheckBox" name="toggle_plotting">
-                <property name="text">
-                 <string>Plotting</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="2" colspan="2">
-               <widget class="QLabel" name="label_73">
-                <property name="text">
-                 <string>Preview Mode</string>
-                </property>
                </widget>
               </item>
               <item row="14" column="0" colspan="7">
@@ -2295,24 +1695,394 @@
                 </layout>
                </widget>
               </item>
-              <item row="7" column="2" colspan="2">
-               <widget class="QCheckBox" name="prompt_weighting">
+              <item row="9" column="6">
+               <widget class="QPushButton" name="cleanup_memory">
+                <property name="minimumSize">
+                 <size>
+                  <width>110</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="text">
-                 <string>Weighted</string>
+                 <string>Clean Memory</string>
                 </property>
                </widget>
               </item>
-              <item row="12" column="4">
-               <widget class="QCheckBox" name="toggle_embeddings">
-                <property name="text">
-                 <string>Aes. Gradient</string>
+              <item row="4" column="1">
+               <widget class="QSpinBox" name="H">
+                <property name="minimum">
+                 <number>256</number>
+                </property>
+                <property name="maximum">
+                 <number>2048</number>
+                </property>
+                <property name="singleStep">
+                 <number>64</number>
+                </property>
+                <property name="value">
+                 <number>512</number>
                 </property>
                </widget>
               </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="widthlabel">
+              <item row="20" column="0" colspan="7">
+               <widget class="QFrame" name="plotting_frame">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_12">
+                 <property name="leftMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>3</number>
+                 </property>
+                 <item row="4" column="1" colspan="4">
+                  <widget class="QLineEdit" name="plotYLine"/>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QComboBox" name="plotX">
+                   <item>
+                    <property name="text">
+                     <string>seed</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>sampler</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>steps</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ddim_eta</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>strength</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>mean_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>var_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>exposure_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>exposure_target</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>colormatch_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>colormatch_image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>colormatch_n_colors</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ignore_sat_weight</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clip_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>aesthetics_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>cutn</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>cut_pow</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>init_mse_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>init_mse_image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>blue_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>gradient_wrt</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>gradient_add_to</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>decode_method</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>grad_threshold_type</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clamp_grad_threshold</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clamp_start</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clamp_stop</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>grad_inject_timing</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>T</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>lr</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QComboBox" name="plotY">
+                   <item>
+                    <property name="text">
+                     <string>seed</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>sampler</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>steps</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ddim_eta</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>strength</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>mean_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>var_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>exposure_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>exposure_target</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>colormatch_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>colormatch_image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>colormatch_n_colors</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ignore_sat_weight</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clip_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>aesthetics_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>cutn</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>cut_pow</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>init_mse_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>init_mse_image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>blue_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>gradient_wrt</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>gradient_add_to</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>decode_method</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>grad_threshold_type</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clamp_grad_threshold</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clamp_start</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clamp_stop</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>grad_inject_timing</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>T</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>lr</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="3" column="1" colspan="4">
+                  <widget class="QLineEdit" name="plotXLine"/>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_71">
+                   <property name="text">
+                    <string>Grid Setup</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="heightlabel">
                 <property name="text">
-                 <string>Width</string>
+                 <string>Heigth</string>
                 </property>
                </widget>
               </item>
@@ -2872,13 +2642,6 @@
                 </layout>
                </widget>
               </item>
-              <item row="12" column="1">
-               <widget class="QCheckBox" name="toggle_animations">
-                <property name="text">
-                 <string>Animation Settings</string>
-                </property>
-               </widget>
-              </item>
               <item row="3" column="1">
                <widget class="QSpinBox" name="W">
                 <property name="minimum">
@@ -2895,10 +2658,10 @@
                 </property>
                </widget>
               </item>
-              <item row="12" column="0">
-               <widget class="QCheckBox" name="toggle_outpaint">
+              <item row="3" column="2" colspan="2">
+               <widget class="QLabel" name="label_73">
                 <property name="text">
-                 <string>Outpaint Settings</string>
+                 <string>Preview Mode</string>
                 </property>
                </widget>
               </item>
@@ -3088,69 +2851,6 @@
                 </layout>
                </widget>
               </item>
-              <item row="9" column="6">
-               <widget class="QPushButton" name="cleanup_memory">
-                <property name="minimumSize">
-                 <size>
-                  <width>110</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Clean Memory</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1" colspan="6">
-               <widget class="QTextEdit" name="prompts">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="placeholderText">
-                 <string>Prompt comes here, start each in a new line</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1" colspan="6">
-               <widget class="QTextEdit" name="negative_prompts">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="placeholderText">
-                 <string>Negative Prompts</string>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="0" rowspan="2">
                <widget class="QTextEdit" name="keyframes">
                 <property name="placeholderText">
@@ -3158,10 +2858,317 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="4" colspan="2">
+              <item row="9" column="0" colspan="2">
+               <widget class="QCheckBox" name="toggle_sampler">
+                <property name="text">
+                 <string>Sampler</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QSpinBox" name="steps">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>300</number>
+                </property>
+                <property name="value">
+                 <number>20</number>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="5">
+               <widget class="QCheckBox" name="toggle_plugins">
+                <property name="text">
+                 <string>Plugins</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="0" colspan="7">
+               <widget class="QFrame" name="outpaint_values">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout">
+                 <property name="leftMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>3</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="delete_2">
+                   <property name="text">
+                    <string>Delete</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="0">
+                  <widget class="QLabel" name="label_7">
+                   <property name="text">
+                    <string>Batch Columns</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QPushButton" name="prep_hires">
+                   <property name="text">
+                    <string>Prep Hires</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="11" column="0">
+                  <widget class="QLabel" name="label_17">
+                   <property name="text">
+                    <string>Reconstruction Blur</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="0">
+                  <widget class="QLabel" name="label_8">
+                   <property name="text">
+                    <string>Start Offset X</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_5">
+                   <property name="text">
+                    <string>Batch Outpaint Overlap</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="0">
+                  <widget class="QLabel" name="label_9">
+                   <property name="text">
+                    <string>Start Offset Y</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="0">
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>Batch Rows</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_4">
+                   <property name="text">
+                    <string>Outpaint Mask Offset</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="3">
+                  <widget class="QPushButton" name="run_batch">
+                   <property name="text">
+                    <string>Run Batch</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="10" column="0">
+                  <widget class="QLabel" name="label_11">
+                   <property name="text">
+                    <string>Mask Blur</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QSpinBox" name="mask_offset">
+                   <property name="minimum">
+                    <number>-128</number>
+                   </property>
+                   <property name="maximum">
+                    <number>128</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QSpinBox" name="rect_overlap">
+                   <property name="maximum">
+                    <number>1024</number>
+                   </property>
+                   <property name="value">
+                    <number>128</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="1">
+                  <widget class="QSpinBox" name="batch_rows">
+                   <property name="maximum">
+                    <number>32</number>
+                   </property>
+                   <property name="value">
+                    <number>3</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="1">
+                  <widget class="QSpinBox" name="batch_columns">
+                   <property name="maximum">
+                    <number>32</number>
+                   </property>
+                   <property name="value">
+                    <number>3</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="1">
+                  <widget class="QSpinBox" name="start_offset_x">
+                   <property name="maximum">
+                    <number>8192</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="1">
+                  <widget class="QSpinBox" name="start_offset_y">
+                   <property name="maximum">
+                    <number>8192</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="10" column="1">
+                  <widget class="QSpinBox" name="mask_blur">
+                   <property name="maximum">
+                    <number>20</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="11" column="1">
+                  <widget class="QSpinBox" name="recons_blur">
+                   <property name="maximum">
+                    <number>200</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="2">
+                  <widget class="QCheckBox" name="randomize">
+                   <property name="text">
+                    <string>Randomize</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="3">
+                  <widget class="QCheckBox" name="reverse">
+                   <property name="text">
+                    <string>Reverse</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="2">
+                  <widget class="QCheckBox" name="spiral">
+                   <property name="text">
+                    <string>Spiral Batch</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="3">
+                  <widget class="QCheckBox" name="enable_overlap">
+                   <property name="text">
+                    <string>Enable Overlap</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="2">
+                  <widget class="QCheckBox" name="with_inpaint">
+                   <property name="text">
+                    <string>With inpaint</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="2">
+                  <widget class="QPushButton" name="load_inpaint_model">
+                   <property name="text">
+                    <string>PreLoad Inpaint Model</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QPushButton" name="redo">
+                   <property name="text">
+                    <string>Redo</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="preview_batch">
+                   <property name="text">
+                    <string>Preview Batch</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="3">
+                  <widget class="QPushButton" name="update_params">
+                   <property name="text">
+                    <string>Update Params</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <widget class="QPushButton" name="run_hires">
+                   <property name="text">
+                    <string>Run Hires</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QPushButton" name="prepare_batch">
+                   <property name="text">
+                    <string>Prepare Batch</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="stepslabel">
+                <property name="text">
+                 <string>Steps</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="QCheckBox" name="toggle_negative_prompt">
+                <property name="minimumSize">
+                 <size>
+                  <width>155</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Negative prompt</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="2">
+               <widget class="QCheckBox" name="prompt_weighting">
+                <property name="text">
+                 <string>Weighted</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="2">
                <widget class="QCheckBox" name="normalized_prompts">
                 <property name="text">
                  <string>Normalized</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="4" colspan="2">
+               <widget class="QCheckBox" name="multi_dim_prompt">
+                <property name="text">
+                 <string>Multi Dim Prompt</string>
                 </property>
                </widget>
               </item>

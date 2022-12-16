@@ -256,6 +256,7 @@ class SessionParams():
         gradient_pass = self.parent.widgets[widget].w.gradient_pass.currentText()
         return_type = self.parent.widgets[widget].w.return_type.currentText()
         keyframes = self.parent.widgets[widget].w.keyframes.toPlainText()
+        multi_dim_prompt = self.parent.widgets[widget].w.n_samples.value()
 
         self.params = {             # todo make this a one step thing not two steps
             # Basic Params
@@ -372,6 +373,7 @@ class SessionParams():
             "gradient_pass": gradient_pass,
             "return_type": return_type,
             "keyframes": keyframes,
+            "multi_dim_prompt": multi_dim_prompt
         }
 
         self.params = SimpleNamespace(**self.params)

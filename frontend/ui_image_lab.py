@@ -104,8 +104,6 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.imageLab.w.aestetics_prediction_output.clicked.connect(self.set_aestetic_prediction_output)
         self.imageLab.w.select_interrogation_output_folder.clicked.connect(self.set_interrogation_output_folder)
         self.imageLab.w.run_interrogation.clicked.connect(self.signal_run_interrogation)
-        self.imageLab.w.selected_model.clicked.connect(self.select_accel_model)
-        self.imageLab.w.run_volta_accel.clicked.connect(self.signal_run_volta_accel)
         self.imageLab.w.upscale_20.clicked.connect(self.run_upscale_20)
 
 

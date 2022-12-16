@@ -197,9 +197,9 @@ class DeforumSix:
             if 'num_heads' in config.model['params']['unet_config']['params']:
                 gs.model_version = '1.5'
             elif 'num_head_channels' in config.model['params']['unet_config']['params']:
-                gs.model_version = '2.0'
+                gs.model_version = '2.x'
             if config.model['params']['conditioning_key'] == 'hybrid-adm':
-                gs.model_version = '2.0'
+                gs.model_version = '2.x'
             if 'parameterization' in config.model['params']:
                 gs.model_resolution = 768
             else:
@@ -260,7 +260,7 @@ class DeforumSix:
 
 
             if gs.model_version == '1.5':
-              self.run_post_load_model_generation_specifics()
+                self.run_post_load_model_generation_specifics()
 
             gs.models["sd"].eval()
 

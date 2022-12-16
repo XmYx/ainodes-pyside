@@ -413,6 +413,7 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
     with torch.no_grad():
         with precision_scope("cuda"):
             with gs.models["sd"].ema_scope():
+                torch.backends.cudnn.enabled = True
                 for prompts in data:
                     if isinstance(prompts, tuple):
 

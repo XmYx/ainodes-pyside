@@ -243,7 +243,7 @@ class DeforumSix:
                 print(u)
 
             model.half()
-            model = torch.compile(model)
+            #model = torch.compile(model)
             gs.models["sd"] = copy.deepcopy(model)
             gs.models["sd"].cond_stage_model.device = self.device
             #gs.models["sd"].embedding_manager = EmbeddingManager(gs.models["sd"].cond_stage_model)

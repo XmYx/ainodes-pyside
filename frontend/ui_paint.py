@@ -700,8 +700,9 @@ class Canvas(QGraphicsView):
         ###print(self.rectlist)
         #self.sub_hover_item = None
         matchFound = False
-        if gs.donthover is None:
-            self.last_hover_item = self.hover_item
+        gs.donthover = None
+        if gs.donthover == None:
+
             self.hover_item = None
 
             #prev_index = self.last_index
@@ -715,11 +716,12 @@ class Canvas(QGraphicsView):
             if self.hover_item is not None:
                 if self.rectlist[index].prompt_visible is None:
                     self.rectlist[index].show_prompt()
-            if self.hover_item != self.last_hover_item:
+            if self.hover_item != self.last_hover_item and self.last_hover_item != None:
                 for i in self.rectlist:
                     if i.id == self.last_hover_item:
                         if i.prompt_visible == True:
                             i.hide_prompt()
+            self.last_hover_item = self.hover_item
 
 
             #elif self.hover_item is None:

@@ -35,7 +35,7 @@
     "gfpgan_cpu": false,
     "realesrgan_cpu": false,
     "extra_models_cpu": false,
-    "extra_models_gpu": false,
+    "extra_models_gpu": true,
     "xformer": false,
     "aesthetic_gradients_dir":"data/models/aesthetic_gradients",
     "finetune_config_dir": "configs/finetune",

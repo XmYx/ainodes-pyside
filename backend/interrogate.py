@@ -31,7 +31,7 @@ clip_model_name = 'ViT-L/14'
 Category = namedtuple("Category", ["name", "topn", "items"])
 
 re_topn = re.compile(r"\.top(\d+)\.")
-
+device_interrogate = 'cuda'
 
 class InterrogateModels:
     blip_model = None
@@ -43,7 +43,7 @@ class InterrogateModels:
 
     def __init__(self, content_dir):
         self.categories = []
-        self.running_on_cpu = devices.device_interrogate == torch.device("cpu")
+        self.running_on_cpu = device_interrogate == torch.device("cpu")
 
         if os.path.exists(content_dir):
             for filename in os.listdir(content_dir):
@@ -70,10 +70,11 @@ class InterrogateModels:
 
     def load_clip_model(self):
         import clip
-
+        if 'clip' in gs.models:
+            del gs.models['clip']
         #hack for now
         self.running_on_cpu = False
-        devices.device_interrogate = 'cuda'
+
 
         if self.running_on_cpu:
             model, preprocess = clip.load(clip_model_name, device="cpu")
@@ -81,7 +82,7 @@ class InterrogateModels:
             model, preprocess = clip.load(clip_model_name)
 
         model.eval()
-        model = model.to(devices.device_interrogate)
+        model = model.to(device_interrogate)
 
         return model, preprocess
 
@@ -92,7 +93,7 @@ class InterrogateModels:
                 print('blip half')
                 self.blip_model = self.blip_model.half()
 
-        self.blip_model = self.blip_model.to(devices.device_interrogate)
+        self.blip_model = self.blip_model.to(device_interrogate)
 
         if self.clip_model is None:
             self.clip_model, self.clip_preprocess = self.load_clip_model()
@@ -100,7 +101,7 @@ class InterrogateModels:
                 print('clip half')
                 self.clip_model = self.clip_model.half()
 
-        self.clip_model = self.clip_model.to(devices.device_interrogate)
+        self.clip_model = self.clip_model.to(device_interrogate)
 
         self.dtype = next(self.clip_model.parameters()).dtype
         print('self.dtype',self.dtype )
@@ -128,11 +129,11 @@ class InterrogateModels:
             text_array = text_array[0:int(gs.interrogate_clip_dict_limit)]
 
         top_count = min(top_count, len(text_array))
-        text_tokens = clip.tokenize([text for text in text_array], truncate=True).to(devices.device_interrogate)
+        text_tokens = clip.tokenize([text for text in text_array], truncate=True).to(device_interrogate)
         text_features = self.clip_model.encode_text(text_tokens).type(self.dtype)
         text_features /= text_features.norm(dim=-1, keepdim=True)
 
-        similarity = torch.zeros((1, len(text_array))).to(devices.device_interrogate)
+        similarity = torch.zeros((1, len(text_array))).to(device_interrogate)
         for i in range(image_features.shape[0]):
             similarity += (100.0 * image_features[i].unsqueeze(0) @ text_features.T).softmax(dim=-1)
         similarity /= image_features.shape[0]
@@ -141,15 +142,21 @@ class InterrogateModels:
         return [(text_array[top_labels[0][i].numpy()], (top_probs[0][i].numpy()*100)) for i in range(top_count)]
 
     def generate_caption(self, pil_image):
-        print(devices.device_interrogate)
+        print(device_interrogate)
         gpu_image = transforms.Compose([
             transforms.Resize((blip_image_eval_size, blip_image_eval_size), interpolation=InterpolationMode.BICUBIC),
             transforms.ToTensor(),
             transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
-        ])(pil_image).unsqueeze(0).type(self.dtype).to(devices.device_interrogate)
+        ])(pil_image).unsqueeze(0).type(self.dtype).to(device_interrogate)
+        #gpu_image
+
 
         with torch.no_grad():
-            caption = self.blip_model.generate(gpu_image, sample=False, num_beams=gs.interrogate_clip_num_beams, min_length=gs.interrogate_clip_min_length, max_length=gs.interrogate_clip_max_length)
+            caption = self.blip_model.generate(gpu_image,
+                                               sample=False,
+                                               num_beams=gs.interrogate_clip_num_beams,
+                                               min_length=gs.interrogate_clip_min_length,
+                                               max_length=gs.interrogate_clip_max_length)
 
         return caption[0]
 
@@ -170,7 +177,7 @@ class InterrogateModels:
 
             res = caption
 
-            clip_image = self.clip_preprocess(pil_image).unsqueeze(0).type(self.dtype).to(devices.device_interrogate)
+            clip_image = self.clip_preprocess(pil_image).unsqueeze(0).type(self.dtype).to(device_interrogate)
 
             precision_scope = torch.autocast if gs.precision == "autocast" else contextlib.nullcontext
             with torch.no_grad(), precision_scope("cuda"):

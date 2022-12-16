@@ -103,6 +103,7 @@ class InterrogateModels:
         self.clip_model = self.clip_model.to(devices.device_interrogate)
 
         self.dtype = next(self.clip_model.parameters()).dtype
+        print('self.dtype',self.dtype )
 
     def send_clip_to_ram(self):
         if not gs.interrogate_keep_models_in_memory:

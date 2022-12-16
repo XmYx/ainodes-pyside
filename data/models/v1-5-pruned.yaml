@@ -1,6 +1,6 @@
 model:
   base_learning_rate: 1.0e-04
-  target: backend.aesthetics.ddpm.LatentDiffusion
+  target: ldm.models.diffusion.ddpm.LatentDiffusion
   params:
     linear_start: 0.00085
     linear_end: 0.0120
@@ -56,10 +56,10 @@ model:
           out_ch: 3
           ch: 128
           ch_mult:
-            - 1
-            - 2
-            - 4
-            - 4
+          - 1
+          - 2
+          - 4
+          - 4
           num_res_blocks: 2
           attn_resolutions: []
           dropout: 0.0
@@ -67,8 +67,4 @@ model:
           target: torch.nn.Identity
 
     cond_stage_config:
-      target: backend.aesthetics.modules.PersonalizedCLIPEmbedder
-      params:
-        aesthetic_embedding_path: "aesthetic_embeddings/sac_8plus.pt"
-        T: 3
-        lr: 0.0001
+      target: ldm.modules.encoders.modules.FrozenCLIPEmbedder

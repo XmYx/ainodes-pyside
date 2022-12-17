@@ -15,6 +15,7 @@ from backend.hypernetworks import hypernetwork
 
 from backend.singleton import singleton
 gs = singleton
+gs.xformers_not_available = None
 try:
     import xformers.ops
 except:

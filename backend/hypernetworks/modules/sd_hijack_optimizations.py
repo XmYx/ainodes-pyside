@@ -12,18 +12,22 @@ from einops import rearrange
 from backend.hypernetworks.modules import shared
 from backend.hypernetworks import hypernetwork
 
-import xformers.ops
 
 from backend.singleton import singleton
 gs = singleton
+try:
+    import xformers.ops
+except:
+    gs.xformers_not_available = True
 
-if gs.system.xformer: #or shared.cmd_opts.force_enable_xformers:
-    try:
-        import xformers.ops
-        shared.xformers_available = True
-    except Exception:
-        print("Cannot import xformers", file=sys.stderr)
-        print(traceback.format_exc(), file=sys.stderr)
+if not gs.xformers_not_available:
+    if gs.system.xformer: #or shared.cmd_opts.force_enable_xformers:
+        try:
+            import xformers.ops
+            shared.xformers_available = True
+        except Exception:
+            print("Cannot import xformers", file=sys.stderr)
+            print(traceback.format_exc(), file=sys.stderr)
 
 
 # see https://github.com/basujindal/stable-diffusion/pull/117 for discussion

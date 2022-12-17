@@ -214,7 +214,7 @@ class Rectangle(object):
         if self.image is not None:
             print("hiding..")
             self.subwidgets['prompt'].w.deletebutton.clicked.disconnect()
-            self.parent.scene.removeItem(self.proxy)
+
             #self.subwidgets['prompt'].hide()
             self.animation = QtCore.QPropertyAnimation(
                 self.subwidgets['prompt'].w, b"windowOpacity"
@@ -228,6 +228,7 @@ class Rectangle(object):
             QTimer.singleShot(250, self.finish_annihilation)
     def finish_annihilation(self):
         #self.parent.scene.removeItem(self.proxy)
+        self.parent.scene.removeItem(self.proxy)
         self.subwidgets['prompt'].w.destroy()
 class MyEventFilter(QObject):
     def eventFilter(self, obj, event):
@@ -284,8 +285,9 @@ class MyProxyWidget(QGraphicsProxyWidget):
         self.setup_widgets()
     def setup_widgets(self):
         print("init method called")
-        rect = QRect(self.parent.rectlist[self.render_index].x,self.parent.rectlist[self.render_index].y,self.parent.rectlist[self.render_index].w,self.parent.rectlist[self.render_index].h,)
-        rect.translate(512, 0)
+        obj = self.parent.rectlist[self.render_index]
+        rect = QRect(obj.x + obj.w ,obj.y, obj.w * 4, obj.h,)
+        #rect.translate(obj.w, 0)
         self.parent.krea.w.setGeometry(rect)
         self.parent.krea.w.show()
     def proxy_task(self):

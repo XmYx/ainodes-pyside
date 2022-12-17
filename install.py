@@ -107,7 +107,7 @@ def version_check(commit):
 
         
 def prepare_enviroment():
-    torch_command = os.environ.get('TORCH_COMMAND', "pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113")
+    torch_command = os.environ.get('TORCH_COMMAND', "pip install torch==1.13.1+cu117 torchvision==0.14.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu117")
     requirements_file = os.environ.get('REQS_FILE', "requirements_versions.txt")
     commandline_args = os.environ.get('COMMANDLINE_ARGS', "")
 
@@ -200,7 +200,6 @@ def prepare_enviroment():
     git_clone(k_diffusion_repo, repo_dir('k-diffusion'), "K-diffusion", k_diffusion_commit_hash)
     git_clone(codeformer_repo, repo_dir('CodeFormer'), "CodeFormer", codeformer_commit_hash)
     git_clone(blip_repo, repo_dir('BLIP'), "BLIP", blip_commit_hash)
-
     git_clone(real_esrgan_repo, repo_dir('realesrgan'), "Real ESRGAN", real_esrgan_commit_hash)
     git_clone(adabins_repo, repo_dir('AdaBins'), "AdaBins", adabins_commit_hash)
     git_clone(midas_repo, repo_dir('MiDaS'), "MiDaS", midas_commit_hash)
@@ -231,6 +230,6 @@ def start_sdui():
     frontend.startup.run_app()
 
 if __name__ == "__main__":
-    prepare_enviroment()
+    #prepare_enviroment()
     import backend.paths
     start_sdui()

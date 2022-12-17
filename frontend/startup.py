@@ -8,11 +8,14 @@ from PySide6.QtWidgets import QApplication, QSplashScreen
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
-
+sys.path.append('src/AdaBins')
+sys.path.append('src/MiDaS')
+sys.path.append('src/pytorch3d-lite')
+sys.path.append('src/BLIP')
 def run_app():
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
     QtQuick.QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
-    app = QApplication(sys.argv)
+    #app = QApplication(sys.argv)
 
 
     pixmap = QPixmap('frontend/main/splash_2.png')
@@ -34,17 +37,4 @@ def run_app():
 
     splash.finish(mainWindow)
 
-    sys.exit(app.exec())
-
-
-    mainWindow.w.setWindowTitle("aiNodes")
-    mainWindow.w.setWindowIcon(QIcon('frontend/main/splash_2.png'))
-    with open(sshFile,"r") as fh:
-        mainWindow.w.setStyleSheet(fh.read())
-
-    mainWindow.w.show()
-
-    mainWindow.w.resize(1280, 720)
-    splash.finish(mainWindow.w)
-
-    sys.exit(app.exec())
+    #sys.exit(app.exec())

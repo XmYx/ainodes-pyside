@@ -6,6 +6,10 @@ from PySide6.QtQuick import QSGRendererInterface
 from PySide6.QtWidgets import QApplication, QSplashScreen
 import os
 #os.environ['KMP_DUPLICATE_LIB_OK']='True'
+sys.path.append('src/AdaBins')
+sys.path.append('src/MiDaS')
+sys.path.append('src/pytorch3d-lite')
+sys.path.append('src/BLIP')
 
 defaultdirs = [
     "data",

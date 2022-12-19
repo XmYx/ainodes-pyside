@@ -8,7 +8,7 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 
-from plugins.dreambooth.ldm_db.modules.diffusionmodules.util import (
+from plugins.training.ldm_db.modules.diffusionmodules.util import (
     checkpoint,
     conv_nd,
     linear,
@@ -17,7 +17,7 @@ from plugins.dreambooth.ldm_db.modules.diffusionmodules.util import (
     normalization,
     timestep_embedding,
 )
-from plugins.dreambooth.ldm_db.modules.attention import SpatialTransformer
+from plugins.training.ldm_db.modules.attention import SpatialTransformer
 
 
 # dummy replace

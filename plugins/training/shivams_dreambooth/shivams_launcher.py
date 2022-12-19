@@ -43,8 +43,7 @@ def run_shivams_dreambooth():
                '--pretrained_model_name_or_path=runwayml/stable-diffusion-v1-5',
                '--pretrained_vae_name_or_path=stabilityai/sd-vae-ft-mse',
                '--output_dir=$OUTPUT_DIR',
-               '--revision=fp16',
-               #'--with_prior_preservation',
+               "--revision='fp16'",
                '--prior_loss_weight=1.0',
                '--seed=1337',
                '--resolution=512',
@@ -62,6 +61,6 @@ def run_shivams_dreambooth():
                '--save_interval=10000',
                '--save_sample_prompt=photo of zwx dog',
                '--concepts_list=concepts_list.json']
-
+    # '--with_prior_preservation',
     subprocess.run(command)
 

@@ -545,7 +545,7 @@ class DreamBooth:
                 print('ignore_keys_callback')
                 del callbacks_cfg['ignore_keys_callback']
 
-            trainer_kwargs["callbacks"] = [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg]
+            #trainer_kwargs["callbacks"] = [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg]
             trainer_kwargs["max_steps"] = trainer_opt.max_steps
 
             print('trainer_opt', trainer_opt)

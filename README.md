@@ -16,10 +16,9 @@ https://www.patreon.com/ainodes
 
 Welcome to aiNodes, a desktop GUI with Deforum Art, Outpaint, Upscalers, and many more.
 
-To install, please use the installer repository at:
+To install, please download or git clone the installer repository from:
 https://github.com/XmYx/ainodes-installer
 
-just Download or git clone from https://github.com/XmYx/ainodes-installer
 - run start.bat
 - press install all
 - restart launcher

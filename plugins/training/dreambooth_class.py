@@ -34,7 +34,6 @@ gs = singleton
 def load_model_from_config(config, ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
     pl_sd = torch.load(ckpt, map_location="cpu")
-    pl_sd = torch.load(ckpt, map_location="cpu")
     sd = pl_sd["state_dict"]
     config.model.params.ckpt_path = ckpt
     model = instantiate_from_config(config.model)
@@ -426,15 +425,26 @@ class DreamBooth:
                     }
                 },
             }
-            default_logger_cfg = default_logger_cfgs["testtube"]
+            default_logger_cfgs = {
+                "wandb": {
+                    "target": "pytorch_lightning.loggers.WandbLogger",
+                    "params": {
+                        "name": nowname,
+                        "save_dir": logdir,
+                        "offline": opt.debug,
+                        "id": nowname,
+                    }
+                }
+            }
+            #default_logger_cfg = default_logger_cfgs["testtube"]
             if "logger" in lightning_config:
                 print('"logger" in lightning_config')
                 logger_cfg = lightning_config.logger
             else:
                 print('"logger" not in lightning_config')
                 logger_cfg = OmegaConf.create()
-            logger_cfg = OmegaConf.merge(default_logger_cfg, logger_cfg)
-            trainer_kwargs["logger"] = instantiate_from_config(logger_cfg)
+            #logger_cfg = OmegaConf.merge(default_logger_cfg, logger_cfg)
+            #trainer_kwargs["logger"] = instantiate_from_config(logger_cfg)
 
             # modelcheckpoint - use TrainResult/EvalResult(checkpoint_on=metric) to
             # specify which metric is used to determine best models

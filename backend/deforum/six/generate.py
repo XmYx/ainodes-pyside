@@ -21,7 +21,6 @@ from contextlib import nullcontext
 from einops import rearrange, repeat
 
 from optimizedSD.optimUtils import logger
-from . import prompt_parser
 from .prompt import get_uc_and_c, split_weighted_subprompts
 from .k_samplers import sampler_fn, make_inject_timing_fn
 from scipy.ndimage import gaussian_filter
@@ -419,18 +418,15 @@ def generate(args, root, frame = 0, return_latent=False, return_sample=False, re
 
                         prompts = list(prompts)
 
-                    #if args.prompt_weighting:
-                        #uc, c = get_uc_and_c(prompts, gs.models["sd"], args, frame)
-                    uc = prompt_parser.get_learned_conditioning(gs.models["sd"], prompts, args.steps)
-                    c = prompt_parser.get_multicond_learned_conditioning(gs.models["sd"], prompts, args.steps)
-
-                    #else:
-                    #    if args.negative_prompts is not None:
-                    #        print(f"using negative prompts: {args.negative_prompts}")
-                    #        uc = gs.models["sd"].get_learned_conditioning(args.negative_prompts)
-                    #    else:
-                    #        uc = gs.models["sd"].get_learned_conditioning(batch_size * [""])
-                    #    c = gs.models["sd"].get_learned_conditioning(prompts)
+                    if args.prompt_weighting:
+                        uc, c = get_uc_and_c(prompts, gs.models["sd"], args, frame)
+                    else:
+                        if args.negative_prompts is not None:
+                            print(f"using negative prompts: {args.negative_prompts}")
+                            uc = gs.models["sd"].get_learned_conditioning(args.negative_prompts)
+                        else:
+                            uc = gs.models["sd"].get_learned_conditioning(batch_size * [""])
+                        c = gs.models["sd"].get_learned_conditioning(prompts)
 
 
                     if args.scale == 1.0:

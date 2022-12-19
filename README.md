@@ -27,3 +27,9 @@ https://github.com/XmYx/ainodes-installer
 - restart launcher
 - download a vanilla SD models (optional)
 - press start aiNodes
+
+F.A.Q:
+
+1. I have the following error: RuntimeError: failed to find interpreter for Builtin discover of python_spec='python3.10'
+Solution: Please make sure you have Python version 3.10 installed on your system and added to your PATH, or in your conda environment you are running the launcher from.
+https://realpython.com/add-python-to-path/

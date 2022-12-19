@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 
-from plugins.dreambooth.ldm_db.data.personalized import per_img_token_list
+from plugins.training.ldm_db.data.personalized import per_img_token_list
 from transformers import CLIPTokenizer
 from functools import partial
 

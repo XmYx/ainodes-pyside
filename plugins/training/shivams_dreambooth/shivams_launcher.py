@@ -45,6 +45,7 @@ def run_shivams_dreambooth():
                '--pretrained_vae_name_or_path=stabilityai/sd-vae-ft-mse',
                '--output_dir=output',
                '--revision=fp16',
+               '--with_prior_preservation',
                '--prior_loss_weight=1.0',
                '--seed=1337',
                '--resolution=512',
@@ -62,7 +63,7 @@ def run_shivams_dreambooth():
                '--concepts_list=concepts_list.json']
     # '--train_text_encoder',
     # '--use_8bit_adam',
-    # '--with_prior_preservation',
+    #
     env = os.environ.copy()
     env["CUDA_VISIBLE_DEVICES"] = "0"  # specify the GPU to use here
 

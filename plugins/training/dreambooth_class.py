@@ -425,7 +425,18 @@ class DreamBooth:
                     }
                 },
             }
-            default_logger_cfg = default_logger_cfgs["testtube"]
+            default_logger_cfgs = {
+                "wandb": {
+                    "target": "pytorch_lightning.loggers.WandbLogger",
+                    "params": {
+                        "name": nowname,
+                        "save_dir": logdir,
+                        "offline": opt.debug,
+                        "id": nowname,
+                    }
+                }
+            }
+            #default_logger_cfg = default_logger_cfgs["testtube"]
             if "logger" in lightning_config:
                 print('"logger" in lightning_config')
                 logger_cfg = lightning_config.logger

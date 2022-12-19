@@ -1,6 +1,7 @@
 import subprocess
 import os
 
+import torch
 
 
 def run_shivams_dreambooth():
@@ -62,5 +63,7 @@ def run_shivams_dreambooth():
                '--save_sample_prompt=photo of zwx dog',
                '--concepts_list=concepts_list.json']
     # '--with_prior_preservation',
-    subprocess.run(command)
+    env = os.environ.copy()
+    env["CUDA_VISIBLE_DEVICES"] = "0"  # specify the GPU to use here
 
+    subprocess.run(command, env=env)

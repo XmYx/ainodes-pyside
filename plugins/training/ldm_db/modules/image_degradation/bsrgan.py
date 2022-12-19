@@ -23,7 +23,7 @@ from scipy.interpolate import interp2d
 from scipy.linalg import orth
 import albumentations
 
-import plugins.dreambooth.ldm_db.modules.image_degradation.utils_image as util
+import plugins.training.ldm_db.modules.image_degradation.utils_image as util
 
 
 def modcrop_np(img, sf):

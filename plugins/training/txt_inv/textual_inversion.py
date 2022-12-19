@@ -444,7 +444,7 @@ def main(args):
         revision=args.revision,
     )
 
-    if is_xformers_available():
+    if is_xformers_available() and 2 == 1:
         try:
             unet.enable_xformers_memory_efficient_attention()
         except Exception as e:

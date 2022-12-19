@@ -35,7 +35,7 @@ class Callbacks(QObject):
     sd_to_diffusers_start_signal = Signal()
 
 
-class aiNodesPlugin:
+class aiPixelsPlugin:
     def __init__(self, parent):
         #self.txt_invers = TI()
         self.parent = parent
@@ -506,6 +506,8 @@ class aiNodesPlugin:
         args.push_to_hub = False
         args.hub_token = None
         args.hub_model_id = None
+        args.tokenizer_name = None
+        args.revision = None
 
         return args
 

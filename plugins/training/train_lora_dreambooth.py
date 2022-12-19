@@ -53,14 +53,15 @@ class DreamBoothDataset(Dataset):
     """
 
     def __init__(
-        self,
-        instance_data_root,
-        instance_prompt,
-        tokenizer,
-        class_data_root=None,
-        class_prompt=None,
-        size=512,
-        center_crop=False,
+            self,
+            instance_data_root,
+            instance_prompt,
+            tokenizer,
+            class_data_root=None,
+            class_prompt=None,
+            size=512,
+            center_crop=False,
+            color_jitter=False,
     ):
         self.size = size
         self.center_crop = center_crop
@@ -93,6 +94,9 @@ class DreamBoothDataset(Dataset):
                 transforms.CenterCrop(size)
                 if center_crop
                 else transforms.RandomCrop(size),
+                transforms.ColorJitter(0.2, 0.1)
+                if color_jitter
+                else transforms.Lambda(lambda x: x),
                 transforms.ToTensor(),
                 transforms.Normalize([0.5], [0.5]),
             ]
@@ -111,107 +115,6 @@ class DreamBoothDataset(Dataset):
         example["instance_images"] = self.image_transforms(instance_image)
         example["instance_prompt_ids"] = self.tokenizer(
             self.instance_prompt,
-            padding="do_not_pad",
-            truncation=True,
-            max_length=self.tokenizer.model_max_length,
-        ).input_ids
-
-        if self.class_data_root:
-            class_image = Image.open(
-                self.class_images_path[index % self.num_class_images]
-            )
-            if not class_image.mode == "RGB":
-                class_image = class_image.convert("RGB")
-            example["class_images"] = self.image_transforms(class_image)
-            example["class_prompt_ids"] = self.tokenizer(
-                self.class_prompt,
-                padding="do_not_pad",
-                truncation=True,
-                max_length=self.tokenizer.model_max_length,
-            ).input_ids
-
-        return example
-
-
-class DreamBoothLabled(Dataset):
-    """
-    A dataset to prepare the instance and class images with the prompts for fine-tuning the model.
-    It pre-processes the images and the tokenizes prompts.
-    """
-
-    def __init__(
-        self,
-        instance_data_root,
-        instance_prompt,
-        tokenizer,
-        class_data_root=None,
-        class_prompt=None,
-        size=512,
-        center_crop=False,
-    ):
-        self.size = size
-        self.center_crop = center_crop
-        self.tokenizer = tokenizer
-
-        self.instance_data_root = Path(instance_data_root)
-        if not self.instance_data_root.exists():
-            raise ValueError("Instance images root doesn't exists.")
-
-        self.instance_images_path = list(Path(instance_data_root).iterdir())
-        self.num_instance_images = len(self.instance_images_path)
-        self.instance_prompt = instance_prompt
-        self._length = self.num_instance_images
-
-        if class_data_root is not None:
-            self.class_data_root = Path(class_data_root)
-            self.class_data_root.mkdir(parents=True, exist_ok=True)
-            self.class_images_path = list(self.class_data_root.iterdir())
-            self.num_class_images = len(self.class_images_path)
-            self._length = max(self.num_class_images, self.num_instance_images)
-            self.class_prompt = class_prompt
-        else:
-            self.class_data_root = None
-
-        self.image_transforms = transforms.Compose(
-            [
-                transforms.Resize(
-                    size, interpolation=transforms.InterpolationMode.BILINEAR
-                ),
-                transforms.CenterCrop(size)
-                if center_crop
-                else transforms.RandomCrop(size),
-                transforms.ToTensor(),
-                transforms.Normalize([0.5], [0.5]),
-            ]
-        )
-
-    def __len__(self):
-        return self._length
-
-    def __getitem__(self, index):
-        example = {}
-        instance_image = Image.open(
-            self.instance_images_path[index % self.num_instance_images]
-        )
-
-        instance_prompt = (
-            str(self.instance_images_path[index % self.num_instance_images])
-            .split("/")[-1]
-            .split(".")[0]
-            .replace("-", " ")
-        )
-        # remove numbers in prompt
-        instance_prompt = re.sub(r"\d+", "", instance_prompt)
-        # print(instance_prompt)
-
-        _svg = random.choice(["svg", "flat color", "vector illustration", "sks"])
-        instance_prompt = f"{instance_prompt}, style of {_svg}"
-
-        if not instance_image.mode == "RGB":
-            instance_image = instance_image.convert("RGB")
-        example["instance_images"] = self.image_transforms(instance_image)
-        example["instance_prompt_ids"] = self.tokenizer(
-            instance_prompt,
             padding="do_not_pad",
             truncation=True,
             max_length=self.tokenizer.model_max_length,
@@ -331,10 +234,7 @@ def parse_args(input_args=None):
         help="The output directory where the model predictions and checkpoints will be written.",
     )
     parser.add_argument(
-        "--seed",
-        type=int,
-        default=None,
-        help="A seed for reproducible training."
+        "--seed", type=int, default=None, help="A seed for reproducible training."
     )
     parser.add_argument(
         "--resolution",
@@ -349,6 +249,11 @@ def parse_args(input_args=None):
         "--center_crop",
         action="store_true",
         help="Whether to center crop images before resizing to resolution",
+    )
+    parser.add_argument(
+        "--color_jitter",
+        action="store_true",
+        help="Whether to apply color jitter to images",
     )
     parser.add_argument(
         "--train_text_encoder",
@@ -394,8 +299,14 @@ def parse_args(input_args=None):
     parser.add_argument(
         "--learning_rate",
         type=float,
-        default=5e-6,
+        default=None,
         help="Initial learning rate (after the potential warmup period) to use.",
+    )
+    parser.add_argument(
+        "--learning_rate_text",
+        type=float,
+        default=5e-6,
+        help="Initial learning rate for text encoder (after the potential warmup period) to use.",
     )
     parser.add_argument(
         "--scale_lr",
@@ -517,8 +428,9 @@ def parse_args(input_args=None):
 
     return args
 
+
 def get_full_repo_name(
-    model_id: str, organization: Optional[str] = None, token: Optional[str] = None
+        model_id: str, organization: Optional[str] = None, token: Optional[str] = None
 ):
     if token is None:
         token = HfFolder.get_token()
@@ -527,6 +439,7 @@ def get_full_repo_name(
         return f"{username}/{model_id}"
     else:
         return f"{organization}/{model_id}"
+
 
 def main(args):
     logging_dir = Path(args.output_dir, args.logging_dir)
@@ -1036,6 +949,5 @@ def main(args):
             )
 
     accelerator.end_training()
-
 def run_lora_dreambooth(args):
     main(args)

@@ -11,7 +11,7 @@ import xformers
 import xformers.ops
 
 
-from plugins.dreambooth.ldm_db.modules.diffusionmodules.util import checkpoint
+from plugins.training.ldm_db.modules.diffusionmodules.util import checkpoint
 
 
 def exists(val):

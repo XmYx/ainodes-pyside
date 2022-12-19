@@ -6,7 +6,7 @@ from einops import rearrange, repeat
 from transformers import CLIPTokenizer, CLIPTextModel
 import kornia
 
-from plugins.dreambooth.ldm_db.modules.x_transformer import Encoder, TransformerWrapper  # TODO: can we directly rely on lucidrains code and simply add this as a reuirement? --> test
+from plugins.training.ldm_db.modules.x_transformer import Encoder, TransformerWrapper  # TODO: can we directly rely on lucidrains code and simply add this as a reuirement? --> test
 
 def _expand_mask(mask, dtype, tgt_len = None):
     """
@@ -491,6 +491,6 @@ class FrozenClipImageEmbedder(nn.Module):
 
 
 if __name__ == "__main__":
-    from plugins.dreambooth.ldm_db.util import count_params
+    from plugins.training.ldm_db.util import count_params
     model = FrozenCLIPEmbedder()
     count_params(model, verbose=True)

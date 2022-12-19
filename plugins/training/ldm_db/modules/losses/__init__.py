@@ -1,1 +1,1 @@
-from plugins.dreambooth.ldm_db.modules.losses.contperceptual import LPIPSWithDiscriminator
+from plugins.training.ldm_db.modules.losses.contperceptual import LPIPSWithDiscriminator

@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 
-from plugins.dreambooth.ldm_db.data.personalized import per_img_token_list
+from plugins.training.ldm_db.data.personalized import per_img_token_list
 from transformers import CLIPTokenizer
 from functools import partial
 
@@ -58,7 +58,7 @@ class EmbeddingManager(nn.Module):
             get_token_for_string = partial(get_clip_token_for_string, embedder.tokenizer)
             get_embedding_for_tkn = partial(get_embedding_for_clip_token, embedder.transformer.text_model.embeddings)
             token_dim = 768
-        else: # using plugins.dreambooth.ldm_db.s BERT encoder
+        else: # using plugins.training.ldm_db.s BERT encoder
             self.is_clip = False
             get_token_for_string = partial(get_bert_token_for_string, embedder.tknz_fn)
             get_embedding_for_tkn = embedder.transformer.token_emb

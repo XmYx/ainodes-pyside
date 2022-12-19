@@ -1,11 +1,12 @@
-#@markdown Name/Path of the initial model.
-import subprocess, os
+import subprocess
+import os
 
 
 
 def run_shivams_dreambooth():
     MODEL_NAME = "runwayml/stable-diffusion-v1-5" #@param {type:"string"}
-
+    import json
+    import os
     #@markdown Enter the directory name to save model at.
 
     OUTPUT_DIR = "" #@param {type:"string"}
@@ -32,8 +33,6 @@ def run_shivams_dreambooth():
     ]
 
     # `class_data_dir` contains regularization images
-    import json
-    import os
     for c in concepts_list:
         os.makedirs(c["instance_data_dir"], exist_ok=True)
 

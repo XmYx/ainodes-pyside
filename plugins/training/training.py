@@ -612,10 +612,12 @@ class aiNodesPlugin:
     def create_dreambooth_thread(self, progress_callback=None):
         torch_gc()
 
-        from plugins.training.shivams_dreambooth import shivams_launcher
-        shivams_launcher.run_shivams_dreambooth()
+        #TODO Uncomment, and test the following two lines to run Shivam's Dreambooth with some default settings, and images in a folder called test
+        #TODO Do Comment the following original dreambooth call for the test.
+        #from plugins.training.shivams_dreambooth import shivams_launcher
+        #shivams_launcher.run_shivams_dreambooth()
 
-        """self.dreambooth_training.dreambooth(
+        self.dreambooth_training.dreambooth(
             accelerator=None if self.training.w.accelerator.currentText() == 'None' else self.training.w.accelerator.currentText(),                                   # Previously known as distributed_backend (dp, ddp, ddp2, etc...).
             # Can also take in an accelerator object for custom hardware.
             accumulate_grad_batches=self.training.w.accumulate_grad_batches.value(),                        # Accumulates grads every k batches or as set up in the dict.
@@ -769,7 +771,7 @@ class aiNodesPlugin:
             # Defaults to `default_root_dir`.
             val_check_interval=self.training.w.val_check_interval.value()                               # How often to check the validation set. Use float to check within a training epoch,
             # use int to check every n steps (batches).
-        )"""
+        )
         """
         self.parent.ti.create_txt_inv(
             name=self.training.w.name.text(),

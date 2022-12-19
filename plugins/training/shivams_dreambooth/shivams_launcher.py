@@ -49,7 +49,7 @@ def run_shivams_dreambooth():
                '--resolution=512',
                '--train_batch_size=1',
                '--train_text_encoder',
-               '--mixed_precision="fp16"',
+               '--mixed_precision=fp16',
                '--use_8bit_adam',
                '--gradient_accumulation_steps=1',
                '--learning_rate=1e-6',

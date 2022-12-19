@@ -43,15 +43,13 @@ def run_shivams_dreambooth():
     command = ['accelerate', 'launch', 'plugins/training/shivams_dreambooth/dreambooth.py',
                '--pretrained_model_name_or_path=runwayml/stable-diffusion-v1-5',
                '--pretrained_vae_name_or_path=stabilityai/sd-vae-ft-mse',
-               '--output_dir=$OUTPUT_DIR',
+               '--output_dir=output',
                '--revision=fp16',
                '--prior_loss_weight=1.0',
                '--seed=1337',
                '--resolution=512',
                '--train_batch_size=1',
-               '--train_text_encoder',
                '--mixed_precision=fp16',
-               '--use_8bit_adam',
                '--gradient_accumulation_steps=1',
                '--learning_rate=1e-6',
                '--lr_scheduler=constant',
@@ -62,6 +60,8 @@ def run_shivams_dreambooth():
                '--save_interval=10000',
                '--save_sample_prompt=photo of zwx dog',
                '--concepts_list=concepts_list.json']
+    # '--train_text_encoder',
+    # '--use_8bit_adam',
     # '--with_prior_preservation',
     env = os.environ.copy()
     env["CUDA_VISIBLE_DEVICES"] = "0"  # specify the GPU to use here

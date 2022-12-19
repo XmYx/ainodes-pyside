@@ -40,7 +40,7 @@ def run_shivams_dreambooth():
         json.dump(concepts_list, f, indent=4)
 
     command = ['accelerate', 'launch', 'plugins/training/shivams_dreambooth/dreambooth.py',
-               '--pretrained_model_name_or_path=$MODEL_NAME',
+               '--pretrained_model_name_or_path=runwayml/stable-diffusion-v1-5',
                '--pretrained_vae_name_or_path=stabilityai/sd-vae-ft-mse',
                '--output_dir=$OUTPUT_DIR',
                '--revision=fp16',

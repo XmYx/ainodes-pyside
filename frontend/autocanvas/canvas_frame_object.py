@@ -158,8 +158,8 @@ class RectangleProxy(QGraphicsProxyWidget):
         super(RectangleProxy, self).__init__()
         self.widget = widget
         self.parent = parent
-        #self.event_filter = MyEventFilter()
-        #self.installEventFilter(self.event_filter)
+        self.event_filter = MyEventFilter()
+        self.installEventFilter(self.event_filter)
 
 
 class MyEventFilter(QObject):

@@ -22,8 +22,8 @@ for i in defaultdirs:
 
 
 if __name__ == "__main__":
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
-    QtQuick.QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
+    #QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
+    #QtQuick.QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
     app = QApplication(sys.argv)
 
 

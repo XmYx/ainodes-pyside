@@ -13,6 +13,5 @@ def undo_hijack():
     ldm.models.diffusion.plms.PLMSSampler.plms_sampling = plms_sampling_safe
 
 def deforum_hijack():
-    print('hijack util')
     ldm.models.diffusion.ddim.DDIMSampler.decode = hijack_codes.decode
     ldm.models.diffusion.plms.PLMSSampler.plms_sampling = hijack_codes.plms_sampling

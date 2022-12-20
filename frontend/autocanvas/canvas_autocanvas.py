@@ -339,40 +339,29 @@ class Canvas(QGraphicsView):
         self.update()
 
     def hoverCheck(self):
-        #self.gridenabled = False
-        #self.gridenabled = True
-        ###print(self.rectlist)
-        #self.sub_hover_item = None
         matchFound = False
+        gs.donthover = None
+        if gs.donthover == None:
 
-        self.last_hover_item = self.hover_item
-        self.hover_item = None
+            self.hover_item = None
 
-        #prev_index = self.last_index
-        for i in self.rectlist:
-            if i.x <= self.scene.scenePos.x() <= i.x + i.w and i.y <= self.scene.scenePos.y() <= i.y + i.h:
-                self.hover_item = i.id
-                index = self.rectlist.index(i)
-
-            else:
-                i.color = __idleColor__
-        if self.hover_item is not None:
-            if self.rectlist[index].prompt_visible is None:
-                self.rectlist[index].show_prompt()
-        if self.hover_item != self.last_hover_item and gs.donthover == None:
+            #prev_index = self.last_index
             for i in self.rectlist:
-                if i.id == self.last_hover_item:
-                    if i.prompt_visible == True:
-                        i.hide_prompt()
+                if i.x <= self.scene.scenePos.x() <= i.x + i.w and i.y <= self.scene.scenePos.y() <= i.y + i.h:
+                    self.hover_item = i.id
+                    index = self.rectlist.index(i)
 
-
-        #elif self.hover_item is None:
-        #    #self.redraw()
-        #    for i in self.rectlist:
-        #        if i.prompt_visible is not None:
-        #            i.hide_prompt()
-        #            i.prompt_visible = None
-
+                else:
+                    i.color = __idleColor__
+            if self.hover_item is not None:
+                if self.rectlist[index].prompt_visible is None:
+                    self.rectlist[index].show_prompt()
+            if self.hover_item != self.last_hover_item and self.last_hover_item != None:
+                for i in self.rectlist:
+                    if i.id == self.last_hover_item:
+                        if i.prompt_visible == True:
+                            i.hide_prompt()
+            self.last_hover_item = self.hover_item
     def save_canvas(self):
         self.redraw(transparent=True)
         timestring = time.strftime('%Y-%m-%d-%H-%S')

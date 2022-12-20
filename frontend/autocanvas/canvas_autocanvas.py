@@ -222,6 +222,8 @@ class Canvas(QGraphicsView):
         self.rectlist = []
         self.rectlist.clear()
         self.scene = Scene()
+        self.w = 512
+        self.h = 512
         self.parent.w = 4096
         self.parent.cheight = 4096
         self.parent.stopwidth = False
@@ -584,8 +586,8 @@ class Canvas(QGraphicsView):
         # Set pen color to black and line width to 1
 
     def draw_grid_(self, painter, rect, mgridsize):
-        rows = self.h / mgridsize
-        cols = self.w / mgridsize
+        #rows = self.h / mgridsize
+        #cols = self.w / mgridsize
 
 
         penHLines = QPen(QColor(75, 75, 75), 4, Qt.SolidLine, Qt.FlatCap, Qt.RoundJoin)

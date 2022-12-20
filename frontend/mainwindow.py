@@ -473,7 +473,7 @@ class MainWindow(QMainWindow):
         self.threadpool.start(worker)
 
     def update_ui_from_params(self):
-        for key, value in self.sessionparams.params.__dict__.items():
+        for key, value in self.sessionparams.params.items():
             try:
                 # We have to add check for Animation Mode as thats a radio checkbox with values 'anim2d', 'anim3d', 'animVid'
                 # add colormatch_image (it will be with a fancy preview)

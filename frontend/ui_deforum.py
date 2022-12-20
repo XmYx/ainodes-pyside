@@ -333,9 +333,7 @@ class Deforum_UI(QObject):
         ddim_eta = float(params.ddim_eta)
         with_inpaint = bool(params.with_inpaint)
 
-        #self.parent.sessionparams.params.advanced = True
-        self.parent.params.advanced = True
-        #print(prompt)
+        self.parent.sessionparams.params.advanced = True
         self.deforum_six.outpaint_txt2img(init_image=init_image,
                                           steps=steps,
                                           H=H,

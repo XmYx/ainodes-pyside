@@ -111,12 +111,11 @@ class Deforum_UI(QObject):
                                          lowmem=params.lowmem,
                                          )
 
-    def run_deforum_six_txt2img(self, progress_callback=None, plotting=True):
+    def run_deforum_six_txt2img(self, hiresinit = None, progress_callback=None, plotting=True):
         gs.stop_all = False
         id = None
         self.params = self.parent.sessionparams.update_params()
         self.parent.params = self.params
-
         index = 0
 
         if self.parent.canvas.canvas.rectlist != []:
@@ -145,13 +144,13 @@ class Deforum_UI(QObject):
         #    del gs.models["inpaint"]
 
         if self.params.with_inpaint == True: # todo what is this for?
-            self.parent.params.advanced = True
+            self.parent.sessionparams.params.advanced = True
         else:
             if self.parent.widgets[self.parent.current_widget].w.mode.currentText() == 'basic':
-                self.parent.params.advanced = False
+                self.parent.sessionparams.params.advanced = False
             elif self.parent.widgets[self.parent.current_widget].w.mode.currentText() == 'advanced':
-                self.parent.params.advanced = True
-                self.parent.render_index = index
+                self.parent.sessionparams.params.advanced = True
+                #self.parent.render_index = index
 
         gs.diffusion.selected_aesthetic_embedding = self.parent.widgets[self.parent.current_widget].w.selected_aesthetic_embedding.currentText()
         gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
@@ -161,7 +160,10 @@ class Deforum_UI(QObject):
         gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.toPlainText()
         gs.slerp_angle = self.parent.widgets[self.parent.current_widget].w.slerp_angle.value()
         gs.aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.toPlainText()
-
+        if hiresinit is not None:
+            self.parent.sessionparams.params.advanced = True
+            self.params.use_init = True
+            self.params.init_image = hiresinit
 
 
         #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients_dir, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())

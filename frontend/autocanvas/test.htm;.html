@@ -1,0 +1,18 @@
+// HTML
+<img src="image.jpg">
+<button onclick="runPythonFunction()">Run Python Function</button>
+
+// JavaScript
+function runPythonFunction() {
+  fetch('/run-python-function')
+    .then(response => response.text())
+    .then(result => {
+      // Process and display the result here
+    });
+}
+
+// Python
+@app.route('/run-python-function')
+def run_python_function():
+  result = some_python_function()
+  return result

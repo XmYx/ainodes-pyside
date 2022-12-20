@@ -492,7 +492,7 @@ class MainWindow(QMainWindow):
                 continue
 
     def update_ui_from_system_params(self):
-        for key, value in self.sessionparams.system_params.items():
+        for key, value in self.sessionparams.system_params.__dict__.items():
             try:
                 current_widget = self.system_setup.w
                 type = str(getattr(current_widget, key))

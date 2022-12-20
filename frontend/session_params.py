@@ -44,7 +44,7 @@ class SessionParams():
         self.params = {}
         for key, value in gs.diffusion.__dict__.items():
             self.params[key] = value
-
+        self.params = SimpleNamespace(**self.params)
         return self.params
 
 
@@ -52,8 +52,8 @@ class SessionParams():
         self.system_params = {}
         for key, value in gs.system.__dict__.items():
             self.system_params[key] = value
-
-        return self.params
+        self.system_params = SimpleNamespace(**self.params)
+        return self.system_params
 
 
     def update_system_params(self):

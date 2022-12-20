@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
         self.create_secondary_toolbar()
         self.system_setup = SystemSetup()
         self.sessionparams.add_state_to_history()
-        self.sessionparams.params = self.sessionparams.update_params()
+        self.params = self.sessionparams.create_diffusion_params()
         self.update_ui_from_params()
         self.update_ui_from_system_params()
         self.currentFrames = []
@@ -473,7 +473,7 @@ class MainWindow(QMainWindow):
         self.threadpool.start(worker)
 
     def update_ui_from_params(self):
-        for key, value in self.sessionparams.params.items():
+        for key, value in self.sessionparams.params.__dict__.items():
             try:
                 # We have to add check for Animation Mode as thats a radio checkbox with values 'anim2d', 'anim3d', 'animVid'
                 # add colormatch_image (it will be with a fancy preview)
@@ -963,7 +963,7 @@ class MainWindow(QMainWindow):
                 if items.id == self.canvas.canvas.selected_item:
                     # print(items.params)
                     try:
-                        self.sessionparams.params = items.params.__dict__
+                        self.sessionparams.params = items.params
                         self.update_ui_from_params()
                     except Exception as e:
                         print(f"Error, could not update  because of: {e}")

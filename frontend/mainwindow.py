@@ -1091,6 +1091,8 @@ class MainWindow(QMainWindow):
                         self.hires_source = None
                     offset = offset + 512
                     rparams.prompts = animation_prompts[x]
+                    if rparams.seed == '' or rparams.seed == '-1':
+                        rparams.seed = random.randint(0, 2 ** 32 - 1)
                     if rparams.seed_behavior == 'random':
                         rparams.seed = random.randint(0, 2 ** 32 - 1)
                     #print(f"seed bhavior:{rparams.seed_behavior} {rparams.seed}")

@@ -688,7 +688,7 @@ class DeforumSix:
             if (args.aesthetics_scale > 0):
                 root.aesthetics_model = load_aesthetics_model(args, root)
 
-        if args.seed == -1:
+        if args.seed == -1 or args.seed == '' or args.seed == 0:
             args.seed = random.randint(0, 2 ** 32 - 1)
         if not args.use_init:
             args.init_image = None

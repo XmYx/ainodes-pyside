@@ -436,6 +436,7 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
     with torch.no_grad():
         with precision_scope("cuda"):
             with gs.models["sd"].ema_scope():
+                torch.backends.cudnn.enabled = True
                 for prompts in data:
                     if isinstance(prompts, tuple):
                         prompts = list(prompts)
@@ -663,6 +664,7 @@ def generate_lowmem(args, root, frame=0, return_latent=False, return_sample=Fals
         turbo=False,
         full_precision=True,
         sampler='euler_a',
+        hires=hires
     )
     return results
 
@@ -1016,6 +1018,7 @@ def generate_lm(
         turbo,
         full_precision,
         sampler,
+        hires=False,
 ):
     C = 4
     f = 8

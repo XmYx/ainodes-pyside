@@ -1,11 +1,15 @@
 import platform
-from PySide6 import QtCore, QtQuick
+#from PySide6 import QtCore, QtQuick
 from PySide6.QtGui import QIcon, QAction, QPixmap
 import sys
 from PySide6.QtQuick import QSGRendererInterface
 from PySide6.QtWidgets import QApplication, QSplashScreen
 import os
 #os.environ['KMP_DUPLICATE_LIB_OK']='True'
+sys.path.append('src/AdaBins')
+sys.path.append('src/MiDaS')
+sys.path.append('src/pytorch3d-lite')
+sys.path.append('src/BLIP')
 
 defaultdirs = [
     "data",
@@ -18,8 +22,8 @@ for i in defaultdirs:
 
 
 if __name__ == "__main__":
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
-    QtQuick.QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
+    #QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
+    #QtQuick.QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
     app = QApplication(sys.argv)
 
 

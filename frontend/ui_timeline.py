@@ -147,6 +147,7 @@ class OurTimeline(QWidget):
                             qp.setPen(QPen(Qt.darkMagenta, 2, Qt.SolidLine))
                             # line = QLine(self.oldX, self.oldY, kfStartPoint, kfYPos)
                             ##print(self.oldX, self.oldY, kfStartPoint, kfYPos)
+                            qp.drawCubicBezier()
                             qp.drawLine(self.oldX, self.oldY, kfStartPoint, kfYPos)
                         kfbrush = QBrush(Qt.darkRed)
 

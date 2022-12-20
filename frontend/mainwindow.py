@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw
 from PIL.ImageQt import ImageQt, QImage
 from PySide6.QtCore import QFile, QIODevice, QEasingCurve, Slot, QRect, QThreadPool, QDir, Signal, QObject, QPoint
 from PySide6.QtWidgets import QMainWindow, QToolBar, QPushButton, QGraphicsColorizeEffect, QListWidgetItem, QFileDialog, \
-    QLabel, QSlider, QFrame, QDockWidget, QWidget
+    QLabel, QSlider, QFrame, QDockWidget, QWidget, QGraphicsOpacityEffect
 from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt
 from PySide6 import QtCore, QtWidgets, QtGui
 from backend.deforum.six.animation import check_is_number
@@ -31,6 +31,7 @@ from frontend import plugin_loader
 
 from backend.prompt_ai.prompt_gen import AiPrompt
 from frontend.ui_paint import PaintUI, spiralOrder, random_path
+from frontend.autocanvas.canvas_proxy_widget import MyProxyWidget
 from frontend.ui_classes import Thumbnails, SystemSetup, ThumbsUI, AnimKeyEditor
 from frontend.unicontrol import UniControl
 
@@ -68,19 +69,19 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.signals = Callbacks()
-
         self.thumbs = ThumbsUI()
-        self.canvas = PaintUI(self)
-        self.setCentralWidget(self.canvas)
-        self.setWindowTitle("aiNodes - Still Mode")
         self.timeline = Timeline(self)
         self.animKeyEditor = AnimKeyEditor()
-
-        self.resize(1280, 800)
-
         self.widgets = {}
         self.current_widget = 'unicontrol'
         self.widgets[self.current_widget] = UniControl(self)
+        self.canvas = PaintUI(self)
+        self.setCentralWidget(self.canvas)
+        self.setWindowTitle("aiNodes - Still Mode")
+
+        self.resize(1280, 800)
+        
+
         self.load_last_prompt()
 
         self.sessionparams = SessionParams(self)
@@ -95,6 +96,7 @@ class MainWindow(QMainWindow):
         self.create_secondary_toolbar()
         self.system_setup = SystemSetup()
         self.sessionparams.add_state_to_history()
+        self.sessionparams.params = self.sessionparams.update_params()
         self.update_ui_from_params()
         self.update_ui_from_system_params()
         self.currentFrames = []
@@ -118,6 +120,45 @@ class MainWindow(QMainWindow):
         self.image_lab_ui = self.image_lab.imageLab
         self.model_download = ModelDownload(self)
         self.model_download_ui = self.model_download.model_download
+        #self.model_chooser = ModelChooser_UI(self)
+
+        self.setup_widget_names()
+        self.add_dock_widgets()
+        #self.add_proxy_widgets()
+        self.canvas.canvas.select_mode()
+
+        self.hide_default()
+        self.mode = 'txt2img'
+        self.stopwidth = False
+        self.callbackbusy = False
+        self.init_plugin_loader()
+        self.connections()
+        self.resize(1280, 800)
+        self.create_sys_folders()
+
+        self.widgets[self.current_widget].update_model_list()
+        self.widgets[self.current_widget].update_vae_list()
+        self.widgets[self.current_widget].update_hypernetworks_list()
+        self.widgets[self.current_widget].update_aesthetics_list()
+
+
+
+        #check_models_exist()
+        self.latent_rgb_factors = torch.tensor([
+            #   R        G        B
+            [0.298, 0.207, 0.208],  # L1
+            [0.187, 0.286, 0.173],  # L2
+            [-0.158, 0.189, 0.264],  # L3
+            [-0.184, -0.271, -0.473],  # L4
+        ], dtype=torch.float, device='cuda')
+
+        self.sessionparams.params = self.sessionparams.update_params()
+        self.toolbar.setVisible(True)
+        self.deforum_ui.deforum_six.load_inpaint_model()
+        self.deforum_ui.deforum_six.load_model_from_config()
+
+
+    def setup_widget_names(self):
         # self.model_chooser = ModelChooser_UI(self)
         self.widgets[self.current_widget].w.dockWidget.setWindowTitle("Parameters")
         self.system_setup.w.dockWidget.setWindowTitle("System Settings")
@@ -128,7 +169,15 @@ class MainWindow(QMainWindow):
         self.model_download_ui.w.dockWidget.setWindowTitle("Model Download")
         self.timeline.setWindowTitle("Timeline")
         self.thumbs.w.dockWidget.setWindowTitle("History")
+    def add_proxy_widgets(self):
 
+        self.proxy = MyProxyWidget(self.widgets[self.current_widget].w)
+        self.canvas.canvas.scene.addItem(self.proxy)
+        self.proxy.setFocusPolicy(Qt.StrongFocus)
+        #self.widgets[self.current_widget].w.dream.clicked.connect(self.task_switcher)
+
+
+    def add_dock_widgets(self):
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.model_download_ui.w.dockWidget)
         self.model_download_ui.w.dockWidget.setMaximumHeight(self.height())
 
@@ -150,6 +199,7 @@ class MainWindow(QMainWindow):
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.prompt_fetcher.w.dockWidget)
         self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
         self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.widgets[self.current_widget].w.dockWidget)
+    def selftest(self):  #TODO Lets extend this function with everything we have and has to work
 
         self.hide_default()
         self.mode = 'txt2img'
@@ -176,23 +226,7 @@ class MainWindow(QMainWindow):
 
         self.params = self.sessionparams.update_params()
 
-    def selftest(self):  # TODO Lets extend this function with everything we have and has to work
 
-        self.canvas.canvas.reset
-        self.params = self.sessionparams.update_params()
-        gs.stop_all = False
-        self.task_switcher()
-        self.params.max_frames = 5
-        self.task_switcher()
-        self.params.max_frames = 1
-        self.add_next_rect()
-        self.params.advanced = True
-        self.task_switcher()
-        self.params.advanced = False
-        self.task_switcher()
-        self.widgets[self.current_widget].w.with_inpaint.setCheckState(Qt.Checked)
-        self.canvas.canvas.addrect_atpos(prompt="", x=1750, y=0, w=512, h=512, params=copy.deepcopy(self.params))
-        self.task_switcher()
 
     def create_sys_folders(self):
         os.makedirs(gs.system.out_dir, exist_ok=True)
@@ -285,12 +319,13 @@ class MainWindow(QMainWindow):
         self.system_setup.w.cancel.clicked.connect(self.update_ui_from_system_params)
 
     def task_switcher(self):
+        print("taskswitcher")
         gs.stop_all = False
         save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(),
                          self.widgets[self.current_widget].w.prompts.toPlainText())
         if self.widgets[self.current_widget].w.with_inpaint.isChecked() == True:
-            self.params = self.sessionparams.update_params()
-            self.params.advanced = True
+            self.sessionparams.params = self.sessionparams.update_params()
+            self.sessionparams.params.advanced = True
             self.canvas.canvas.reusable_outpaint(self.canvas.canvas.selected_item)
             self.deforum_ui.deforum_outpaint_thread()
         else:
@@ -316,6 +351,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def run_upscale_20_thread(self):
+        check_models_exist()
         worker = Worker(self.image_lab.run_upscale_20)
         self.threadpool.start(worker)
 
@@ -326,11 +362,13 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def run_interrogation_thread(self):
+        check_models_exist()
         worker = Worker(self.image_lab.run_interrogation)
         self.threadpool.start(worker)
 
     @Slot()
     def ai_prompt_thread(self):
+        check_models_exist()
         self.aiPrompt = AiPrompt()
         self.aiPrompt.signals.ai_prompt_ready.connect(self.prompt_fetcher_ui.set_ai_prompt)
         self.aiPrompt.signals.status_update.connect(self.set_status_bar)
@@ -339,6 +377,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def image_to_prompt_thread(self):
+        check_models_exist()
         worker = Worker(self.prompt_fetcher_ui.get_img_to_prompt)
         self.threadpool.start(worker)
 
@@ -434,8 +473,7 @@ class MainWindow(QMainWindow):
         self.threadpool.start(worker)
 
     def update_ui_from_params(self):
-
-        for key, value in self.sessionparams.params.items():
+        for key, value in self.sessionparams.params.__dict__.items():
             try:
                 # We have to add check for Animation Mode as thats a radio checkbox with values 'anim2d', 'anim3d', 'animVid'
                 # add colormatch_image (it will be with a fancy preview)
@@ -502,12 +540,13 @@ class MainWindow(QMainWindow):
         anim_mode = QAction(QIcon_from_svg('frontend/icons/film.svg'), 'Anim', self)
         node_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Nodes', self)
         gallery_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Gallery', self)
-        settings_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Settings', self)
+        settings_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'New Image', self)
         help_mode = QAction(QIcon_from_svg('frontend/icons/help-circle.svg'), 'Help', self)
         skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'Help', self)
         skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'Help', self)
         test_mode = QAction(QIcon_from_svg('frontend/icons/alert-octagon.svg'), 'Run Self Test - It will take a while',
                             self)
+
 
         self.toolbar.addAction(still_mode)
         # self.toolbar.addAction(anim_mode)
@@ -688,9 +727,9 @@ class MainWindow(QMainWindow):
     def deforum_six_txt2img_thread(self):
         self.update = 0
         height = self.cheight
-        # for debug
-        # self.deforum_ui.run_deforum_txt2img()
-        self.params = self.sessionparams.update_params()
+
+        self.sessionparams.params = self.sessionparams.update_params()
+
         self.sessionparams.add_state_to_history()
         # Prepare next rectangle, widen canvas:
         worker = Worker(self.deforum_ui.run_deforum_six_txt2img)
@@ -709,7 +748,7 @@ class MainWindow(QMainWindow):
         x = 0
         y = 0
         img = self.image
-        if self.params.advanced == True:
+        if self.sessionparams.params.advanced == True:
             if self.canvas.canvas.rectlist != []:
                 if img is not None:
                     if self.canvas.canvas.rectlist[self.render_index].images is not None:
@@ -743,7 +782,7 @@ class MainWindow(QMainWindow):
                 self.canvas.canvas.redraw()
                 qimage = None
                 pixmap = None
-        elif self.params.advanced == False:
+        elif self.sessionparams.params.advanced == False:
             self.add_next_rect()
             self.render_index = len(self.canvas.canvas.rectlist) - 1
             if img is not None:
@@ -766,21 +805,22 @@ class MainWindow(QMainWindow):
                 self.canvas.canvas.rectlist[self.render_index].images[
                     self.canvas.canvas.rectlist[self.render_index].render_index]
                 self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
-                self.canvas.canvas.rectlist[self.render_index].params = self.params
+                self.canvas.canvas.rectlist[self.render_index].params = self.sessionparams.params
         self.canvas.canvas.newimage = True
         self.canvas.canvas.redraw()
         self.canvas.canvas.update()
         self.callbackbusy = False
-        if self.params.advanced == False and self.params.max_frames > 1:
-            self.params.advanced = True
-        # self.signals.add_image_to_thumbnail_signal.emit(gs.temppath)
+        if self.sessionparams.params.advanced == False and self.sessionparams.params.max_frames > 1:
+            self.sessionparams.params.advanced = True
+        #self.signals.add_image_to_thumbnail_signal.emit(gs.temppath)
+
 
     def add_next_rect(self):
         w = self.widgets[self.current_widget].w.W.value()
         h = self.widgets[self.current_widget].w.H.value()
         resize = False
 
-        params = copy.deepcopy(self.params)
+        params = copy.deepcopy(self.sessionparams.params)
         if self.canvas.canvas.rectlist == []:
             self.canvas.canvas.w = w
             self.canvas.canvas.h = h
@@ -813,12 +853,13 @@ class MainWindow(QMainWindow):
                         # self.canvas.canvas.selected_item = None
             self.canvas.canvas.addrect_atpos(x=x, y=y, params=params)
             self.canvas.canvas.render_item = self.canvas.canvas.selected_item
-        # if resize == True:
-        # pass
-        # print(self.w, self.cheight)
-        self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
-        # self.canvas.canvas.update()
-        # self.canvas.canvas.redraw()
+        #if resize == True:
+            # pass
+        #print(self.w, self.cheight)
+        #self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
+        #self.canvas.canvas.update()
+        #self.canvas.canvas.redraw()
+
 
     def tensor_preview_signal(self, data, data2):
         self.data = data
@@ -907,7 +948,7 @@ class MainWindow(QMainWindow):
     def create_params(self, uid=None):
         for i in self.canvas.canvas.rectlist:
             if i.id == uid:
-                i.params = copy.deepcopy(self.params)
+                i.params = copy.deepcopy(self.sessionparams.params)
 
     def get_params(self):
         params = self.sessionparams.update_params()
@@ -988,7 +1029,8 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.newimage = True
         self.canvas.canvas.selected_item = None
         self.canvas.canvas.update()
-        # self.canvas.canvas.draw_rects()
+        self.canvas.canvas.draw_rects()
+
         self.thumbs.w.thumbnails.clear()
 
     def test_save_outpaint(self):
@@ -1017,8 +1059,9 @@ class MainWindow(QMainWindow):
         self.callbackbusy = True
         self.busy = False
         offset = self.widgets[self.current_widget].w.mask_offset.value()
-        # self.preview_batch_outpaint()
-        self.params = self.sessionparams.update_params()
+        #self.preview_batch_outpaint()
+        self.sessionparams.params = self.sessionparams.update_params()
+
         if gobig_img_path is not None:
             pil_image = Image.open(gobig_img_path).resize((self.canvas.W.value(), self.canvas.H.value()),
                                                           Image.Resampling.LANCZOS).convert("RGBA")
@@ -1062,6 +1105,8 @@ class MainWindow(QMainWindow):
                         self.hires_source = None
                     offset = offset + 512
                     rparams.prompts = animation_prompts[x]
+                    if rparams.seed == '' or rparams.seed == '-1':
+                        rparams.seed = random.randint(0, 2 ** 32 - 1)
                     if rparams.seed_behavior == 'random':
                         rparams.seed = random.randint(0, 2 ** 32 - 1)
                     # print(f"seed bhavior:{rparams.seed_behavior} {rparams.seed}")
@@ -1179,7 +1224,7 @@ class MainWindow(QMainWindow):
         self.callbackbusy = False
         self.sleepytime = 0.0
         self.choice = "Outpaint"
-        self.params.advanced = True
+        self.sessionparams.params.advanced = True
 
         # multi = self.widgets[self.current_widget].w.multiBatch.isChecked()
         # batch_n = self.widgets[self.current_widget].w.multiBatchvalue.value()
@@ -1218,8 +1263,7 @@ class MainWindow(QMainWindow):
             print(f"All time wasted: {self.sleepytime} seconds.")
 
     def run_outpaint_step_x(self, x):
-
-        # print("it should not do anything....")
+        self.sessionparams.params.advanced = True
 
         self.busy = True
         self.canvas.canvas.reusable_outpaint(self.canvas.canvas.rectlist[x].id)

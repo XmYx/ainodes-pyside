@@ -138,7 +138,7 @@ class Deforum_UI(QObject):
 
         ##print(self.params.translation_x)
         ##print(f"updated parameters to: {params}")
-        model_killer(keep='sd')
+        #model_killer(keep='sd')
         #print(gs.models)
         #if "inpaint" in gs.models:
         #    del gs.models["inpaint"]
@@ -149,6 +149,7 @@ class Deforum_UI(QObject):
             if self.parent.widgets[self.parent.current_widget].w.mode.currentText() == 'basic':
                 self.parent.sessionparams.params.advanced = False
             elif self.parent.widgets[self.parent.current_widget].w.mode.currentText() == 'advanced':
+
                 self.parent.sessionparams.params.advanced = True
                 #self.parent.render_index = index
 
@@ -335,9 +336,7 @@ class Deforum_UI(QObject):
         ddim_eta = float(params.ddim_eta)
         with_inpaint = bool(params.with_inpaint)
 
-        #self.parent.sessionparams.params.advanced = True
-        self.parent.params.advanced = True
-        #print(prompt)
+        self.parent.sessionparams.params.advanced = True
         self.deforum_six.outpaint_txt2img(init_image=init_image,
                                           steps=steps,
                                           H=H,

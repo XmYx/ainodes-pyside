@@ -1,6 +1,9 @@
 import time
 from types import SimpleNamespace
 
+import torch
+
+
 def DeforumAnimArgs(attr):
     attr = SimpleNamespace(**attr)
     #@markdown ####**Animation:**
@@ -68,7 +71,7 @@ def DeforumArgs(attr):
     #W, H = map(lambda x: x - x % 64, (W, H))  # resize to integer multiple of 64
 
     #@markdown **Sampling Settings**
-    seed = attr.seed #@param
+    seed = attr.seed
     sampler = attr.sampler #@param ["klms","dpm2","dpm2_ancestral","heun","euler","euler_ancestral","plms", "ddim"]
     steps = attr.steps #@param
     scale = attr.scale #@param

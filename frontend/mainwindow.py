@@ -1,6 +1,7 @@
 import os
 import backend.settings as settings
 from backend.singleton import singleton
+
 gs = singleton
 settings.load_settings_json()
 if gs.system.custom_cache_dir == True:
@@ -26,7 +27,7 @@ from pytorch_lightning import seed_everything
 import copy
 from backend.worker import Worker
 from frontend import plugin_loader
-#from frontend.ui_model_chooser import ModelChooser_UI
+# from frontend.ui_model_chooser import ModelChooser_UI
 
 from backend.prompt_ai.prompt_gen import AiPrompt
 from frontend.ui_paint import PaintUI, spiralOrder, random_path
@@ -42,8 +43,6 @@ from backend.shared import model_killer
 from backend.devices import choose_torch_device
 from frontend.ui_timeline import Timeline, KeyFrame
 
-
-
 # we had to load settings first before we can do this import
 from frontend.ui_prompt_fetcher import PromptFetcher_UI, FetchPrompts
 from frontend.ui_image_lab import ImageLab
@@ -51,6 +50,7 @@ from frontend.ui_deforum import Deforum_UI
 from frontend.session_params import SessionParams
 from backend.shared import save_last_prompt
 from backend.maintain_models import check_models_exist
+
 
 # please don't remove it totally, just remove what we know is not used
 class Callbacks(QObject):
@@ -63,7 +63,6 @@ class Callbacks(QObject):
     add_image_to_thumbnail_signal = Signal(str)
     setStatusBar = Signal(str)
     vid2vid_one_percent = Signal(int)
-
 
 
 class MainWindow(QMainWindow):
@@ -82,6 +81,7 @@ class MainWindow(QMainWindow):
 
         self.resize(1280, 800)
         
+
         self.load_last_prompt()
 
         self.sessionparams = SessionParams(self)
@@ -115,7 +115,6 @@ class MainWindow(QMainWindow):
         self.krea = Krea()
         self.prompt_fetcher = FetchPrompts()
         self.prompt_fetcher_ui = PromptFetcher_UI(self)
-
 
         self.image_lab = ImageLab()
         self.image_lab_ui = self.image_lab.imageLab
@@ -160,6 +159,7 @@ class MainWindow(QMainWindow):
 
 
     def setup_widget_names(self):
+        # self.model_chooser = ModelChooser_UI(self)
         self.widgets[self.current_widget].w.dockWidget.setWindowTitle("Parameters")
         self.system_setup.w.dockWidget.setWindowTitle("System Settings")
         self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
@@ -201,21 +201,31 @@ class MainWindow(QMainWindow):
         self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.widgets[self.current_widget].w.dockWidget)
     def selftest(self):  #TODO Lets extend this function with everything we have and has to work
 
-        self.canvas.canvas.reset()
-        self.sessionparams.params = self.sessionparams.update_params()
-        gs.stop_all = False
-        self.task_switcher()
-        self.sessionparams.params.max_frames = 5
-        self.task_switcher()
-        self.sessionparams.params.max_frames = 1
-        self.add_next_rect()
-        self.sessionparams.params.advanced = True
-        self.task_switcher()
-        self.sessionparams.params.advanced = False
-        self.task_switcher()
-        self.widgets[self.current_widget].w.with_inpaint.setCheckState(Qt.Checked)
-        self.canvas.canvas.addrect_atpos(prompt="", x=1750, y=0, w=512, h=512, params=copy.deepcopy(self.sessionparams.params))
-        self.task_switcher()
+        self.hide_default()
+        self.mode = 'txt2img'
+        self.stopwidth = False
+        self.callbackbusy = False
+        self.init_plugin_loader()
+        self.connections()
+        self.resize(1280, 800)
+        self.create_sys_folders()
+
+        self.widgets[self.current_widget].update_model_list()
+        self.widgets[self.current_widget].update_vae_list()
+        self.widgets[self.current_widget].update_hypernetworks_list()
+        self.widgets[self.current_widget].update_aesthetics_list()
+
+        check_models_exist()
+        self.latent_rgb_factors = torch.tensor([
+            #   R        G        B
+            [0.298, 0.207, 0.208],  # L1
+            [0.187, 0.286, 0.173],  # L2
+            [-0.158, 0.189, 0.264],  # L3
+            [-0.184, -0.271, -0.473],  # L4
+        ], dtype=torch.float, device='cuda')
+
+        self.params = self.sessionparams.update_params()
+
 
 
     def create_sys_folders(self):
@@ -235,12 +245,10 @@ class MainWindow(QMainWindow):
         os.makedirs(gs.system.hypernetwork_dir, exist_ok=True)
         os.makedirs(gs.system.aesthetic_gradients_dir, exist_ok=True)
 
-
-
     def connections(self):
         self.deforum_ui.signals.txt2img_image_cb.connect(self.image_preview_func)
         self.deforum_ui.signals.deforum_step.connect(self.tensor_preview_schedule)
-
+        self.deforum_ui.signals.prepare_hires_batch.connect(self.run_create_outpaint_img2img_batch)
         self.canvas.W.valueChanged.connect(self.canvas.canvas.change_resolution)
         self.canvas.H.valueChanged.connect(self.canvas.canvas.change_resolution)
 
@@ -249,16 +257,15 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
         self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_six_txt2img_thread)
 
-        #self.canvas.canvas.signals.update_selected.connect(self.show_outpaint_details)
-        #self.canvas.canvas.signals.update_params.connect(self.create_params)
-        #self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
+        # self.canvas.canvas.signals.update_selected.connect(self.show_outpaint_details)
+        # self.canvas.canvas.signals.update_params.connect(self.create_params)
+        # self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
         self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_six_txt2img_thread)
 
         self.widgets[self.current_widget].w.dream.clicked.connect(self.task_switcher)
         self.widgets[self.current_widget].w.H.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
         self.widgets[self.current_widget].w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
         self.widgets[self.current_widget].w.lucky.clicked.connect(self.show_default)
-
 
         self.widgets[self.current_widget].w.redo.clicked.connect(self.redo_current_outpaint)
         self.widgets[self.current_widget].w.delete_2.clicked.connect(self.delete_outpaint_frame)
@@ -268,20 +275,21 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.run_hires.clicked.connect(self.run_hires_batch_thread)
         self.widgets[self.current_widget].w.prep_hires.clicked.connect(self.run_create_outpaint_img2img_batch)
         self.widgets[self.current_widget].w.update_params.clicked.connect(self.update_params)
-        self.widgets[self.current_widget].w.load_model.clicked.connect(self.deforum_ui.deforum_six.load_model_from_config)
-        self.widgets[self.current_widget].w.load_inpaint_model.clicked.connect(self.deforum_ui.deforum_six.load_inpaint_model)
+        self.widgets[self.current_widget].w.load_model.clicked.connect(
+            self.deforum_ui.deforum_six.load_model_from_config)
+        self.widgets[self.current_widget].w.load_inpaint_model.clicked.connect(
+            self.deforum_ui.deforum_six.load_inpaint_model)
         self.widgets[self.current_widget].w.cleanup_memory.clicked.connect(model_killer)
 
         self.widgets[self.current_widget].w.W.valueChanged.connect(self.update_outpaint_parameters)
         self.widgets[self.current_widget].w.H.valueChanged.connect(self.update_outpaint_parameters)
         self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.outpaint_offset_signal)
-        #self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.widgets[self.current_widget].w.mask_offset.value())))  # todo does this work?
+        # self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.widgets[self.current_widget].w.mask_offset.value())))  # todo does this work?
         self.widgets[self.current_widget].w.rect_overlap.valueChanged.connect(self.outpaint_rect_overlap)
 
         self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
         self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
         self.animKeyEditor.w.keyButton.clicked.connect(self.addCurrentFrame)
-
 
         self.image_lab.signals.upscale_start.connect(self.upscale_start)
         self.image_lab.signals.upscale_stop.connect(self.upscale_stop)
@@ -313,7 +321,8 @@ class MainWindow(QMainWindow):
     def task_switcher(self):
         print("taskswitcher")
         gs.stop_all = False
-        save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(), self.widgets[self.current_widget].w.prompts.toPlainText())
+        save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(),
+                         self.widgets[self.current_widget].w.prompts.toPlainText())
         if self.widgets[self.current_widget].w.with_inpaint.isChecked() == True:
             self.sessionparams.params = self.sessionparams.update_params()
             self.sessionparams.params.advanced = True
@@ -351,7 +360,6 @@ class MainWindow(QMainWindow):
         worker = Worker(self.image_lab.run_volta_accel)
         self.threadpool.start(worker)
 
-
     @Slot()
     def run_interrogation_thread(self):
         check_models_exist()
@@ -377,6 +385,7 @@ class MainWindow(QMainWindow):
     def use_prompt(self):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
         self.widgets[self.current_widget].w.prompts.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
+
     @Slot()
     def dream_prompt(self):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
@@ -419,18 +428,22 @@ class MainWindow(QMainWindow):
     def upscale_thread(self):
         worker = Worker(self.image_lab.run_upscale)
         self.threadpool.start(worker)
+
     @Slot()
     def img_to_text_start(self):
         worker = Worker(self.image_lab.run_img2txt)
         self.threadpool.start(worker)
+
     @Slot()
     def watermark_start(self):
         worker = Worker(self.image_lab.run_watermark)
         self.threadpool.start(worker)
+
     @Slot()
     def model_merge_start(self):
         worker = Worker(self.image_lab.model_merge_start)
         self.threadpool.start(worker)
+
     @Slot()
     def ebl_model_merge_start(self):
         worker = Worker(self.image_lab.ebl_model_merge_start)
@@ -459,18 +472,16 @@ class MainWindow(QMainWindow):
         worker = Worker(self.prompt_fetcher_ui.get_img_to_prompt)
         self.threadpool.start(worker)
 
-
-
     def update_ui_from_params(self):
         for key, value in self.sessionparams.params.__dict__.items():
             try:
-                #We have to add check for Animation Mode as thats a radio checkbox with values 'anim2d', 'anim3d', 'animVid'
-                #add colormatch_image (it will be with a fancy preview)
+                # We have to add check for Animation Mode as thats a radio checkbox with values 'anim2d', 'anim3d', 'animVid'
+                # add colormatch_image (it will be with a fancy preview)
                 type = str(getattr(self.widgets[self.current_widget].w, key))
 
                 if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
                     getattr(self.widgets[self.current_widget].w, key).setValue(value)
-                elif  'QTextEdit' in type or 'QLineEdit' in type:
+                elif 'QTextEdit' in type or 'QLineEdit' in type:
                     getattr(self.widgets[self.current_widget].w, key).setText(str(value))
                 elif 'QCheckBox' in type:
                     if value == True:
@@ -488,7 +499,7 @@ class MainWindow(QMainWindow):
 
                 if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
                     getattr(current_widget, key).setValue(value)
-                elif  'QTextEdit' in type or 'QLineEdit' in type:
+                elif 'QTextEdit' in type or 'QLineEdit' in type:
                     getattr(current_widget, key).setText(str(value))
                 elif 'QCheckBox' in type:
                     if value == True:
@@ -497,7 +508,7 @@ class MainWindow(QMainWindow):
                     item_count = getattr(current_widget, key).count()
                     items = []
                     for i in range(0, item_count):
-                       items.append(getattr(current_widget, key).itemText(i))
+                        items.append(getattr(current_widget, key).itemText(i))
                     if item_count > 0:
                         getattr(current_widget, key).setCurrentIndex(items.index(value))
                     else:
@@ -505,7 +516,6 @@ class MainWindow(QMainWindow):
 
             except Exception as e:
                 continue
-
 
     def init_plugin_loader(self):
         self.widgets[self.current_widget].w.loadbutton.clicked.connect(self.load_plugin)
@@ -534,25 +544,23 @@ class MainWindow(QMainWindow):
         help_mode = QAction(QIcon_from_svg('frontend/icons/help-circle.svg'), 'Help', self)
         skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'Help', self)
         skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'Help', self)
-        test_mode = QAction(QIcon_from_svg('frontend/icons/alert-octagon.svg'), 'Run Self Test - It will take a while', self)
+        test_mode = QAction(QIcon_from_svg('frontend/icons/alert-octagon.svg'), 'Run Self Test - It will take a while',
+                            self)
 
 
-        #self.toolbar.addAction(still_mode)
-        #self.toolbar.addAction(anim_mode)
-        #self.toolbar.addAction(node_mode)
-        #self.toolbar.addAction(gallery_mode)
-        self.toolbar.addAction(settings_mode)
-        #self.toolbar.addAction(help_mode)
-        #self.toolbar.addAction(skip_back)
-        #self.toolbar.addAction(skip_forward)
-        #self.toolbar.addAction(test_mode)
+        self.toolbar.addAction(still_mode)
+        # self.toolbar.addAction(anim_mode)
+        # self.toolbar.addAction(node_mode)
+        # self.toolbar.addAction(gallery_mode)
+        # self.toolbar.addAction(settings_mode)
+        self.toolbar.addAction(help_mode)
+        self.toolbar.addAction(skip_back)
+        self.toolbar.addAction(skip_forward)
+        self.toolbar.addAction(test_mode)
 
-
-        #skip_back.triggered.connect(self.canvas.canvas.skip_back)
-        #skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
-        #test_mode.triggered.connect(self.selftest)
-        settings_mode.triggered.connect(self.canvas.canvas.rubberband_mode)
-
+        skip_back.triggered.connect(self.canvas.canvas.skip_back)
+        skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
+        test_mode.triggered.connect(self.selftest)
 
     def create_secondary_toolbar(self):
         self.secondary_toolbar = QToolBar('Outpaint Tools')
@@ -601,8 +609,6 @@ class MainWindow(QMainWindow):
         play.triggered.connect(self.canvas.canvas.start_main_clock)
         stop.triggered.connect(self.canvas.canvas.stop_main_clock)
 
-
-
     def hide_default(self):
         self.toolbar.setVisible(False)
         self.secondary_toolbar.setVisible(False)
@@ -618,18 +624,18 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.toggle_embeddings.setVisible(False)
         self.widgets[self.current_widget].w.toggle_plugins.setVisible(False)
 
-        #self.widgets[self.current_widget].w.showHideAll.setVisible(False)
+        # self.widgets[self.current_widget].w.showHideAll.setVisible(False)
         self.widgets[self.current_widget].w.H.setVisible(False)
-        #self.widgets[self.current_widget].w.H_slider.setVisible(False)
+        # self.widgets[self.current_widget].w.H_slider.setVisible(False)
         self.widgets[self.current_widget].w.W.setVisible(False)
-        #self.widgets[self.current_widget].w.W_slider.setVisible(False)
+        # self.widgets[self.current_widget].w.W_slider.setVisible(False)
         self.widgets[self.current_widget].w.cfglabel.setVisible(False)
         self.widgets[self.current_widget].w.heightlabel.setVisible(False)
         self.widgets[self.current_widget].w.widthlabel.setVisible(False)
         self.widgets[self.current_widget].w.steps.setVisible(False)
-        #self.widgets[self.current_widget].w.steps_slider.setVisible(False)
+        # self.widgets[self.current_widget].w.steps_slider.setVisible(False)
         self.widgets[self.current_widget].w.scale.setVisible(False)
-        #self.widgets[self.current_widget].w.scale_slider.setVisible(False)
+        # self.widgets[self.current_widget].w.scale_slider.setVisible(False)
         self.widgets[self.current_widget].w.stepslabel.setVisible(False)
         self.widgets[self.current_widget].w.keyframes.setVisible(False)
         self.system_setup.w.dockWidget.setVisible(False)
@@ -671,16 +677,16 @@ class MainWindow(QMainWindow):
             self.widgets[self.current_widget].w.toggle_embeddings.setVisible(True)
             self.widgets[self.current_widget].w.toggle_plugins.setVisible(True)
             self.widgets[self.current_widget].w.H.setVisible(True)
-            #self.widgets[self.current_widget].w.H_slider.setVisible(True)
+            # self.widgets[self.current_widget].w.H_slider.setVisible(True)
             self.widgets[self.current_widget].w.W.setVisible(True)
-            #self.widgets[self.current_widget].w.W_slider.setVisible(True)
+            # self.widgets[self.current_widget].w.W_slider.setVisible(True)
             self.widgets[self.current_widget].w.cfglabel.setVisible(True)
             self.widgets[self.current_widget].w.heightlabel.setVisible(True)
             self.widgets[self.current_widget].w.widthlabel.setVisible(True)
             self.widgets[self.current_widget].w.steps.setVisible(True)
-            #self.widgets[self.current_widget].w.steps_slider.setVisible(True)
+            # self.widgets[self.current_widget].w.steps_slider.setVisible(True)
             self.widgets[self.current_widget].w.scale.setVisible(True)
-            #self.widgets[self.current_widget].w.scale_slider.setVisible(True)
+            # self.widgets[self.current_widget].w.scale_slider.setVisible(True)
             self.widgets[self.current_widget].w.stepslabel.setVisible(True)
             self.widgets[self.current_widget].w.keyframes.setVisible(True)
             self.system_setup.w.dockWidget.setVisible(True)
@@ -705,10 +711,8 @@ class MainWindow(QMainWindow):
         self.thumbsShow.setEasingCurve(QEasingCurve.Linear)
         self.thumbsShow.start()
 
-
     def show_system_settings(self):
         self.system_setup.w.show()
-
 
     def load_last_prompt(self):
         data = ''
@@ -723,14 +727,13 @@ class MainWindow(QMainWindow):
     def deforum_six_txt2img_thread(self):
         self.update = 0
         height = self.cheight
-        #for debug
-        #self.deforum_ui.run_deforum_txt2img()
+
         self.sessionparams.params = self.sessionparams.update_params()
+
         self.sessionparams.add_state_to_history()
-        #Prepare next rectangle, widen canvas:
+        # Prepare next rectangle, widen canvas:
         worker = Worker(self.deforum_ui.run_deforum_six_txt2img)
         self.threadpool.start(worker)
-
 
     def image_preview_signal(self, image, *args, **kwargs):
         while self.callbackbusy == True:
@@ -756,7 +759,8 @@ class MainWindow(QMainWindow):
                     qimage = ImageQt(img.convert("RGBA"))
                     pixmap = QPixmap.fromImage(qimage)
                     print(self.canvas.canvas.rectlist[self.render_index].render_index)
-                    self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap), f"{self.canvas.canvas.rectlist[self.render_index].render_index}"))
+                    self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap),
+                                                                     f"{self.canvas.canvas.rectlist[self.render_index].render_index}"))
 
                     if self.canvas.canvas.anim_inpaint == True:
                         templist[self.canvas.canvas.rectlist[self.render_index].render_index] = qimage
@@ -768,7 +772,9 @@ class MainWindow(QMainWindow):
                         else:
                             self.canvas.canvas.rectlist[self.render_index].render_index += 1
                     self.canvas.canvas.rectlist[self.render_index].images = templist
-                    self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
+                    self.canvas.canvas.rectlist[self.render_index].image = \
+                    self.canvas.canvas.rectlist[self.render_index].images[
+                        self.canvas.canvas.rectlist[self.render_index].render_index]
                     self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
                     self.canvas.canvas.rectlist[self.render_index].img_path = gs.temppath
                 self.canvas.canvas.newimage = True
@@ -781,7 +787,7 @@ class MainWindow(QMainWindow):
             self.render_index = len(self.canvas.canvas.rectlist) - 1
             if img is not None:
                 image = img
-                #for items in self.canvas.canvas.rectlist:
+                # for items in self.canvas.canvas.rectlist:
                 #    if items.id == self.canvas.canvas.render_item:
                 if self.canvas.canvas.rectlist[self.render_index].images is not None:
                     templist = self.canvas.canvas.rectlist[self.render_index].images
@@ -795,7 +801,9 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.rectlist[self.render_index].render_index = 0
                 else:
                     self.canvas.canvas.rectlist[self.render_index].render_index += 1
-                self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
+                self.canvas.canvas.rectlist[self.render_index].image = \
+                self.canvas.canvas.rectlist[self.render_index].images[
+                    self.canvas.canvas.rectlist[self.render_index].render_index]
                 self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
                 self.canvas.canvas.rectlist[self.render_index].params = self.sessionparams.params
         self.canvas.canvas.newimage = True
@@ -805,6 +813,7 @@ class MainWindow(QMainWindow):
         if self.sessionparams.params.advanced == False and self.sessionparams.params.max_frames > 1:
             self.sessionparams.params.advanced = True
         #self.signals.add_image_to_thumbnail_signal.emit(gs.temppath)
+
 
     def add_next_rect(self):
         w = self.widgets[self.current_widget].w.W.value()
@@ -829,7 +838,7 @@ class MainWindow(QMainWindow):
                         x = self.canvas.canvas.rectlist[self.canvas.canvas.rectlist.index(i)].x + w + 20
                         print(f"w, x: {w}, {x}")
                         y = i.y
-                        #print(i.x + w, i.y, self.cheight, self.w, self.stopwidth)
+                        # print(i.x + w, i.y, self.cheight, self.w, self.stopwidth)
                         if x > 3000:
                             x = 0
                             y = self.cheight + 25
@@ -851,6 +860,7 @@ class MainWindow(QMainWindow):
         #self.canvas.canvas.update()
         #self.canvas.canvas.redraw()
 
+
     def tensor_preview_signal(self, data, data2):
         self.data = data
 
@@ -860,28 +870,27 @@ class MainWindow(QMainWindow):
             self.data2 = None
         self.deforum_ui.signals.deforum_step.emit()
 
-    def tensor_preview_schedule(self): #TODO: Rename this function to tensor_draw_function
+    def tensor_preview_schedule(self):  # TODO: Rename this function to tensor_draw_function
         if len(self.data) != 1:
             print(
                 f'we got {len(self.data)} Tensors but Tensor Preview will show only one')
 
-        #Applying RGB fix on incoming tensor found at: https://github.com/keturn/sd-progress-demo/
+        # Applying RGB fix on incoming tensor found at: https://github.com/keturn/sd-progress-demo/
         self.data = torch.einsum('...lhw,lr -> ...rhw', self.data[0], self.latent_rgb_factors)
         self.data = (((self.data + 1) / 2)
-                  .clamp(0, 1)  # change scale from -1..1 to 0..1
-                  .mul(0xFF)  # to 0..255
-                  .byte())
-        #Copying to cpu as numpy array
+                     .clamp(0, 1)  # change scale from -1..1 to 0..1
+                     .mul(0xFF)  # to 0..255
+                     .byte())
+        # Copying to cpu as numpy array
         self.data = rearrange(self.data, 'c h w -> h w c').cpu().numpy()
         dPILimg = Image.fromarray(self.data)
         dqimg = ImageQt(dPILimg)
-        #Setting Canvas's Tensor Preview item, then calling function to draw it.
+        # Setting Canvas's Tensor Preview item, then calling function to draw it.
         self.canvas.canvas.tensor_preview_item = dqimg
         self.canvas.canvas.tensor_preview()
         dPILimg = None
         dqimg = None
         x_samples = None
-
 
     def outpaint_offset_signal(self):
 
@@ -892,7 +901,7 @@ class MainWindow(QMainWindow):
     def update_outpaint_parameters(self):
         W = self.widgets[self.current_widget].w.W.value()
         H = self.widgets[self.current_widget].w.H.value()
-        #W, H = map(lambda x: x - x % 64, (W, H))
+        # W, H = map(lambda x: x - x % 64, (W, H))
         self.widgets[self.current_widget].w.W.setValue(W)
         self.widgets[self.current_widget].w.H.setValue(H)
 
@@ -900,20 +909,22 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.h = H
 
     def prep_rect_params(self, prompt=None):
-        #prompt = str(prompt)
-        #steps = self.widgets[self.current_widget].w.stepsSlider.value()
+        # prompt = str(prompt)
+        # steps = self.widgets[self.current_widget].w.stepsSlider.value()
         params = {"prompts": self.widgets[self.current_widget].w.prompts.toPlainText(),
-                  "seed":random.randint(0, 2**32 - 1) if self.widgets[self.current_widget].w.seed.text() == '' else int(self.widgets[self.current_widget].w.seed.text()),
+                  "seed": random.randint(0, 2 ** 32 - 1) if self.widgets[
+                                                                self.current_widget].w.seed.text() == '' else int(
+                      self.widgets[self.current_widget].w.seed.text()),
                   "strength": self.widgets[self.current_widget].w.strength.value(),
-                  "scale":self.widgets[self.current_widget].w.scale.value(),
-                  "mask_blur":int(self.widgets[self.current_widget].w.mask_blur.value()),
-                  "reconstruction_blur":int(self.widgets[self.current_widget].w.recons_blur.value()),
-                  "with_inpaint":self.widgets[self.current_widget].w.with_inpaint.isChecked(),
-                  "mask_offset":self.widgets[self.current_widget].w.mask_offset.value(),
-                  "steps":self.widgets[self.current_widget].w.steps.value(),
-                  "H":self.widgets[self.current_widget].w.H.value(),
-                  "W":self.widgets[self.current_widget].w.W.value(),
-                  "ddim_eta":self.widgets[self.current_widget].w.ddim_eta.value()
+                  "scale": self.widgets[self.current_widget].w.scale.value(),
+                  "mask_blur": int(self.widgets[self.current_widget].w.mask_blur.value()),
+                  "reconstruction_blur": int(self.widgets[self.current_widget].w.recons_blur.value()),
+                  "with_inpaint": self.widgets[self.current_widget].w.with_inpaint.isChecked(),
+                  "mask_offset": self.widgets[self.current_widget].w.mask_offset.value(),
+                  "steps": self.widgets[self.current_widget].w.steps.value(),
+                  "H": self.widgets[self.current_widget].w.H.value(),
+                  "W": self.widgets[self.current_widget].w.W.value(),
+                  "ddim_eta": self.widgets[self.current_widget].w.ddim_eta.value()
                   }
 
         return params
@@ -926,7 +937,7 @@ class MainWindow(QMainWindow):
                 if uid is not None:
                     if i.id == uid:
                         if params == None:
-                                params = self.get_params()
+                            params = self.get_params()
                         i.params = copy.deepcopy(params)
                 else:
                     if i.id == self.canvas.canvas.selected_item:
@@ -939,10 +950,9 @@ class MainWindow(QMainWindow):
             if i.id == uid:
                 i.params = copy.deepcopy(self.sessionparams.params)
 
-
     def get_params(self):
         params = self.sessionparams.update_params()
-        #print(f"Created Params")
+        # print(f"Created Params")
         return params
 
     @Slot()
@@ -952,7 +962,7 @@ class MainWindow(QMainWindow):
 
             for items in self.canvas.canvas.rectlist:
                 if items.id == self.canvas.canvas.selected_item:
-                    #print(items.params)
+                    # print(items.params)
                     try:
                         self.sessionparams.params = items.params.__dict__
                         self.update_ui_from_params()
@@ -961,31 +971,33 @@ class MainWindow(QMainWindow):
 
                     if items.params != {}:
                         pass
-                        #print(f"showing strength of {items.params['strength'] * 100}")
-                        #self.widgets[self.current_widget].w.steps.setValue(items.params.steps)
-                        #self.widgets[self.current_widget].w.steps_slider.setValue(items.params.steps)
-                        #self.widgets[self.current_widget].w.scale.setValue(items.params['scale'] * 10)
-                        #self.widgets[self.current_widget].w.scale_slider.setValue(items.params['scale'] * 10)
-                        #self.widgets[self.current_widget].w.strength.setValue(int(items.params['strength'] * 100))
-                        #self.widgets[self.current_widget].w.strength_slider.setValue(int(items.params['strength'] * 100))
-                        #self.widgets[self.current_widget].w.reconstruction_blur.setValue(items.params['reconstruction_blur'])
-                        #self.widgets[self.current_widget].w.mask_blur.setValue(items.params['mask_blur'])
-                        #self.widgets[self.current_widget].w.prompts.setText(items.params['prompts'])
-                        #self.widgets[self.current_widget].w.seed.setText(str(items.params['seed']))
-                        #self.widgets[self.current_widget].w.mask_offset.setValue(items.params['mask_offset'])
+                        # print(f"showing strength of {items.params['strength'] * 100}")
+                        # self.widgets[self.current_widget].w.steps.setValue(items.params.steps)
+                        # self.widgets[self.current_widget].w.steps_slider.setValue(items.params.steps)
+                        # self.widgets[self.current_widget].w.scale.setValue(items.params['scale'] * 10)
+                        # self.widgets[self.current_widget].w.scale_slider.setValue(items.params['scale'] * 10)
+                        # self.widgets[self.current_widget].w.strength.setValue(int(items.params['strength'] * 100))
+                        # self.widgets[self.current_widget].w.strength_slider.setValue(int(items.params['strength'] * 100))
+                        # self.widgets[self.current_widget].w.reconstruction_blur.setValue(items.params['reconstruction_blur'])
+                        # self.widgets[self.current_widget].w.mask_blur.setValue(items.params['mask_blur'])
+                        # self.widgets[self.current_widget].w.prompts.setText(items.params['prompts'])
+                        # self.widgets[self.current_widget].w.seed.setText(str(items.params['seed']))
+                        # self.widgets[self.current_widget].w.mask_offset.setValue(items.params['mask_offset'])
 
                     if items.images is not []:
                         for i in items.images:
                             if i is not None:
                                 image = i.copy(0, 0, i.width(), i.height())
                                 pixmap = QPixmap.fromImage(image)
-                                self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap), f"{items.render_index}"))
+                                self.thumbs.w.thumbnails.addItem(
+                                    QListWidgetItem(QIcon(pixmap), f"{items.render_index}"))
 
     def redo_current_outpaint(self):
         self.canvas.canvas.redo_outpaint(self.canvas.canvas.selected_item)
+
     def select_outpaint_image(self, item):
-        width=self.widgets[self.current_widget].w.W.value()
-        height=self.widgets[self.current_widget].w.H.value()
+        width = self.widgets[self.current_widget].w.W.value()
+        height = self.widgets[self.current_widget].w.H.value()
         templist = self.canvas.canvas.rectlist
         imageSize = item.icon().actualSize(QtCore.QSize(width, height))
         if self.canvas.canvas.selected_item is not None:
@@ -1004,7 +1016,7 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.update()
 
     def delete_outpaint_frame(self):
-        #self.canvas.canvas.undoitems = []
+        # self.canvas.canvas.undoitems = []
         if self.canvas.canvas.selected_item is not None:
             x = 0
             for i in self.canvas.canvas.rectlist:
@@ -1018,8 +1030,8 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.selected_item = None
         self.canvas.canvas.update()
         self.canvas.canvas.draw_rects()
-        self.thumbs.w.thumbnails.clear()
 
+        self.thumbs.w.thumbnails.clear()
 
     def test_save_outpaint(self):
 
@@ -1043,22 +1055,24 @@ class MainWindow(QMainWindow):
         self.create_outpaint_batch()
 
     def create_outpaint_batch(self, gobig_img_path=None):
-        #self.sessionparams.params.advanced = True
+        # self.sessionparams.params.advanced = True
         self.callbackbusy = True
         self.busy = False
         offset = self.widgets[self.current_widget].w.mask_offset.value()
         #self.preview_batch_outpaint()
         self.sessionparams.params = self.sessionparams.update_params()
+
         if gobig_img_path is not None:
-            pil_image = Image.open(gobig_img_path).resize((self.canvas.W.value(),self.canvas.H.value()), Image.Resampling.LANCZOS).convert("RGBA")
+            pil_image = Image.open(gobig_img_path).resize((self.canvas.W.value(), self.canvas.H.value()),
+                                                          Image.Resampling.LANCZOS).convert("RGBA")
             qimage = ImageQt(pil_image)
             chops_x = int(qimage.width() / self.canvas.canvas.w)
             chops_y = int(qimage.width() / self.canvas.canvas.h)
             self.preview_batch_outpaint(with_chops=chops_x, chops_y=chops_y)
         rparams = self.sessionparams.update_params()
-        #print(self.tempsize_int)
+        # print(self.tempsize_int)
         prompt_series = pd.Series([np.nan for a in range(self.tempsize_int)])
-        #print(prompt_series)
+        # print(prompt_series)
         if rparams.keyframes == '':
             rparams.keyframes = "0"
         prom = rparams.prompts
@@ -1095,8 +1109,10 @@ class MainWindow(QMainWindow):
                         rparams.seed = random.randint(0, 2 ** 32 - 1)
                     if rparams.seed_behavior == 'random':
                         rparams.seed = random.randint(0, 2 ** 32 - 1)
-                    #print(f"seed bhavior:{rparams.seed_behavior} {rparams.seed}")
-                    self.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image, render_index=index, order=item["order"], params=copy.deepcopy(rparams))
+                    # print(f"seed bhavior:{rparams.seed_behavior} {rparams.seed}")
+                    self.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image,
+                                                     render_index=index, order=item["order"],
+                                                     params=copy.deepcopy(rparams))
                     print(animation_prompts[x])
                     if rparams.seed_behavior == 'iter':
                         rparams.seed += 1
@@ -1117,10 +1133,12 @@ class MainWindow(QMainWindow):
                     self.hires_source = None
                 offset = offset + 512
                 rparams.prompts = animation_prompts[x]
-                #print(rparams.prompts)
+                # print(rparams.prompts)
                 if rparams.seed_behavior == 'random':
                     rparams.seed = random.randint(0, 2 ** 32 - 1)
-                self.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image, render_index=index, order=items["order"], params=copy.deepcopy(rparams))
+                self.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image,
+                                                 render_index=index, order=items["order"],
+                                                 params=copy.deepcopy(rparams))
 
                 if rparams.seed_behavior == 'iter':
                     rparams.seed += 1
@@ -1131,8 +1149,8 @@ class MainWindow(QMainWindow):
 
     def run_hires_batch(self, progress_callback=None):
         self.sessionparams.params.advanced = True
-        #multi = self.widgets[self.current_widget].w.multiBatch.isChecked()
-        #batch_n = self.widgets[self.current_widget].w.multiBatchvalue.value()
+        # multi = self.widgets[self.current_widget].w.multiBatch.isChecked()
+        # batch_n = self.widgets[self.current_widget].w.multiBatchvalue.value()
         multi = False
         batch_n = 1
         gs.stop_all = False
@@ -1150,7 +1168,8 @@ class MainWindow(QMainWindow):
             for x in range(int(tiles)):
                 if gs.stop_all != True:
                     self.run_hires_step_x(x)
-                    betterslices.append((self.image.convert('RGBA'), self.canvas.canvas.rectlist[x].x, self.canvas.canvas.rectlist[x].y))
+                    betterslices.append((self.image.convert('RGBA'), self.canvas.canvas.rectlist[x].x,
+                                         self.canvas.canvas.rectlist[x].y))
                 else:
                     break
 
@@ -1159,7 +1178,7 @@ class MainWindow(QMainWindow):
             alpha_gradient = ImageDraw.Draw(alpha)
             a = 0
             i = 0
-            overlap = self.widgets[self.current_widget].w.offsetSlider.value()
+            overlap = self.widgets[self.current_widget].w.rect_overlap.value()
             shape = (og_size, (0, 0))
             while i < overlap:
                 alpha_gradient.rectangle(shape, fill=a)
@@ -1177,7 +1196,7 @@ class MainWindow(QMainWindow):
                 source_image.convert("RGBA"), finished_slices
             ).convert("RGBA")
             final_output.save('output/test_hires.png')
-            #base_filename = f"{base_filename}d"
+            # base_filename = f"{base_filename}d"
             print(f"All time wasted: {self.sleepytime} seconds.")
             self.hires_source = final_output
             self.deforum_ui.signals.prepare_hires_batch.emit('output/test_hires.png')
@@ -1187,9 +1206,9 @@ class MainWindow(QMainWindow):
         image = self.canvas.canvas.rectlist[x].image
         image.save('output/temp/temp.png', "PNG")
         self.canvas.canvas.selected_item = self.canvas.canvas.rectlist[x].id
+        self.render_index = x
 
-
-        self.deforum_ui.run_deforum_six_txt2img()
+        self.deforum_ui.run_deforum_six_txt2img(hiresinit='output/temp/temp.png')
         while self.callbackbusy == True:
             time.sleep(0.25)
             self.sleepytime += 0.25
@@ -1207,8 +1226,8 @@ class MainWindow(QMainWindow):
         self.choice = "Outpaint"
         self.sessionparams.params.advanced = True
 
-        #multi = self.widgets[self.current_widget].w.multiBatch.isChecked()
-        #batch_n = self.widgets[self.current_widget].w.multiBatchvalue.value()
+        # multi = self.widgets[self.current_widget].w.multiBatch.isChecked()
+        # batch_n = self.widgets[self.current_widget].w.multiBatchvalue.value()
 
         multi = False
         batch_n = 1
@@ -1221,13 +1240,13 @@ class MainWindow(QMainWindow):
             print("multi outpaint batch")
             for i in range(batch_n):
                 if i != 0:
-                    filename = str(random.randint(1111111,9999999))
+                    filename = str(random.randint(1111111, 9999999))
                     self.canvas.canvas.save_rects_as_json(filename=filename)
                     self.canvas.canvas.save_canvas()
                     self.canvas.canvas.rectlist.clear()
                     self.create_outpaint_batch()
                 for x in range(tiles):
-                    #print(x)
+                    # print(x)
                     if gs.stop_all == False:
                         self.run_outpaint_step_x(x)
                     else:
@@ -1239,12 +1258,13 @@ class MainWindow(QMainWindow):
                     self.run_outpaint_step_x(x)
                 else:
                     break
-            #self.canvas.canvas.save_canvas()
+            # self.canvas.canvas.save_canvas()
 
             print(f"All time wasted: {self.sleepytime} seconds.")
 
     def run_outpaint_step_x(self, x):
         self.sessionparams.params.advanced = True
+
         self.busy = True
         self.canvas.canvas.reusable_outpaint(self.canvas.canvas.rectlist[x].id)
         while self.canvas.canvas.busy == True:
@@ -1276,16 +1296,16 @@ class MainWindow(QMainWindow):
         startOffsetX = self.widgets[self.current_widget].w.start_offset_x.value()
         startOffsetY = self.widgets[self.current_widget].w.start_offset_y.value()
         prompts = self.widgets[self.current_widget].w.prompts.toPlainText()
-        #keyframes = self.prompt.w.keyFrames.toPlainText()
+        # keyframes = self.prompt.w.keyFrames.toPlainText()
         keyframes = ""
         self.canvas.canvas.create_tempBatch(prompts, keyframes, startOffsetX, startOffsetY, randomize)
         templist = []
         if spiral:
-            #self.canvas.canvas.tempbatch = random_path(self.canvas.canvas.tempbatch, self.canvas.canvas.cols)
+            # self.canvas.canvas.tempbatch = random_path(self.canvas.canvas.tempbatch, self.canvas.canvas.cols)
             self.canvas.canvas.tempbatch = spiralOrder(self.canvas.canvas.tempbatch)
         if reverse:
             self.canvas.canvas.tempbatch.reverse()
-        #print(len(self.canvas.canvas.tempbatch))
+        # print(len(self.canvas.canvas.tempbatch))
         self.tempsize_int = self.canvas.canvas.cols * self.canvas.canvas.rows
         self.canvas.canvas.draw_tempBatch(self.canvas.canvas.tempbatch)
 
@@ -1298,10 +1318,10 @@ class MainWindow(QMainWindow):
             self.canvas.canvas.visualize_rects()
 
     def prepare_batch_outpaint_thread(self):
-        #self.prompt.w.stopButton.clicked.connect(self.stop_processing)
+        # self.prompt.w.stopButton.clicked.connect(self.stop_processing)
         self.stopprocessing = False
-        #self.save_last_prompt()
-        #if self.canvas.canvas.tempbatch == [] or self.canvas.canvas.tempbatch is None:
+        # self.save_last_prompt()
+        # if self.canvas.canvas.tempbatch == [] or self.canvas.canvas.tempbatch is None:
         #    self.preview_batch_outpaint()
         #    #self.create_outpaint_batch()
         worker = Worker(self.run_batch_outpaint)
@@ -1337,7 +1357,7 @@ class MainWindow(QMainWindow):
         t.setFilter(filter)
         if save:
             t.setAcceptMode(QFileDialog.AcceptSave)
-        #t.selectFilter(filter or 'All Files (*.*);;')
+        # t.selectFilter(filter or 'All Files (*.*);;')
         if text:
             (next(x for x in t.findChildren(QLabel) if x.text() == 'File &name:')).setText(text)
         if button_caption:
@@ -1347,8 +1367,7 @@ class MainWindow(QMainWindow):
             t.exec_()
         return t.selectedFiles()[0]
 
-
-    #Timeline functions
+    # Timeline functions
     def showTypeKeyframes(self):
         valueType = self.animKeyEditor.w.comboBox.currentText()
 
@@ -1425,17 +1444,21 @@ def QIcon_from_svg(svg_filepath, color='white'):
     img = QPixmap(svg_filepath)
     qp = QPainter(img)
     qp.setCompositionMode(QPainter.CompositionMode_SourceIn)
-    qp.fillRect( img.rect(), QColor(color) )
+    qp.fillRect(img.rect(), QColor(color))
     qp.end()
     return QIcon(img)
+
 
 def translate_sampler_index(index):
     if index == 0:
         return "euler"
 
+
 def translate_sampler(sampler):
     if sampler == "K Euler":
         return "euler"
+
+
 def get_inbetweens(key_frames, max_frames, integer=False, interp_method='Linear'):
     import numexpr
     key_frame_series = pd.Series([np.nan for a in range(max_frames)])
@@ -1464,6 +1487,8 @@ def get_inbetweens(key_frames, max_frames, integer=False, interp_method='Linear'
     if integer:
         return key_frame_series.astype(int)
     return key_frame_series
+
+
 def addalpha(im, mask):
     imr, img, imb, ima = im.split()
     mmr, mmg, mmb, mma = mask.split()

@@ -1,3 +1,4 @@
+import copy
 import random
 from types import SimpleNamespace
 from backend.settings import save_settings_json
@@ -56,23 +57,25 @@ class SessionParams():
 
 
     def update_system_params(self):
+        current_widget = self.parent.system_setup.w
         for key, value in self.system_params.items():
+            extracted_value = None
             try:
-                current_widget = self.parent.system_setup.w
-                type = str(getattr(current_widget, key))
-                if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
+                type_str = str(getattr(current_widget, key))
+                if 'QSpinBox' in type_str or 'QDoubleSpinBox' in type_str:
                     self.system_params[key] = getattr(current_widget, key).value()
-                elif  'QTextEdit' in type or 'QLineEdit' in type:
+                    extracted_value = getattr(current_widget, key).value()
+                elif  'QTextEdit' in type_str or 'QLineEdit' in type_str:
                     self.system_params[key] = getattr(current_widget, key).text()
-                elif 'QCheckBox' in type:
+                    extracted_value = getattr(current_widget, key).text()
+                elif 'QCheckBox' in type_str:
                     self.system_params[key] = getattr(current_widget, key).isChecked()
-                elif 'QComboBox' in type:
+                    extracted_value = getattr(current_widget, key).isChecked()
+                elif 'QComboBox' in type_str:
                     self.system_params[key] = getattr(current_widget, key).currentText()
+                    extracted_value = getattr(current_widget, key).currentText()
+                gs.system.__dict__[key] = copy.deepcopy(extracted_value)
             except Exception as e:
-                continue
-            try:
-                gs.system.__dict__[key] = value
-            except:
                 pass
         save_settings_json()
 
@@ -250,7 +253,7 @@ class SessionParams():
             axis = {'y'}
         elif self.parent.widgets[widget].w.axis.currentText() == 'Both':
             axis = {'x', 'y'}
-        plotting = self.parent.widgets[widget].w.plotting.isChecked()
+        plotting = self.parent.widgets[widget].w.toggle_plotting.isChecked()
         plotX = self.parent.widgets[widget].w.plotX.currentText()
         plotY = self.parent.widgets[widget].w.plotY.currentText()
         plotXLine = self.parent.widgets[widget].w.plotXLine.text()

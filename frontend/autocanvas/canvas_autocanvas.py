@@ -453,7 +453,7 @@ class Canvas(QGraphicsView):
                         i.h = self.parent.parent.image.size[1]
                         self.parent.parent.render_index = self.rectlist.index(i)
 
-                        self.parent.parent.params.advanced = True
+                        self.parent.parent.sessionparams.params.advanced = True
                         self.parent.parent.image_preview_func()
 
     def load_rects_from_json(self):
@@ -823,8 +823,8 @@ class Canvas(QGraphicsView):
                                     #self.addrect()
                     if i.id == x.id:
                         print(f"setting render index to:{self.rectlist.index(i)}")
-                        #self.parent.parent.params = x.params
-                        #self.parent.parent.params.advanced = True
+                        #self.parent.parent.sessionparams.params = x.params
+                        #self.parent.parent.sessionparams.params.advanced = True
                         self.parent.parent.render_index = self.rectlist.index(i)
         outpaintimage.save("outpaint.png")
         #outpainter.end()
@@ -1304,7 +1304,7 @@ class Canvas(QGraphicsView):
         elif e.button() == Qt.RightButton:
             self.mode = "inpaint"
             self.setDragMode(QGraphicsView.DragMode.NoDrag)
-            id = self.addrect_atpos(x=self.scene.scenePos.x() - self.w / 2, y=self.scene.scenePos.y() - self.h / 2, params=copy.deepcopy(self.parent.parent.params))
+            id = self.addrect_atpos(x=self.scene.scenePos.x() - self.w / 2, y=self.scene.scenePos.y() - self.h / 2, params=copy.deepcopy(self.parent.parent.sessionparams.params))
             self.reusable_inpaint(id)
 
     def inpaint_mouseMoveEvent(self, e):
@@ -1358,7 +1358,7 @@ class Canvas(QGraphicsView):
     def rubberband_mousePressEvent(self, event):
         self.parent.parent.widgets[self.parent.parent.current_widget].w.hires.setCheckState(Qt.CheckState.Unchecked)
         self.parent.parent.widgets['unicontrol'].w.with_inpaint.setCheckState(Qt.CheckState.Unchecked)
-        self.parent.parent.params.with_inpaint = False
+        self.parent.parent.sessionparams.params.with_inpaint = False
 
         #self.hoverCheck()
         #if self.hover_item is not None:
@@ -1429,8 +1429,8 @@ class Canvas(QGraphicsView):
             self.rectlist.append(rect[uid])
 
             self.draw_rects()
-            self.parent.parent.params.W = w
-            self.parent.parent.params.H = h
+            self.parent.parent.sessionparams.params.W = w
+            self.parent.parent.sessionparams.params.H = h
 
             prompt = SimplePrompt()
 
@@ -1464,12 +1464,12 @@ class Canvas(QGraphicsView):
             self.proxies[uid].widget.dreambutton.clicked.connect(self.proxies[uid].proxy_task)
             self.drag_mode()
             self.draw_rects()
-            if self.parent.parent.params.with_inpaint == True:
+            if self.parent.parent.sessionparams.params.with_inpaint == True:
                 w, h = map(lambda x: x - x % 64, (w, h))
                 self.rectlist[len(self.rectlist) - 1].w = w
                 self.rectlist[len(self.rectlist) - 1].h = h
-                self.parent.parent.params.W = w
-                self.parent.parent.params.H = h
+                self.parent.parent.sessionparams.params.W = w
+                self.parent.parent.sessionparams.params.H = h
                 #self.parent.parent.update_ui_from_params()
                 self.change_resolution()
             self.parent.parent.widgets[self.parent.parent.current_widget].w.W.setValue(w)
@@ -1488,9 +1488,9 @@ class Canvas(QGraphicsView):
                     if x.y >= i.y - i.h and x.x >= i.x - i.w:
                         if x.y <= i.y + i.h and x.x <= i.x + i.w:
                             if i.id != x.id:
-                                self.parent.parent.params.with_inpaint = True
+                                self.parent.parent.sessionparams.params.with_inpaint = True
 
-        if self.parent.parent.params.with_inpaint == True:
+        if self.parent.parent.sessionparams.params.with_inpaint == True:
             return True
         else:
             return False

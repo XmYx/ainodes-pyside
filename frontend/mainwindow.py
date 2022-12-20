@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
         self.create_secondary_toolbar()
         self.system_setup = SystemSetup()
         self.sessionparams.add_state_to_history()
-        self.params = self.sessionparams.update_params()
+        self.sessionparams.params = self.sessionparams.update_params()
         self.update_ui_from_params()
         self.update_ui_from_system_params()
         self.currentFrames = []
@@ -153,7 +153,7 @@ class MainWindow(QMainWindow):
             [-0.184, -0.271, -0.473],  # L4
         ], dtype=torch.float, device='cuda')
 
-        self.params = self.sessionparams.update_params()
+        self.sessionparams.params = self.sessionparams.update_params()
         self.toolbar.setVisible(True)
         self.deforum_ui.deforum_six.load_inpaint_model()
         self.deforum_ui.deforum_six.load_model_from_config()
@@ -202,19 +202,19 @@ class MainWindow(QMainWindow):
     def selftest(self):  #TODO Lets extend this function with everything we have and has to work
 
         self.canvas.canvas.reset()
-        self.params = self.sessionparams.update_params()
+        self.sessionparams.params = self.sessionparams.update_params()
         gs.stop_all = False
         self.task_switcher()
-        self.params.max_frames = 5
+        self.sessionparams.params.max_frames = 5
         self.task_switcher()
-        self.params.max_frames = 1
+        self.sessionparams.params.max_frames = 1
         self.add_next_rect()
-        self.params.advanced = True
+        self.sessionparams.params.advanced = True
         self.task_switcher()
-        self.params.advanced = False
+        self.sessionparams.params.advanced = False
         self.task_switcher()
         self.widgets[self.current_widget].w.with_inpaint.setCheckState(Qt.Checked)
-        self.canvas.canvas.addrect_atpos(prompt="", x=1750, y=0, w=512, h=512, params=copy.deepcopy(self.params))
+        self.canvas.canvas.addrect_atpos(prompt="", x=1750, y=0, w=512, h=512, params=copy.deepcopy(self.sessionparams.params))
         self.task_switcher()
 
 
@@ -315,8 +315,8 @@ class MainWindow(QMainWindow):
         gs.stop_all = False
         save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(), self.widgets[self.current_widget].w.prompts.toPlainText())
         if self.widgets[self.current_widget].w.with_inpaint.isChecked() == True:
-            self.params = self.sessionparams.update_params()
-            self.params.advanced = True
+            self.sessionparams.params = self.sessionparams.update_params()
+            self.sessionparams.params.advanced = True
             self.canvas.canvas.reusable_outpaint(self.canvas.canvas.selected_item)
             self.deforum_ui.deforum_outpaint_thread()
         else:
@@ -462,7 +462,7 @@ class MainWindow(QMainWindow):
 
 
     def update_ui_from_params(self):
-        for key, value in self.params.__dict__.items():
+        for key, value in self.sessionparams.params.__dict__.items():
             try:
                 #We have to add check for Animation Mode as thats a radio checkbox with values 'anim2d', 'anim3d', 'animVid'
                 #add colormatch_image (it will be with a fancy preview)
@@ -725,7 +725,7 @@ class MainWindow(QMainWindow):
         height = self.cheight
         #for debug
         #self.deforum_ui.run_deforum_txt2img()
-        self.params = self.sessionparams.update_params()
+        self.sessionparams.params = self.sessionparams.update_params()
         self.sessionparams.add_state_to_history()
         #Prepare next rectangle, widen canvas:
         worker = Worker(self.deforum_ui.run_deforum_six_txt2img)
@@ -745,7 +745,7 @@ class MainWindow(QMainWindow):
         x = 0
         y = 0
         img = self.image
-        if self.params.advanced == True:
+        if self.sessionparams.params.advanced == True:
             if self.canvas.canvas.rectlist != []:
                 if img is not None:
                     if self.canvas.canvas.rectlist[self.render_index].images is not None:
@@ -776,7 +776,7 @@ class MainWindow(QMainWindow):
                 self.canvas.canvas.redraw()
                 qimage = None
                 pixmap = None
-        elif self.params.advanced == False:
+        elif self.sessionparams.params.advanced == False:
             self.add_next_rect()
             self.render_index = len(self.canvas.canvas.rectlist) - 1
             if img is not None:
@@ -797,13 +797,13 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.rectlist[self.render_index].render_index += 1
                 self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
                 self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
-                self.canvas.canvas.rectlist[self.render_index].params = self.params
+                self.canvas.canvas.rectlist[self.render_index].params = self.sessionparams.params
         self.canvas.canvas.newimage = True
         self.canvas.canvas.redraw()
         self.canvas.canvas.update()
         self.callbackbusy = False
-        if self.params.advanced == False and self.params.max_frames > 1:
-            self.params.advanced = True
+        if self.sessionparams.params.advanced == False and self.sessionparams.params.max_frames > 1:
+            self.sessionparams.params.advanced = True
         #self.signals.add_image_to_thumbnail_signal.emit(gs.temppath)
 
     def add_next_rect(self):
@@ -811,7 +811,7 @@ class MainWindow(QMainWindow):
         h = self.widgets[self.current_widget].w.H.value()
         resize = False
 
-        params = copy.deepcopy(self.params)
+        params = copy.deepcopy(self.sessionparams.params)
         if self.canvas.canvas.rectlist == []:
             self.canvas.canvas.w = w
             self.canvas.canvas.h = h
@@ -937,7 +937,7 @@ class MainWindow(QMainWindow):
     def create_params(self, uid=None):
         for i in self.canvas.canvas.rectlist:
             if i.id == uid:
-                i.params = copy.deepcopy(self.params)
+                i.params = copy.deepcopy(self.sessionparams.params)
 
 
     def get_params(self):
@@ -1048,7 +1048,7 @@ class MainWindow(QMainWindow):
         self.busy = False
         offset = self.widgets[self.current_widget].w.mask_offset.value()
         #self.preview_batch_outpaint()
-        self.params = self.sessionparams.update_params()
+        self.sessionparams.params = self.sessionparams.update_params()
         if gobig_img_path is not None:
             pil_image = Image.open(gobig_img_path).resize((self.canvas.W.value(),self.canvas.H.value()), Image.Resampling.LANCZOS).convert("RGBA")
             qimage = ImageQt(pil_image)
@@ -1203,7 +1203,7 @@ class MainWindow(QMainWindow):
         self.callbackbusy = False
         self.sleepytime = 0.0
         self.choice = "Outpaint"
-        self.params.advanced = True
+        self.sessionparams.params.advanced = True
 
         #multi = self.widgets[self.current_widget].w.multiBatch.isChecked()
         #batch_n = self.widgets[self.current_widget].w.multiBatchvalue.value()

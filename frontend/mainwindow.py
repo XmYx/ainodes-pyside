@@ -144,7 +144,7 @@ class MainWindow(QMainWindow):
 
 
 
-        check_models_exist()
+        #check_models_exist()
         self.latent_rgb_factors = torch.tensor([
             #   R        G        B
             [0.298, 0.207, 0.208],  # L1
@@ -342,6 +342,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def run_upscale_20_thread(self):
+        check_models_exist()
         worker = Worker(self.image_lab.run_upscale_20)
         self.threadpool.start(worker)
 
@@ -353,11 +354,13 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def run_interrogation_thread(self):
+        check_models_exist()
         worker = Worker(self.image_lab.run_interrogation)
         self.threadpool.start(worker)
 
     @Slot()
     def ai_prompt_thread(self):
+        check_models_exist()
         self.aiPrompt = AiPrompt()
         self.aiPrompt.signals.ai_prompt_ready.connect(self.prompt_fetcher_ui.set_ai_prompt)
         self.aiPrompt.signals.status_update.connect(self.set_status_bar)
@@ -366,6 +369,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def image_to_prompt_thread(self):
+        check_models_exist()
         worker = Worker(self.prompt_fetcher_ui.get_img_to_prompt)
         self.threadpool.start(worker)
 

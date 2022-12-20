@@ -847,7 +847,7 @@ class MainWindow(QMainWindow):
         #if resize == True:
             # pass
         #print(self.w, self.cheight)
-        self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
+        #self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
         #self.canvas.canvas.update()
         #self.canvas.canvas.redraw()
 

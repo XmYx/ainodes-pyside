@@ -219,25 +219,18 @@ class Canvas(QGraphicsView):
         self.zoom = 1
         self.rotate = 0
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
-        self.w = 4096
-        self.h = 4096
-
         self.rectlist = []
         self.rectlist.clear()
         self.scene = Scene()
         self.parent.w = 4096
         self.parent.cheight = 4096
         self.parent.stopwidth = False
-
         self.last_x, self.last_y = None, None
         self.pen_color = QColor('#000000')
-        #self.mode = 'drag'
         self.setMouseTracking(True)
         self.painter = QPainter()
-
         self.update()
         self.setScene(self.scene)
-
         self.tempbatch = []
         self.hover_item = None
         self.selected_item = None
@@ -245,9 +238,7 @@ class Canvas(QGraphicsView):
         self.outpaintitem = None
         self.outpaintsource = None
         self.soft_reset()
-
         self.rendermode = 1
-        ###print(self.rendermode)
         self.painter.begin(self.pixmap)
         self.painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform | QPainter.LosslessImageRendering)
         self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)

@@ -1,5 +1,5 @@
 import platform
-from PySide6 import QtCore, QtQuick
+#from PySide6 import QtCore, QtQuick
 from PySide6.QtGui import QIcon, QAction, QPixmap
 import sys
 from PySide6.QtQuick import QSGRendererInterface

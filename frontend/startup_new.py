@@ -13,8 +13,8 @@ sys.path.append('src/MiDaS')
 sys.path.append('src/pytorch3d-lite')
 sys.path.append('src/BLIP')
 def run_app():
-    #QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
-    #QtQuick.QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
+    QtQuick.QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
     #app = QApplication(sys.argv)
 
 

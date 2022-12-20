@@ -154,8 +154,8 @@ class MainWindow(QMainWindow):
 
         self.sessionparams.params = self.sessionparams.update_params()
         self.toolbar.setVisible(True)
-        self.deforum_ui.deforum_six.load_inpaint_model()
-        self.deforum_ui.deforum_six.load_model_from_config()
+        #self.deforum_ui.deforum_six.load_inpaint_model()
+        #self.deforum_ui.deforum_six.load_model_from_config()
 
 
     def setup_widget_names(self):
@@ -544,24 +544,24 @@ class MainWindow(QMainWindow):
         help_mode = QAction(QIcon_from_svg('frontend/icons/help-circle.svg'), 'Help', self)
         skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'Help', self)
         skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'Help', self)
-        test_mode = QAction(QIcon_from_svg('frontend/icons/alert-octagon.svg'), 'Run Self Test - It will take a while',
-                            self)
+        test_mode = QAction(QIcon_from_svg('frontend/icons/alert-octagon.svg'), 'Run Self Test - It will take a while', self)
 
 
-        self.toolbar.addAction(still_mode)
-        # self.toolbar.addAction(anim_mode)
-        # self.toolbar.addAction(node_mode)
-        # self.toolbar.addAction(gallery_mode)
-        # self.toolbar.addAction(settings_mode)
-        self.toolbar.addAction(help_mode)
-        self.toolbar.addAction(skip_back)
-        self.toolbar.addAction(skip_forward)
-        self.toolbar.addAction(test_mode)
+        #self.toolbar.addAction(still_mode)
+        #self.toolbar.addAction(anim_mode)
+        #self.toolbar.addAction(node_mode)
+        #self.toolbar.addAction(gallery_mode)
+        self.toolbar.addAction(settings_mode)
+        #self.toolbar.addAction(help_mode)
+        #self.toolbar.addAction(skip_back)
+        #self.toolbar.addAction(skip_forward)
+        #self.toolbar.addAction(test_mode)
 
-        skip_back.triggered.connect(self.canvas.canvas.skip_back)
-        skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
-        test_mode.triggered.connect(self.selftest)
 
+        #skip_back.triggered.connect(self.canvas.canvas.skip_back)
+        #skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
+        #test_mode.triggered.connect(self.selftest)
+        settings_mode.triggered.connect(self.canvas.canvas.rubberband_mode)
     def create_secondary_toolbar(self):
         self.secondary_toolbar = QToolBar('Outpaint Tools')
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.secondary_toolbar)
@@ -608,7 +608,6 @@ class MainWindow(QMainWindow):
         save_canvas_png.triggered.connect(self.canvas.canvas.save_canvas)
         play.triggered.connect(self.canvas.canvas.start_main_clock)
         stop.triggered.connect(self.canvas.canvas.stop_main_clock)
-
     def hide_default(self):
         self.toolbar.setVisible(False)
         self.secondary_toolbar.setVisible(False)

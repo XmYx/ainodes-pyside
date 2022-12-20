@@ -614,8 +614,9 @@ class aiNodesPlugin:
 
         #TODO Uncomment, and test the following two lines to run Shivam's Dreambooth with some default settings, and images in a folder called test
         #TODO Do Comment the following original dreambooth call for the test.
-        #from plugins.training.shivams_dreambooth import shivams_launcher
-        #shivams_launcher.run_shivams_dreambooth()
+        from plugins.training.shivams_dreambooth import shivams_launcher
+        shivams_launcher.run_shivams_dreambooth()
+        return
 
         self.dreambooth_training.dreambooth(
             accelerator=None if self.training.w.accelerator.currentText() == 'None' else self.training.w.accelerator.currentText(),                                   # Previously known as distributed_backend (dp, ddp, ddp2, etc...).

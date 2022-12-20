@@ -658,7 +658,7 @@ class Canvas(QGraphicsView):
             painter.drawText(w - 128, 0, 100, 100, 15, str(w))
             w += 128"""
     def draw_tempRects(self, x, y, width, height, order, value):
-        #self.painter.begin(self.pixmap)
+        self.painter.begin(self.pixmap)
         self.painter.setPen(self.pen)
         rect = QRect(x, y, width, height)
         font = QFont("Segoe UI Black")
@@ -666,8 +666,8 @@ class Canvas(QGraphicsView):
         self.painter.drawRect(rect)
         self.painter.setFont(font)
         #self.painter.drawText(x - 25 + width / 2, y  + 25 + width / 2, f"{order} / {value}")
-        #self.painter.end()
-        #self.bgitem.setPixmap(self.pixmap)
+        self.painter.end()
+        self.bgitem.setPixmap(self.pixmap)
 
     def visualize_rects(self, overlays=False):
         self.painter.begin(self.pixmap)

@@ -21,7 +21,7 @@
     "gfpgan_model_file": "data/models/support/upscale/GFPGANv1.3.pth",
     "blip_large_model_file": "data/models/support/model_large_caption.pth",
     "sd_model_file": "data/models/v1-5-pruned-emaonly.ckpt",
-    "sd_inpaint_model_file": "data/models/sd-v1-5-inpaint.ckpt",
+    "sd_inpaint_model_file": "data/models/sd-v1-5-inpainting.ckpt",
     "v1_inference_yaml_file": "configs/stable-diffusion/v1-inference.yaml",
     "v2_inference_yaml_file": "configs/stable-diffusion/v2-inference.yaml",
     "v2_upscale_inference_yaml_file": "backend/sdv2/v2_upscale_inference_yaml_file.yaml",

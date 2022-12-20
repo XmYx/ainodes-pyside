@@ -21,7 +21,7 @@ try:
 except:
     gs.xformers_not_available = True
 
-if not gs.xformers_not_available:
+if gs.xformers_not_available == None:
     if gs.system.xformer: #or shared.cmd_opts.force_enable_xformers:
         try:
             import xformers.ops
@@ -29,6 +29,7 @@ if not gs.xformers_not_available:
         except Exception:
             print("Cannot import xformers", file=sys.stderr)
             print(traceback.format_exc(), file=sys.stderr)
+            pass
 
 
 # see https://github.com/basujindal/stable-diffusion/pull/117 for discussion

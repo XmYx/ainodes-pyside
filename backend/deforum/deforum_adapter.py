@@ -213,6 +213,7 @@ class DeforumSix:
             return config, version
 
     def load_model_from_config(self, config=None, ckpt=None, verbose=False):
+        gs.force_inpaint = False
         if ckpt is None:
             ckpt = gs.system.sd_model_file
         # Open the file in binary mode
@@ -230,6 +231,9 @@ class DeforumSix:
         # if not os.path.exists(config_yaml_name):
         #    config_yaml_name = 'data/default_configs/v1-5.yaml'
         config, version = self.return_model_version(ckpt)
+        if 'Inpaint' in version:
+            gs.force_inpaint = True
+            print("Forcing Inpaint")
         if config == None:
             config = os.path.splitext(ckpt)[0] + '.yaml'
         else:
@@ -313,7 +317,7 @@ class DeforumSix:
             del model
             torch_gc()
 
-            if gs.model_version == '1.5':
+            if gs.model_version == '1.5' and not 'Inpaint' in version:
                 self.run_post_load_model_generation_specifics()
 
             gs.models["sd"].eval()

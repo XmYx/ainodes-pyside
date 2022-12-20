@@ -618,7 +618,7 @@ class aiNodesPlugin:
         shivams_launcher.run_shivams_dreambooth()
         return
 
-        self.dreambooth_training.dreambooth(
+        '''self.dreambooth_training.dreambooth(
             accelerator=None if self.training.w.accelerator.currentText() == 'None' else self.training.w.accelerator.currentText(),                                   # Previously known as distributed_backend (dp, ddp, ddp2, etc...).
             # Can also take in an accelerator object for custom hardware.
             accumulate_grad_batches=self.training.w.accumulate_grad_batches.value(),                        # Accumulates grads every k batches or as set up in the dict.
@@ -772,7 +772,7 @@ class aiNodesPlugin:
             # Defaults to `default_root_dir`.
             val_check_interval=self.training.w.val_check_interval.value()                               # How often to check the validation set. Use float to check within a training epoch,
             # use int to check every n steps (batches).
-        )
+        )'''
         """
         self.parent.ti.create_txt_inv(
             name=self.training.w.name.text(),

@@ -40,31 +40,34 @@ def run_shivams_dreambooth():
     with open("concepts_list.json", "w") as f:
         json.dump(concepts_list, f, indent=4)
 
-    command = ['accelerate', 'launch', 'plugins/training/shivams_dreambooth/dreambooth.py',
-               '--pretrained_model_name_or_path=runwayml/stable-diffusion-v1-5',
-               '--pretrained_vae_name_or_path=stabilityai/sd-vae-ft-mse',
-               '--output_dir=output',
-               '--revision=fp16',
-               '--with_prior_preservation',
-               '--prior_loss_weight=1.0',
-               '--seed=1337',
-               '--resolution=512',
-               '--train_batch_size=1',
-               '--mixed_precision=no',
-               '--gradient_accumulation_steps=1',
-               '--learning_rate=1e-6',
-               '--lr_scheduler=constant',
-               '--lr_warmup_steps=0',
-               '--num_class_images=5',
-               '--sample_batch_size=1',
-               '--max_train_steps=800',
-               '--save_interval=10000',
-               '--save_sample_prompt=photo of zwx dog',
-               '--concepts_list=concepts_list.json']
-    # '--train_text_encoder',
-    # '--use_8bit_adam',
-    #
-    env = os.environ.copy()
-    env["CUDA_VISIBLE_DEVICES"] = "0"  # specify the GPU to use here
 
-    subprocess.run(command, env=env)
+
+
+    command = [
+        "accelerate",
+        "launch",
+        "--mixed_precision=fp16",
+        "plugins/training/shivams_dreambooth/dreambooth.py",
+        "--pretrained_model_name_or_path=runwayml/stable-diffusion-v1-5",
+        "--instance_data_dir=training",
+        "--class_data_dir=classes",
+        "--output_dir=output_model",
+        "--with_prior_preservation",
+        "--prior_loss_weight=1.0",
+        "--instance_prompt=a photo of sks dog",
+        "--class_prompt=a photo of dog",
+        "--n_save_sample=1",
+        "--resolution=512",
+        "--train_batch_size=1",
+        "--sample_batch_size=1",
+        "--gradient_accumulation_steps=1",
+        "--gradient_checkpointing",
+        "--learning_rate=5e-6",
+        "--lr_scheduler=constant",
+        "--lr_warmup_steps=0",
+        "--num_class_images=200",
+        "--max_train_steps=800",
+        "--mixed_precision=fp16",
+    ]
+
+    subprocess.call(command)

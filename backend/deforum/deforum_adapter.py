@@ -181,6 +181,8 @@ class DeforumSix:
         # version not the version of the custom model
         #if config is None:
         config_yaml_name = os.path.splitext(ckpt)[0] + '.yaml'
+        if not os.path.exists(config_yaml_name):
+            config_yaml_name = 'data/default_configs/v1-5.yaml'
         #print(config_yaml_name)
         #else:
         #    config_yaml_name = config

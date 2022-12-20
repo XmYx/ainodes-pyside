@@ -52,7 +52,7 @@ class SessionParams():
         self.system_params = {}
         for key, value in gs.system.__dict__.items():
             self.system_params[key] = value
-        self.system_params = SimpleNamespace(**self.params)
+        self.system_params = SimpleNamespace(**self.system_params)
         return self.system_params
 
 

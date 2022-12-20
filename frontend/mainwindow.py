@@ -1244,9 +1244,7 @@ class MainWindow(QMainWindow):
             print(f"All time wasted: {self.sleepytime} seconds.")
 
     def run_outpaint_step_x(self, x):
-
-        #print("it should not do anything....")
-
+        self.sessionparams.params.advanced = True
         self.busy = True
         self.canvas.canvas.reusable_outpaint(self.canvas.canvas.rectlist[x].id)
         while self.canvas.canvas.busy == True:

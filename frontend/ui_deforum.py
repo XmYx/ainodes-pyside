@@ -151,7 +151,7 @@ class Deforum_UI(QObject):
                 self.parent.params.advanced = False
             elif self.parent.widgets[self.parent.current_widget].w.mode.currentText() == 'advanced':
                 self.parent.params.advanced = True
-                self.parent.render_index = index
+                #self.parent.render_index = index
 
         gs.diffusion.selected_aesthetic_embedding = self.parent.widgets[self.parent.current_widget].w.selected_aesthetic_embedding.currentText()
         gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()

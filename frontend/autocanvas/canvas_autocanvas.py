@@ -1420,7 +1420,7 @@ class Canvas(QGraphicsView):
             self.selected_item = uid
             self.render_item = uid
             self.rectlist.append(rect[uid])
-            self.parent.parent.render_index = len(self.rectlist)
+            self.parent.parent.render_index = len(self.rectlist) - 1
             self.draw_rects()
             self.parent.parent.sessionparams.params.W = w
             self.parent.parent.sessionparams.params.H = h

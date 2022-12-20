@@ -29,7 +29,8 @@ from frontend import plugin_loader
 #from frontend.ui_model_chooser import ModelChooser_UI
 
 from backend.prompt_ai.prompt_gen import AiPrompt
-from frontend.ui_paint import PaintUI, spiralOrder, random_path, MyProxyWidget
+from frontend.ui_paint import PaintUI, spiralOrder, random_path
+from frontend.autocanvas.canvas_proxy_widget import MyProxyWidget
 from frontend.ui_classes import Thumbnails, SystemSetup, ThumbsUI, AnimKeyEditor
 from frontend.unicontrol import UniControl
 

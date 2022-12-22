@@ -85,7 +85,8 @@ class SessionParams():
         steps = self.parent.widgets[widget].w.steps.value()
         H = self.parent.widgets[widget].w.H.value()
         W = self.parent.widgets[widget].w.W.value()
-        seed = self.parent.widgets[widget].w.seed.text()
+        seed = random.randint(0, 2 ** 32 - 1) if self.parent.widgets[widget].w.seed.text() == '' else int(
+            self.parent.widgets[widget].w.seed.text())
         prompt = self.parent.widgets[widget].w.prompts.toPlainText()
         mask_blur = int(self.parent.widgets[widget].w.mask_blur.value())
         recons_blur = int(self.parent.widgets[widget].w.recons_blur.value())

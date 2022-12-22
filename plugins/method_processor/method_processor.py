@@ -133,7 +133,7 @@ class MethodProcessorWidget():
                 value = line_edit.text()
                 if value.isnumeric():
                     value = int(value)
-                elif "." in value:
+                elif "." in value and ":" not in value:
                     value = float(value)
                 elif value == "True":
                     value = True

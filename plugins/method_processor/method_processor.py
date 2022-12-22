@@ -28,13 +28,14 @@ import copy
 import PySide6
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QPushButton, QListWidget, QDialog, QFormLayout, \
-    QLineEdit, QHBoxLayout, QLabel, QMenu, QSpinBox, QDoubleSpinBox, QCheckBox, QTextEdit
+    QLineEdit, QHBoxLayout, QLabel, QMenu, QSpinBox, QDoubleSpinBox, QCheckBox, QTextEdit, QAbstractItemView
 from PySide6.QtCore import QObject, Signal, Slot, Qt
 import types
 import argparse
 
 from backend.singleton import singleton
 from backend.worker import Worker
+from frontend.session_params import translate_sampler
 
 gs = singleton
 
@@ -89,7 +90,7 @@ class MethodProcessorWidget():
 
         # set layout
         self.widget.setLayout(layout)
-
+        self.method_list.setDragDropMode(QAbstractItemView.InternalMove)
         self.method_list.setContextMenuPolicy(Qt.CustomContextMenu)
         self.method_list.customContextMenuRequested.connect(self.show_context_menu)
     @Slot()
@@ -400,9 +401,19 @@ class MethodProcessorWidget():
         print(params)
         print(params.param2)
     def txt2img(self, params):
-        print(type(params.use_init))
+
+        params.sampler = translate_sampler(params.sampler)
+        if type(params.grad_inject_timing) is not int:
+            if params.grad_inject_timing.isnumeric():
+                params.grad_inject_timing = int(params.grad_inject_timing)
+            elif "," in params.grad_inject_timing:
+                params.grad_inject_timing = params.grad_inject_timing.split(",")
+            elif "." in params.grad_inject_timing:
+                params.grad_inject_timing = float(params.grad_inject_timing)
+            else:
+                params.grad_inject_timing = params.grad_inject_timing
+
+
         self.parent.deforum_ui.run_deforum_six_txt2img(params=params)
-        print(params)
-        print(params.param2)
     def restart_loop(self, params=None):
         self.process_methods()

@@ -66,6 +66,7 @@ class MethodProcessorWidget():
         self.method_combo_box.addItem("txt2img")
         self.method_combo_box.addItem("switch_model")
         self.method_combo_box.addItem("restart_loop")
+        self.method_combo_box.addItem("use_prev_as_init")
         layout.addWidget(self.method_combo_box)
 
         # create button to add selected method to list
@@ -87,7 +88,7 @@ class MethodProcessorWidget():
         self.stop_button.clicked.connect(self.stop_processing)
         layout.addWidget(self.play_button)
         layout.addWidget(self.stop_button)
-
+        self.param_modifier = None
         # set layout
         self.widget.setLayout(layout)
         self.method_list.setDragDropMode(QAbstractItemView.InternalMove)
@@ -321,8 +322,13 @@ class MethodProcessorWidget():
             params = self.parent.sessionparams.update_params()
         elif method_name == "switch_model":
             params = {}
-
             params = types.SimpleNamespace(**params)
+        elif method_name == "use_prev_as_init":
+            params = self.add_use_prev_as_init_params()
+        elif method_name == "restart_loop":
+            params = {}
+            params = types.SimpleNamespace(**params)
+            params.active = True
 
         self.parameters[(method_name, method_id)] = params
 
@@ -338,12 +344,16 @@ class MethodProcessorWidget():
     def stop_processing(self):
         self.stop = True
     @Slot()
-    def process_methods(self, progress_callback=None):
+    def process_methods(self, progress_callback=None, retrigger=False):
         # get list of method items in method_list
+        if retrigger == False:
+            self.param_modifier = None
         method_items = [self.method_list.item(i) for i in range(self.method_list.count())]
 
         # loop through method items
         for item in method_items:
+            if self.stop:
+                break
             # get method name and id
             method_name, method_id = item.text().split(" (")
             method_id = int(method_id[:-1])  # remove closing parenthesis
@@ -415,7 +425,9 @@ class MethodProcessorWidget():
         print(results)
         return results
     def txt2img(self, params):
-
+        if self.param_modifier is not None:
+            for key, value in self.param_modifier.__dict__.items():
+                params.__dict__[key] = value
         params.sampler = translate_sampler(params.sampler)
         if type(params.grad_inject_timing) is not int:
             if params.grad_inject_timing.isnumeric():
@@ -426,11 +438,24 @@ class MethodProcessorWidget():
                 params.grad_inject_timing = float(params.grad_inject_timing)
             else:
                 params.grad_inject_timing = params.grad_inject_timing
-
-
         self.parent.deforum_ui.run_deforum_six_txt2img(params=params)
     def switch_model(self, params):
         from backend.shared import model_killer
         model_killer()
     def restart_loop(self, params=None):
-        self.process_methods()
+        if self.stop == True:
+            return
+
+        self.process_methods(retrigger=True)
+
+    def use_prev_as_init(self, params):
+        if self.param_modifier == None:
+            self.param_modifier = types.SimpleNamespace()
+        self.param_modifier.init_image = gs.temppath
+        self.param_modifier.use_init = True
+
+    def add_use_prev_as_init_params(self):
+        params = types.SimpleNamespace()
+        params.use_init = True
+        params.init_img = ""
+        return params

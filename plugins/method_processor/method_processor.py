@@ -27,7 +27,7 @@ import copy
 
 import PySide6
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QPushButton, QListWidget, QDialog, QFormLayout, \
-    QLineEdit, QHBoxLayout, QLabel, QMenu
+    QLineEdit, QHBoxLayout, QLabel, QMenu, QSpinBox, QDoubleSpinBox
 from PySide6.QtCore import QObject, Signal, Slot, Qt
 import types
 import argparse
@@ -113,12 +113,17 @@ class MethodProcessorWidget():
             column_layouts.append(column_layout)
 
         self.line_edits = {}
-        for i, param_name in enumerate(vars(params)):
-            line_edit = QLineEdit(str(getattr(params, param_name)))
-            self.line_edits[param_name] = line_edit
-            column_layouts[i % 15].addWidget(QLabel(param_name))
-            column_layouts[i % 15].addWidget(line_edit)
 
+        self.get_widget_types(params)
+
+        input_widgets_dict = self.create_input_widgets_dict()
+        for i, param_name in enumerate(vars(params)):
+            value = str(getattr(params, param_name))
+            widget_type = input_widgets_dict.get(param_name, QLineEdit)
+            input_widget = widget_type(value)
+            self.line_edits[param_name] = input_widget
+            column_layouts[i % 15].addWidget(QLabel(param_name))
+            column_layouts[i % 15].addWidget(input_widget)
         # create OK button
         ok_button = QPushButton("OK")
         ok_button.clicked.connect(parameter_widget.accept)
@@ -127,21 +132,23 @@ class MethodProcessorWidget():
 
         # show widget and update parameters if OK is clicked
         # show widget and update parameters if OK is clicked
-        if parameter_widget.exec_() == QDialog.Accepted:
+        if parameter_widget.exec() == QDialog.Accepted:
             for param_name in vars(params):
                 line_edit = self.line_edits[param_name]
                 value = line_edit.text()
+                string = False
+                if any(c.isalpha() for c in line_edit.text()):
+                    value = str(value)
+                    string = True
                 if value.isnumeric():
                     value = int(value)
-                elif "." in value and ":" not in value:
+                elif "." in value and string == False:
                     value = float(value)
                 elif value == "True":
                     value = True
                 elif value == "False":
                     value = False
                 # check for non-numeric characters
-                if any(c.isalpha() for c in line_edit.text()):
-                    value = line_edit.text()
                 else:
                     value = value
                 setattr(params, param_name, value)
@@ -206,11 +213,57 @@ class MethodProcessorWidget():
                     params = self.parameters[(method_name, method_id)]
                     method(params)
 
+    def create_input_widgets_dict(self):
+        # get input widgets from parent widget
+        print(self.parent.widgets[self.parent.current_widget].ui_unicontrol.unicontrol.w.findChildren(QWidget))
+
+        input_widgets = [
+            widget for widget in self.parent.widgets[self.parent.current_widget].w.findChildren(QWidget)
+
+        ]
+        print(input_widgets)
+        # create dictionary of input widgets and values for QComboBox widgets
+        input_widgets_dict = {}
+        for widget in input_widgets:
+            input_widgets_dict[widget.objectName()] = type(widget)
+        print(input_widgets_dict)
+        return input_widgets_dict
+
+    def get_combo_box_values(self, name):
+        # find QComboBox widget with given object name
+        combo_box = self.parent.unicontrol.findChild(QComboBox, name)
+
+        # return values if widget was found, otherwise return empty list
+        if combo_box:
+            return combo_box.items()
+        return []
+
+    def get_widget_types(self, params):
+        current_widget = self.parent.widgets[self.parent.current_widget].w
+        results = []
+        for key, value in params.__dict__.items():
+            try:
+                type_str = str(getattr(current_widget, key))
+                print(type_str)
+                if 'QSpinBox' in type_str or 'QDoubleSpinBox' in type_str:
+                    result = {'QSpinBox':getattr(current_widget, key).value()}
+                elif 'QTextEdit' in type_str or 'QLineEdit' in type_str:
+                    result = {'QLineEdit':getattr(current_widget, key).text()}
+                elif 'QCheckBox' in type_str:
+                    result = {'QCheckBox':getattr(current_widget, key).isChecked()}
+                elif 'QComboBox' in type_str:
+                    result = {'QComboBox':getattr(current_widget, key).items()}
+                    print(result)
+                results.append(result)
+            except Exception as e:
+                pass
+        print(results)
     # example method
     def example_method(self, params):
         print(params)
         print(params.param2)
     def txt2img(self, params):
+        print(type(params.use_init))
         self.parent.deforum_ui.run_deforum_six_txt2img(params=params)
         print(params)
         print(params.param2)

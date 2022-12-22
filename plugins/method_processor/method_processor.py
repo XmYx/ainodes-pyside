@@ -177,7 +177,7 @@ class MethodProcessorWidget():
             method_id = 0  # first instance of this method
 
         # create SimpleNamespace object to store parameters for this method
-        params = copy.deepcopy(self.parent.sessionparams.params)
+        params = self.parent.sessionparams.update_params()
         params.param1 = "test"
         params.param2 = "test"
 
@@ -209,7 +209,6 @@ class MethodProcessorWidget():
         print(params.param2)
     def txt2img(self, params):
         self.parent.deforum_ui.run_deforum_six_txt2img(params=params)
-
         print(params)
         print(params.param2)
     def restart_loop(self, params=None):

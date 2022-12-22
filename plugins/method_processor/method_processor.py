@@ -139,6 +139,9 @@ class MethodProcessorWidget():
                     value = True
                 elif value == "False":
                     value = False
+                # check for non-numeric characters
+                if any(c.isalpha() for c in line_edit.text()):
+                    value = line_edit.text()
                 else:
                     value = value
                 setattr(params, param_name, value)

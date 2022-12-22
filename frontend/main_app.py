@@ -12,7 +12,10 @@ defaultdirs = [
     "data/models",
     "data/models/custom",
 ]
-
+sys.path.append('src/AdaBins')
+sys.path.append('src/MiDaS')
+sys.path.append('src/pytorch3d-lite')
+sys.path.append('src/BLIP')
 for i in defaultdirs:
     os.makedirs(i, exist_ok=True)
 

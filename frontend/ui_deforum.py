@@ -7,6 +7,7 @@ from PIL import Image, ImageFont, ImageDraw
 from PySide6.QtCore import QObject, Signal, QPoint
 from PySide6.QtGui import QMouseEvent
 
+import backend.aesthetics.aesthetic_clip
 from backend.deforum.deforum_adapter import DeforumSix
 from backend.hypernetworks.modules.images import GridAnnotation
 from backend.singleton import singleton
@@ -111,11 +112,17 @@ class Deforum_UI(QObject):
                                          lowmem=params.lowmem,
                                          )
 
-    def run_deforum_six_txt2img(self, hiresinit = None, progress_callback=None, plotting=True):
+    def run_deforum_six_txt2img(self, hiresinit = None, progress_callback=None, plotting=True, params=None):
+        #backend.aesthetics.aesthetic_clip.generate_imgs_embd_20("test", "test", 5)
+
         gs.stop_all = False
         id = None
-        self.params = self.parent.sessionparams.update_params()
-        self.parent.params = self.params
+        if params == None:
+            self.params = self.parent.sessionparams.update_params()
+            self.parent.params = self.params
+        else:
+            self.params = params
+            self.parent.params = params
         index = 0
 
         if self.parent.canvas.canvas.rectlist != []:

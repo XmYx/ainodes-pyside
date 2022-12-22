@@ -194,7 +194,8 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                         if args.display_samples:
                             display.display(image)
                         index += 1
-                    args.seed = next_seed(args)
+                    if args.seed != '':
+                        args.seed = next_seed(args)
 
             #print(len(all_images))
             if args.make_grid:

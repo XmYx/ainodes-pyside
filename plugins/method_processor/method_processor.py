@@ -27,7 +27,7 @@ import copy
 
 import PySide6
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QPushButton, QListWidget, QDialog, QFormLayout, \
-    QLineEdit, QHBoxLayout, QLabel, QMenu, QSpinBox, QDoubleSpinBox, QCheckBox
+    QLineEdit, QHBoxLayout, QLabel, QMenu, QSpinBox, QDoubleSpinBox, QCheckBox, QTextEdit
 from PySide6.QtCore import QObject, Signal, Slot, Qt
 import types
 import argparse
@@ -121,20 +121,25 @@ class MethodProcessorWidget():
                 value = widget_type_and_value[(name, widget_type)]
                 if widget_type == 'QSpinBox':
                     widget = QSpinBox()
+                    widget.setMaximum(4096)
                     widget.setValue(value)
                 if widget_type == 'QDoubleSpinBox':
                     widget = QDoubleSpinBox()
+                    widget.setMaximum(4096.0)
                     widget.setValue(value)
                 elif widget_type == 'QLineEdit':
                     widget = QLineEdit()
-                    widget.setText(value)
+                    widget.setText(str(value))
+                elif widget_type == 'QTextEdit':
+                    widget = QTextEdit()
+                    widget.setText(str(value))
                 elif widget_type == 'QCheckBox':
                     widget = QCheckBox()
                     widget.setChecked(value)
                 elif widget_type == 'QComboBox':
                     widget = QComboBox()
                     widget.addItems(value)
-                    widget.setCurrentText(params.__dict__[name])
+                    widget.setCurrentText(str(params.__dict__[name]))
                 self.line_edits[name] = widget
                 column_layouts[i % 15].addWidget(QLabel(name))
                 column_layouts[i % 15].addWidget(widget)
@@ -166,6 +171,8 @@ class MethodProcessorWidget():
                         value = widget.value()
                     elif widget_type == 'QLineEdit':
                         value = widget.text()
+                    elif widget_type == 'QTextEdit':
+                        value = widget.toPlainText()
                     elif widget_type == 'QCheckBox':
                         value = widget.isChecked()
                     elif widget_type == 'QComboBox':
@@ -285,12 +292,15 @@ class MethodProcessorWidget():
                 elif 'QDoubleSpinBox' in type_str:
                     #result = {(key, 'QDoubleSpinBox'):getattr(current_widget, key).value()}
                     result = {(key, 'QDoubleSpinBox'):value}
-                elif 'QTextEdit' in type_str or 'QLineEdit' in type_str:
+                elif 'QLineEdit' in type_str:
                     #result = {(key, 'QLineEdit'):getattr(current_widget, key).text()}
                     result = {(key, 'QLineEdit'):value}
                 elif 'QCheckBox' in type_str:
                     #result = {(key, 'QCheckBox'):getattr(current_widget, key).isChecked()}
                     result = {(key, 'QCheckBox'):value}
+                elif 'QTextEdit' in type_str:
+                    #result = {(key, 'QCheckBox'):getattr(current_widget, key).isChecked()}
+                    result = {(key, 'QTextEdit'):value}
                 elif 'QComboBox' in type_str:
                     items = [getattr(current_widget, key).itemText(i) for i in range(getattr(current_widget, key).count())]
                     result = {(key,'QComboBox'):items}

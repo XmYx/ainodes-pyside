@@ -53,7 +53,7 @@ class SessionParams():
         for key, value in gs.system.__dict__.items():
             self.system_params[key] = value
 
-        return self.params
+        return self.system_params
 
 
     def update_system_params(self):
@@ -259,7 +259,7 @@ class SessionParams():
         gradient_pass = self.parent.widgets[widget].w.gradient_pass.currentText()
         return_type = self.parent.widgets[widget].w.return_type.currentText()
         keyframes = self.parent.widgets[widget].w.keyframes.toPlainText()
-
+        selected_model = self.parent.widgets[widget].w.selected_model.currentText()
         self.params = {             # todo make this a one step thing not two steps
             # Basic Params
             'mode': mode,
@@ -375,6 +375,7 @@ class SessionParams():
             "gradient_pass": gradient_pass,
             "return_type": return_type,
             "keyframes": keyframes,
+            "selected_model": selected_model
         }
 
         self.params = SimpleNamespace(**self.params)

@@ -63,8 +63,8 @@ class MethodProcessorWidget():
 
         # create combo box to select method
         self.method_combo_box = QComboBox()
-        self.method_combo_box.addItem("example_method")
         self.method_combo_box.addItem("txt2img")
+        self.method_combo_box.addItem("switch_model")
         self.method_combo_box.addItem("restart_loop")
         layout.addWidget(self.method_combo_box)
 
@@ -116,7 +116,9 @@ class MethodProcessorWidget():
 
         self.line_edits = {}
 
-        widget_types_and_values = self.get_widget_types(params)
+        widget_types_and_values = self.get_widget_types(params=params, current_widget=self.parent.widgets[self.parent.current_widget].w)
+        #widget_types_and_values = self.get_widget_types(params=params, current_widget=self.parent.system_setup.w)
+
         self.line_edits = {}
         for i, widget_type_and_value in enumerate(widget_types_and_values):
             for name, widget_type in widget_type_and_value.keys():
@@ -314,9 +316,13 @@ class MethodProcessorWidget():
             method_id = 0  # first instance of this method
 
         # create SimpleNamespace object to store parameters for this method
-        params = self.parent.sessionparams.update_params()
-        params.param1 = "test"
-        params.param2 = "test"
+        print(method_name)
+        if method_name == "txt2img":
+            params = self.parent.sessionparams.update_params()
+        elif method_name == "switch_model":
+            params = {}
+
+            params = types.SimpleNamespace(**params)
 
         self.parameters[(method_name, method_id)] = params
 
@@ -333,13 +339,25 @@ class MethodProcessorWidget():
         self.stop = True
     @Slot()
     def process_methods(self, progress_callback=None):
-        if self.stop == False:
-            for method_name in self.methods:
-                for method_id in self.methods[method_name]:
-                    method = self.methods[method_name][method_id]
-                    params = self.parameters[(method_name, method_id)]
-                    method(params)
+        # get list of method items in method_list
+        method_items = [self.method_list.item(i) for i in range(self.method_list.count())]
 
+        # loop through method items
+        for item in method_items:
+            # get method name and id
+            method_name, method_id = item.text().split(" (")
+            method_id = int(method_id[:-1])  # remove closing parenthesis
+
+            # get method and parameters
+            method = self.methods[method_name][method_id]
+            params = self.parameters[(method_name, method_id)]
+
+            # call method with parameters
+            getattr(self, method.__name__)(params)
+
+            # update progress
+            #if progress_callback:
+            #    progress_callback()
     def create_input_widgets_dict(self):
         # get input widgets from parent widget
         #print(self.parent.widgets[self.parent.current_widget].ui_unicontrol.unicontrol.w.findChildren(QWidget))
@@ -365,8 +383,8 @@ class MethodProcessorWidget():
             return combo_box.items()
         return []
 
-    def get_widget_types(self, params):
-        current_widget = self.parent.widgets[self.parent.current_widget].w
+    def get_widget_types(self, params, current_widget):
+        #current_widget = self.parent.widgets[self.parent.current_widget].w
         results = []
         combo_box_items = []
         for key, value in params.__dict__.items():
@@ -396,10 +414,6 @@ class MethodProcessorWidget():
                 pass
         print(results)
         return results
-    # example method
-    def example_method(self, params):
-        print(params)
-        print(params.param2)
     def txt2img(self, params):
 
         params.sampler = translate_sampler(params.sampler)
@@ -415,5 +429,8 @@ class MethodProcessorWidget():
 
 
         self.parent.deforum_ui.run_deforum_six_txt2img(params=params)
+    def switch_model(self, params):
+        from backend.shared import model_killer
+        model_killer()
     def restart_loop(self, params=None):
         self.process_methods()

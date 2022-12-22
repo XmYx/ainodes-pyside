@@ -123,6 +123,9 @@ class Deforum_UI(QObject):
         else:
             self.params = params
             self.parent.params = params
+            new_model = os.path.join(gs.system.models_path, params.selected_model)
+            gs.system.sd_model_file = new_model
+
         index = 0
 
         if self.parent.canvas.canvas.rectlist != []:

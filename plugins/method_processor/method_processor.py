@@ -26,6 +26,7 @@ the image_preview_func from the main thread.
 import copy
 
 import PySide6
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QPushButton, QListWidget, QDialog, QFormLayout, \
     QLineEdit, QHBoxLayout, QLabel, QMenu, QSpinBox, QDoubleSpinBox, QCheckBox, QTextEdit
 from PySide6.QtCore import QObject, Signal, Slot, Qt
@@ -203,13 +204,98 @@ class MethodProcessorWidget():
         menu = QMenu()
         delete_action = menu.addAction("Delete")
         parameters_action = menu.addAction("Show Parameters")
+        # add duplicate in place action
+        duplicate_in_place_action = QAction("Duplicate in place", self.widget)
+        duplicate_in_place_action.triggered.connect(lambda: self.duplicate_in_place(item))
+        menu.addAction(duplicate_in_place_action)
+
+        # add duplicate to end action
+        duplicate_to_end_action = QAction("Duplicate to end", self.widget)
+        #duplicate_to_end_action.triggered.connect(lambda: self.duplicate_to_end(item))
+        menu.addAction(duplicate_to_end_action)
+
+        # add copy action
+        copy_action = QAction("Copy", self.widget)
+        #copy_action.triggered.connect(lambda: self.copy(item))
+        menu.addAction(copy_action)
+
+        # add paste action
+        paste_action = QAction("Paste", self.widget)
+        #paste_action.triggered.connect(lambda: self.paste())
+        menu.addAction(paste_action)
 
         # show context menu and handle actions
-        action = menu.exec_(self.method_list.mapToGlobal(position))
+        action = menu.exec(self.method_list.mapToGlobal(position))
         if action == delete_action:
             self.delete_method(item)
         elif action == parameters_action:
             self.show_parameter_widget(item)
+        elif action == duplicate_in_place_action:
+            self.duplicate_in_place(item)
+        elif action == duplicate_to_end_action:
+            self.duplicate_to_end(item)
+        elif action == copy_action:
+            self.copy(item)
+        elif action == paste_action:
+            self.paste()
+
+
+
+    def duplicate_in_place(self, item):
+        # get method name and id
+        method_name, method_id = item.text().split(" (")
+        method_id = int(method_id[:-1])  # remove closing parenthesis
+
+        # create new id for duplicate
+        new_id = max(self.methods[method_name].keys()) + 1
+
+        # add duplicate method
+        self.methods[method_name][new_id] = self.methods[method_name][method_id]
+        self.parameters[(method_name, new_id)] = self.parameters[(method_name, method_id)]
+
+        # add duplicate item to list
+        item_text = f"{method_name} ({new_id})"
+        self.method_list.insertItem(self.method_list.row(item), item_text)
+
+    def duplicate_to_end(self, item):
+        # get method name and id
+        method_name, method_id = item.text().split(" (")
+        method_id = int(method_id[:-1])  # remove closing parenthesis
+
+        # create new id for duplicate
+        new_id = max(self.methods[method_name].keys()) + 1
+
+        # add duplicate method
+        self.methods[method_name][new_id] = self.methods[method_name][method_id]
+        self.parameters[(method_name, new_id)] = self.parameters[(method_name, method_id)]
+
+        # add duplicate item to list
+        item_text = f"{method_name} ({new_id})"
+        self.method_list.addItem(item_text)
+
+    def copy(self, item):
+        # get method name and id
+        method_name, method_id = item.text().split(" (")
+        method_id = int(method_id[:-1])  # remove closing parenthesis
+
+        # store copied method and id
+        self.copied_method = (method_name, method_id)
+    def paste(self):
+        if self.copied_method:
+            # get method name and id
+            method_name, method_id = self.copied_method[0], self.copied_method[1]
+
+            # create new id for pasted method
+            new_id = max(self.methods[method_name].keys()) + 1
+
+            # paste method and parameters
+            self.methods[method_name][new_id] = self.methods[method_name][method_id]
+            self.parameters[(method_name, new_id)] = self.parameters[(method_name, method_id)]
+
+            # add pasted item to list
+            item_text = f"{method_name} ({new_id})"
+            self.method_list.addItem(item_text)
+
     @Slot()
     def delete_method(self, item):
         method_name, method_id = item.text().split(" (")

@@ -26,8 +26,9 @@ the image_preview_func from the main thread.
 import copy
 
 import PySide6
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QPushButton, QListWidget
-from PySide6.QtCore import QObject, Signal, Slot
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QPushButton, QListWidget, QDialog, QFormLayout, \
+    QLineEdit, QHBoxLayout, QLabel, QMenu
+from PySide6.QtCore import QObject, Signal, Slot, Qt
 import types
 import argparse
 
@@ -72,6 +73,7 @@ class MethodProcessorWidget():
 
         # create list widget to display added methods
         self.method_list = QListWidget()
+        #self.method_list.itemClicked.connect(self.show_parameter_widget)
         self.method_list.itemDoubleClicked.connect(self.delete_method)
 
         layout.addWidget(self.method_list)
@@ -87,6 +89,77 @@ class MethodProcessorWidget():
         # set layout
         self.widget.setLayout(layout)
 
+        self.method_list.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.method_list.customContextMenuRequested.connect(self.show_context_menu)
+    @Slot()
+    def show_parameter_widget(self, item):
+        method_name, method_id = item.text().split(" (")
+        method_id = int(method_id[:-1])  # remove closing parenthesis
+        params = self.parameters[(method_name, method_id)]
+
+        # create parameter widget
+        parameter_widget = QDialog(self.widget)
+        parameter_widget.setWindowTitle(f"{method_name} ({method_id}) Parameters")
+
+        # create horizontal layout to contain column layouts
+        h_layout = QHBoxLayout()
+        parameter_widget.setLayout(h_layout)
+
+        # create column layouts
+        column_layouts = []
+        for i in range(15):
+            column_layout = QVBoxLayout()
+            h_layout.addLayout(column_layout)
+            column_layouts.append(column_layout)
+
+        self.line_edits = {}
+        for i, param_name in enumerate(vars(params)):
+            line_edit = QLineEdit(str(getattr(params, param_name)))
+            self.line_edits[param_name] = line_edit
+            column_layouts[i % 15].addWidget(QLabel(param_name))
+            column_layouts[i % 15].addWidget(line_edit)
+
+        # create OK button
+        ok_button = QPushButton("OK")
+        ok_button.clicked.connect(parameter_widget.accept)
+        h_layout.addStretch()
+        h_layout.addWidget(ok_button)
+
+        # show widget and update parameters if OK is clicked
+        # show widget and update parameters if OK is clicked
+        if parameter_widget.exec_() == QDialog.Accepted:
+            for param_name in vars(params):
+                line_edit = self.line_edits[param_name]
+                value = line_edit.text()
+                if value.isnumeric():
+                    value = int(value)
+                elif "." in value:
+                    value = float(value)
+                elif value == "True":
+                    value = True
+                elif value == "False":
+                    value = False
+                else:
+                    value = value
+                setattr(params, param_name, value)
+
+    def show_context_menu(self, position):
+        # get current item
+        item = self.method_list.itemAt(position)
+        if not item:
+            return
+
+        # create context menu
+        menu = QMenu()
+        delete_action = menu.addAction("Delete")
+        parameters_action = menu.addAction("Show Parameters")
+
+        # show context menu and handle actions
+        action = menu.exec_(self.method_list.mapToGlobal(position))
+        if action == delete_action:
+            self.delete_method(item)
+        elif action == parameters_action:
+            self.show_parameter_widget(item)
     @Slot()
     def delete_method(self, item):
         method_name, method_id = item.text().split(" (")

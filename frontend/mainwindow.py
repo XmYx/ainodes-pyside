@@ -62,6 +62,7 @@ class Callbacks(QObject):
     add_image_to_thumbnail_signal = Signal(str)
     setStatusBar = Signal(str)
     vid2vid_one_percent = Signal(int)
+    set_download_percent = Signal(int)
 
 
 class MainWindow(QMainWindow):
@@ -278,6 +279,7 @@ class MainWindow(QMainWindow):
         self.prompt_fetcher_ui.signals.got_krea_prompts.connect(self.prompt_fetcher_ui.set_krea_prompts)
 
         self.model_download.signals.startDownload.connect(self.download_model_thread)
+        self.signals.set_download_percent.connect(self.model_download_progress_callback_signal)
 
         self.thumbs.w.thumbnails.itemClicked.connect(self.select_outpaint_image)
 
@@ -359,6 +361,9 @@ class MainWindow(QMainWindow):
         self.threadpool.start(worker)
 
     def model_download_progress_callback(self, percent):
+        self.signals.set_download_percent.emit(percent)
+
+    def model_download_progress_callback_signal(self, percent):
         self.model_download_ui.w.dl_progress.setValue(percent)
 
     @Slot()

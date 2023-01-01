@@ -3323,6 +3323,9 @@
               </item>
               <item row="6" column="3" colspan="2">
                <widget class="QCheckBox" name="multi_dim_prompt">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Have a look into multiDimParams.txt for more informations&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
                  <string>Multi Dim Prompt</string>
                 </property>

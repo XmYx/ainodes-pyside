@@ -7,6 +7,8 @@ from backend.torch_gc import torch_gc
 
 gs = singleton
 
+
+
 class UniControl(QObject):
 
     def __init__(self, parent, *args, **kwargs):
@@ -45,6 +47,24 @@ class UniControl(QObject):
         self.initAnim.start()
         self.hide_all()
         self.ui_unicontrol = UniControl_UI(self)
+
+    def select_init_image(self):
+        filename = QFileDialog.getOpenFileName(caption='Select Init image', filter='Image (*.png *.jpg)')
+        self.w.init_image.setText(filename[0])
+
+    def select_mask_image(self):
+        filename = QFileDialog.getOpenFileName(caption='Select Init image', filter='Image (*.png *.jpg)')
+        self.w.mask_file.setText(filename[0])
+
+    def select_input_video(self):
+        filename = QFileDialog.getOpenFileName(caption='Select input video', filter='Video (*.mp4 *.avi)')
+        self.w.video_init_path.setText(filename[0])
+
+    def select_mask_video(self):
+        filename = QFileDialog.getOpenFileName(caption='Select mask video', filter='Video (*.mp4 *.avi)')
+        self.w.video_mask_path.setText(filename[0])
+
+
 
     def stop_all(self):
         gs.stop_all = True

@@ -1,4 +1,4 @@
-name: ai-pixel
+name: ai-nodes
 channels:
   - pytorch
   - defaults

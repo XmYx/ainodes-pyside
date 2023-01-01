@@ -32,6 +32,9 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <item row="0" column="0">
     <widget class="QDockWidget" name="dockWidget">
      <widget class="QWidget" name="dockWidgetContents">
@@ -43,16 +46,19 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
        <property name="leftMargin">
-        <number>2</number>
+        <number>3</number>
        </property>
        <property name="topMargin">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="rightMargin">
-        <number>2</number>
+        <number>3</number>
        </property>
        <property name="bottomMargin">
-        <number>2</number>
+        <number>0</number>
+       </property>
+       <property name="spacing">
+        <number>0</number>
        </property>
        <item row="1" column="1">
         <widget class="QPushButton" name="dream">
@@ -97,8 +103,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>715</width>
-            <height>2900</height>
+            <width>713</width>
+            <height>2250</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -108,6 +114,21 @@
            </size>
           </property>
           <layout class="QGridLayout" name="gridLayout_13">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <property name="spacing">
+            <number>0</number>
+           </property>
            <item row="0" column="0">
             <widget class="QFrame" name="basic_values">
              <property name="sizePolicy">
@@ -136,16 +157,19 @@
              </property>
              <layout class="QGridLayout" name="gridLayout_2">
               <property name="leftMargin">
-               <number>3</number>
+               <number>0</number>
               </property>
               <property name="topMargin">
-               <number>3</number>
+               <number>0</number>
               </property>
               <property name="rightMargin">
-               <number>3</number>
+               <number>0</number>
               </property>
               <property name="bottomMargin">
-               <number>3</number>
+               <number>0</number>
+              </property>
+              <property name="spacing">
+               <number>0</number>
               </property>
               <item row="21" column="0" colspan="7">
                <widget class="QFrame" name="plugin_values">
@@ -156,6 +180,21 @@
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_17">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
                  <item row="0" column="0">
                   <widget class="QLabel" name="label">
                    <property name="text">
@@ -209,16 +248,19 @@
                 </property>
                 <layout class="QGridLayout" name="gridLayout">
                  <property name="leftMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="topMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="rightMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="bottomMargin">
-                  <number>3</number>
+                  <number>0</number>
+                 </property>
+                 <property name="spacing">
+                  <number>0</number>
                  </property>
                  <item row="0" column="0">
                   <widget class="QPushButton" name="delete_2">
@@ -494,7 +536,7 @@
                   <number>0</number>
                  </property>
                  <property name="spacing">
-                  <number>5</number>
+                  <number>0</number>
                  </property>
                  <item row="27" column="0" colspan="2">
                   <widget class="QCheckBox" name="show_mask_setup">
@@ -546,6 +588,21 @@
                     <enum>QFrame::Raised</enum>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_16">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
                     <item row="1" column="0">
                      <widget class="QCheckBox" name="use_alpha_as_mask_2">
                       <property name="text">
@@ -753,19 +810,19 @@
                    </property>
                    <layout class="QGridLayout" name="gridLayout_5">
                     <property name="leftMargin">
-                     <number>3</number>
+                     <number>0</number>
                     </property>
                     <property name="topMargin">
-                     <number>3</number>
+                     <number>0</number>
                     </property>
                     <property name="rightMargin">
-                     <number>3</number>
+                     <number>0</number>
                     </property>
                     <property name="bottomMargin">
-                     <number>3</number>
+                     <number>0</number>
                     </property>
                     <property name="spacing">
-                     <number>5</number>
+                     <number>0</number>
                     </property>
                     <item row="5" column="1" colspan="2">
                      <widget class="QLineEdit" name="outdir">
@@ -833,7 +890,22 @@
                    <property name="frameShadow">
                     <enum>QFrame::Raised</enum>
                    </property>
-                   <layout class="QGridLayout" name="gridLayout_18">
+                   <layout class="QGridLayout" name="gridLayout_18" rowstretch="0,0">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
                     <item row="0" column="2">
                      <widget class="QPushButton" name="select_init_image">
                       <property name="text">
@@ -1044,16 +1116,19 @@
                 </property>
                 <layout class="QGridLayout" name="gridLayout_12">
                  <property name="leftMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="topMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="rightMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="bottomMargin">
-                  <number>3</number>
+                  <number>0</number>
+                 </property>
+                 <property name="spacing">
+                  <number>0</number>
                  </property>
                  <item row="4" column="1" colspan="4">
                   <widget class="QLineEdit" name="plotYLine"/>
@@ -1469,6 +1544,9 @@
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_3">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
                  <property name="leftMargin">
                   <number>0</number>
                  </property>
@@ -1497,17 +1575,20 @@
                      <string>3d / Mask / Other</string>
                     </attribute>
                     <layout class="QVBoxLayout" name="verticalLayout_5">
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
                      <property name="leftMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <property name="topMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <property name="rightMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <property name="bottomMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <item>
                       <widget class="QFrame" name="frame_7">
@@ -1534,6 +1615,9 @@
                          <number>0</number>
                         </property>
                         <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="spacing">
                          <number>0</number>
                         </property>
                         <item row="5" column="2">
@@ -1899,19 +1983,19 @@
                     </attribute>
                     <layout class="QVBoxLayout" name="verticalLayout_4">
                      <property name="spacing">
-                      <number>5</number>
+                      <number>0</number>
                      </property>
                      <property name="leftMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <property name="topMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <property name="rightMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <property name="bottomMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <item>
                       <widget class="QLabel" name="label_24">
@@ -1980,17 +2064,20 @@
                      <string>2D</string>
                     </attribute>
                     <layout class="QHBoxLayout" name="horizontalLayout">
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
                      <property name="leftMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <property name="topMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <property name="rightMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <property name="bottomMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <item>
                       <widget class="QFrame" name="frame_2">
@@ -2017,6 +2104,9 @@
                          <number>0</number>
                         </property>
                         <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="spacing">
                          <number>0</number>
                         </property>
                         <item row="4" column="1">
@@ -2144,17 +2234,20 @@
                      <string>3D</string>
                     </attribute>
                     <layout class="QVBoxLayout" name="verticalLayout">
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
                      <property name="leftMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <property name="topMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <property name="rightMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <property name="bottomMargin">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <item>
                       <widget class="QFrame" name="frame_6">
@@ -2181,6 +2274,9 @@
                          <number>0</number>
                         </property>
                         <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="spacing">
                          <number>0</number>
                         </property>
                         <item row="0" column="0">
@@ -2326,16 +2422,19 @@
                 </property>
                 <layout class="QGridLayout" name="gridLayout_15">
                  <property name="leftMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="topMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="rightMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="bottomMargin">
-                  <number>3</number>
+                  <number>0</number>
+                 </property>
+                 <property name="spacing">
+                  <number>0</number>
                  </property>
                  <item row="4" column="0">
                   <widget class="QLabel" name="label_34">
@@ -2414,16 +2513,19 @@
                    </property>
                    <layout class="QGridLayout" name="gridLayout_14">
                     <property name="leftMargin">
-                     <number>3</number>
+                     <number>0</number>
                     </property>
                     <property name="topMargin">
-                     <number>3</number>
+                     <number>0</number>
                     </property>
                     <property name="rightMargin">
-                     <number>3</number>
+                     <number>0</number>
                     </property>
                     <property name="bottomMargin">
-                     <number>3</number>
+                     <number>0</number>
+                    </property>
+                    <property name="spacing">
+                     <number>0</number>
                     </property>
                     <item row="2" column="0">
                      <widget class="QLabel" name="label_3">
@@ -2659,16 +2761,19 @@
                    </property>
                    <layout class="QGridLayout" name="gridLayout_7">
                     <property name="leftMargin">
-                     <number>3</number>
+                     <number>0</number>
                     </property>
                     <property name="topMargin">
-                     <number>3</number>
+                     <number>0</number>
                     </property>
                     <property name="rightMargin">
-                     <number>3</number>
+                     <number>0</number>
                     </property>
                     <property name="bottomMargin">
-                     <number>3</number>
+                     <number>0</number>
+                    </property>
+                    <property name="spacing">
+                     <number>0</number>
                     </property>
                     <item row="4" column="4">
                      <widget class="QPushButton" name="select_mse_init">
@@ -2910,21 +3015,21 @@
                 <property name="frameShadow">
                  <enum>QFrame::Raised</enum>
                 </property>
-                <layout class="QGridLayout" name="gridLayout_6">
+                <layout class="QGridLayout" name="gridLayout_6" rowstretch="0,0,0,0,0,0,0,0,0,0,0">
                  <property name="leftMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="topMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="rightMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="bottomMargin">
-                  <number>3</number>
+                  <number>0</number>
                  </property>
                  <property name="spacing">
-                  <number>5</number>
+                  <number>0</number>
                  </property>
                  <item row="8" column="0">
                   <widget class="QLabel" name="label_22">

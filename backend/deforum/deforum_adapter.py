@@ -609,7 +609,7 @@ class DeforumSix:
         for key, value in anim_args.__dict__.items():
             try:
                 anim_args.__dict__[key] = self.parent.params.__dict__[key]
-                print(f"settings {key} from {value} to {self.parent.params.__dict__[key]}")
+                #print(f"settings {key} from {value} to {self.parent.params.__dict__[key]}")
             except:
                 pass
         for key, value in args.__dict__.items():
@@ -768,9 +768,7 @@ class DeforumSix:
 
         skip_video_for_run_all = True if anim_args.max_frames < 2 else False
 
-        if skip_video_for_run_all == True:
-            print('Skipping video creation, uncheck skip_video_for_run_all if you want to run it')
-        else:
+        if skip_video_for_run_all == False:
             import os
             import subprocess
             from base64 import b64encode

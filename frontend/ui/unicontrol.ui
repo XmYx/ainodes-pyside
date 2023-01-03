@@ -3009,6 +3009,13 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="15" column="6" colspan="2">
+                  <widget class="QCheckBox" name="preview_on_canvas">
+                   <property name="text">
+                    <string>Model preview images</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </widget>
               </item>

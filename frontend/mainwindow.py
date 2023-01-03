@@ -1,4 +1,8 @@
+import json
 import os
+import re
+from io import BytesIO
+
 import backend.settings as settings
 from backend.singleton import singleton
 
@@ -49,7 +53,9 @@ from frontend.ui_deforum import Deforum_UI
 from frontend.session_params import SessionParams
 from backend.shared import save_last_prompt
 from backend.maintain_models import check_models_exist
-
+from backend.sqlite import db_base
+from backend.sqlite import model_db_civitai
+from backend.web_requests.web_images import WebImages
 
 # please don't remove it totally, just remove what we know is not used
 class Callbacks(QObject):
@@ -151,6 +157,8 @@ class MainWindow(QMainWindow):
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.prompt_fetcher.w.dockWidget)
         self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
         self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.widgets[self.current_widget].w.dockWidget)
+        self.civitai_api = model_db_civitai.civit_ai_api()
+        self.web_images = WebImages()
 
         self.hide_default()
         self.mode = 'txt2img'
@@ -176,6 +184,8 @@ class MainWindow(QMainWindow):
         ], dtype=torch.float, device='cuda')
 
         self.params = self.sessionparams.update_params()
+        db_base.check_db_status()
+
 
     def selftest(self):  # TODO Lets extend this function with everything we have and has to work
 
@@ -253,6 +263,7 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.outpaint_offset_signal)
         # self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.widgets[self.current_widget].w.mask_offset.value())))  # todo does this work?
         self.widgets[self.current_widget].w.rect_overlap.valueChanged.connect(self.outpaint_rect_overlap)
+        self.widgets[self.current_widget].w.selected_model.currentIndexChanged.connect(self.select_new_model)
 
         self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
         self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
@@ -281,10 +292,59 @@ class MainWindow(QMainWindow):
         self.model_download.signals.startDownload.connect(self.download_model_thread)
         self.signals.set_download_percent.connect(self.model_download_progress_callback_signal)
 
+        self.model_download.civit_ai_api.signals.civitai_no_more_models.connect(self.all_civitai_model_data_loaded_thread)
+        self.model_download.civit_ai_api.signals.civitai_start_model_update.connect(self.civitai_start_model_update_thread)
+        self.model_download.signals.show_model_preview_images.connect(self.show_model_preview_images)
         self.thumbs.w.thumbnails.itemClicked.connect(self.select_outpaint_image)
 
         self.system_setup.w.ok.clicked.connect(self.sessionparams.update_system_params)
         self.system_setup.w.cancel.clicked.connect(self.update_ui_from_system_params)
+        self.web_images.signals.web_image_retrived.connect(self.show_web_image_on_canvas)
+
+
+    def show_model_preview_images(self, model):
+        for image in model['images']:
+            self.show_image_from_url(image['url'])
+
+
+    def show_image_from_url(self, url):
+        self.web_images.get_image(url)
+
+    def show_web_image_on_canvas(self, image_string):
+        self.image = Image.open(BytesIO(image_string)).resize((512,512))
+        self.image_preview_func()
+
+
+    def select_new_model(self):
+        if self.widgets[self.current_widget].w.preview_on_canvas.isChecked():
+            if 'custom/' in self.widgets[self.current_widget].w.selected_model.currentText():
+                custom_model_info = self.civitai_api.civitai_get_model_data(self.widgets[self.current_widget].w.selected_model.currentText().replace('custom/',''))
+                custom_model_info = custom_model_info[0]
+                print(custom_model_info.keys())
+
+                self.widgets[self.current_widget].w.selected_model.setToolTip(custom_model_info['description'])
+                self.widgets[self.current_widget].w.prompts.setPlaceholderText(custom_model_info['trained_words'])
+                images = custom_model_info['images']
+                images =  json.loads(images)
+                for image in images:
+                    self.show_image_from_url(image['url'])
+            else:
+                self.widgets[self.current_widget].w.selected_model.setToolTip('')
+                self.widgets[self.current_widget].w.prompts.setPlaceholderText('Enter your prompt here')
+
+
+
+
+    @Slot()
+    def civitai_start_model_update_thread(self):
+        worker = Worker(self.model_download.civit_ai_api.civitai_start_model_update)
+        self.threadpool.start(worker)
+
+    @Slot()
+    def all_civitai_model_data_loaded_thread(self):
+        worker = Worker(self.model_download.civit_ai_api.all_civitai_model_data_loaded)
+        self.threadpool.start(worker)
+
 
     def task_switcher(self):
         gs.stop_all = False
@@ -455,7 +515,7 @@ class MainWindow(QMainWindow):
                         getattr(self.widgets[self.current_widget].w, key).setCheckState(QtCore.Qt.Checked)
 
             except Exception as e:
-                print('setting still to be fixed ', e)
+                #print('setting still to be fixed ', e)
                 continue
 
     def update_ui_from_system_params(self):

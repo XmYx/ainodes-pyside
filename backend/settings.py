@@ -45,7 +45,6 @@ def save_settings_json():
         "system": json.loads(system),
         "diffusion": json.loads(diffusion)
     })
-    print(json.loads(system))
     with open("configs/ainodes/settings.json", "w") as write_file:
         json.dump({
             "system": json.loads(system),

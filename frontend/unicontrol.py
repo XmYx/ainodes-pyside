@@ -1,18 +1,22 @@
 import os
 
 from PySide6 import QtUiTools, QtCore
-from PySide6.QtCore import QFile, QObject, QEasingCurve, QRect
+from PySide6.QtCore import QFile, QObject, QEasingCurve, QRect, Signal
+from PySide6.QtWidgets import QFileDialog
+
 from backend.singleton import singleton
 from backend.torch_gc import torch_gc
-
+from backend.sqlite import model_db_civitai
 gs = singleton
 
-
+class Callbacks(QObject):
+    model_changed = Signal(str)
 
 class UniControl(QObject):
 
     def __init__(self, parent, *args, **kwargs):
         self.parent = parent
+        self.signals = Callbacks()
         loader = QtUiTools.QUiLoader()
         file = QFile("frontend/ui/unicontrol.ui")
         file.open(QFile.ReadOnly)
@@ -51,6 +55,7 @@ class UniControl(QObject):
         self.initAnim.start()
         self.hide_all()
         self.ui_unicontrol = UniControl_UI(self)
+        self.civitai_api = model_db_civitai.civit_ai_api()
 
     def select_init_image(self):
         filename = QFileDialog.getOpenFileName(caption='Select Init image', filter='Image (*.png *.jpg)')

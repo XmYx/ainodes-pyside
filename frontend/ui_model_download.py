@@ -9,6 +9,7 @@ import urllib.parse
 from PySide6 import QtUiTools, QtNetwork, QtCore
 from PySide6.QtCore import QObject, QFile, Signal
 from backend.poor_mans_wget import wget_progress, wget_headers
+from backend.sqlite import model_db_civitai
 from backend.singleton import singleton
 gs = singleton
 
@@ -31,6 +32,8 @@ class Callbacks(QObject):
     setCurrentProgress = Signal(int)
     # Signal to be emitted when the file has been downloaded successfully.
     succeeded = Signal()
+    # signal to push the list of preview images to be shownon canvas
+    show_model_preview_images = Signal(dict)
 
 
 
@@ -43,8 +46,19 @@ class ModelDownload():
         self.model_download.w.model_list.itemClicked.connect(self.show_model_infos)
         self.model_download.w.download_button.clicked.connect(self.signal_download_model)
         self.model_download.w.more_models.clicked.connect(self.get_more_models)
+        self.model_download.w.maintain_custom_models.clicked.connect(self.maintain_custom_models)
         self.actual_model_list = {}
         self.next_models_link = None
+        self.civit_ai_api = model_db_civitai.civit_ai_api()
+
+
+
+    def maintain_custom_models(self):
+        self.civit_ai_api.civitai_start_model_update()
+        #self.civit_ai_api.signals.civitai_start_model_update.emit()
+
+    def civitai_model_data_update(self):
+        self.civit_ai_api.get_model_list()
 
     def signal_download_model(self):
         self.signals.startDownload.emit()
@@ -60,6 +74,8 @@ Type: {model_info['item']['type']}
 NSFW: {model_info['item']['nsfw']} 
 """
         self.model_download.w.model_informations.setPlainText(info)
+        if self.model_download.w.preview_on_canvas.isChecked():
+            self.signals.show_model_preview_images.emit(model_info['model'])
 
     def executeRequest(self, url):
         req = QtNetwork.QNetworkRequest(QtCore.QUrl(url))

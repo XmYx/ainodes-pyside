@@ -17,14 +17,17 @@
    <string>imageLab</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
-   <property name="leftMargin">
+   <property name="spacing">
     <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>3</number>
    </property>
    <property name="topMargin">
     <number>0</number>
    </property>
    <property name="rightMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <property name="bottomMargin">
     <number>0</number>
@@ -36,6 +39,21 @@
      </property>
      <widget class="QWidget" name="dockWidgetContents">
       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QWidget" name="widget" native="true">
          <property name="minimumSize">
@@ -44,7 +62,23 @@
            <height>100</height>
           </size>
          </property>
-         <layout class="QVBoxLayout" name="dropZone"/>
+         <layout class="QVBoxLayout" name="dropZone">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+         </layout>
         </widget>
        </item>
        <item>
@@ -62,6 +96,9 @@
           </size>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
@@ -80,27 +117,36 @@
              <bool>true</bool>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="Upscale">
              <attribute name="title">
               <string>Upscale</string>
              </attribute>
              <layout class="QVBoxLayout" name="verticalLayout_3">
+              <property name="spacing">
+               <number>0</number>
+              </property>
               <property name="leftMargin">
-               <number>5</number>
+               <number>0</number>
               </property>
               <property name="topMargin">
                <number>0</number>
               </property>
               <property name="rightMargin">
-               <number>5</number>
+               <number>0</number>
               </property>
               <property name="bottomMargin">
                <number>0</number>
               </property>
               <item>
                <layout class="QGridLayout" name="gridLayout_3">
+                <property name="horizontalSpacing">
+                 <number>2</number>
+                </property>
+                <property name="verticalSpacing">
+                 <number>0</number>
+                </property>
                 <item row="4" column="0">
                  <widget class="QLabel" name="esrStrength_lable">
                   <property name="text">
@@ -271,6 +317,24 @@
               <string>Upscale 2.0</string>
              </attribute>
              <layout class="QGridLayout" name="gridLayout_7">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <property name="horizontalSpacing">
+               <number>2</number>
+              </property>
+              <property name="verticalSpacing">
+               <number>0</number>
+              </property>
               <item row="6" column="0">
                <widget class="QLabel" name="label_20">
                 <property name="text">
@@ -442,8 +506,29 @@ hr { height: 1px; border-width: 0; }
               <string>Img2Txt</string>
              </attribute>
              <layout class="QVBoxLayout" name="verticalLayout_4">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item>
                <layout class="QGridLayout" name="gridLayout_2">
+                <property name="horizontalSpacing">
+                 <number>2</number>
+                </property>
+                <property name="verticalSpacing">
+                 <number>0</number>
+                </property>
                 <item row="0" column="0">
                  <widget class="QCheckBox" name="grayscaleType">
                   <property name="text">
@@ -513,14 +598,17 @@ hr { height: 1px; border-width: 0; }
               <string>Watermark</string>
              </attribute>
              <layout class="QVBoxLayout" name="verticalLayout_5">
+              <property name="spacing">
+               <number>0</number>
+              </property>
               <property name="leftMargin">
-               <number>5</number>
+               <number>0</number>
               </property>
               <property name="topMargin">
                <number>0</number>
               </property>
               <property name="rightMargin">
-               <number>5</number>
+               <number>0</number>
               </property>
               <property name="bottomMargin">
                <number>0</number>
@@ -581,15 +669,21 @@ hr { height: 1px; border-width: 0; }
              </attribute>
              <layout class="QGridLayout" name="gridLayout_4">
               <property name="leftMargin">
-               <number>5</number>
+               <number>0</number>
               </property>
               <property name="topMargin">
                <number>0</number>
               </property>
               <property name="rightMargin">
-               <number>5</number>
+               <number>0</number>
               </property>
               <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <property name="horizontalSpacing">
+               <number>2</number>
+              </property>
+              <property name="verticalSpacing">
                <number>0</number>
               </property>
               <item row="4" column="0" colspan="2">
@@ -761,6 +855,24 @@ hr { height: 1px; border-width: 0; }
               <string>Aestetic Prediction</string>
              </attribute>
              <layout class="QGridLayout" name="gridLayout_5">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <property name="horizontalSpacing">
+               <number>0</number>
+              </property>
+              <property name="verticalSpacing">
+               <number>2</number>
+              </property>
               <item row="5" column="0">
                <widget class="QCheckBox" name="checkBox_4">
                 <property name="text">
@@ -835,6 +947,24 @@ hr { height: 1px; border-width: 0; }
               <string>Interrogation</string>
              </attribute>
              <layout class="QGridLayout" name="gridLayout_6">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <property name="horizontalSpacing">
+               <number>2</number>
+              </property>
+              <property name="verticalSpacing">
+               <number>0</number>
+              </property>
               <item row="5" column="0">
                <widget class="QCheckBox" name="interrogate">
                 <property name="text">
@@ -913,6 +1043,24 @@ hr { height: 1px; border-width: 0; }
               <string>VoltaML</string>
              </attribute>
              <layout class="QGridLayout" name="gridLayout">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <property name="horizontalSpacing">
+               <number>2</number>
+              </property>
+              <property name="verticalSpacing">
+               <number>0</number>
+              </property>
               <item row="2" column="0">
                <widget class="QSpinBox" name="max_gpu_memory">
                 <property name="minimum">

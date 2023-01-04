@@ -15,13 +15,13 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <property name="topMargin">
     <number>0</number>
    </property>
    <property name="rightMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <property name="bottomMargin">
     <number>0</number>
@@ -52,7 +52,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>563</width>
+            <width>557</width>
             <height>624</height>
            </rect>
           </property>
@@ -75,7 +75,7 @@
               <bool>true</bool>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>2</number>
              </property>
              <widget class="QWidget" name="tab_2">
               <attribute name="title">
@@ -124,13 +124,20 @@
                   <property name="verticalSpacing">
                    <number>2</number>
                   </property>
-                  <item row="0" column="0">
+                  <item row="1" column="0">
                    <widget class="QPushButton" name="maintain_custom_models">
                     <property name="toolTip">
                      <string>Will try to fetch missing informations for the existing custom models</string>
                     </property>
                     <property name="text">
                      <string>Maintain Custom Models</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_12">
+                    <property name="text">
+                     <string>Download model data to DB</string>
                     </property>
                    </widget>
                   </item>
@@ -164,7 +171,7 @@
                   <property name="verticalSpacing">
                    <number>2</number>
                   </property>
-                  <item row="6" column="0">
+                  <item row="0" column="0">
                    <spacer name="verticalSpacer_3">
                     <property name="orientation">
                      <enum>Qt::Vertical</enum>
@@ -177,95 +184,6 @@
                     </property>
                    </spacer>
                   </item>
-                  <item row="1" column="0">
-                   <widget class="QPushButton" name="civ_dl_checkpoints">
-                    <property name="toolTip">
-                     <string>Will download any missing checkpoint file from civitai</string>
-                    </property>
-                    <property name="text">
-                     <string>DL missing Checkpoints</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_8">
-                    <property name="text">
-                     <string>Civitai</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="2">
-                   <widget class="QCheckBox" name="ti_all_vers">
-                    <property name="text">
-                     <string>all versions</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QPushButton" name="civ_dl_ti">
-                    <property name="toolTip">
-                     <string>Will download any missing textual inversion file from civitai</string>
-                    </property>
-                    <property name="text">
-                     <string>DL missing textual inversion</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="0">
-                   <widget class="QPushButton" name="civ_dl_ag">
-                    <property name="toolTip">
-                     <string>Will download any missing aesthetic gradient file from civitai</string>
-                    </property>
-                    <property name="text">
-                     <string>DL missing aesthetic gradients</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="2">
-                   <widget class="QCheckBox" name="ckpt_all_vers">
-                    <property name="text">
-                     <string>all versions</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QPushButton" name="civ_dl_hypernets">
-                    <property name="toolTip">
-                     <string>Will download any missing hypernetwork file from civitai</string>
-                    </property>
-                    <property name="text">
-                     <string>DL missing Hypernetworks</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="2">
-                   <widget class="QCheckBox" name="ag_all_vers">
-                    <property name="text">
-                     <string>all versions</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="2">
-                   <widget class="QCheckBox" name="hn_all_vers">
-                    <property name="text">
-                     <string>all versions</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="0">
-                   <widget class="QPushButton" name="pushButton">
-                    <property name="text">
-                     <string>DL missing LORAs</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="2">
-                   <widget class="QCheckBox" name="lora_all_vers">
-                    <property name="text">
-                     <string>all versions</string>
-                    </property>
-                   </widget>
-                  </item>
                  </layout>
                 </widget>
                </item>
@@ -276,13 +194,24 @@
                <string>Civitai DL</string>
               </attribute>
               <layout class="QGridLayout" name="gridLayout">
-               <item row="11" column="1">
-                <widget class="QProgressBar" name="dl_progress">
-                 <property name="value">
-                  <number>0</number>
-                 </property>
-                </widget>
-               </item>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="horizontalSpacing">
+                <number>2</number>
+               </property>
+               <property name="verticalSpacing">
+                <number>0</number>
+               </property>
                <item row="2" column="1" colspan="2">
                 <widget class="QSpinBox" name="limit">
                  <property name="maximum">
@@ -521,6 +450,13 @@
                  </property>
                 </widget>
                </item>
+               <item row="11" column="1" colspan="2">
+                <widget class="QProgressBar" name="dl_progress">
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
              <widget class="QWidget" name="tab_3">
@@ -528,6 +464,24 @@
                <string>Civitai UL</string>
               </attribute>
               <layout class="QGridLayout" name="gridLayout_5">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="horizontalSpacing">
+                <number>0</number>
+               </property>
+               <property name="verticalSpacing">
+                <number>2</number>
+               </property>
                <item row="1" column="0">
                 <widget class="QPushButton" name="pushButton_2">
                  <property name="text">
@@ -584,6 +538,9 @@
                </item>
                <item row="6" column="0">
                 <widget class="QPushButton" name="pushButton_4">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
                   <string>Upload</string>
                  </property>

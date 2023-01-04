@@ -58,8 +58,8 @@ class PromptFetcher_UI:
         filename = list(QFileDialog.getOpenFileName(caption='Load Input Image', filter='Images (*.png *.jpg)'))
         filename = filename[0]
         pixmap = QPixmap(filename)
-        self.parent.preview_init_image.w.label.setPixmap(pixmap)
-        self.parent.preview_init_image.w.dockWidget.show()
+        #self.parent.preview_init_image.w.label.setPixmap(pixmap)
+        #self.parent.preview_init_image.w.dockWidget.show()
         self.prompt_image = filename
         self.signals.run_img_to_prompt.emit()
 

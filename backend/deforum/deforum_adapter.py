@@ -35,6 +35,7 @@ from backend.singleton import singleton
 from backend.shared import model_killer
 from backend.deforum.six.seamless import configure_model_padding
 from backend.aesthetics.aesthetic_clip import AestheticCLIP
+from backend.sqlite import model_sha_db
 
 gs = singleton
 
@@ -175,41 +176,48 @@ class DeforumSix:
     """
 
     def return_model_version(self, model):
-        with open(model, 'rb') as file:
-            # Read the contents of the file
-            file_contents = file.read()
+        res = model_sha_db.get_model_config_data(model)
+        if len(res) > 0:
+            config = res[0]['config']
+            version = res[0]['version']
+        else:
+            print('calculating sha to estimate the model version')
+            with open(model, 'rb') as file:
+                # Read the contents of the file
+                file_contents = file.read()
 
-            # Calculate the SHA-256 hash
-            sha256_hash = hashlib.sha256(file_contents).hexdigest()
-            if sha256_hash == 'd635794c1fedfdfa261e065370bea59c651fc9bfa65dc6d67ad29e11869a1824':
-                version = '2.0 512'
-                config = '512-base-ema.yaml'
-            elif sha256_hash == '2a208a7ded5d42dcb0c0ec908b23c631002091e06afe7e76d16cd11079f8d4e3':
-                version = '2.0 Inpaint'
-                config = '512-inpainting-ema.yaml'
-            elif sha256_hash == 'bfcaf0755797b0c30eb00a3787e8b423eb1f5decd8de76c4d824ac2dd27e139f':
-                version = '2.0 768'
-                config = '768-v-ema.yaml'
-            elif sha256_hash == 'fe4efff1e174c627256e44ec2991ba279b3816e364b49f9be2abc0b3ff3f8556':
-                version = '1.4'
-                config = 'sd-v1-4.yaml'
-            elif sha256_hash == 'c6bbc15e3224e6973459ba78de4998b80b50112b0ae5b5c67113d56b4e366b19':
-                version = '1.5 Inpaint'
-                config = 'sd-v1-5-inpainting.yaml'
-            elif sha256_hash == 'cc6cb27103417325ff94f52b7a5d2dde45a7515b25c255d8e396c90014281516':
-                version = '1.5 EMA Only'
-                config = 'v1-5-pruned-emaonly.yaml'
-            elif sha256_hash == '88ecb782561455673c4b78d05093494b9c539fc6bfc08f3a9a4a0dd7b0b10f36':
-                version = '2.1 512'
-                config = 'v2-1_512-ema-pruned.yaml'
-            elif sha256_hash == 'ad2a33c361c1f593c4a1fb32ea81afce2b5bb7d1983c6b94793a26a3b54b08a0':
-                version = '2.1 768'
-                config = 'v2-1_768-ema-pruned.yaml'
-            else:
-                version = 'unknown'
-                config = None
-            # Print the hash
-            return config, version
+                # Calculate the SHA-256 hash
+                sha256_hash = hashlib.sha256(file_contents).hexdigest()
+                if sha256_hash == 'd635794c1fedfdfa261e065370bea59c651fc9bfa65dc6d67ad29e11869a1824':
+                    version = '2.0 512'
+                    config = '512-base-ema.yaml'
+                elif sha256_hash == '2a208a7ded5d42dcb0c0ec908b23c631002091e06afe7e76d16cd11079f8d4e3':
+                    version = '2.0 Inpaint'
+                    config = '512-inpainting-ema.yaml'
+                elif sha256_hash == 'bfcaf0755797b0c30eb00a3787e8b423eb1f5decd8de76c4d824ac2dd27e139f':
+                    version = '2.0 768'
+                    config = '768-v-ema.yaml'
+                elif sha256_hash == 'fe4efff1e174c627256e44ec2991ba279b3816e364b49f9be2abc0b3ff3f8556':
+                    version = '1.4'
+                    config = 'sd-v1-4.yaml'
+                elif sha256_hash == 'c6bbc15e3224e6973459ba78de4998b80b50112b0ae5b5c67113d56b4e366b19':
+                    version = '1.5 Inpaint'
+                    config = 'sd-v1-5-inpainting.yaml'
+                elif sha256_hash == 'cc6cb27103417325ff94f52b7a5d2dde45a7515b25c255d8e396c90014281516':
+                    version = '1.5 EMA Only'
+                    config = 'v1-5-pruned-emaonly.yaml'
+                elif sha256_hash == '88ecb782561455673c4b78d05093494b9c539fc6bfc08f3a9a4a0dd7b0b10f36':
+                    version = '2.1 512'
+                    config = 'v2-1_512-ema-pruned.yaml'
+                elif sha256_hash == 'ad2a33c361c1f593c4a1fb32ea81afce2b5bb7d1983c6b94793a26a3b54b08a0':
+                    version = '2.1 768'
+                    config = 'v2-1_768-ema-pruned.yaml'
+                else:
+                    version = 'unknown'
+                    config = None
+                model_sha_db.insert_model_config_data(model, config, version, sha256_hash)
+                # Print the hash
+        return config, version
 
     def load_model_from_config(self, config=None, ckpt=None, verbose=False):
         gs.force_inpaint = False
@@ -229,6 +237,7 @@ class DeforumSix:
         # config_yaml_name = os.path.splitext(ckpt)[0] + '.yaml'
         # if not os.path.exists(config_yaml_name):
         #    config_yaml_name = 'data/default_configs/v1-5.yaml'
+
         config, version = self.return_model_version(ckpt)
         if 'Inpaint' in version:
             gs.force_inpaint = True
@@ -237,12 +246,6 @@ class DeforumSix:
             config = os.path.splitext(ckpt)[0] + '.yaml'
         else:
             config = os.path.join('data/models', config)
-        # print(config_yaml_name)
-        # else:
-        #    config_yaml_name = config
-        # print(os.path.isfile(config_yaml_name))
-        # if os.path.isfile(config_yaml_name):
-        # config = config_yaml_name
 
         if "sd" not in gs.models:
             self.prev_seamless = False
@@ -617,11 +620,7 @@ class DeforumSix:
                 args.__dict__[key] = self.parent.params.__dict__[key]
             except:
                 pass
-        print(args.make_grid)
-        print(self.parent.params.make_grid)
-        # if args.seamless == False and self.prev_seamless == True:
-        #    self.prev_seamless = False
-        #    model_killer()
+
         if lowmem == True:
             print(f'-                 Low Memory Mode                             ')
             if "sd" in gs.models:
@@ -643,7 +642,6 @@ class DeforumSix:
             check = self.load_model_from_config(config=None, ckpt=None)
             if check == -1:
                 return check
-
         if gs.diffusion.selected_hypernetwork != 'None':
             hypernetwork.load_hypernetwork(gs.diffusion.selected_hypernetwork)
             hypernetwork.apply_strength(
@@ -651,24 +649,12 @@ class DeforumSix:
             gs.model_hijack.apply_circular(False)
             gs.model_hijack.clear_comments()
 
-        # W, H = map(lambda x: x - x % 64, (W, H))  # resize to integer multiple of 64
-
-        # if args.seamless == True and self.prev_seamless == False:
-
-        # print("Running Seamless sampling...")
         seamless = args.seamless
         seamless_axes = args.axis
         if lowmem == False:
             configure_model_padding(gs.models["sd"], seamless, seamless_axes)
         elif lowmem == True:
             configure_model_padding(gs.models["model"], seamless, seamless_axes)
-        # self.prev_seamless = True
-        """
-        for key, value in root.__dict__.items():
-            try:
-                root.__dict__[key] = self.parent.params.__dict__[key]
-            except:
-                pass"""
 
         if gs.diffusion.selected_aesthetic_embedding != 'None':
             gs.models["sd"].cond_stage_model.process_tokens.set_aesthetic_params(

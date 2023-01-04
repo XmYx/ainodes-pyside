@@ -412,6 +412,10 @@ class MainWindow(QMainWindow):
     @Slot()
     def dream_prompt(self):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
+        if prompt == '':
+            prompt = 'No prompt selected, please select the prompt you want to use'
+            print(prompt)
+
         self.widgets[self.current_widget].w.prompts.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
         self.task_switcher()
 

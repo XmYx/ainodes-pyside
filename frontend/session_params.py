@@ -78,6 +78,7 @@ class SessionParams():
         for key in self.params.keys():
             if key in gs.diffusion.__dict__:
                 gs.diffusion.__dict__[key] = self.params[key]
+        gs.diffusion.seed = self.store_seed
         setting_db.save_settings()
 
 
@@ -141,10 +142,9 @@ class SessionParams():
             axis = {'y'}
         elif self.parent.widgets[widget].w.axis.currentText() == 'Both':
             axis = {'x', 'y'}
-
+        self.store_seed = self.parent.widgets[widget].w.seed.text()
         seed =  random.randint(0, 2 ** 32 - 1) if self.parent.widgets[widget].w.seed.text() == '' else int(
             self.parent.widgets[widget].w.seed.text())
-        widget = 'unicontrol'
 
         self.params = {             # todo make this a one step thing not two steps
             # Basic Params

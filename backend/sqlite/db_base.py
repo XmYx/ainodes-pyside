@@ -7,3 +7,4 @@ def check_settings_db_status():
 
 def check_db_status():
     model_db.check_model_db_status()
+    model_db.check_model_sha_db_status()

@@ -24,15 +24,21 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <property name="leftMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <property name="topMargin">
     <number>0</number>
    </property>
    <property name="rightMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="horizontalSpacing">
+    <number>2</number>
+   </property>
+   <property name="verticalSpacing">
     <number>0</number>
    </property>
    <item row="0" column="0">
@@ -57,6 +63,9 @@
        </sizepolicy>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -79,7 +88,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>694</width>
+            <width>688</width>
             <height>416</height>
            </rect>
           </property>
@@ -105,10 +114,16 @@
            <item>
             <layout class="QGridLayout" name="gridLayout">
              <property name="leftMargin">
-              <number>5</number>
+              <number>0</number>
              </property>
              <property name="rightMargin">
-              <number>5</number>
+              <number>0</number>
+             </property>
+             <property name="horizontalSpacing">
+              <number>2</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>0</number>
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="label">

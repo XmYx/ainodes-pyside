@@ -44,7 +44,10 @@
         <height>16777215</height>
        </size>
       </property>
-      <layout class="QGridLayout" name="gridLayout_3">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <property name="leftMargin">
         <number>3</number>
        </property>
@@ -57,43 +60,137 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="dream">
-         <property name="text">
-          <string>Dream</string>
+       <item>
+        <widget class="QFrame" name="frame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
-         <property name="iconSize">
-          <size>
-           <width>8</width>
-           <height>8</height>
-          </size>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
          </property>
+         <layout class="QGridLayout" name="gridLayout_19">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="dream">
+            <property name="text">
+             <string>Dream</string>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>8</width>
+              <height>8</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="lucky">
+            <property name="text">
+             <string>I Have a lucky day</string>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>8</width>
+              <height>8</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="stop_dream">
+            <property name="text">
+             <string>Stop</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="lowmem">
+            <property name="text">
+             <string>Low Memory</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="3">
+           <widget class="QTextEdit" name="prompts">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="placeholderText">
+             <string>Prompt comes here, start each in a new line</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="3">
+           <widget class="QTextEdit" name="negative_prompts">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="placeholderText">
+             <string>Negative Prompts</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" rowspan="2">
+           <widget class="QTextEdit" name="keyframes">
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="placeholderText">
+             <string>Keyframes: each in a new line, start with 0</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="lucky">
-         <property name="text">
-          <string>I Have a lucky day</string>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>8</width>
-           <height>8</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QPushButton" name="stop_dream">
-         <property name="text">
-          <string>Stop</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="4">
+       <item>
         <widget class="QScrollArea" name="scrollArea">
          <property name="widgetResizable">
           <bool>true</bool>
@@ -104,7 +201,7 @@
             <x>0</x>
             <y>0</y>
             <width>682</width>
-            <height>2484</height>
+            <height>2338</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -1126,42 +1223,10 @@
                 </layout>
                </widget>
               </item>
-              <item row="0" column="0" rowspan="2">
-               <widget class="QTextEdit" name="keyframes">
-                <property name="placeholderText">
-                 <string>Keyframes: each in a new line, start with 0</string>
-                </property>
-               </widget>
-              </item>
               <item row="5" column="0">
                <widget class="QLabel" name="stepslabel">
                 <property name="text">
                  <string>Steps</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1" colspan="6">
-               <widget class="QTextEdit" name="prompts">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="placeholderText">
-                 <string>Prompt comes here, start each in a new line</string>
                 </property>
                </widget>
               </item>
@@ -2397,31 +2462,6 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="1" colspan="6">
-               <widget class="QTextEdit" name="negative_prompts">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="placeholderText">
-                 <string>Negative Prompts</string>
-                </property>
-               </widget>
-              </item>
               <item row="12" column="0" colspan="7">
                <widget class="QFrame" name="sampler_values">
                 <property name="frameShape">
@@ -3396,13 +3436,6 @@
            </item>
           </layout>
          </widget>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="lowmem">
-         <property name="text">
-          <string>Low Memory</string>
-         </property>
         </widget>
        </item>
       </layout>

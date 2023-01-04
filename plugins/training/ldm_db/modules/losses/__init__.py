@@ -1,0 +1,1 @@
+from plugins.training.ldm_db.modules.losses.contperceptual import LPIPSWithDiscriminator

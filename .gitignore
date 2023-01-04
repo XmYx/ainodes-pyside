@@ -175,5 +175,6 @@ frontend/session_params.py.bak
 *.pt
 /tmp/
 /test.py
-/data/db/
-/data/output/
+/data/db/*
+/data/output/*
+/cache/*

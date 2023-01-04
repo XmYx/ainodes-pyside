@@ -1,6 +1,6 @@
 import random
 from types import SimpleNamespace
-from backend.settings import save_settings_json
+from backend.sqlite import setting_db
 from backend.singleton import singleton
 
 gs = singleton
@@ -72,7 +72,14 @@ class SessionParams():
                 gs.system.__dict__[key] = value
             except:
                 pass
-        save_settings_json()
+        setting_db.save_settings()
+
+    def update_diffusion_settings(self):
+        for key in self.params.keys():
+            if key in gs.diffusion.__dict__:
+                gs.diffusion.__dict__[key] = self.params[key]
+        setting_db.save_settings()
+
 
     def update_params(self):
 
@@ -285,7 +292,7 @@ class SessionParams():
             "apply_strength": 0,
             "apply_circular": False
         }
-
+        self.update_diffusion_settings()
         self.params = SimpleNamespace(**self.params)
         print(f'sampler: {self.params.sampler} steps {self.params.steps}\nscale: {self.params.scale}\nddim_eta: {self.params.ddim_eta}')
         return self.params

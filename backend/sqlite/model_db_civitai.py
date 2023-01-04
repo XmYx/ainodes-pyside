@@ -24,7 +24,7 @@ class civit_ai_api:
         self.nam.finished.connect(self.handleResponse)
         self.db_file = os.path.join(gs.system.db_dir, model_data_file)
 
-    def insert_model(self, model, item):
+    def insert_model(self, cursor, model, item):
         sqlite_insert_with_param = (
             """insert or replace into model_data (model_name, type, nsfw, trained_words, tags, version, base_model, files, images, model_data, description) values (?,?,?,?,?,?,?,?,?,?,?);""")
         if item['nsfw'] is False:
@@ -43,45 +43,49 @@ class civit_ai_api:
                       json.dumps(model),
                       item['description']
                       )
-        model_db_con = sqlite3.connect(self.db_file)
-        cursor = model_db_con.cursor()
         cursor.execute(sqlite_insert_with_param, data_tuple)
-        model_db_con.commit()
-        cursor.close()
-        model_db_con.close()
+
 
     def handleResponse(self, reply):
         er = reply.error()
         if er == QtNetwork.QNetworkReply.NoError:
-            bytes_string = reply.readAll()
-            responseDict = json.loads(str(bytes_string, 'utf-8'))
-            for item in responseDict['items']:
-                tmp_item = {
-                    'id': item['id'],
-                    'name': item['name'],
-                    'type': item['type'],
-                    'nsfw': item['nsfw'],
-                    'tags': item['tags'],
-                    'description': item['description'],
-                    'poi': item['poi'],
-                    'creator': item['creator']
-                }
-                for model in item['modelVersions']:
-                    self.insert_model(model, tmp_item)
-            if 'metadata' in responseDict:
-                if 'nextPage' in responseDict['metadata']:
-                    self.next_models_link = responseDict['metadata']['nextPage']
+            model_db_con = sqlite3.connect(self.db_file)
+            cursor = model_db_con.cursor()
+            try:
+                bytes_string = reply.readAll()
+                responseDict = json.loads(str(bytes_string, 'utf-8'))
+                for item in responseDict['items']:
+                    tmp_item = {
+                        'id': item['id'],
+                        'name': item['name'],
+                        'type': item['type'],
+                        'nsfw': item['nsfw'],
+                        'tags': item['tags'],
+                        'description': item['description'],
+                        'poi': item['poi'],
+                        'creator': item['creator']
+                    }
+                    for model in item['modelVersions']:
+                        self.insert_model(cursor, model, tmp_item)
+                if 'metadata' in responseDict:
+                    if 'nextPage' in responseDict['metadata']:
+                        self.next_models_link = responseDict['metadata']['nextPage']
+                    else:
+                        self.next_models_link = None
                 else:
                     self.next_models_link = None
-            else:
-                self.next_models_link = None
+            except:
+                pass
+            finally:
+                model_db_con.commit()
+                cursor.close()
+                model_db_con.close()
         else:
             print('error: ', er)
         if self.next_models_link is not None:
             print('next page')
             req = QtNetwork.QNetworkRequest(QtCore.QUrl(self.next_models_link))
             self.nam.get(req)
-
         else:
             print('model list update done')
             self.signals.civitai_no_more_models.emit()

@@ -198,14 +198,7 @@ class Compass(QObject):
         self.w = loader.load(file)
         file.close()
 
-class OutpaintControls(QObject):
 
-    def __init__(self, *args, **kwargs):
-        loader = QtUiTools.QUiLoader()
-        file = QFile("frontend/ui_widgets/outpaint_controls.ui")
-        file.open(QFile.ReadOnly)
-        self.w = loader.load(file)
-        file.close()
 
 
 class AnimKeyEditor(QObject):

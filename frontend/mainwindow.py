@@ -515,7 +515,7 @@ class MainWindow(QMainWindow):
                         getattr(self.widgets[self.current_widget].w, key).setCheckState(QtCore.Qt.Checked)
 
             except Exception as e:
-                #print('setting still to be fixed ', e)
+                print('setting still to be fixed ', e)
                 continue
 
     def update_ui_from_system_params(self):

@@ -3,6 +3,8 @@ import threading
 from types import SimpleNamespace
 from backend.torch_gc import torch_gc
 
+
+db_settings_present = False
 system = {}
 diffusion = {}
 models = {}

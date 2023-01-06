@@ -340,6 +340,8 @@ class MainWindow(QMainWindow):
                     self.show_image_from_url(image['url'])
 
         if 'custom/' in self.widgets[self.current_widget].w.selected_model.currentText():
+            custom_model_info = self.civitai_api.civitai_get_model_data(self.widgets[self.current_widget].w.selected_model.currentText().replace('custom/',''))
+            custom_model_info = custom_model_info[0]
             self.widgets[self.current_widget].w.selected_model.setToolTip(custom_model_info['description'])
             self.widgets[self.current_widget].w.prompts.setPlaceholderText(custom_model_info['trained_words'])
         else:

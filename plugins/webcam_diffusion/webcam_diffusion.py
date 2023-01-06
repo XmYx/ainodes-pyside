@@ -58,7 +58,13 @@ class aiNodesPlugin():
         self.parent = parent
 
     def initme(self):
+        sshFile = "frontend/style/QTDark.stylesheet"
+
         self.widget = WebcamWidget()
+        self.widget.setWindowTitle("Webcam Diffusion")
+        with open(sshFile, "r") as fh:
+            self.widget.setStyleSheet(fh.read())
+
         self.widget.show()
 
 
@@ -83,11 +89,11 @@ class WebcamWidget(QtWidgets.QWidget):
         self.maskprompt = QTextEdit()
         self.prompt = QTextEdit()
         self.steps = QSpinBox()
-        self.steps.setValue(20)
+        self.steps.setValue(12)
         self.steps.valueChanged.connect(self.make_sampler_schedule)
 
         self.strength = QDoubleSpinBox()
-        self.strength.setValue(0.60)
+        self.strength.setValue(0.50)
         self.strength.setMaximum(1.00)
         self.strength.setMinimum(0.01)
         self.strength.setSingleStep(0.01)
@@ -106,13 +112,13 @@ class WebcamWidget(QtWidgets.QWidget):
 
         self.seed = QLineEdit()
         self.samplercombobox = QComboBox()
-        self.samplercombobox.addItems(["klms", "dpm2", "dpm2_ancestral", "heun", "euler", "euler_ancestral",
-                                        "dpm_fast", "dpm_adaptive", "dpmpp_2s_a", "dpmpp_2m", "dpmpp_sde"])
+        self.samplercombobox.addItems(["euler", "dpm2", "dpm2_ancestral", "heun", "klms", "euler_ancestral",
+                                        "dpm_fast", "dpmpp_2s_a", "dpmpp_2m", "dpmpp_sde", "dpm_adaptive"])
         self.modelselect = QComboBox()
         self.modelselect.addItems(["Normal"])
         # Set up the layout
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(self.maskprompt)
+        #layout.addWidget(self.maskprompt)
         layout.addWidget(self.prompt)
         layout.addWidget(self.steps)
         layout.addWidget(self.strength)
@@ -125,7 +131,7 @@ class WebcamWidget(QtWidgets.QWidget):
         layout.addWidget(self.webcam_dropdown)
         layout.addWidget(self.capture_button)
         layout.addWidget(self.continous)
-        layout.addWidget(self.camera_label)
+        #layout.addWidget(self.camera_label)
         self.setLayout(layout)
         self.threadpool = QThreadPool()
         # Start the webcam
@@ -143,7 +149,9 @@ class WebcamWidget(QtWidgets.QWidget):
         prevlayout.addWidget(self.fullscreen_button)
         prevlayout.addWidget(self.image_label)
         self.image_dialog.setLayout(prevlayout)
-        # Show the dialog
+        sshFile = "frontend/style/QTDark.stylesheet"
+        with open(sshFile, "r") as fh:
+            self.image_dialog.setStyleSheet(fh.read())
         self.image_dialog.show()
         self.loadedmodel = None
 

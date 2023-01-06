@@ -334,18 +334,17 @@ class MainWindow(QMainWindow):
             if 'custom/' in self.widgets[self.current_widget].w.selected_model.currentText():
                 custom_model_info = self.civitai_api.civitai_get_model_data(self.widgets[self.current_widget].w.selected_model.currentText().replace('custom/',''))
                 custom_model_info = custom_model_info[0]
-                print(custom_model_info.keys())
-
-                self.widgets[self.current_widget].w.selected_model.setToolTip(custom_model_info['description'])
-                self.widgets[self.current_widget].w.prompts.setPlaceholderText(custom_model_info['trained_words'])
                 images = custom_model_info['images']
                 images =  json.loads(images)
                 for image in images:
                     self.show_image_from_url(image['url'])
-            else:
-                self.widgets[self.current_widget].w.selected_model.setToolTip('')
-                self.widgets[self.current_widget].w.prompts.setPlaceholderText('Enter your prompt here')
 
+        if 'custom/' in self.widgets[self.current_widget].w.selected_model.currentText():
+            self.widgets[self.current_widget].w.selected_model.setToolTip(custom_model_info['description'])
+            self.widgets[self.current_widget].w.prompts.setPlaceholderText(custom_model_info['trained_words'])
+        else:
+            self.widgets[self.current_widget].w.selected_model.setToolTip('')
+            self.widgets[self.current_widget].w.prompts.setPlaceholderText('Enter your prompt here')
 
 
 

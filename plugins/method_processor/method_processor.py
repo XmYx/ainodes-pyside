@@ -28,7 +28,8 @@ import copy
 import PySide6
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QPushButton, QListWidget, QDialog, QFormLayout, \
-    QLineEdit, QHBoxLayout, QLabel, QMenu, QSpinBox, QDoubleSpinBox, QCheckBox, QTextEdit, QAbstractItemView
+    QLineEdit, QHBoxLayout, QLabel, QMenu, QSpinBox, QDoubleSpinBox, QCheckBox, QTextEdit, QAbstractItemView, \
+    QDialogButtonBox
 from PySide6.QtCore import QObject, Signal, Slot, Qt
 import types
 import argparse
@@ -67,6 +68,8 @@ class MethodProcessorWidget():
         self.method_combo_box.addItem("switch_model")
         self.method_combo_box.addItem("restart_loop")
         self.method_combo_box.addItem("use_prev_as_init")
+        self.method_combo_box.addItem("param_editor")
+        self.method_combo_box.addItem("space_engineer_example")
         layout.addWidget(self.method_combo_box)
 
         # create button to add selected method to list
@@ -77,6 +80,7 @@ class MethodProcessorWidget():
         # create list widget to display added methods
         self.method_list = QListWidget()
         #self.method_list.itemClicked.connect(self.show_parameter_widget)
+        self.method_list.itemClicked.connect(self.item_clicked)
         self.method_list.itemDoubleClicked.connect(self.delete_method)
 
         layout.addWidget(self.method_list)
@@ -94,8 +98,18 @@ class MethodProcessorWidget():
         self.method_list.setDragDropMode(QAbstractItemView.InternalMove)
         self.method_list.setContextMenuPolicy(Qt.CustomContextMenu)
         self.method_list.customContextMenuRequested.connect(self.show_context_menu)
+
+    def item_clicked(self, item):
+
+        #runs the function names [method_name]_ui_func on click
+        method_name, method_id = item.text().split(" (")
+        method_id = int(method_id[:-1])  # remove closing parenthesis
+        func_name = method_name + "_ui_func"
+        getattr(self, func_name)(item)
     @Slot()
     def show_parameter_widget(self, item):
+
+        #shows the full parameter widget on right click show parameters
         method_name, method_id = item.text().split(" (")
         method_id = int(method_id[:-1])  # remove closing parenthesis
         params = self.parameters[(method_name, method_id)]
@@ -110,16 +124,20 @@ class MethodProcessorWidget():
 
         # create column layouts
         column_layouts = []
-        for i in range(15):
+        for i in range(20):
             column_layout = QVBoxLayout()
+            column_layout.setContentsMargins(3,5,5,2)
+            column_layout.setSpacing(3)
             h_layout.addLayout(column_layout)
             column_layouts.append(column_layout)
 
         self.line_edits = {}
 
         widget_types_and_values = self.get_widget_types(params=params, current_widget=self.parent.widgets[self.parent.current_widget].w)
-        #widget_types_and_values = self.get_widget_types(params=params, current_widget=self.parent.system_setup.w)
 
+        widget_types_and_values = sorted(widget_types_and_values,
+                                         key=lambda x: (list(x.keys())[0][1], list(x.keys())[0][0]))
+        print(widget_types_and_values)
         self.line_edits = {}
         for i, widget_type_and_value in enumerate(widget_types_and_values):
             for name, widget_type in widget_type_and_value.keys():
@@ -325,11 +343,14 @@ class MethodProcessorWidget():
             params = types.SimpleNamespace(**params)
         elif method_name == "use_prev_as_init":
             params = self.add_use_prev_as_init_params()
-        elif method_name == "restart_loop":
+        elif method_name in ["restart_loop", "param_editor"]:
             params = {}
             params = types.SimpleNamespace(**params)
             params.active = True
+        else:
+            params = getattr(self, f"get_{method_name}_params")()
 
+            print(params.W)
         self.parameters[(method_name, method_id)] = params
 
         # add method to list
@@ -337,6 +358,7 @@ class MethodProcessorWidget():
             self.methods[method_name] = {}
         self.methods[method_name][method_id] = getattr(self, method_name)
         self.method_list.addItem(f"{method_name} ({method_id})")
+        #self.method_list.item(self.method_list.count() - 1).clicked.connect(getattr(self, f"{method_name}_ui_func"))
     def process_methods_thread(self):
         self.stop = False
         worker = Worker(self.process_methods)
@@ -439,23 +461,135 @@ class MethodProcessorWidget():
             else:
                 params.grad_inject_timing = params.grad_inject_timing
         self.parent.deforum_ui.run_deforum_six_txt2img(params=params)
+    def txt2img_ui_func(self):
+        pass
     def switch_model(self, params):
         from backend.shared import model_killer
         model_killer()
+    def switch_model_ui_func(self):
+        pass
     def restart_loop(self, params=None):
         if self.stop == True:
             return
 
         self.process_methods(retrigger=True)
-
+    def restart_loop_ui_func(self):
+        pass
     def use_prev_as_init(self, params):
         if self.param_modifier == None:
             self.param_modifier = types.SimpleNamespace()
         self.param_modifier.init_image = gs.temppath
         self.param_modifier.use_init = True
-
     def add_use_prev_as_init_params(self):
         params = types.SimpleNamespace()
         params.use_init = True
         params.init_img = ""
+        return params
+    def use_prev_as_init_ui_func(self):
+
+        pass
+
+    def param_editor(self):
+        pass
+    @Slot()
+    def param_editor_ui_func(self, item):
+        method_name, method_id = item.text().split(" (")
+        method_id = int(method_id[:-1])  # remove closing parenthesis
+        params = self.parent.sessionparams.params
+        # create widget
+        parameter_widget = QDialog(self.widget)
+        parameter_widget.setWindowTitle(f"{method_name} ({method_id}) Parameters")
+        self.paramlayout = QFormLayout()
+        parameter_widget.setLayout(self.paramlayout)
+
+        # create combo box to select parameter to edit
+        self.param_combo_box = QComboBox()
+        self.param_combo_box.addItems(vars(params))
+        self.param_combo_box.currentTextChanged.connect(self.update_parameter_form)
+        self.paramlayout.addRow("Parameter:", self.param_combo_box)
+
+        # create form to edit parameter
+        form = QFormLayout()
+        self.paramlayout.addRow(form)
+
+        # create ok and cancel buttons
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        button_box.accepted.connect(parameter_widget.accept)
+        button_box.rejected.connect(parameter_widget.reject)
+        self.paramlayout.addWidget(button_box)
+
+        # show widget and get result
+        result = parameter_widget.exec_()
+        if result == QDialog.Accepted:
+            if self.param_modifier == None:
+                self.param_modifier = types.SimpleNamespace()
+            selected_param = self.param_combo_box.currentText()
+            input_widget = self.param_input_widget
+            if isinstance(input_widget, QLineEdit):
+                setattr(self.param_modifier, selected_param, input_widget.text())
+            elif isinstance(input_widget, QSpinBox):
+                setattr(self.param_modifier, selected_param, input_widget.value())
+            elif isinstance(input_widget, QDoubleSpinBox):
+                setattr(self.param_modifier, selected_param, input_widget.value())
+            elif isinstance(input_widget, QComboBox):
+                setattr(self.param_modifier, selected_param, input_widget.currentText())
+            elif isinstance(input_widget, QCheckBox):
+                setattr(self.param_modifier, selected_param, input_widget.isChecked())
+        print(self.param_modifier.__dict__[selected_param])
+
+    def update_parameter_form(self):
+        selected_param = self.param_combo_box.currentText()
+        input_widget = getattr(self.parent.widgets["unicontrol"].w, selected_param)
+        print(input_widget)
+        type_str = str(getattr(self.parent.widgets["unicontrol"].w, selected_param))
+        print(type_str)
+        if 'QSpinBox' in type_str:
+            self.param_input_widget = QSpinBox()
+            self.param_input_widget.setMaximum(4096)
+            self.param_input_widget.setValue(self.parent.sessionparams.params.__dict__[selected_param])
+        if 'QDoubleSpinBox' in type_str:
+            self.param_input_widget = QDoubleSpinBox()
+            self.param_input_widget.setMaximum(4096.0)
+            self.param_input_widget.setValue(self.parent.sessionparams.params.__dict__[selected_param])
+        elif 'QLineEdit' in type_str:
+            print("line edit found")
+            self.param_input_widget = QLineEdit()
+            self.param_input_widget.setText(str(self.parent.sessionparams.params.__dict__[selected_param]))
+        elif 'QTextEdit' in type_str:
+            self.param_input_widget = QTextEdit()
+            self.param_input_widget.setText(str(self.parent.sessionparams.params.__dict__[selected_param]))
+        elif 'QCheckBox' in type_str:
+            self.param_input_widget = QCheckBox()
+            self.param_input_widget.setChecked(self.parent.sessionparams.params.__dict__[selected_param])
+        elif'QComboBox' in type_str:
+            self.param_input_widget = QComboBox()
+            items = [getattr(self.parent.widgets["unicontrol"].w, selected_param).itemText(i) for i in range(getattr(self.parent.widgets["unicontrol"].w, selected_param).count())]
+            self.param_input_widget.addItems(items)
+        self.paramlayout.addWidget(self.param_input_widget)
+            #widget.setCurrentText(str(params.__dict__[name]))
+
+        #if isinstance(input_widget, QLineEdit):
+        #    self.parameter_input.setText(input_widget.text())
+        #elif isinstance(input_widget, QSpinBox):
+        #    self.parameter_input.setValue(input_widget.value())
+        #elif isinstance(input_widget, QDoubleSpinBox):
+        #    self.parameter_input.setValue(input_widget.value())
+        #elif isinstance(input_widget, QComboBox):
+        #    self.parameter_input.clear()
+        #    for i in range(input_widget.count()):
+        #        self.parameter_input.addItem(input_widget.itemText(i))
+        #        self.parameter_input.setCurrentIndex(input_widget.currentIndex())
+        #elif isinstance(input_widget, QCheckBox):
+        #    self.parameter_input.setChecked(input_widget.isChecked())
+
+    def space_engineer_example(self):
+        pass
+    def space_engineer_example_ui_func(self, item):
+        print("This was ran on s single click")
+        pass
+    def get_space_engineer_example_params(self):
+        params = types.SimpleNamespace()
+        params.prompts = "Test Prompt"
+        params.W = 512
+        params.H = 512
         return params

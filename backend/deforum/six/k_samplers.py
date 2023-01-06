@@ -22,11 +22,16 @@ def sampler_fn(
     #gs.karras = True
     if gs.karras == True:
         print("Using Karras Scheduler")
-        sigmas = sampling.get_sigmas_karras(n=args.steps, sigma_min=0.1, sigma_max=10, device="cuda")
+        sigmas = sampling.get_sigmas_karras(n=args.steps, sigma_min=gs.karras_sigma_min, sigma_max=gs.karras_sigma_max, device="cuda")
+
     else:
         sigmas: torch.Tensor = model_wrap.get_sigmas(args.steps)
     #print(f"sigmas: {sigmas}")
-    sigmas = sigmas[len(sigmas) - t_enc - 1 :]
+    if gs.diffusion.discard_next_to_last_sigma == True:
+        sigmas = torch.cat([sigmas[:-2], sigmas[-1:]])
+    else:
+        sigmas = sigmas[len(sigmas) - t_enc - 1 :]
+
     #print(f"sigmas: {sigmas}")
     if args.use_init:
         if len(sigmas) > 0:

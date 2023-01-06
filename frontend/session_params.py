@@ -97,7 +97,7 @@ class SessionParams():
         else:
             gs.aesthetic_embedding_path = None
 
-        if self.parent.widgets[widget].w.n_samples.value() == 1:
+        if self.parent.widgets[widget].w.n_batch.value() == 1:
             make_grid = False
         else:
             make_grid = self.parent.widgets[widget].w.make_grid.isChecked()  # self.parent.widgets[widget].w.make_grid.isChecked()
@@ -122,7 +122,27 @@ class SessionParams():
 
         if self.parent.widgets[widget].w.max_frames.value() < 2:
             animation_mode = 'None'
+
+            use_mask = self.parent.widgets[widget].w.use_mask.isChecked()
+            use_alpha_as_mask = self.parent.widgets[widget].w.use_alpha_as_mask_2.isChecked()
+            mask_file = self.parent.widgets[widget].w.mask_file.text()
+            invert_mask = self.parent.widgets[widget].w.invert_mask_2.isChecked()
+            mask_brightness_adjust = self.parent.widgets[widget].w.mask_brightness_adjust_2.value()
+            mask_contrast_adjust = self.parent.widgets[widget].w.mask_contrast_adjust_2.value()
+            mask_overlay_blur = self.parent.widgets[widget].w.mask_overlay_blur_2.value()
+            overlay_mask = self.parent.widgets[widget].w.overlay_mask_2.isChecked()
+
+
         else:
+
+            use_alpha_as_mask = self.parent.widgets[widget].w.use_alpha_as_mask.isChecked()
+            mask_file = self.parent.widgets[widget].w.mask_file.text()
+            invert_mask = self.parent.widgets[widget].w.invert_mask.isChecked()
+            mask_brightness_adjust = self.parent.widgets[widget].w.mask_brightness_adjust.value()
+            mask_contrast_adjust = self.parent.widgets[widget].w.mask_contrast_adjust.value()
+            mask_overlay_blur = self.parent.widgets[widget].w.mask_overlay_blur.value()
+            overlay_mask = self.parent.widgets[widget].w.overlay_mask.isChecked()
+
             if self.parent.widgets[widget].w.anim2D.isChecked():
                 animation_mode = '2D'
                 outdir = gs.system.txt2vid_single_frame_dir
@@ -212,7 +232,7 @@ class SessionParams():
             "recons_blur": int(self.parent.widgets[widget].w.recons_blur.value()),
 
             # Animation Parameters
-            "mask_overlay_blur": self.parent.widgets[widget].w.mask_overlay_blur.value(),
+
             "precision": 'autocast', # todo make variable
             "timestring": "",  # todo make variable
             "border": self.parent.widgets[widget].w.border.currentText(),
@@ -263,6 +283,14 @@ class SessionParams():
             "keyframes": self.parent.widgets[widget].w.keyframes.toPlainText(),
             "multi_dim_prompt": self.parent.widgets[widget].w.multi_dim_prompt.isChecked(),
             "multi_dim_seed_mode": self.parent.widgets[widget].w.multi_dim_seed_behavior.currentText(),
+            "use_mask": use_mask,
+            "use_alpha_as_mask": use_alpha_as_mask,
+            "mask_file": mask_file,
+            "invert_mask": invert_mask,
+            "mask_brightness_adjust": mask_brightness_adjust,
+            "mask_contrast_adjust": mask_contrast_adjust,
+            "mask_overlay_blur": mask_overlay_blur,
+            "overlay_mask": overlay_mask,
             # todo make this a variable controlled by ui
             "dynamic_threshold": None,
             "static_threshold": None,
@@ -272,13 +300,7 @@ class SessionParams():
             "adabins": self.parent.widgets[widget].w.adabins.isChecked(),
             "batch_name": 'batch_name_' + str(seed),
             "filename_format": "{timestring}_{index}_{prompt}.png",
-            "use_mask": self.parent.widgets[widget].w.use_mask.isChecked(),
-            "use_alpha_as_mask": self.parent.widgets[widget].w.use_alpha_as_mask.isChecked(),
-            "mask_file": self.parent.widgets[widget].w.mask_file.text(),
-            "invert_mask": self.parent.widgets[widget].w.invert_mask.isChecked(),
-            "mask_brightness_adjust": self.parent.widgets[widget].w.mask_brightness_adjust.value(),
-            "mask_contrast_adjust": self.parent.widgets[widget].w.mask_contrast_adjust.value(),
-            "overlay_mask": self.parent.widgets[widget].w.overlay_mask.isChecked(),
+
             "init_latent": None,
             "init_sample": None,
             "init_c": None,
@@ -290,7 +312,11 @@ class SessionParams():
             "interpolate_x_frames": 4,
             "prompt": self.parent.widgets[widget].w.prompts.toPlainText(),
             "apply_strength": 0,
-            "apply_circular": False
+            "apply_circular": False,
+            "karras_sigma_min": self.parent.widgets[widget].w.karras_sigma_min.value(),
+            "karras_sigma_max": self.parent.widgets[widget].w.karras_sigma_max.value(),
+            "pathmode": self.parent.widgets[widget].w.pathmode.currentText(),
+            "discard_next_to_last_sigma": self.parent.widgets[widget].w.discard_next_to_last_sigma.isChecked(),
         }
         self.update_diffusion_settings()
         self.params = SimpleNamespace(**self.params)

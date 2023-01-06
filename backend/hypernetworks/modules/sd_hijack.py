@@ -27,7 +27,7 @@ gs.embeddings_path = ""
 
 
 def apply_optimizations():
-    undo_optimizations()
+    #undo_optimizations()
 
     ldm.modules.diffusionmodules.model.nonlinearity = silu
 

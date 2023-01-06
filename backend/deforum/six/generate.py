@@ -443,12 +443,19 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
                     if args.prompt_weighting:
                         uc, c = get_uc_and_c(prompts, gs.models["sd"], args, frame)
                     else:
-                        if args.negative_prompts is not None:
+                        # make negative prompt just a weighted prompt
+                        if args.negative_prompts is not None and args.negative_prompts != '':
+                            work_prompt = prompts[0] + ':1 ' + args.negative_prompts + ':-1'
+                            uc, c = get_uc_and_c([work_prompt], gs.models["sd"], args, frame)
+                        """
+                                                if args.negative_prompts is not None:
                             print(f"using negative prompts: {args.negative_prompts}")
                             uc = gs.models["sd"].get_learned_conditioning(args.negative_prompts)
                         else:
                             uc = gs.models["sd"].get_learned_conditioning(batch_size * [""])
                         c = gs.models["sd"].get_learned_conditioning(prompts)
+                        """
+
 
                     if args.scale == 1.0:
                         uc = None

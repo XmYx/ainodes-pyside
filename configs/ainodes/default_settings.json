@@ -44,7 +44,6 @@
     "textual_inversion_dir": "data/textual_inversion",
     "content_db_dir": "backend/content_db",
     "support_models_dir": "data/models/support",
-    "pathmode": "subfolders",
     "gen_one_models": ["1.4", "1.5"],
     "gen_two_models": ["2.0"],
     "blip_model_file": "data/models/support/model_base_caption_capfilt_large.pth",
@@ -162,6 +161,10 @@
     "recons_blur": 5,
     "selected_hypernetwork": "None",
     "selected_vae": "None",
-    "selected_aesthetic_embedding": "None"
+    "selected_aesthetic_embedding": "None",
+    "karras_sigma_min": 0.1,
+    "karras_sigma_max": 10.0,
+    "pathmode": "prompt-folders",
+    "discard_next_to_last_sigma": true
   }
 }

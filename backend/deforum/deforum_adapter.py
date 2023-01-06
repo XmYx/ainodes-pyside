@@ -580,6 +580,7 @@ class DeforumSix:
                         prompt="",
                         negative_prompts=None,
                         hires=None,
+                        hires_strength=0.0,
                         # use_hypernetwork=None,
                         apply_strength=0,
                         apply_circular=False,
@@ -667,9 +668,6 @@ class DeforumSix:
                 aesthetic_slerp_angle=gs.slerp_angle,
                 aesthetic_text_negative=gs.aesthetic_text_negative)
 
-        if hires:
-            args.hiresstr = args.strength
-
         if not use_init:
             init_image = None
         args.strength = 0 if init_image is None else strength
@@ -725,7 +723,7 @@ class DeforumSix:
         # clean up unused memory
         torch_gc()
 
-        args.clip_prompt = ['test']
+        #args.clip_prompt = ['test']
 
         # print('anim_args.animation_mode', anim_args.animation_mode)
         # print('anim_args.translation_x', anim_args.translation_x)

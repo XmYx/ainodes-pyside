@@ -185,6 +185,7 @@ class MainWindow(QMainWindow):
 
         self.params = self.sessionparams.update_params()
         db_base.check_db_status()
+        self.check_karras_enabled()
 
 
     def selftest(self):  # TODO Lets extend this function with everything we have and has to work
@@ -301,6 +302,19 @@ class MainWindow(QMainWindow):
         self.system_setup.w.cancel.clicked.connect(self.update_ui_from_system_params)
         self.web_images.signals.web_image_retrived.connect(self.show_web_image_on_canvas)
 
+        self.widgets[self.current_widget].w.sampler.currentIndexChanged.connect(self.check_karras_enabled)
+
+
+    def check_karras_enabled(self):
+        if self.widgets[self.current_widget].w.sampler.currentText() != 'ddim' and self.widgets[self.current_widget].w.sampler.currentText() != 'plms':
+            self.widgets[self.current_widget].w.karras_switches.setVisible(True)
+            self.widgets[self.current_widget].w.ddim_eta_label.setVisible(False)
+            self.widgets[self.current_widget].w.ddim_eta.setVisible(False)
+        else:
+            self.widgets[self.current_widget].w.karras_switches.setVisible(False)
+            if self.widgets[self.current_widget].w.sampler.currentText() == 'ddim':
+                self.widgets[self.current_widget].w.ddim_eta_label.setVisible(True)
+                self.widgets[self.current_widget].w.ddim_eta.setVisible(True)
 
     def show_model_preview_images(self, model):
         for image in model['images']:
@@ -680,6 +694,14 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.cleanup_memory.setVisible(False)
         self.widgets[self.current_widget].w.normalized_prompts.setVisible(False)
 
+        self.widgets[self.current_widget].w.preview_mode_label.setVisible(False)
+        self.widgets[self.current_widget].w.mode.setVisible(False)
+        self.widgets[self.current_widget].w.stop_dream.setVisible(False)
+        self.widgets[self.current_widget].w.hires.setVisible(False)
+        self.widgets[self.current_widget].w.hires_strength.setVisible(False)
+        self.widgets[self.current_widget].w.hires_strength_label.setVisible(False)
+        self.widgets[self.current_widget].w.seamless.setVisible(False)
+
         if self.widgets[self.current_widget].samHidden == False:
             self.widgets[self.current_widget].hideSampler_anim()
         if self.widgets[self.current_widget].aesHidden == False:
@@ -734,6 +756,14 @@ class MainWindow(QMainWindow):
             self.model_download_ui.w.dockWidget.setVisible(True)
             self.widgets[self.current_widget].w.cleanup_memory.setVisible(True)
             self.widgets[self.current_widget].w.normalized_prompts.setVisible(True)
+            self.widgets[self.current_widget].w.preview_mode_label.setVisible(True)
+            self.widgets[self.current_widget].w.stop_dream.setVisible(True)
+            self.widgets[self.current_widget].w.mode.setVisible(True)
+            self.widgets[self.current_widget].w.hires.setVisible(True)
+            self.widgets[self.current_widget].w.hires_strength.setVisible(True)
+            self.widgets[self.current_widget].w.hires_strength_label.setVisible(True)
+            self.widgets[self.current_widget].w.seamless.setVisible(True)
+
             self.default_hidden = False
         else:
             self.hide_default()

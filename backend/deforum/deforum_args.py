@@ -167,6 +167,7 @@ def DeforumArgs(attr):
 
     negative_prompts = attr.negative_prompts
     hires = attr.hires
+    hires_strength = attr.hires_strength
     lowmem = attr.lowmem
     seamless = False
     axis = {'x'}

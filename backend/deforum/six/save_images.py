@@ -31,7 +31,8 @@ def save_samples(
     # save samples
     images = []
     grid_image = None
-    if args.display_samples or args.save_samples:
+    #if args.display_samples or args.save_samples:
+    if args.save_samples:
         for index, x_sample in enumerate(x_samples):
             x_sample = 255.0 * rearrange(x_sample.cpu().numpy(), "c h w -> h w c")
             images.append(Image.fromarray(x_sample.astype(np.uint8)))
@@ -43,7 +44,7 @@ def save_samples(
                 )
 
     # save grid
-    if args.display_grid or args.save_grid:
+    if args.save_grid:
         grid = torch.stack([x_samples], 0)
         grid = rearrange(grid, "n b c h w -> (n b) c h w")
         grid = make_grid(grid, nrow=n_rows, padding=0)

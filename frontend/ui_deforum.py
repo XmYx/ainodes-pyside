@@ -365,6 +365,8 @@ class Deforum_UI(QObject):
             self.parent.canvas.canvas.render_item = id
 
         gs.karras = self.parent.widgets[self.parent.current_widget].w.karras.isChecked()
+        gs.karras_sigma_min = self.parent.widgets[self.parent.current_widget].w.karras_sigma_min.value()
+        gs.karras_sigma_max = self.parent.widgets[self.parent.current_widget].w.karras_sigma_max.value()
 
         ##print(self.params.translation_x)
         ##print(f"updated parameters to: {params}")
@@ -372,14 +374,18 @@ class Deforum_UI(QObject):
         #print(gs.models)
         #if "inpaint" in gs.models:
         #    del gs.models["inpaint"]
+        mode = self.parent.widgets[self.parent.current_widget].w.mode.currentText()
+
+        #if mode == 'single' and self.selected_rect == None
 
         if self.params.with_inpaint == True: # todo what is this for?
             self.parent.sessionparams.params.advanced = True
         else:
-            if self.parent.widgets[self.parent.current_widget].w.mode.currentText() == 'basic':
+            if mode == 'grid':
                 self.parent.sessionparams.params.advanced = False
-            elif self.parent.widgets[self.parent.current_widget].w.mode.currentText() == 'advanced':
+            elif mode == 'single':
                 self.parent.sessionparams.params.advanced = True
+                #todo add a first rectangle if not present addrect_atpos
                 #self.parent.render_index = index
 
         gs.diffusion.selected_aesthetic_embedding = self.parent.widgets[self.parent.current_widget].w.selected_aesthetic_embedding.currentText()
@@ -476,9 +482,9 @@ class Deforum_UI(QObject):
         self.parent.renderedFrames = 0
         self.parent.sample_number = 1
         if params.n_samples == 1:
-            makegrid = False
+            make_grid = False
         else:
-            makegrid = self.parent.widgets[self.parent.current_widget].w.make_grid.isChecked()
+            make_grid = self.parent.widgets[self.parent.current_widget].w.make_grid.isChecked()
         #sampler_name = translate_sampler(self.parent.sampler.w.sampler.currentText())
         sampler_name = "ddim"
         init_image = "outpaint.png"

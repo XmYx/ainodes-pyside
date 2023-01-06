@@ -42,7 +42,7 @@
     "textual_inversion_dir": "data/embeddings",
     "content_db_dir": "backend/content_db",
     "support_models_dir": "data/models/support",
-    "pathmode": "subfolders",
+    "pathmode": "prompt-folders",
     "gen_one_models": ["1.4", "1.5"],
     "gen_two_models": ["2.0"],
     "blip_model_file": "data/models/support/upscale/model_base_caption_capfilt_large.pth",

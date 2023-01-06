@@ -48,10 +48,9 @@ def next_seed(args):
 
 def save_settings(args, outfolder, prompt, index):
     os.makedirs(outfolder, exist_ok=True)
-    if args.save_settings or args.save_samples:
-        print(f"Saving to {outfolder}_*")
     # save settings for the batch
     if args.save_settings:
+        print(f"Saving to {outfolder}_*")
         filename = os.path.join(outfolder, f"{args.timestring}_{index:05}_{sanitize(prompt)[:160]}_settings.txt")
         output_data = copy.deepcopy(args.__dict__)
         output_data['actual_prompt'] = prompt
@@ -151,7 +150,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                             gs.diffusion.selected_aesthetic_embedding = 'None'
                         args.backupaesthetics = None
                         args.use_init = True
-                        args.strength = args.hiresstr
+                        args.strength = args.hires_strength
                         args.W = fpW
                         args.H = fpH
                         if args.lowmem == True:
@@ -177,14 +176,15 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                             else:
                                 filename = f"{args.timestring}_{index:05}_{args.seed}.png"
                             #added prompt to output folder name
-                            if gs.system.pathmode == "subfolders":
+                            if gs.diffusion.pathmode == "prompt-folders":
                                 outfolder = os.path.join(args.outdir, f'{args.timestring}_{sanitize(prompt)[:120]}')
                             else:
                                 outfolder = os.path.join(args.outdir, datetime.now().strftime("%Y%m%d"))
                             os.makedirs(outfolder, exist_ok=True)
                             gs.temppath = os.path.join(outfolder, filename)
-                            paths.append(gs.temppath)
-                            image.save(gs.temppath)
+                            if args.save_samples:
+                                paths.append(gs.temppath)
+                                image.save(gs.temppath)
                             args.init_sample = None
                             if args.save_settings == True:
                                 save_settings(args, outfolder, prompt, index)
@@ -204,8 +204,8 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                 filename = f"{args.timestring}_{iprompt:05d}_grid_{args.seed}.png"
                 grid_image = Image.fromarray(grid.astype(np.uint8))
                 grid_image.save(os.path.join(args.outdir, filename))
-                display.clear_output(wait=True)
-                display.display(grid_image)
+                #display.clear_output(wait=True)
+                #display.display(grid_image)
     return paths
 
 

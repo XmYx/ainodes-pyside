@@ -173,3 +173,4 @@ ffmpeg.exe
 *.bak
 frontend/session_params.py.bak
 *.pt
+/tmp/

@@ -27,7 +27,6 @@ from backend.utils import sampleToImage, encoded_to_torch_image, image_path_to_t
     get_conditionings, torch_image_to_latent, get_prompts_data
 from backend.ddim_simplified import DDIMSampler_simple
 from backend.torch_gc import torch_gc
-from ldm_deforum.modules.embedding_managerpt import EmbeddingManager
 from ldm_v2.util import instantiate_from_config
 from backend.hypernetworks import hypernetwork
 import backend.hypernetworks.modules.sd_hijack

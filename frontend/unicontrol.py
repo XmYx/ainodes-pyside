@@ -7,6 +7,8 @@ from backend.torch_gc import torch_gc
 
 gs = singleton
 
+
+
 class UniControl(QObject):
 
     def __init__(self, parent, *args, **kwargs):
@@ -40,11 +42,33 @@ class UniControl(QObject):
         self.w.selected_vae.currentIndexChanged.connect(self.select_new_vae)
         self.w.selected_hypernetwork.currentIndexChanged.connect(self.select_new_hypernetwork)
         self.w.selected_aesthetic_embedding.currentIndexChanged.connect(self.select_new_aesthetic_embedding)
+        self.w.select_input_video.clicked.connect(self.select_input_video)
+        self.w.select_mask_video.clicked.connect(self.select_mask_video)
+        self.w.select_init_image.clicked.connect(self.select_init_image)
+        self.w.select_mask_image.clicked.connect(self.select_init_image)
         self.w.negative_prompts.setVisible(False)
         self.init_anims()
         self.initAnim.start()
         self.hide_all()
         self.ui_unicontrol = UniControl_UI(self)
+
+    def select_init_image(self):
+        filename = QFileDialog.getOpenFileName(caption='Select Init image', filter='Image (*.png *.jpg)')
+        self.w.init_image.setText(filename[0])
+
+    def select_mask_image(self):
+        filename = QFileDialog.getOpenFileName(caption='Select Init image', filter='Image (*.png *.jpg)')
+        self.w.mask_file.setText(filename[0])
+
+    def select_input_video(self):
+        filename = QFileDialog.getOpenFileName(caption='Select input video', filter='Video (*.mp4 *.avi)')
+        self.w.video_init_path.setText(filename[0])
+
+    def select_mask_video(self):
+        filename = QFileDialog.getOpenFileName(caption='Select mask video', filter='Video (*.mp4 *.avi)')
+        self.w.video_mask_path.setText(filename[0])
+
+
 
     def stop_all(self):
         gs.stop_all = True

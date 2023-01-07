@@ -59,21 +59,16 @@ class aiNodesPlugin():
         self.parent = parent
 
     def initme(self):
-        cmd = ["pip", "install", "ffmpeg"]
+        cmd = ["pip", "install", "ffmpeg", "--upgrade"]
         subprocess.Popen(cmd)
-        cmd = ["pip", "install", "sk-video"]
+        cmd = ["pip", "install", "sk-video", "--upgrade"]
         subprocess.Popen(cmd)
-
         sshFile = "frontend/style/QTDark.stylesheet"
-
         self.widget = WebcamWidget()
         self.widget.setWindowTitle("Webcam Diffusion")
         with open(sshFile, "r") as fh:
             self.widget.setStyleSheet(fh.read())
-
         self.widget.show()
-
-
 
 class WebcamWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -182,10 +177,6 @@ class WebcamWidget(QtWidgets.QWidget):
     def start_webcam(self):
         """Start the webcam and display the video feed."""
         self.capture = cv2.VideoCapture(self.webcam_dropdown.currentIndex())
-        #if self.capture.isOpened():
-        #    self.wtimer = QtCore.QTimer()
-        #    self.wtimer.timeout.connect(self.update_frame)
-        #    self.wtimer.start(8)
 
     def update_frame(self):
         """Update the camera preview label with the latest frame."""
@@ -251,11 +242,8 @@ class WebcamWidget(QtWidgets.QWidget):
         self.index = 0
         self.lastinit = None
         self.seedint = 0
-        #if self.loadedmodel == "inpaint":
-        #    self.model = None
         if self.loadedmodel == "normal":
             with autocast("cuda"):
-
                 self.return_seedint()
                 seed_everything(self.seedint)
                 self.uc = self.model.get_learned_conditioning(1 * [""])
@@ -263,7 +251,6 @@ class WebcamWidget(QtWidgets.QWidget):
                 self.c = self.model.get_learned_conditioning(self.promptstring)
                 self.sigmas = sampling.get_sigmas_karras(n=self.steps.value(), sigma_min=0.1, sigma_max=10, device="cuda")
                 self.sigmas = self.sigmas[len(self.sigmas) - int(self.strength.value() * self.steps.value()) - 1:]
-            #self.init_mask_model()
             self.model_wrap = CompVisDenoiser(self.model, quantize=False)
 
             loss_fns_scales = [
@@ -290,7 +277,6 @@ class WebcamWidget(QtWidgets.QWidget):
                                             grad_consolidate_fn=None,
                                             verbose=False)
         _, frame = self.capture.read()
-        #self.frame_to_mask_png(frame)
         self.args = SimpleNamespace()
         self.args.use_init = True
         self.args.scale = 7.5
@@ -317,7 +303,6 @@ class WebcamWidget(QtWidgets.QWidget):
                     self.c = self.model.get_learned_conditioning(self.promptstring)
                 self.images = [self.img2img(frame, prompt,
                                             steps, 1, 7.5, self.seedint, eta, strength)]
-                #self.images = [result_image]
                 self.update_image_signal()
             if self.run == False:
                 break
@@ -328,11 +313,9 @@ class WebcamWidget(QtWidgets.QWidget):
 
     def process_video(self, video_path = None, progress_callback = None):
         import skvideo.io
-
         video_path=self.filename[0]
         # Create a VideoCapture object for reading the video file
         capture = cv2.VideoCapture(video_path)
-
         # Read the first frame to get the video dimensions
         success, frame = capture.read()
         frame_height, frame_width, _ = frame.shape
@@ -350,7 +333,6 @@ class WebcamWidget(QtWidgets.QWidget):
         #    self.model = None
         if self.loadedmodel == "normal":
             with autocast("cuda"):
-
                 self.return_seedint()
                 seed_everything(self.seedint)
                 self.uc = self.model.get_learned_conditioning(1 * [""])
@@ -360,7 +342,6 @@ class WebcamWidget(QtWidgets.QWidget):
                 self.sigmas = self.sigmas[len(self.sigmas) - int(self.strength.value() * self.steps.value()) - 1:]
             #self.init_mask_model()
             self.model_wrap = CompVisDenoiser(self.model, quantize=False)
-
             loss_fns_scales = [
                 [None, 0.0],
                 [None, 0.0],
@@ -394,7 +375,6 @@ class WebcamWidget(QtWidgets.QWidget):
         self.image_label.setScaledContents(True)
         self.args.log_weighted_subprompts = False
         self.args.normalize_prompt_weights = False
-
         # Initialize a counter variable to skip frames
         frame_count = 0
         frame_skip = 2

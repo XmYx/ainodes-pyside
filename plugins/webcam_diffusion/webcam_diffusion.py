@@ -23,16 +23,29 @@ It is also worth mentioning, that ui should only be modified from the main threa
 set self.parent.image, then call self.parent.image_preview_signal, which will emit a signal to call
 the image_preview_func from the main thread.
 """
+import hashlib
 import subprocess
 
+import safetensors
+
+from backend.aesthetics.aesthetic_clip import AestheticCLIP
+from backend.deforum.deforum_adapter import load_vae_dict, vae_ignore_keys
+from backend.deforum.six.model_load import make_linear_decode
+from backend.deforum.six.seamless import configure_model_padding
+from backend.hypernetworks.hypernetwork import apply_strength
 from backend.singleton import singleton
+from backend.torch_gc import torch_gc
+from backend.hypernetworks import hypernetwork
+import backend.hypernetworks.modules.sd_hijack
+from backend.deforum.six.hijack import hijack_deforum
+
 gs = singleton
 import os, sys
 import random
 import traceback
 from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtCore import Signal, QObject, QThreadPool, Slot, QRunnable
-from PySide6.QtWidgets import QTextEdit, QSpinBox, QDoubleSpinBox, QLineEdit, QComboBox, QLabel, QFileDialog
+from PySide6.QtWidgets import QTextEdit, QSpinBox, QDoubleSpinBox, QLineEdit, QComboBox, QLabel, QFileDialog, QCheckBox
 from omegaconf import OmegaConf
 from einops import repeat, rearrange
 from pytorch_lightning import seed_everything
@@ -46,7 +59,7 @@ from k_diffusion import sampling
 from types import SimpleNamespace
 from typing import Any, Callable, Optional
 
-from torch import autocast
+from torch import nn, autocast, optim
 import torch
 from backend.resizeRight import resizeright, interp_methods
 torch.set_grad_enabled(False)
@@ -79,10 +92,10 @@ class WebcamWidget(QtWidgets.QWidget):
         # Set up the user interface
         self.capture_button = QtWidgets.QPushButton('Stop')
         self.capture_button.clicked.connect(self.stop_threads)
-        self.continous = QtWidgets.QPushButton('Start')
+        self.continous = QtWidgets.QPushButton('Start Webcam Diffusion')
         self.continous.clicked.connect(self.start_continuous_capture)
-        self.continous = QtWidgets.QPushButton('Use Video Input')
-        self.continous.clicked.connect(self.start_video_input)
+        self.video_input = QtWidgets.QPushButton('Start Video Input Diffusion')
+        self.video_input.clicked.connect(self.start_video_input)
         self.webcam_dropdown = QtWidgets.QComboBox()
         self.webcam_dropdown.addItems(self.get_available_webcams())
         self.webcam_dropdown.currentIndexChanged.connect(self.start_webcam)
@@ -91,6 +104,7 @@ class WebcamWidget(QtWidgets.QWidget):
 
         self.maskprompt = QTextEdit()
         self.prompt = QTextEdit()
+
         self.steps = QSpinBox()
         self.steps.setValue(12)
         self.steps.valueChanged.connect(self.make_sampler_schedule)
@@ -100,6 +114,8 @@ class WebcamWidget(QtWidgets.QWidget):
         self.strength.setMaximum(1.00)
         self.strength.setMinimum(0.01)
         self.strength.setSingleStep(0.01)
+        self.strength.valueChanged.connect(self.make_sampler_schedule)
+
         self.eta = QDoubleSpinBox()
         self.eta.setValue(0.0)
         self.eta.setMaximum(1.00)
@@ -119,21 +135,37 @@ class WebcamWidget(QtWidgets.QWidget):
                                         "dpm_fast", "dpmpp_2s_a", "dpmpp_2m", "dpmpp_sde", "dpm_adaptive"])
         self.modelselect = QComboBox()
         self.modelselect.addItems(["Normal"])
+
+        self.save_video_stream = QCheckBox("Save Video Stream")
+        self.save_frames = QCheckBox("Save Individual Frames")
         # Set up the layout
-        layout = QtWidgets.QVBoxLayout()
-        #layout.addWidget(self.maskprompt)
-        layout.addWidget(self.prompt)
-        layout.addWidget(self.steps)
-        layout.addWidget(self.strength)
-        layout.addWidget(self.rescalefactorlabel)
-        layout.addWidget(self.rescalefactor)
-        layout.addWidget(self.eta)
-        layout.addWidget(self.seed)
-        layout.addWidget(self.samplercombobox)
-        layout.addWidget(self.modelselect)
-        layout.addWidget(self.webcam_dropdown)
-        layout.addWidget(self.capture_button)
-        layout.addWidget(self.continous)
+        # Create a QGridLayout object
+        layout = QtWidgets.QGridLayout()
+
+        # Add the widgets to the grid layout
+        layout.addWidget(QtWidgets.QLabel("Prompt:"), 0, 0)
+        layout.addWidget(self.prompt, 0, 1)
+        layout.addWidget(QtWidgets.QLabel("Steps:"), 1, 0)
+        layout.addWidget(self.steps, 1, 1)
+        layout.addWidget(QtWidgets.QLabel("Strength:"), 2, 0)
+        layout.addWidget(self.strength, 2, 1)
+        layout.addWidget(QtWidgets.QLabel("Rescale factor:"), 3, 0)
+        layout.addWidget(self.rescalefactor, 3, 1)
+        layout.addWidget(QtWidgets.QLabel("Eta:"), 4, 0)
+        layout.addWidget(self.eta, 4, 1)
+        layout.addWidget(QtWidgets.QLabel("Seed:"), 5, 0)
+        layout.addWidget(self.seed, 5, 1)
+        layout.addWidget(QtWidgets.QLabel("Sampler:"), 6, 0)
+        layout.addWidget(self.samplercombobox, 6, 1)
+        layout.addWidget(QtWidgets.QLabel("Model:"), 7, 0)
+        layout.addWidget(self.modelselect, 7, 1)
+        layout.addWidget(QtWidgets.QLabel("Webcam:"), 8, 0)
+        layout.addWidget(self.webcam_dropdown, 8, 1)
+        layout.addWidget(self.capture_button, 9, 0)
+        layout.addWidget(self.continous, 9, 1)
+        layout.addWidget(self.save_video_stream, 10, 0)
+        layout.addWidget(self.video_input, 10, 1)
+        layout.addWidget(self.save_frames, 11, 0)
         #layout.addWidget(self.camera_label)
         self.setLayout(layout)
         self.threadpool = QThreadPool()
@@ -195,8 +227,8 @@ class WebcamWidget(QtWidgets.QWidget):
 
         inference = self.modelselect.currentText()
         if self.loadedmodel != "normal":
-            self.model = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
-                                                "data/models/v1-5-pruned-emaonly.ckpt")
+            #gs.models["sd"] = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
+            #                                    "data/models/v1-5-pruned-emaonly.ckpt")
             self.loadedmodel = "normal"
             self.midas_trafo = None
             self.sampler = None
@@ -213,8 +245,8 @@ class WebcamWidget(QtWidgets.QWidget):
 
         inference = self.modelselect.currentText()
         if self.loadedmodel != "normal":
-            self.model = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
-                                                "data/models/v1-5-pruned-emaonly.ckpt")
+           # gs.models["sd"] = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
+           #                                     "data/models/v1-5-pruned-emaonly.ckpt")
             self.loadedmodel = "normal"
             self.midas_trafo = None
             self.sampler = None
@@ -238,20 +270,27 @@ class WebcamWidget(QtWidgets.QWidget):
     def continuous_capture(self, progress_callback=None):
         """Capture images from the webcam continuously."""
         # State for interpolating between diffusion steps
+        self.prepare_for_run()
         self.images = []
         self.index = 0
         self.lastinit = None
         self.seedint = 0
+        if self.save_video_stream.isChecked():
+            import skvideo.io
+            skvideo.setFFmpegPath("ffmpeg.exe")
+            output_path = "out_stream.mp4"
+            frame_rate = 24
+            writer = skvideo.io.FFmpegWriter(output_path, outputdict={'-r': str(frame_rate)})
         if self.loadedmodel == "normal":
             with autocast("cuda"):
                 self.return_seedint()
                 seed_everything(self.seedint)
-                self.uc = self.model.get_learned_conditioning(1 * [""])
+                self.uc = gs.models["sd"].get_learned_conditioning(1 * [""])
                 self.promptstring = self.prompt.toPlainText()
-                self.c = self.model.get_learned_conditioning(self.promptstring)
+                self.c = gs.models["sd"].get_learned_conditioning(self.promptstring)
                 self.sigmas = sampling.get_sigmas_karras(n=self.steps.value(), sigma_min=0.1, sigma_max=10, device="cuda")
                 self.sigmas = self.sigmas[len(self.sigmas) - int(self.strength.value() * self.steps.value()) - 1:]
-            self.model_wrap = CompVisDenoiser(self.model, quantize=False)
+            self.model_wrap = CompVisDenoiser(gs.models["sd"], quantize=False)
 
             loss_fns_scales = [
                 [None, 0.0],
@@ -288,6 +327,7 @@ class WebcamWidget(QtWidgets.QWidget):
         self.args.log_weighted_subprompts = False
         self.args.normalize_prompt_weights = False
         #torch.backends.cudnn.benchmark = True
+        frame_count = 0
         while self.run == True:
             with torch.autocast("cuda"):
                 _, frame = self.capture.read()
@@ -300,49 +340,111 @@ class WebcamWidget(QtWidgets.QWidget):
                 eta = self.eta.value()
                 if prompt != self.prompt:
                     self.promptstring = self.prompt.toPlainText()
-                    self.c = self.model.get_learned_conditioning(self.promptstring)
+                    self.c = gs.models["sd"].get_learned_conditioning(self.promptstring)
                 self.images = [self.img2img(frame, prompt,
                                             steps, 1, 7.5, self.seedint, eta, strength)]
+                frame_count += 1
+                if self.save_frames.isChecked():
+                    filepath = f"video_out/webcam_out_frame_{frame_count}.png"
+                    self.images[0].save(filepath)
+                if self.save_video_stream.isChecked():
+                    # Add the resulting image to the output video
+                    writer.writeFrame(self.images[0])
                 self.update_image_signal()
             if self.run == False:
+                if self.save_video_stream.isChecked():
+                    writer.close()
                 break
+        if self.save_video_stream.isChecked():
+            try:
+                writer.close()
+            except:
+                pass
+    def prepare_for_run(self):
+        check = self.load_model_from_config(config=None, ckpt=None)
+        if check == -1:
+            return check
+
+        if gs.diffusion.selected_hypernetwork != 'None':
+            hypernetwork.load_hypernetwork(gs.diffusion.selected_hypernetwork)
+            hypernetwork.apply_strength(
+                apply_strength)  # 1.0, "Hypernetwork strength", gr.Slider, {"minimum": 0.0, "maximum": 1.0, "step": 0.001}),
+            gs.model_hijack.apply_circular(False)
+            gs.model_hijack.clear_comments()
+
+        # W, H = map(lambda x: x - x % 64, (W, H))  # resize to integer multiple of 64
+
+        # if args.seamless == True and self.prev_seamless == False:
+
+        # print("Running Seamless sampling...")
+        seamless = False
+        seamless_axes = ["x"]
+        configure_model_padding(gs.models["sd"], seamless, seamless_axes)
+        # self.prev_seamless = True
+        """
+        for key, value in root.__dict__.items():
+            try:
+                root.__dict__[key] = self.parent.params.__dict__[key]
+            except:
+                pass"""
+
+        if gs.diffusion.selected_aesthetic_embedding != 'None' and gs.model_version == "1.5":
+            gs.models["sd"].cond_stage_model.process_tokens.set_aesthetic_params(
+                aesthetic_lr=gs.lr,
+                aesthetic_weight=gs.aesthetic_weight,
+                aesthetic_steps=gs.T,
+                image_embs_name=gs.diffusion.selected_aesthetic_embedding,
+                aesthetic_slerp=gs.slerp,
+                aesthetic_imgs_text=gs.aesthetic_imgs_text,
+                aesthetic_slerp_angle=gs.slerp_angle,
+                aesthetic_text_negative=gs.aesthetic_text_negative)
 
     def select_video_file(self):
         self.filename = QFileDialog.getOpenFileName(caption='Select Init video', filter='Video (*.mp4 *.mov)')
-        print(self.filename[0])
+        #print(self.filename[0])
 
     def process_video(self, video_path = None, progress_callback = None):
-        import skvideo.io
+        self.prepare_for_run()
         video_path=self.filename[0]
         # Create a VideoCapture object for reading the video file
         capture = cv2.VideoCapture(video_path)
         # Read the first frame to get the video dimensions
         success, frame = capture.read()
+        factor = self.rescalefactor.value()
         frame_height, frame_width, _ = frame.shape
-        output_path = "out_test.mp4"
+        frame_height = frame_height // factor
+        frame_width = frame_width // factor
+
+
         frame_rate = 24
         output_codec = "libx264"
         # Create a ffmpeg writer to write the output video
-        skvideo.setFFmpegPath("ffmpeg.exe")
-        writer = skvideo.io.FFmpegWriter(output_path, outputdict={'-r': str(frame_rate)})
+
+        if self.save_video_stream.isChecked():
+            import skvideo.io
+            skvideo.setFFmpegPath("ffmpeg.exe")
+            output_path = "out_video.mp4"
+            writer = skvideo.io.FFmpegWriter(output_path, outputdict={'-r': str(frame_rate)})
+        os.makedirs("video_out", exist_ok=True)
+
         self.images = []
         self.index = 0
         self.lastinit = None
         self.seedint = 0
         self.run = True
         #if self.loadedmodel == "inpaint":
-        #    self.model = None
+        #    gs.models["sd"] = None
         if self.loadedmodel == "normal":
             with autocast("cuda"):
                 self.return_seedint()
                 seed_everything(self.seedint)
-                self.uc = self.model.get_learned_conditioning(1 * [""])
+                self.uc = gs.models["sd"].get_learned_conditioning(1 * [""])
                 self.promptstring = self.prompt.toPlainText()
-                self.c = self.model.get_learned_conditioning(self.promptstring)
+                self.c = gs.models["sd"].get_learned_conditioning(self.promptstring)
                 self.sigmas = sampling.get_sigmas_karras(n=self.steps.value(), sigma_min=0.1, sigma_max=10, device="cuda")
                 self.sigmas = self.sigmas[len(self.sigmas) - int(self.strength.value() * self.steps.value()) - 1:]
             #self.init_mask_model()
-            self.model_wrap = CompVisDenoiser(self.model, quantize=False)
+            self.model_wrap = CompVisDenoiser(gs.models["sd"], quantize=False)
             loss_fns_scales = [
                 [None, 0.0],
                 [None, 0.0],
@@ -386,27 +488,37 @@ class WebcamWidget(QtWidgets.QWidget):
                     # Convert the frame to RGB
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     # Call the predict function and get the resulting image
-                    prompt = "pixelsprite, 16bitscene"
+                    prompt = self.prompt.toPlainText()
                     steps = self.steps.value()
-                    eta = self.eta.value()
                     strength = self.strength.value()
+                    eta = self.eta.value()
+                    if prompt != self.prompt:
+                        self.promptstring = self.prompt.toPlainText()
+                        self.c = gs.models["sd"].get_learned_conditioning(self.promptstring)
                     self.seedint = ""
                     self.return_seedint()
                     result_image = self.img2img(frame, prompt, steps, 1, 7.5, self.seedint, eta, strength)
                     self.images = [result_image]
-                    self.update_image_signal()
-                    # Add the resulting image to the output video
-                    writer.writeFrame(result_image)
-                    # Increment the counter variable
                     frame_count += 1
+                    if self.save_frames.isChecked():
+                        filepath = f"video_out/video_out_frame_{frame_count}.png"
+                        self.images[0].save(filepath)
+                    self.update_image_signal()
+                    if self.save_video_stream.isChecked():
+                        # Add the resulting image to the output video
+                        writer.writeFrame(result_image)
+                    # Increment the counter variable
+
                     # Skip the next `frame_skip` frames
                     for i in range(frame_skip):
                         success, frame = capture.read()
             else:
-                writer.close()
+                if self.save_video_stream.isChecked():
+                    writer.close()
                 capture.release()
                 break
-        writer.close()
+        if self.save_video_stream.isChecked():
+            writer.close()
         capture.release()
         # Close the ffmpeg writer and the VideoCapture object
     def return_seedint(self):
@@ -431,7 +543,7 @@ class WebcamWidget(QtWidgets.QWidget):
 
         #with torch.autocast("cuda"):
         torch.backends.cudnn.benchmark = True
-        self.init_latent = self.model.get_first_stage_encoding(self.model.encode_first_stage(image))
+        self.init_latent = gs.models["sd"].get_first_stage_encoding(gs.models["sd"].encode_first_stage(image))
         factor = self.rescalefactor.value()
         if factor != 1.0:
             self.init_latent = resizeright.resize(self.init_latent, scale_factors=None,
@@ -455,7 +567,7 @@ class WebcamWidget(QtWidgets.QWidget):
             device="cuda",
             cb=None,
             verbose=False)
-        x_samples = self.model.decode_first_stage(samples)
+        x_samples = gs.models["sd"].decode_first_stage(samples)
         x_samples = torch.clamp((x_samples + 1.0) / 2.0, min=0.0, max=1.0)
         x_sample = 255. * rearrange(x_samples[0].cpu().numpy(), 'c h w -> h w c')
         image = Image.fromarray(x_sample.astype(np.uint8))
@@ -506,7 +618,7 @@ class WebcamWidget(QtWidgets.QWidget):
             "x": x,
             "sigmas": self.sigmas,
             "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
-            "disable": False,
+            "disable": True,
             "callback": None,
         }
         if args.sampler in ["dpm_fast"]:
@@ -583,6 +695,250 @@ class WebcamWidget(QtWidgets.QWidget):
         samples = sampler_map[args.sampler](**sampler_args)
         return samples
 
+    def run_post_load_model_generation_specifics(self):
+
+        # print("Loading Hypaaaa")
+        gs.model_hijack = backend.hypernetworks.modules.sd_hijack.StableDiffusionModelHijack()
+
+        print("hijacking??")
+        gs.model_hijack.hijack(gs.models["sd"])
+        gs.model_hijack.embedding_db.load_textual_inversion_embeddings()
+
+        # gs.models["sd"].cond_stage_model = backend.aesthetics.modules.PersonalizedCLIPEmbedder()
+
+        aesthetic = AestheticCLIP()
+        aesthetic.process_tokens = gs.models["sd"].cond_stage_model.process_tokens
+        gs.models["sd"].cond_stage_model.process_tokens = aesthetic
+
+    def get_autoencoder_version(self):
+        return "sd-v1"  # TODO this will be different for different models
+
+    def transform_checkpoint_dict_key(self, k):
+        chckpoint_dict_replacements = {
+            'cond_stage_model.transformer.embeddings.': 'cond_stage_model.transformer.text_model.embeddings.',
+            'cond_stage_model.transformer.encoder.': 'cond_stage_model.transformer.text_model.encoder.',
+            'cond_stage_model.transformer.final_layer_norm.': 'cond_stage_model.transformer.text_model.final_layer_norm.',
+        }
+        for text, replacement in chckpoint_dict_replacements.items():
+            if k.startswith(text):
+                k = replacement + k[len(text):]
+
+        return k
+
+    def get_state_dict_from_checkpoint(self, pl_sd):
+        pl_sd = pl_sd.pop("state_dict", pl_sd)
+        pl_sd.pop("state_dict", None)
+
+        sd = {}
+        for k, v in pl_sd.items():
+            new_key = self.transform_checkpoint_dict_key(k)
+
+            if new_key is not None:
+                sd[new_key] = v
+
+        pl_sd.clear()
+        pl_sd.update(sd)
+
+        return pl_sd
+
+    """
+    512-base-ema.ckpt d635794c1fedfdfa261e065370bea59c651fc9bfa65dc6d67ad29e11869a1824
+    512-inpainting-ema.ckpt 2a208a7ded5d42dcb0c0ec908b23c631002091e06afe7e76d16cd11079f8d4e3
+    768-v-ema.ckpt bfcaf0755797b0c30eb00a3787e8b423eb1f5decd8de76c4d824ac2dd27e139f
+    sd-v1-4.ckpt fe4efff1e174c627256e44ec2991ba279b3816e364b49f9be2abc0b3ff3f8556
+    sd-v1-5-inpainting.ckpt c6bbc15e3224e6973459ba78de4998b80b50112b0ae5b5c67113d56b4e366b19
+    v1-5-pruned-emaonly.ckpt cc6cb27103417325ff94f52b7a5d2dde45a7515b25c255d8e396c90014281516
+    data/models/v2-1_512-ema-pruned.ckpt 88ecb782561455673c4b78d05093494b9c539fc6bfc08f3a9a4a0dd7b0b10f36
+    data/models/v2-1_768-ema-pruned.ckpt ad2a33c361c1f593c4a1fb32ea81afce2b5bb7d1983c6b94793a26a3b54b08a0    
+    """
+
+    def return_model_version(self, model):
+        with open(model, 'rb') as file:
+            # Read the contents of the file
+            file_contents = file.read()
+
+            # Calculate the SHA-256 hash
+            sha256_hash = hashlib.sha256(file_contents).hexdigest()
+            if sha256_hash == 'd635794c1fedfdfa261e065370bea59c651fc9bfa65dc6d67ad29e11869a1824':
+                version = '2.0 512'
+                config = '512-base-ema.yaml'
+            elif sha256_hash == '2a208a7ded5d42dcb0c0ec908b23c631002091e06afe7e76d16cd11079f8d4e3':
+                version = '2.0 Inpaint'
+                config = '512-inpainting-ema.yaml'
+            elif sha256_hash == 'bfcaf0755797b0c30eb00a3787e8b423eb1f5decd8de76c4d824ac2dd27e139f':
+                version = '2.0 768'
+                config = '768-v-ema.yaml'
+            elif sha256_hash == 'fe4efff1e174c627256e44ec2991ba279b3816e364b49f9be2abc0b3ff3f8556':
+                version = '1.4'
+                config = 'sd-v1-4.yaml'
+            elif sha256_hash == 'c6bbc15e3224e6973459ba78de4998b80b50112b0ae5b5c67113d56b4e366b19':
+                version = '1.5 Inpaint'
+                config = 'sd-v1-5-inpainting.yaml'
+            elif sha256_hash == 'cc6cb27103417325ff94f52b7a5d2dde45a7515b25c255d8e396c90014281516':
+                version = '1.5 EMA Only'
+                config = 'v1-5-pruned-emaonly.yaml'
+            elif sha256_hash == '88ecb782561455673c4b78d05093494b9c539fc6bfc08f3a9a4a0dd7b0b10f36':
+                version = '2.1 512'
+                config = 'v2-1_512-ema-pruned.yaml'
+            elif sha256_hash == 'ad2a33c361c1f593c4a1fb32ea81afce2b5bb7d1983c6b94793a26a3b54b08a0':
+                version = '2.1 768'
+                config = 'v2-1_768-ema-pruned.yaml'
+            else:
+                version = 'unknown'
+                config = None
+            # Print the hash
+            return config, version
+
+    def load_model_from_config(self, config=None, ckpt=None, verbose=False):
+        gs.force_inpaint = False
+        if ckpt is None:
+            ckpt = gs.system.sd_model_file
+        # Open the file in binary mode
+
+        # loads config.yaml with the name of the model
+        # the config yaml has to be provided with pöropper naming,
+        # otherwise it is not anymore possible to do all the magic with multiple versions of the model around
+        # also config.yaml needs to have one entry at root model_version
+        # model_version has to be explicid like 1.4 or 1.5 or 2.0
+        # it is important that you give the right version hint based on the SD model version
+        # if it is some custom model based on some version of SD we need to have the SD
+        # version not the version of the custom model
+        # if config is None:
+        # config_yaml_name = os.path.splitext(ckpt)[0] + '.yaml'
+        # if not os.path.exists(config_yaml_name):
+        #    config_yaml_name = 'data/default_configs/v1-5.yaml'
+        config, version = self.return_model_version(ckpt)
+        if 'Inpaint' in version:
+            gs.force_inpaint = True
+            print("Forcing Inpaint")
+        if config == None:
+            config = os.path.splitext(ckpt)[0] + '.yaml'
+        else:
+            config = os.path.join('data/models', config)
+        # print(config_yaml_name)
+        # else:
+        #    config_yaml_name = config
+        # print(os.path.isfile(config_yaml_name))
+        # if os.path.isfile(config_yaml_name):
+        # config = config_yaml_name
+
+        if "sd" not in gs.models:
+            self.prev_seamless = False
+            if verbose:
+                print(f"Loading model from {ckpt} with config {config}")
+            config = OmegaConf.load(config)
+
+            # print(config.model['params'])
+
+            if 'num_heads' in config.model['params']['unet_config']['params']:
+                gs.model_version = '1.5'
+            elif 'num_head_channels' in config.model['params']['unet_config']['params']:
+                gs.model_version = '2.0'
+            if config.model['params']['conditioning_key'] == 'hybrid-adm':
+                gs.model_version = '2.0'
+            if 'parameterization' in config.model['params']:
+                gs.model_resolution = 768
+            else:
+                gs.model_resolution = 512
+            # if not 'model_version' in config:
+            #    print('you must provide a model_version in the config yaml or we can not figure how to tread your model')
+            #    return -1
+            print(f'{ckpt}: v{gs.model_version} found with resolution {gs.model_resolution}')
+
+            # gs.model_version = config.model_version
+            if verbose:
+                print(gs.model_version)
+
+            checkpoint_file = ckpt
+            _, extension = os.path.splitext(checkpoint_file)
+            map_location = "cpu"
+            if extension.lower() == ".safetensors":
+                pl_sd = safetensors.torch.load_file(checkpoint_file, device=map_location)
+            else:
+                pl_sd = torch.load(checkpoint_file, map_location=map_location)
+            # pl_sd = torch.load(ckpt, map_location="cpu")
+
+            if "global_step" in pl_sd:
+                print(f"Global Step: {pl_sd['global_step']}")
+            sd = self.get_state_dict_from_checkpoint(pl_sd)
+            # sd = pl_sd["state_dict"]
+
+            model = instantiate_from_config(config.model)
+            m, u = model.load_state_dict(sd, strict=False)
+            if len(m) > 0 and verbose:
+                print("missing keys:")
+                print(m)
+            if len(u) > 0 and verbose:
+                print("unexpected keys:")
+                print(u)
+            model.half()
+            gs.models["sd"] = model
+            gs.models["sd"].cond_stage_model.device = "cuda"
+            # gs.models["sd"].embedding_manager = EmbeddingManager(gs.models["sd"].cond_stage_model)
+            # embedding_path = '001glitch-core.pt'
+            # if embedding_path is not None:
+            #    gs.models["sd"].embedding_manager.load(
+            #        embedding_path
+            #    )
+
+            for m in gs.models["sd"].modules():
+                if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
+                    m._orig_padding_mode = m.padding_mode
+
+            autoencoder_version = self.get_autoencoder_version()
+
+            gs.models["sd"].linear_decode = make_linear_decode(autoencoder_version, "cuda")
+            del pl_sd
+            del sd
+            del m, u
+            del model
+            torch_gc()
+
+            if gs.model_version == '1.5' and not 'Inpaint' in version:
+                self.run_post_load_model_generation_specifics()
+
+            gs.models["sd"].eval()
+
+            # todo make this 'cuda' a parameter
+            gs.models["sd"].to("cuda")
+            # todo why we do this here?
+            from backend.aesthetics import modules
+            #self.next_get_post_op()
+            if gs.diffusion.selected_vae != 'None':
+                self.load_vae(gs.diffusion.selected_vae)
+
+    def load_vae(self, vae_file=None):
+        global first_load, vae_dict, vae_list, loaded_vae_file
+        # save_settings = False
+
+        if os.path.isfile(vae_file):
+            assert os.path.isfile(vae_file), f"VAE file doesn't exist: {vae_file}"
+            print(f"Loading VAE weights from: {vae_file}")
+            vae_ckpt = torch.load(vae_file, map_location='cpu')
+            vae_dict_1 = {k: v for k, v in vae_ckpt["state_dict"].items() if
+                          k[0:4] != "loss" and k not in vae_ignore_keys}
+            load_vae_dict(gs.models["sd"], vae_dict_1)
+
+            # If vae used is not in dict, update it
+            # It will be removed on refresh though
+            # vae_opt = get_filename(vae_file)
+            # if vae_opt not in vae_dict:
+            #    vae_dict[vae_opt] = vae_file
+            #    vae_list.append(vae_opt)
+        else:
+            print(f"VAE file doesn't exist: {vae_file}")
+
+        loaded_vae_file = vae_file
+
+        """
+        # Save current VAE to VAE settings, maybe? will it work?
+        if save_settings:
+            if vae_file is None:
+                vae_opt = "None"
+            # shared.opts.sd_vae = vae_opt
+        """
+
+        first_load = False
 
 class WorkerSignals(QObject):
     '''

@@ -119,7 +119,7 @@ class UniControl(QObject):
         current_text = self.w.selected_vae.currentText()
         new_vae = 'None'
         if current_text != 'None':
-            new_vae = os.path.join(gs.system.vae_path, current_text)
+            new_vae = os.path.join(gs.system.vae_dir, current_text)
         gs.diffusion.selected_vae = new_vae
 
     def select_new_hypernetwork(self):

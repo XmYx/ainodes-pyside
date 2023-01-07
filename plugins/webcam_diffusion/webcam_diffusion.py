@@ -197,10 +197,11 @@ class WebcamWidget(QtWidgets.QWidget):
         inference = self.modelselect.currentText()
         if self.loadedmodel != "normal":
             self.model = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
-                                                "data/models/v1-5-pruned-emaonly.ckpt")
+                                                "data/models/custom/allInOnePixelModel_v1.ckpt")
             self.loadedmodel = "normal"
             self.midas_trafo = None
             self.sampler = None
+
         """Start the continuous capture in a separate thread."""
         self.run = True
 
@@ -213,7 +214,9 @@ class WebcamWidget(QtWidgets.QWidget):
         steps = self.steps.value()
         eta = self.eta.value()
         if self.loadedmodel == 'normal':
-            self.sampler.make_schedule(steps, ddim_eta=eta, verbose=True)
+            #self.sampler.make_schedule(steps, ddim_eta=eta, verbose=True)
+            self.sigmas = sampling.get_sigmas_karras(n=self.steps.value(), sigma_min=0.1, sigma_max=10, device="cuda")
+            self.sigmas = self.sigmas[len(self.sigmas) - int(self.strength.value() * self.steps.value()) - 1:]
 
     def continuous_capture(self, progress_callback=None):
         """Capture images from the webcam continuously."""
@@ -232,6 +235,8 @@ class WebcamWidget(QtWidgets.QWidget):
                 self.uc = self.model.get_learned_conditioning(1 * [""])
                 self.promptstring = self.prompt.toPlainText()
                 self.c = self.model.get_learned_conditioning(self.promptstring)
+                self.sigmas = sampling.get_sigmas_karras(n=self.steps.value(), sigma_min=0.1, sigma_max=10, device="cuda")
+                self.sigmas = self.sigmas[len(self.sigmas) - int(self.strength.value() * self.steps.value()) - 1:]
             #self.init_mask_model()
             self.model_wrap = CompVisDenoiser(self.model, quantize=False)
 
@@ -308,8 +313,6 @@ class WebcamWidget(QtWidgets.QWidget):
         image = 2.*image - 1.
         image = image.half().to("cuda")
         t_enc = int(strength * steps)
-        #seed_everything(seed)
-        #torch.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
 
         #with torch.autocast("cuda"):
@@ -328,7 +331,7 @@ class WebcamWidget(QtWidgets.QWidget):
         self.args.steps = steps
         self.args.seed = seed
         self.args.sampler = self.samplercombobox.currentText()
-        samples = sampler_fn(
+        samples = self.sampler_fn(
             c=self.c,
             uc=self.uc,
             args=self.args,
@@ -363,6 +366,109 @@ class WebcamWidget(QtWidgets.QWidget):
             do_full_sample=do_full_sample
             )
         return result
+
+    def sampler_fn(
+            self,
+            c: torch.Tensor,
+            uc: torch.Tensor,
+            args,
+            model_wrap: CompVisVDenoiser,
+            init_latent: Optional[torch.Tensor] = None,
+            t_enc: Optional[torch.Tensor] = None,
+            device=torch.device("cpu")
+            if not torch.cuda.is_available()
+            else torch.device("cuda"),
+            cb: Callable[[Any], None] = None,
+            verbose: Optional[bool] = False,
+    ) -> torch.Tensor:
+        shape = [args.C, args.H // args.f, args.W // args.f]
+
+        x = (
+                init_latent
+                + torch.randn([args.n_samples, *shape], device=device) * self.sigmas[0]
+        )
+        sampler_args = {
+            "model": model_wrap,
+            "x": x,
+            "sigmas": self.sigmas,
+            "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
+            "disable": True,
+            "callback": None,
+        }
+        if args.sampler in ["dpm_fast"]:
+            min = self.sigmas[0].item()
+            max = min
+            for i in self.sigmas:
+                if i.item() < min and i.item() != 0.0:
+                    min = i.item()
+
+            sampler_args = {
+                "model": model_wrap,
+                "x": x,
+                "sigma_min": min,
+                "sigma_max": max,
+                "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
+                "disable": True,
+                "callback": None,
+                "n": args.steps,
+                "eta": 0.0,
+                "s_noise": 1.0,
+            }
+        elif args.sampler in ["dpm_adaptive"]:
+            min = self.sigmas[0].item()
+            max = min
+            for i in self.sigmas:
+                if i.item() < min and i.item() != 0.0:
+                    min = i.item()
+
+            sampler_args = {
+                "model": model_wrap,
+                "x": x,
+                "sigma_min": min,
+                "sigma_max": max,
+                "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
+                "disable": True,
+                "callback": None,
+                "order": 3,
+                "rtol": 0.05,
+                "atol": 0.0078,
+                "h_init": 0.05,
+                "pcoeff": 0.0,
+                "icoeff": 1.0,
+                "dcoeff": 0.0,
+                "eta": 0.0,
+                "s_noise": 1.0,
+            }
+
+        elif args.sampler in ["dpmpp_sde", "dpmpp_2s_a"]:
+            sampler_args = {
+                "model": model_wrap,
+                "x": x,
+                "sigmas": self.sigmas,
+                "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
+                "disable": True,
+                "callback": None,
+                "eta": 1.0,
+                "s_noise": 1.0,
+            }
+
+        sampler_map = {
+            "klms": sampling.sample_lms,
+            "dpm2": sampling.sample_dpm_2,
+            "dpm2_ancestral": sampling.sample_dpm_2_ancestral,
+            "heun": sampling.sample_heun,
+            "euler": sampling.sample_euler,
+            "euler_ancestral": sampling.sample_euler_ancestral,
+            "dpm_fast": sampling.sample_dpm_fast,
+            "dpm_adaptive": sampling.sample_dpm_adaptive,
+            "dpmpp_2s_a": sampling.sample_dpmpp_2s_ancestral,
+            "dpmpp_2m": sampling.sample_dpmpp_2m,
+            "dpmpp_sde": sampling.sample_dpmpp_sde,
+        }
+
+        samples = sampler_map[args.sampler](**sampler_args)
+        return samples
+
 
 class WorkerSignals(QObject):
     '''
@@ -437,107 +543,6 @@ class Worker(QRunnable):
 class OurSignals(QObject):
     updateimagesignal = Signal()
     webcamupdate = Signal()
-def sampler_fn(
-    c: torch.Tensor,
-    uc: torch.Tensor,
-    args,
-    model_wrap: CompVisDenoiser,
-    init_latent: Optional[torch.Tensor] = None,
-    t_enc: Optional[torch.Tensor] = None,
-    device=torch.device("cpu")
-    if not torch.cuda.is_available()
-    else torch.device("cuda"),
-    cb: Callable[[Any], None] = None,
-    verbose: Optional[bool] = False,
-) -> torch.Tensor:
-    shape = [args.C, args.H // args.f, args.W // args.f]
-    karras = True
-    if karras == True:
-        sigmas = sampling.get_sigmas_karras(n=args.steps, sigma_min=0.1, sigma_max=10, device="cuda")
-    else:
-        sigmas: torch.Tensor = model_wrap.get_sigmas(args.steps)
-    #if gs.diffusion.discard_next_to_last_sigma == True:
-    #    sigmas = torch.cat([sigmas[:-2], sigmas[-1:]])
-    sigmas = sigmas[len(sigmas) - t_enc - 1:]
-
-    x = (
-            init_latent
-            + torch.randn([args.n_samples, *shape], device=device) * sigmas[0]
-    )
-    sampler_args = {
-        "model": model_wrap,
-        "x": x,
-        "sigmas": sigmas,
-        "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
-        "disable": False,
-        "callback": cb,
-    }
-    min = sigmas[0].item()
-    max = min
-    for i in sigmas:
-        if i.item() < min and i.item() != 0.0:
-            min = i.item()
-    if args.sampler in ["dpm_fast"]:
-        sampler_args = {
-            "model": model_wrap,
-            "x": x,
-            "sigma_min": min,
-            "sigma_max": max,
-            "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
-            "disable": False,
-            "callback": cb,
-            "n":args.steps,
-            "eta": 0.0,
-            "s_noise": 1.0,
-        }
-    elif args.sampler in ["dpm_adaptive"]:
-        sampler_args = {
-            "model": model_wrap,
-            "x": x,
-            "sigma_min": min,
-            "sigma_max": max,
-            "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
-            "disable": False,
-            "callback": cb,
-            "order": 3,
-            "rtol": 0.05,
-            "atol": 0.0078,
-            "h_init": 0.05,
-            "pcoeff": 0.0,
-            "icoeff": 1.0,
-            "dcoeff": 0.0,
-            "eta": 0.0,
-            "s_noise": 1.0,
-        }
-
-    elif args.sampler in ["dpmpp_sde", "dpmpp_2s_a"]:
-        sampler_args = {
-            "model": model_wrap,
-            "x": x,
-            "sigmas": sigmas,
-            "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
-            "disable": False,
-            "callback": cb,
-            "eta": 1.0,
-            "s_noise": 1.0,
-        }
-
-    sampler_map = {
-        "klms": sampling.sample_lms,
-        "dpm2": sampling.sample_dpm_2,
-        "dpm2_ancestral": sampling.sample_dpm_2_ancestral,
-        "heun": sampling.sample_heun,
-        "euler": sampling.sample_euler,
-        "euler_ancestral": sampling.sample_euler_ancestral,
-        "dpm_fast": sampling.sample_dpm_fast,
-        "dpm_adaptive": sampling.sample_dpm_adaptive,
-        "dpmpp_2s_a": sampling.sample_dpmpp_2s_ancestral,
-        "dpmpp_2m": sampling.sample_dpmpp_2m,
-        "dpmpp_sde": sampling.sample_dpmpp_sde,
-    }
-
-    samples = sampler_map[args.sampler](**sampler_args)
-    return samples
 
 
 def make_inject_timing_fn(inject_timing, model, steps):

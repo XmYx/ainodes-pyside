@@ -31,7 +31,7 @@ import random
 import traceback
 from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtCore import Signal, QObject, QThreadPool, Slot, QRunnable
-from PySide6.QtWidgets import QTextEdit, QSpinBox, QDoubleSpinBox, QLineEdit, QComboBox, QLabel
+from PySide6.QtWidgets import QTextEdit, QSpinBox, QDoubleSpinBox, QLineEdit, QComboBox, QLabel, QFileDialog
 from omegaconf import OmegaConf
 from einops import repeat, rearrange
 from pytorch_lightning import seed_everything
@@ -80,6 +80,8 @@ class WebcamWidget(QtWidgets.QWidget):
         self.capture_button.clicked.connect(self.stop_threads)
         self.continous = QtWidgets.QPushButton('Start')
         self.continous.clicked.connect(self.start_continuous_capture)
+        self.continous = QtWidgets.QPushButton('Use Video Input')
+        self.continous.clicked.connect(self.start_video_input)
         self.webcam_dropdown = QtWidgets.QComboBox()
         self.webcam_dropdown.addItems(self.get_available_webcams())
         self.webcam_dropdown.currentIndexChanged.connect(self.start_webcam)
@@ -192,6 +194,24 @@ class WebcamWidget(QtWidgets.QWidget):
     def stop_threads(self):
         self.run = False
 
+    def start_video_input(self):
+
+        inference = self.modelselect.currentText()
+        if self.loadedmodel != "normal":
+            self.model = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
+                                                "data/models/custom/allInOnePixelModel_v1.ckpt")
+            self.loadedmodel = "normal"
+            self.midas_trafo = None
+            self.sampler = None
+
+        """Start the continuous capture in a separate thread."""
+        self.run = True
+        self.select_video_file()
+        #self.continous_init_latent()
+        torch.cuda.empty_cache()
+        worker = Worker(self.process_video)
+        self.threadpool.start(worker)
+        self.index = 0
     def start_continuous_capture(self):
 
         inference = self.modelselect.currentText()
@@ -295,6 +315,113 @@ class WebcamWidget(QtWidgets.QWidget):
                 self.update_image_signal()
             if self.run == False:
                 break
+
+    def select_video_file(self):
+        self.filename = QFileDialog.getOpenFileName(caption='Select Init video', filter='Video (*.mp4 *.mov)')
+        print(self.filename[0])
+
+    def process_video(self, video_path = None, progress_callback = None):
+        import skvideo.io
+
+        video_path=self.filename[0]
+        # Create a VideoCapture object for reading the video file
+        capture = cv2.VideoCapture(video_path)
+
+        # Read the first frame to get the video dimensions
+        success, frame = capture.read()
+        frame_height, frame_width, _ = frame.shape
+        output_path = "out_test.mp4"
+        frame_rate = 24
+        output_codec = "libx264"
+        # Create a ffmpeg writer to write the output video
+        writer = skvideo.io.FFmpegWriter(output_path, outputdict={'-r': str(frame_rate)})
+        self.images = []
+        self.index = 0
+        self.lastinit = None
+        self.seedint = 0
+        self.run = True
+        #if self.loadedmodel == "inpaint":
+        #    self.model = None
+        if self.loadedmodel == "normal":
+            with autocast("cuda"):
+
+                self.return_seedint()
+                seed_everything(self.seedint)
+                self.uc = self.model.get_learned_conditioning(1 * [""])
+                self.promptstring = self.prompt.toPlainText()
+                self.c = self.model.get_learned_conditioning(self.promptstring)
+                self.sigmas = sampling.get_sigmas_karras(n=self.steps.value(), sigma_min=0.1, sigma_max=10, device="cuda")
+                self.sigmas = self.sigmas[len(self.sigmas) - int(self.strength.value() * self.steps.value()) - 1:]
+            #self.init_mask_model()
+            self.model_wrap = CompVisDenoiser(self.model, quantize=False)
+
+            loss_fns_scales = [
+                [None, 0.0],
+                [None, 0.0],
+                [None, 0.0],
+                [None, 0.0],
+                [None, 0.0],
+                [None, 0.0],
+                [None, 0.0],
+                [None, 0.0]
+            ]
+            clamp_fn = threshold_by(threshold=0, threshold_type='dynamic',
+                                    clamp_schedule=[0])
+            grad_inject_timing_fn = make_inject_timing_fn(1, self.model_wrap, 10)
+            self.cfg_model = CFGDenoiserWithGrad(self.model_wrap,
+                                            loss_fns_scales,
+                                            clamp_fn,
+                                            None,
+                                            None,
+                                            True,
+                                            decode_method=None,
+                                            grad_inject_timing_fn=grad_inject_timing_fn,
+                                            grad_consolidate_fn=None,
+                                            verbose=False)
+        self.args = SimpleNamespace()
+        self.args.use_init = True
+        self.args.scale = 7.5
+        self.args.sampler = self.samplercombobox.currentText()
+        self.args.n_samples = 1
+        self.args.C = 4
+        self.args.f = 8
+        self.image_label.setScaledContents(True)
+        self.args.log_weighted_subprompts = False
+        self.args.normalize_prompt_weights = False
+
+        # Initialize a counter variable to skip frames
+        frame_count = 0
+        frame_skip = 2
+        # Iterate through all frames in the video
+        while success:
+            if self.run == True:
+                with torch.autocast("cuda"):
+                    # Convert the frame to RGB
+                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    # Call the predict function and get the resulting image
+                    prompt = "pixelsprite, 16bitscene"
+                    steps = self.steps.value()
+                    eta = self.eta.value()
+                    strength = self.strength.value()
+                    self.seedint = ""
+                    self.return_seedint()
+                    result_image = self.img2img(frame, prompt, steps, 1, 7.5, self.seedint, eta, strength)
+                    self.images = [result_image]
+                    self.update_image_signal()
+                    # Add the resulting image to the output video
+                    writer.writeFrame(result_image)
+                    # Increment the counter variable
+                    frame_count += 1
+                    # Skip the next `frame_skip` frames
+                    for i in range(frame_skip):
+                        success, frame = capture.read()
+            else:
+                writer.close()
+                capture.release()
+                break
+        writer.close()
+        capture.release()
+        # Close the ffmpeg writer and the VideoCapture object
     def return_seedint(self):
         self.seedint = self.seed.text() if self.seed.text() != '' else self.seedint
         self.seedint = int(self.seedint) + 1 if self.seedint != '' else random.randint(0, 4000000)
@@ -392,7 +519,7 @@ class WebcamWidget(QtWidgets.QWidget):
             "x": x,
             "sigmas": self.sigmas,
             "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
-            "disable": True,
+            "disable": False,
             "callback": None,
         }
         if args.sampler in ["dpm_fast"]:

@@ -96,6 +96,8 @@ class WebcamWidget(QtWidgets.QWidget):
         self.continous.clicked.connect(self.start_continuous_capture)
         self.video_input = QtWidgets.QPushButton('Start Video Input Diffusion')
         self.video_input.clicked.connect(self.start_video_input)
+        self.cleanup = QtWidgets.QPushButton('Switch Model')
+        self.cleanup.clicked.connect(self.switch_model)
         self.webcam_dropdown = QtWidgets.QComboBox()
         self.webcam_dropdown.addItems(self.get_available_webcams())
         self.webcam_dropdown.currentIndexChanged.connect(self.start_webcam)
@@ -166,6 +168,7 @@ class WebcamWidget(QtWidgets.QWidget):
         layout.addWidget(self.save_video_stream, 10, 0)
         layout.addWidget(self.video_input, 10, 1)
         layout.addWidget(self.save_frames, 11, 0)
+        layout.addWidget(self.cleanup, 11, 1)
         #layout.addWidget(self.camera_label)
         self.setLayout(layout)
         self.threadpool = QThreadPool()
@@ -189,6 +192,7 @@ class WebcamWidget(QtWidgets.QWidget):
             self.image_dialog.setStyleSheet(fh.read())
         self.image_dialog.show()
         self.loadedmodel = None
+        #gs.models["sd"] = None
 
 
     def show_fullscreen(self):
@@ -227,7 +231,7 @@ class WebcamWidget(QtWidgets.QWidget):
 
         inference = self.modelselect.currentText()
         if self.loadedmodel != "normal":
-            #gs.models["sd"] = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
+            #self.model = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
             #                                    "data/models/v1-5-pruned-emaonly.ckpt")
             self.loadedmodel = "normal"
             self.midas_trafo = None
@@ -245,7 +249,7 @@ class WebcamWidget(QtWidgets.QWidget):
 
         inference = self.modelselect.currentText()
         if self.loadedmodel != "normal":
-           # gs.models["sd"] = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
+           # self.model = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
            #                                     "data/models/v1-5-pruned-emaonly.ckpt")
             self.loadedmodel = "normal"
             self.midas_trafo = None
@@ -287,6 +291,7 @@ class WebcamWidget(QtWidgets.QWidget):
                 seed_everything(self.seedint)
                 self.uc = gs.models["sd"].get_learned_conditioning(1 * [""])
                 self.promptstring = self.prompt.toPlainText()
+                #prompts = list(self.promptstring)
                 self.c = gs.models["sd"].get_learned_conditioning(self.promptstring)
                 self.sigmas = sampling.get_sigmas_karras(n=self.steps.value(), sigma_min=0.1, sigma_max=10, device="cuda")
                 self.sigmas = self.sigmas[len(self.sigmas) - int(self.strength.value() * self.steps.value()) - 1:]
@@ -494,7 +499,8 @@ class WebcamWidget(QtWidgets.QWidget):
                     eta = self.eta.value()
                     if prompt != self.prompt:
                         self.promptstring = self.prompt.toPlainText()
-                        self.c = gs.models["sd"].get_learned_conditioning(self.promptstring)
+                        prompts = list(self.promptstring)
+                        self.c = gs.models["sd"].get_learned_conditioning(prompts)
                     self.seedint = ""
                     self.return_seedint()
                     result_image = self.img2img(frame, prompt, steps, 1, 7.5, self.seedint, eta, strength)
@@ -614,10 +620,10 @@ class WebcamWidget(QtWidgets.QWidget):
                 + torch.randn([args.n_samples, *shape], device=device) * self.sigmas[0]
         )
         sampler_args = {
-            "model": model_wrap,
+            "model": self.cfg_model,
             "x": x,
             "sigmas": self.sigmas,
-            "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
+            "extra_args": {"cond": self.c, "uncond": self.uc, "cond_scale": args.scale},
             "disable": True,
             "callback": None,
         }
@@ -629,11 +635,11 @@ class WebcamWidget(QtWidgets.QWidget):
                     min = i.item()
 
             sampler_args = {
-                "model": model_wrap,
+                "model": self.cfg_model,
                 "x": x,
                 "sigma_min": min,
                 "sigma_max": max,
-                "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
+                "extra_args": {"cond": self.c, "uncond": self.uc, "cond_scale": args.scale},
                 "disable": True,
                 "callback": None,
                 "n": args.steps,
@@ -648,11 +654,11 @@ class WebcamWidget(QtWidgets.QWidget):
                     min = i.item()
 
             sampler_args = {
-                "model": model_wrap,
+                "model": self.cfg_model,
                 "x": x,
                 "sigma_min": min,
                 "sigma_max": max,
-                "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
+                "extra_args": {"cond": self.c, "uncond": self.uc, "cond_scale": args.scale},
                 "disable": True,
                 "callback": None,
                 "order": 3,
@@ -668,10 +674,10 @@ class WebcamWidget(QtWidgets.QWidget):
 
         elif args.sampler in ["dpmpp_sde", "dpmpp_2s_a"]:
             sampler_args = {
-                "model": model_wrap,
+                "model": self.cfg_model,
                 "x": x,
                 "sigmas": self.sigmas,
-                "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
+                "extra_args": {"cond": self.c, "uncond": self.uc, "cond_scale": args.scale},
                 "disable": True,
                 "callback": None,
                 "eta": 1.0,
@@ -698,17 +704,21 @@ class WebcamWidget(QtWidgets.QWidget):
     def run_post_load_model_generation_specifics(self):
 
         # print("Loading Hypaaaa")
-        gs.model_hijack = backend.hypernetworks.modules.sd_hijack.StableDiffusionModelHijack()
+        #gs.model_hijack = backend.hypernetworks.modules.sd_hijack.StableDiffusionModelHijack()
 
-        print("hijacking??")
-        gs.model_hijack.hijack(gs.models["sd"])
-        gs.model_hijack.embedding_db.load_textual_inversion_embeddings()
+        #print("hijacking??")
+        #gs.model_hijack.hijack(gs.models["sd"])
+        #gs.model_hijack.embedding_db.load_textual_inversion_embeddings()
 
         # gs.models["sd"].cond_stage_model = backend.aesthetics.modules.PersonalizedCLIPEmbedder()
 
-        aesthetic = AestheticCLIP()
-        aesthetic.process_tokens = gs.models["sd"].cond_stage_model.process_tokens
-        gs.models["sd"].cond_stage_model.process_tokens = aesthetic
+        #aesthetic = AestheticCLIP()
+        #aesthetic.process_tokens = gs.models["sd"].cond_stage_model.process_tokens
+        #gs.models["sd"].cond_stage_model.process_tokens = aesthetic
+
+        from backend.hypernetworks.modules.sd_hijack import apply_optimizations
+        apply_optimizations()
+
 
     def get_autoencoder_version(self):
         return "sd-v1"  # TODO this will be different for different models
@@ -788,7 +798,13 @@ class WebcamWidget(QtWidgets.QWidget):
                 config = None
             # Print the hash
             return config, version
-
+    def switch_model(self):
+        if "sd" in gs.models:
+            gs.models["sd"].to("cpu")
+            gs.models["sd"] = None
+            del gs.models["sd"]
+        gs.models["sd"] = None
+        self.prepare_for_run()
     def load_model_from_config(self, config=None, ckpt=None, verbose=False):
         gs.force_inpaint = False
         if ckpt is None:
@@ -822,7 +838,7 @@ class WebcamWidget(QtWidgets.QWidget):
         # if os.path.isfile(config_yaml_name):
         # config = config_yaml_name
 
-        if "sd" not in gs.models:
+        if gs.models["sd"] == None:
             self.prev_seamless = False
             if verbose:
                 print(f"Loading model from {ckpt} with config {config}")

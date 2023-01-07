@@ -804,6 +804,10 @@ class WebcamWidget(QtWidgets.QWidget):
             gs.models["sd"] = None
             del gs.models["sd"]
         gs.models["sd"] = None
+        self.model = None
+        del self.threadpool
+        self.threadpool = QThreadPool()
+        torch_gc()
         self.prepare_for_run()
     def load_model_from_config(self, config=None, ckpt=None, verbose=False):
         gs.force_inpaint = False

@@ -45,7 +45,8 @@ import random
 import traceback
 from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtCore import Signal, QObject, QThreadPool, Slot, QRunnable
-from PySide6.QtWidgets import QTextEdit, QSpinBox, QDoubleSpinBox, QLineEdit, QComboBox, QLabel, QFileDialog, QCheckBox
+from PySide6.QtWidgets import QTextEdit, QSpinBox, QDoubleSpinBox, QLineEdit, QComboBox, QLabel, QFileDialog, QCheckBox, \
+    QHBoxLayout
 from omegaconf import OmegaConf
 from einops import repeat, rearrange
 from pytorch_lightning import seed_everything
@@ -82,6 +83,7 @@ class aiNodesPlugin():
         with open(sshFile, "r") as fh:
             self.widget.setStyleSheet(fh.read())
         self.widget.show()
+
 
 class WebcamWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -169,6 +171,21 @@ class WebcamWidget(QtWidgets.QWidget):
         layout.addWidget(self.video_input, 10, 1)
         layout.addWidget(self.save_frames, 11, 0)
         layout.addWidget(self.cleanup, 11, 1)
+
+        layout2 = QHBoxLayout()
+        dec_button = QtWidgets.QPushButton("-")
+        fix_button = QtWidgets.QPushButton("FIX SEED")
+        inc_button = QtWidgets.QPushButton("+")
+        layout2.addWidget(dec_button)
+        layout2.addWidget(fix_button)
+        layout2.addWidget(inc_button)
+
+        dec_button.clicked.connect(self.dec_seed)
+        fix_button.clicked.connect(self.fix_seed)
+        inc_button.clicked.connect(self.inc_seed)
+
+        layout.addLayout(layout2, 12, 1)
+
         #layout.addWidget(self.camera_label)
         self.setLayout(layout)
         self.threadpool = QThreadPool()
@@ -193,7 +210,22 @@ class WebcamWidget(QtWidgets.QWidget):
         self.image_dialog.show()
         self.loadedmodel = None
         #gs.models["sd"] = None
-
+        self.seedint = None
+        self.return_seedint()
+    def dec_seed(self):
+        if self.seed.text() == "":
+            self.seed.setText(str(self.seedint))
+        else:
+            self.seedint = int(self.seedint) - 1
+            self.seed.setText(str(self.seedint))
+    def fix_seed(self):
+        self.seed.setText(str(self.seedint))
+    def inc_seed(self):
+        if self.seed.text() == "":
+            self.seed.setText(str(self.seedint))
+        else:
+            self.seedint = int(self.seedint) + 1
+            self.seed.setText(str(self.seedint))
 
     def show_fullscreen(self):
         if self.image_dialog.isFullScreen():
@@ -528,8 +560,10 @@ class WebcamWidget(QtWidgets.QWidget):
         capture.release()
         # Close the ffmpeg writer and the VideoCapture object
     def return_seedint(self):
-        self.seedint = self.seed.text() if self.seed.text() != '' else self.seedint
-        self.seedint = int(self.seedint) + 1 if self.seedint != '' else random.randint(0, 4000000)
+        if self.seedint != None:
+            randn = int(self.seedint) + 1 if self.seedint != '' else random.randint(0, 4000000)
+            self.seedint = self.seed.text() if self.seed.text() != '' else randn
+
     def update_image_signal(self):
         self.signals.updateimagesignal.emit()
     @Slot()
@@ -842,7 +876,7 @@ class WebcamWidget(QtWidgets.QWidget):
         # if os.path.isfile(config_yaml_name):
         # config = config_yaml_name
 
-        if gs.models["sd"] == None:
+        if "sd" not in gs.models:
             self.prev_seamless = False
             if verbose:
                 print(f"Loading model from {ckpt} with config {config}")

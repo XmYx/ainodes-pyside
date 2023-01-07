@@ -59,9 +59,9 @@ class aiNodesPlugin():
         self.parent = parent
 
     def initme(self):
-        cmd = ["pip", "install", "ffmpeg", "--upgrade"]
+        cmd = ["pip", "install", "ffmpeg", "--upgrade", "--force-reinstall"]
         subprocess.Popen(cmd)
-        cmd = ["pip", "install", "sk-video", "--upgrade"]
+        cmd = ["pip", "install", "sk-video", "--upgrade", "--force-reinstall"]
         subprocess.Popen(cmd)
         sshFile = "frontend/style/QTDark.stylesheet"
         self.widget = WebcamWidget()

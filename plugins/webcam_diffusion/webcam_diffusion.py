@@ -205,7 +205,7 @@ class WebcamWidget(QtWidgets.QWidget):
         inference = self.modelselect.currentText()
         if self.loadedmodel != "normal":
             self.model = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
-                                                "data/models/custom/allInOnePixelModel_v1.ckpt")
+                                                "data/models/v1-5-pruned-emaonly.ckpt")
             self.loadedmodel = "normal"
             self.midas_trafo = None
             self.sampler = None

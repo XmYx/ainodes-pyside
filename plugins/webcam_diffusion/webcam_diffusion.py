@@ -311,7 +311,7 @@ class WebcamWidget(QtWidgets.QWidget):
         self.index = 0
         self.lastinit = None
         self.seedint = 0
-        if self.save_video_stream.isChecked():
+        if self.save_video_stream.isChecked() == True:
             import skvideo.io
             skvideo.setFFmpegPath("ffmpeg.exe")
             output_path = "out_stream.mp4"
@@ -384,15 +384,15 @@ class WebcamWidget(QtWidgets.QWidget):
                 if self.save_frames.isChecked():
                     filepath = f"video_out/webcam_out_frame_{frame_count}.png"
                     self.images[0].save(filepath)
-                if self.save_video_stream.isChecked():
+                if self.save_video_stream.isChecked() == True:
                     # Add the resulting image to the output video
                     writer.writeFrame(self.images[0])
                 self.update_image_signal()
             if self.run == False:
-                if self.save_video_stream.isChecked():
+                if self.save_video_stream.isChecked() == True:
                     writer.close()
                 break
-        if self.save_video_stream.isChecked():
+        if self.save_video_stream.isChecked() == True:
             try:
                 writer.close()
             except:
@@ -457,7 +457,7 @@ class WebcamWidget(QtWidgets.QWidget):
         output_codec = "libx264"
         # Create a ffmpeg writer to write the output video
 
-        if self.save_video_stream.isChecked():
+        if self.save_video_stream.isChecked() == True:
             import skvideo.io
             skvideo.setFFmpegPath("ffmpeg.exe")
             output_path = "out_video.mp4"
@@ -542,7 +542,7 @@ class WebcamWidget(QtWidgets.QWidget):
                         filepath = f"video_out/video_out_frame_{frame_count}.png"
                         self.images[0].save(filepath)
                     self.update_image_signal()
-                    if self.save_video_stream.isChecked():
+                    if self.save_video_stream.isChecked() == True:
                         # Add the resulting image to the output video
                         writer.writeFrame(result_image)
                     # Increment the counter variable
@@ -551,11 +551,11 @@ class WebcamWidget(QtWidgets.QWidget):
                     for i in range(frame_skip):
                         success, frame = capture.read()
             else:
-                if self.save_video_stream.isChecked():
+                if self.save_video_stream.isChecked() == True:
                     writer.close()
                 capture.release()
                 break
-        if self.save_video_stream.isChecked():
+        if self.save_video_stream.isChecked() == True:
             writer.close()
         capture.release()
         # Close the ffmpeg writer and the VideoCapture object

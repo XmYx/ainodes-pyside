@@ -59,9 +59,9 @@ class aiNodesPlugin():
         self.parent = parent
 
     def initme(self):
-        cmd = ["pip", "install", "ffmpeg", "--upgrade", "--force-reinstall"]
-        subprocess.Popen(cmd)
-        cmd = ["pip", "install", "sk-video", "--upgrade", "--force-reinstall"]
+        #cmd = ["pip", "install", "ffmpeg", "--upgrade"]
+        #subprocess.Popen(cmd)
+        cmd = ["pip", "install", "sk-video", "--upgrade"]
         subprocess.Popen(cmd)
         sshFile = "frontend/style/QTDark.stylesheet"
         self.widget = WebcamWidget()
@@ -214,7 +214,7 @@ class WebcamWidget(QtWidgets.QWidget):
         inference = self.modelselect.currentText()
         if self.loadedmodel != "normal":
             self.model = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
-                                                "data/models/custom/allInOnePixelModel_v1.ckpt")
+                                                "data/models/v1-5-pruned-emaonly.ckpt")
             self.loadedmodel = "normal"
             self.midas_trafo = None
             self.sampler = None
@@ -323,6 +323,7 @@ class WebcamWidget(QtWidgets.QWidget):
         frame_rate = 24
         output_codec = "libx264"
         # Create a ffmpeg writer to write the output video
+        skvideo.setFFmpegPath("ffmpeg.exe")
         writer = skvideo.io.FFmpegWriter(output_path, outputdict={'-r': str(frame_rate)})
         self.images = []
         self.index = 0

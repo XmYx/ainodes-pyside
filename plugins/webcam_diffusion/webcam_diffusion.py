@@ -23,6 +23,7 @@ It is also worth mentioning, that ui should only be modified from the main threa
 set self.parent.image, then call self.parent.image_preview_signal, which will emit a signal to call
 the image_preview_func from the main thread.
 """
+import subprocess
 
 from backend.singleton import singleton
 gs = singleton
@@ -58,6 +59,11 @@ class aiNodesPlugin():
         self.parent = parent
 
     def initme(self):
+        cmd = ["pip", "install", "ffmpeg"]
+        subprocess.Popen(cmd)
+        cmd = ["pip", "install", "sk-video"]
+        subprocess.Popen(cmd)
+
         sshFile = "frontend/style/QTDark.stylesheet"
 
         self.widget = WebcamWidget()

@@ -414,9 +414,9 @@ class WebcamWidget(QtWidgets.QWidget):
         # if args.seamless == True and self.prev_seamless == False:
 
         # print("Running Seamless sampling...")
-        seamless = False
-        seamless_axes = ["x"]
-        configure_model_padding(gs.models["sd"], seamless, seamless_axes)
+        #seamless = False
+        #seamless_axes = ["x"]
+        #configure_model_padding(gs.models["sd"], seamless, seamless_axes)
         # self.prev_seamless = True
         """
         for key, value in root.__dict__.items():
@@ -425,16 +425,16 @@ class WebcamWidget(QtWidgets.QWidget):
             except:
                 pass"""
 
-        if gs.diffusion.selected_aesthetic_embedding != 'None' and gs.model_version == "1.5":
-            gs.models["sd"].cond_stage_model.process_tokens.set_aesthetic_params(
-                aesthetic_lr=gs.lr,
-                aesthetic_weight=gs.aesthetic_weight,
-                aesthetic_steps=gs.T,
-                image_embs_name=gs.diffusion.selected_aesthetic_embedding,
-                aesthetic_slerp=gs.slerp,
-                aesthetic_imgs_text=gs.aesthetic_imgs_text,
-                aesthetic_slerp_angle=gs.slerp_angle,
-                aesthetic_text_negative=gs.aesthetic_text_negative)
+        #if gs.diffusion.selected_aesthetic_embedding != 'None' and gs.model_version == "1.5":
+        #    gs.models["sd"].cond_stage_model.process_tokens.set_aesthetic_params(
+        #        aesthetic_lr=gs.lr,
+        #        aesthetic_weight=gs.aesthetic_weight,
+        #        aesthetic_steps=gs.T,
+        #        image_embs_name=gs.diffusion.selected_aesthetic_embedding,
+        #        aesthetic_slerp=gs.slerp,
+        #        aesthetic_imgs_text=gs.aesthetic_imgs_text,
+        #        aesthetic_slerp_angle=gs.slerp_angle,
+        #        aesthetic_text_negative=gs.aesthetic_text_negative)
 
     def select_video_file(self):
         self.filename = QFileDialog.getOpenFileName(caption='Select Init video', filter='Video (*.mp4 *.mov)')

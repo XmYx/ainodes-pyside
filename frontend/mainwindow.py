@@ -188,6 +188,7 @@ class MainWindow(QMainWindow):
         self.check_karras_enabled()
 
 
+
     def selftest(self):  # TODO Lets extend this function with everything we have and has to work
 
         self.canvas.canvas.reset
@@ -303,7 +304,18 @@ class MainWindow(QMainWindow):
         self.web_images.signals.web_image_retrived.connect(self.show_web_image_on_canvas)
 
         self.widgets[self.current_widget].w.sampler.currentIndexChanged.connect(self.check_karras_enabled)
+        self.widgets[self.current_widget].w.hires.toggled.connect(self.set_hires_strength_visablity)
+        self.widgets[self.current_widget].w.toggle_clip_prompt.toggled.connect(self.set_clip_prompt_visablity)
 
+
+    def set_clip_prompt_visablity(self):
+        visable = self.widgets[self.current_widget].w.toggle_clip_prompt.isChecked()
+        self.widgets[self.current_widget].w.clip_prompt.setVisible(visable)
+
+    def set_hires_strength_visablity(self):
+        visable = self.widgets[self.current_widget].w.hires.isChecked()
+        self.widgets[self.current_widget].w.hires_strength_label.setVisible(visable)
+        self.widgets[self.current_widget].w.hires_strength.setVisible(visable)
 
     def check_karras_enabled(self):
         if self.widgets[self.current_widget].w.sampler.currentText() != 'ddim' and self.widgets[self.current_widget].w.sampler.currentText() != 'plms':
@@ -699,9 +711,12 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.mode.setVisible(False)
         self.widgets[self.current_widget].w.stop_dream.setVisible(False)
         self.widgets[self.current_widget].w.hires.setVisible(False)
-        self.widgets[self.current_widget].w.hires_strength.setVisible(False)
         self.widgets[self.current_widget].w.hires_strength_label.setVisible(False)
+        self.widgets[self.current_widget].w.hires_strength.setVisible(False)
         self.widgets[self.current_widget].w.seamless.setVisible(False)
+        self.widgets[self.current_widget].w.clip_prompt.setVisible(False)
+        self.widgets[self.current_widget].w.toggle_clip_prompt.setVisible(False)
+
 
         if self.widgets[self.current_widget].samHidden == False:
             self.widgets[self.current_widget].hideSampler_anim()
@@ -761,10 +776,9 @@ class MainWindow(QMainWindow):
             self.widgets[self.current_widget].w.stop_dream.setVisible(True)
             self.widgets[self.current_widget].w.mode.setVisible(True)
             self.widgets[self.current_widget].w.hires.setVisible(True)
-            self.widgets[self.current_widget].w.hires_strength.setVisible(True)
-            self.widgets[self.current_widget].w.hires_strength_label.setVisible(True)
             self.widgets[self.current_widget].w.seamless.setVisible(True)
-
+            self.widgets[self.current_widget].w.toggle_clip_prompt.setVisible(True)
+            self.set_hires_strength_visablity()
             self.default_hidden = False
         else:
             self.hide_default()
@@ -956,6 +970,22 @@ class MainWindow(QMainWindow):
         dqimg = None
         x_samples = None
 
+
+    def is_multiple_of_512(num):
+        if num % 512 == 0:
+            return True
+        else:
+            return False
+
+    def nearest_multiple_of_512(num):
+        quotient = num // 512
+        lower_multiple = quotient * 512
+        upper_multiple = (quotient + 1) * 512
+        if abs(num - lower_multiple) < abs(num - upper_multiple):
+            return lower_multiple
+        else:
+            return upper_multiple
+
     def outpaint_offset_signal(self):
 
         value = int(self.widgets[self.current_widget].w.mask_offset.value())
@@ -1117,19 +1147,51 @@ class MainWindow(QMainWindow):
         self.choice = "Outpaint"
         self.create_outpaint_batch()
 
+
+    def get_num_tiles(self, width, height, tile_size, overlap_x, overlap_y):
+        # Calculate the effective size of the tiles
+        effective_tile_size_x = tile_size - overlap_x * 2
+        effective_tile_size_y = tile_size - overlap_y * 2
+
+        # Calculate the number of columns and rows
+        num_cols = width // effective_tile_size_x
+        if width % effective_tile_size_x > 0:
+            num_cols += 1
+        num_rows = height // effective_tile_size_y
+        if height % effective_tile_size_y > 0:
+            num_rows += 1
+
+        return num_cols, num_rows
+
+
     def create_outpaint_batch(self, gobig_img_path=None):
-        # self.sessionparams.params.advanced = True
+        tilesize = 512
+        self.sessionparams.params.advanced = True
         self.callbackbusy = True
         self.busy = False
         offset = self.widgets[self.current_widget].w.mask_offset.value()
         # self.preview_batch_outpaint()
         self.params = self.sessionparams.update_params()
         if gobig_img_path is not None:
-            pil_image = Image.open(gobig_img_path).resize((self.canvas.W.value(), self.canvas.H.value()),
-                                                          Image.Resampling.LANCZOS).convert("RGBA")
+            tilesize = int(self.widgets[self.current_widget].w.batch_upscale_tile_size.currentText())
+            upscale_factor = self.widgets[self.current_widget].w.batch_upscale_factor.value()
+            pil_image = Image.open(gobig_img_path)
+            width, height = pil_image.size
+            target_h = int(int(height) * upscale_factor)
+            target_w = int(int(width) * upscale_factor)
+            #self.canvas.H.setValue(int(target_h))
+            #self.canvas.W.setValue(int(target_w))
+            self.canvas.canvas.resize_canvas(target_w, target_h)
+            pil_image = pil_image.resize((target_w, target_h),Image.Resampling.LANCZOS).convert("RGBA")
             qimage = ImageQt(pil_image)
-            chops_x = int(qimage.width() / self.canvas.canvas.w)
-            chops_y = int(qimage.width() / self.canvas.canvas.h)
+
+
+            overlap = self.widgets[self.current_widget].w.rect_overlap.value()
+            chops_x, chops_y = self.get_num_tiles(target_h, target_w, tilesize, overlap, overlap)
+            print(chops_x, chops_y)
+
+            #chops_x = int(qimage.width() / tilesize)
+            #chops_y = int(qimage.width() / tilesize)
             self.preview_batch_outpaint(with_chops=chops_x, chops_y=chops_y)
         rparams = self.sessionparams.update_params()
         # print(self.tempsize_int)
@@ -1165,7 +1227,7 @@ class MainWindow(QMainWindow):
                         image = None
                         index = None
                         self.hires_source = None
-                    offset = offset + 512
+                    offset = offset + tilesize
                     rparams.prompts = animation_prompts[x]
                     if rparams.seed_behavior == 'random':
                         rparams.seed = random.randint(0, 2 ** 32 - 1)
@@ -1181,8 +1243,9 @@ class MainWindow(QMainWindow):
                     x += 1
             elif type(items) == dict:
 
+
                 if gobig_img_path is not None:
-                    rect = QRect(item['x'], item['y'], self.canvas.canvas.w, self.canvas.canvas.h)
+                    rect = QRect(items['x'], items['y'], self.canvas.canvas.w, self.canvas.canvas.h)
                     image = qimage.copy(rect)
                     index = None
                     self.hires_source = pil_image
@@ -1191,7 +1254,7 @@ class MainWindow(QMainWindow):
                     image = None
                     index = None
                     self.hires_source = None
-                offset = offset + 512
+                offset = offset + tilesize
                 rparams.prompts = animation_prompts[x]
                 # print(rparams.prompts)
                 if rparams.seed_behavior == 'random':

@@ -288,6 +288,7 @@ class SessionParams():
             "mask_file": mask_file,
             "invert_mask": invert_mask,
             "mask_brightness_adjust": mask_brightness_adjust,
+
             "mask_contrast_adjust": mask_contrast_adjust,
             "mask_overlay_blur": mask_overlay_blur,
             "overlay_mask": overlay_mask,

@@ -84,21 +84,36 @@ NSFW: {model_info['item']['nsfw']}
         self.nam.get(req)
 
     def executeMoreRequest(self, url):
+        # Create a QNetworkRequest with the specified url
         req = QtNetwork.QNetworkRequest(QtCore.QUrl(url))
+        # Create a QNetworkAccessManager
         self.nam = QtNetwork.QNetworkAccessManager()
+        # Connect the finished signal of the QNetworkAccessManager to the handleMoreResponse function
         self.nam.finished.connect(self.handleMoreResponse)
+        # Send a GET request using the QNetworkAccessManager
         self.nam.get(req)
 
     def handleResponse(self, reply):
+        # Initialize an empty dictionary to store model information
         self.actual_model_list = {}
+
+        # Clear the model list widget
         self.model_download.w.model_list.clear()
+
+        # Check for errors in the reply
         er = reply.error()
-        #self.prompts = []
-        #self.counter = 0
+
+        # If there are no errors:
         if er == QtNetwork.QNetworkReply.NoError:
+            # Read the bytes of the reply
             bytes_string = reply.readAll()
+
+            # Convert the bytes to a dictionary
             responseDict = json.loads(str(bytes_string, 'utf-8'))
+
+            # Iterate through the items in the response
             for item in responseDict['items']:
+                # Create a temporary dictionary with the item information
                 tmp_item = {
                     'id': item['id'],
                     'name': item['name'],
@@ -106,22 +121,34 @@ NSFW: {model_info['item']['nsfw']}
                     'nsfw': item['nsfw'],
                     'tags': item['tags']
                 }
-                for model in item['modelVersions']:
 
+                # Iterate through the model versions of the item
+                for model in item['modelVersions']:
+                    # Construct a description of the model
                     model_description = item['name'] + ' ' + ' Version: ' + model['name']
+
+                    # Add the model and item information to the actual_model_list dictionary
                     self.actual_model_list[model_description] = {'model':model, 'item':tmp_item}
+
+                    # Add the model description to the model list widget
                     self.model_download.w.model_list.addItem(model_description)
+
+            # Check if there is a "next page" of models
             if 'metadata' in responseDict:
                 if 'nextPage' in responseDict['metadata']:
+                    # If there is a next page, enable the "more models" button and store the link to the next page
                     self.next_models_link = responseDict['metadata']['nextPage']
                     self.model_download.w.more_models.setEnabled(True)
                 else:
+                    # If there is no next page, disable the "more models" button and set the link to None
                     self.model_download.w.more_models.setEnabled(False)
                     self.next_models_link = None
             else:
+                # If there is no "metadata" key in the response, disable the "more models" button and set the link to None
                 self.model_download.w.more_models.setEnabled(False)
                 self.next_models_link = None
         else:
+            # If there are errors, print the error code
             print('error: ', er)
 
     def handleMoreResponse(self, reply):
@@ -158,19 +185,29 @@ NSFW: {model_info['item']['nsfw']}
             print('error: ', er)
 
     def get_more_models(self):
+        # Print the link to the next page of models
         print('more', self.next_models_link)
+        # If there is a link to the next page of models:
         if self.next_models_link != None:
+            # Send a GET request to the next page of models
             self.executeMoreRequest(self.next_models_link)
 
+
     def models_search(self):
+        # Build the query string from the user input fields
         query = 'query=' + self.model_download.w.query.text()
         query += '&tag=' + self.model_download.w.tag.text() if self.model_download.w.tag.text() != '' else ''
         query += '&limit=' + str(self.model_download.w.limit.value())
         query += '&types=' + self.model_download.w.types.currentText()
         query += '&sort=' + self.model_download.w.sort.currentText()
         query += '&period=' + self.model_download.w.period.currentText()
+
+        # Construct the URL using the base URL and the query string
         url = "https://civitai.com/api/v1/models?" + query
+
+        # Send a GET request to the URL
         self.executeRequest(url)
+
 
     def sanitize(self, name):
         whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ-')

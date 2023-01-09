@@ -345,11 +345,12 @@ class MainWindow(QMainWindow):
         if self.widgets[self.current_widget].w.preview_on_canvas.isChecked():
             if 'custom/' in self.widgets[self.current_widget].w.selected_model.currentText():
                 custom_model_info = self.civitai_api.civitai_get_model_data(self.widgets[self.current_widget].w.selected_model.currentText().replace('custom/',''))
-                custom_model_info = custom_model_info[0]
-                images = custom_model_info['images']
-                images =  json.loads(images)
-                for image in images:
-                    self.show_image_from_url(image['url'])
+                if len(custom_model_info) > 0:
+                    custom_model_info = custom_model_info[0]
+                    images = custom_model_info['images']
+                    images =  json.loads(images)
+                    for image in images:
+                        self.show_image_from_url(image['url'])
 
         if 'custom/' in self.widgets[self.current_widget].w.selected_model.currentText():
             custom_model_info = self.civitai_api.civitai_get_model_data(self.widgets[self.current_widget].w.selected_model.currentText().replace('custom/',''))

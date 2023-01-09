@@ -117,7 +117,7 @@
              <bool>true</bool>
             </property>
             <property name="currentIndex">
-             <number>3</number>
+             <number>4</number>
             </property>
             <widget class="QWidget" name="Upscale">
              <attribute name="title">
@@ -686,11 +686,12 @@ hr { height: 1px; border-width: 0; }
               <property name="verticalSpacing">
                <number>0</number>
               </property>
-              <item row="4" column="0" colspan="2">
-               <widget class="QLineEdit" name="modelBpath"/>
-              </item>
-              <item row="1" column="0" colspan="2">
-               <widget class="QLineEdit" name="modelApath"/>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_9">
+                <property name="text">
+                 <string>Alpha</string>
+                </property>
+               </widget>
               </item>
               <item row="12" column="0" colspan="2">
                <widget class="QComboBox" name="device">
@@ -711,25 +712,71 @@ hr { height: 1px; border-width: 0; }
                 </item>
                </widget>
               </item>
-              <item row="9" column="0">
-               <widget class="QLabel" name="label_10">
+              <item row="4" column="0" colspan="2">
+               <widget class="QLineEdit" name="modelBpath"/>
+              </item>
+              <item row="5" column="0" colspan="2">
+               <widget class="QPushButton" name="selectB">
                 <property name="text">
-                 <string>Model Output Name</string>
+                 <string>Select Model B</string>
                 </property>
                </widget>
               </item>
-              <item row="17" column="0">
-               <spacer name="verticalSpacer_4">
+              <item row="11" column="0">
+               <widget class="QLabel" name="label_11">
+                <property name="text">
+                 <string>Device</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>Model B</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0" colspan="2">
+               <widget class="QPushButton" name="selectA">
+                <property name="text">
+                 <string>Select Model A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="17" column="1">
+               <widget class="QLCDNumber" name="alphaNewNumber">
+                <property name="value" stdset="0">
+                 <double>0.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="18" column="0" colspan="2">
+               <widget class="QPushButton" name="MergeEBL">
+                <property name="text">
+                 <string>Start Merge EBL &gt; SD(EB)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="16" column="0">
+               <widget class="QLabel" name="label_12">
+                <property name="text">
+                 <string>EBL Alpha New</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0" colspan="2">
+               <widget class="Line" name="line">
                 <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+                 <enum>Qt::Horizontal</enum>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
+               </widget>
+              </item>
+              <item row="8" column="1">
+               <widget class="QLCDNumber" name="alphaNumber">
+                <property name="value" stdset="0">
+                 <double>0.500000000000000</double>
                 </property>
-               </spacer>
+               </widget>
               </item>
               <item row="8" column="0">
                <widget class="QSlider" name="alpha">
@@ -744,49 +791,7 @@ hr { height: 1px; border-width: 0; }
                 </property>
                </widget>
               </item>
-              <item row="13" column="0" colspan="2">
-               <widget class="QPushButton" name="Merge">
-                <property name="text">
-                 <string>Start Merge</string>
-                </property>
-               </widget>
-              </item>
-              <item row="11" column="0">
-               <widget class="QLabel" name="label_11">
-                <property name="text">
-                 <string>Device</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="1">
-               <widget class="QLCDNumber" name="alphaNumber">
-                <property name="value" stdset="0">
-                 <double>0.500000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="10" column="0" colspan="2">
-               <widget class="QLineEdit" name="modelOutputName">
-                <property name="text">
-                 <string>output</string>
-                </property>
-               </widget>
-              </item>
-              <item row="16" column="0" colspan="2">
-               <widget class="QPushButton" name="MergeEBL">
-                <property name="text">
-                 <string>Start Merge EBL &gt; SD(EB)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0" colspan="2">
-               <widget class="QPushButton" name="selectA">
-                <property name="text">
-                 <string>Select Model A</string>
-                </property>
-               </widget>
-              </item>
-              <item row="15" column="0">
+              <item row="17" column="0">
                <widget class="QSlider" name="alphaNew">
                 <property name="maximum">
                  <number>10</number>
@@ -799,12 +804,15 @@ hr { height: 1px; border-width: 0; }
                 </property>
                </widget>
               </item>
-              <item row="15" column="1">
-               <widget class="QLCDNumber" name="alphaNewNumber">
-                <property name="value" stdset="0">
-                 <double>0.500000000000000</double>
+              <item row="10" column="0" colspan="2">
+               <widget class="QLineEdit" name="modelOutputName">
+                <property name="text">
+                 <string>output</string>
                 </property>
                </widget>
+              </item>
+              <item row="1" column="0" colspan="2">
+               <widget class="QLineEdit" name="modelApath"/>
               </item>
               <item row="0" column="0">
                <widget class="QLabel" name="label_7">
@@ -813,38 +821,37 @@ hr { height: 1px; border-width: 0; }
                 </property>
                </widget>
               </item>
-              <item row="6" column="0" colspan="2">
-               <widget class="Line" name="line">
+              <item row="9" column="0">
+               <widget class="QLabel" name="label_10">
+                <property name="text">
+                 <string>Model Output Name</string>
+                </property>
+               </widget>
+              </item>
+              <item row="19" column="0">
+               <spacer name="verticalSpacer_4">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Vertical</enum>
                 </property>
-               </widget>
-              </item>
-              <item row="5" column="0" colspan="2">
-               <widget class="QPushButton" name="selectB">
-                <property name="text">
-                 <string>Select Model B</string>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
                 </property>
-               </widget>
-              </item>
-              <item row="7" column="0">
-               <widget class="QLabel" name="label_9">
-                <property name="text">
-                 <string>Alpha</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_8">
-                <property name="text">
-                 <string>Model B</string>
-                </property>
-               </widget>
+               </spacer>
               </item>
               <item row="14" column="0">
-               <widget class="QLabel" name="label_12">
+               <widget class="QPushButton" name="Merge">
                 <property name="text">
-                 <string>EBL Alpha New</string>
+                 <string>Start Merge</string>
+                </property>
+               </widget>
+              </item>
+              <item row="14" column="1">
+               <widget class="QCheckBox" name="save_as_safetensors">
+                <property name="text">
+                 <string>Safetensors</string>
                 </property>
                </widget>
               </item>

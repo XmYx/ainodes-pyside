@@ -287,7 +287,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.signals.ebl_model_merge_start.emit()
 
     def model_merge_start(self, progress_callback=None):
-        merge_models(self.modela[0], self.modelb[0], self.imageLab.w.alpha.value() / 10, self.imageLab.w.modelOutputName.text(),self.imageLab.w.device.currentText())
+        merge_models(self.modela[0], self.modelb[0], self.imageLab.w.alpha.value() / 10, self.imageLab.w.modelOutputName.text(),self.imageLab.w.device.currentText(),self.imageLab.w.save_as_safetensors.isChecked())
 
     def ebl_model_merge_start(self, progress_callback=None):
         merge_ebl_model(src=self.modela[0], dst=self.modelb[0],output=self.imageLab.w.modelOutputName.text(), alpha=self.imageLab.w.alpha.value() / 10, alpha_new=self.imageLab.w.alphaNew.value() / 10)

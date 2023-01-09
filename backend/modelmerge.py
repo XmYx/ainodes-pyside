@@ -1,4 +1,6 @@
 import os
+
+import safetensors
 import torch
 from tqdm import tqdm
 
@@ -9,14 +11,22 @@ gs = singleton
 
 #normal merge
 
-def merge_models(model_0, model_1, alpha, output, device):
+def merge_models(model_0, model_1, alpha, output, device, safe_tensors=False):
 
     print(f'Start Merge Model {model_0} with {model_1} at an alpha of {str(alpha)} on Device {device}')
 
-    model_0 = torch.load(model_0, map_location=device)
-    model_1 = torch.load(model_1, map_location=device)
-    theta_0 = model_0["state_dict"]
-    theta_1 = model_1["state_dict"]
+    if 'safetensors' in model_0:
+        model_0 = safetensors.torch.load_file(model_0, device=device)
+    else:
+        model_0 = torch.load(model_0, map_location=device)
+    if 'safetensors' in model_1:
+        model_1 = safetensors.torch.load_file(model_1, device=device)
+    else:
+        model_1 = torch.load(model_1, map_location=device)
+    #model_1 = torch.load(model_1, map_location=device)
+
+    theta_0 = model_0["state_dict"] if "state_dict" in model_0 else model_0
+    theta_1 = model_1["state_dict"] if "state_dict" in model_1 else model_1
 
     print('Start Stage 1')
     for key in tqdm(theta_0.keys(), desc="Stage 1/2"):
@@ -29,12 +39,17 @@ def merge_models(model_0, model_1, alpha, output, device):
             theta_0[key] = theta_1[key]
 
     print("Saving...")
-
-    output_file = os.path.join(gs.system.custom_models_dir,f'{output}-{str(alpha)[2:] + "0"}.ckpt')
-    torch.save({"state_dict": theta_0}, output_file)
+    output_file = os.path.join(gs.system.custom_models_dir,f'{output}-{str(alpha)[2:] + "0"}')
+    if safe_tensors:
+        output_file = output_file+ '.safetensors'
+        safetensors.torch.save_file(theta_0, output_file)
+    else:
+        output_file = output_file+ '.ckpt'
+        torch.save({"state_dict": theta_0}, output_file)
 
     print("Done!")
-
+    del model_0
+    del model_1
     torch_gc()
 
 

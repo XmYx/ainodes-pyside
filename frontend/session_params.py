@@ -207,6 +207,7 @@ class SessionParams():
             'ignore_sat_weight': self.parent.widgets[widget].w.ignore_sat_weight.value(),
             'clip_name': self.parent.widgets[widget].w.clip_name.currentText(),  # @param ['ViT-L/14', 'ViT-L/14@336px', 'ViT-B/16', 'ViT-B/32']
             'clip_scale': self.parent.widgets[widget].w.clip_scale.value(),
+            'clip_prompt': [self.parent.widgets[widget].w.clip_prompt.toPlainText()],
             'aesthetics_scale': self.parent.widgets[widget].w.aesthetics_scale.value(),
             'cutn': int(self.parent.widgets[widget].w.cutn.value()),
             'cut_pow': self.parent.widgets[widget].w.cut_pow.value(),

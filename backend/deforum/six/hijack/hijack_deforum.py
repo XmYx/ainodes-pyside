@@ -3,12 +3,16 @@ import ldm.models.diffusion.ddim
 import ldm.models.diffusion.plms
 from backend.deforum.six.hijack import hijack_codes
 
+import time
+
+
 ddim_decode = ldm.models.diffusion.ddim.DDIMSampler.decode
 
 plms_sampling_safe = ldm.models.diffusion.plms.PLMSSampler.plms_sampling
 
 
 def undo_hijack():
+    print('undo hijack util')
     ldm.models.diffusion.ddim.DDIMSampler.decode = ddim_decode
     ldm.models.diffusion.plms.PLMSSampler.plms_sampling = plms_sampling_safe
 

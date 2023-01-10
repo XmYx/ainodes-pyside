@@ -130,6 +130,7 @@ def DeforumArgs(attr):
     #@markdown **CLIP\Aesthetics Conditional Settings**
     clip_name = attr.clip_name #@param ['ViT-L/14', 'ViT-L/14@336px', 'ViT-B/16', 'ViT-B/32']
     clip_scale = attr.clip_scale #@param {type:"number"}
+    clip_prompt = attr.clip_prompt
     aesthetics_scale = attr.aesthetics_scale #@param {type:"number"}
     cutn = attr.cutn #@param {type:"number"}
     cut_pow = attr.cut_pow #@param {type:"number"}

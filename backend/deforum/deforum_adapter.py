@@ -559,6 +559,7 @@ class DeforumSix:
                         ignore_sat_weight=0,
                         clip_name='ViT-L/14',  # @param ['ViT-L/14', 'ViT-L/14@336px', 'ViT-B/16', 'ViT-B/32']
                         clip_scale=0,
+                        clip_prompt = '',
                         aesthetics_scale=0,
                         cutn=0,
                         cut_pow=0.0,
@@ -643,6 +644,15 @@ class DeforumSix:
             check = self.load_model_from_config(config=None, ckpt=None)
             if check == -1:
                 return check
+
+        if gs.model_version == '2.0':
+            # CLIP manipulations as in 1.x Models does not work in 2.x models so we just turn it off here
+            args.clip_scale = 0
+            args.aesthetics_scale = 0
+            args.init_mse_scale = 0
+            gs.diffusion.selected_aesthetic_embedding = 'None' # is a string for now as it gets translated later on in the code
+
+
         if gs.diffusion.selected_hypernetwork != 'None':
             hypernetwork.load_hypernetwork(gs.diffusion.selected_hypernetwork)
             hypernetwork.apply_strength(
@@ -652,6 +662,7 @@ class DeforumSix:
 
         seamless = args.seamless
         seamless_axes = args.axis
+
         if lowmem == False:
             configure_model_padding(gs.models["sd"], seamless, seamless_axes)
         elif lowmem == True:
@@ -667,7 +678,6 @@ class DeforumSix:
                 aesthetic_imgs_text=gs.aesthetic_imgs_text,
                 aesthetic_slerp_angle=gs.slerp_angle,
                 aesthetic_text_negative=gs.aesthetic_text_negative)
-
         if not use_init:
             init_image = None
         args.strength = 0 if init_image is None else strength
@@ -677,7 +687,6 @@ class DeforumSix:
         root.output_path = args.outdir
         root.half_precision = True
         # Mod 2, animation prompt parsing
-
         if anim_args.animation_mode != 'None':
             prompt_series = pd.Series([np.nan for a in range(max_frames)])
             if keyframes == '':
@@ -698,13 +707,12 @@ class DeforumSix:
             prompts = list(prompts.split("\n"))
 
         animation_prompts = prompts
-
         # Load clip model if using clip guidance
         if (args.clip_scale > 0) or (args.aesthetics_scale > 0):
+            print('load clip', args.clip_scale,args.aesthetics_scale )
             root.clip_model = clip.load(args.clip_name, jit=False)[0].eval().requires_grad_(False).to(device)
             if (args.aesthetics_scale > 0):
                 root.aesthetics_model = load_aesthetics_model(args, root)
-
         if args.seed == -1:
             args.seed = random.randint(0, 2 ** 32 - 1)
         if not args.use_init:

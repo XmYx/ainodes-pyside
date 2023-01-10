@@ -150,6 +150,7 @@ class Deforum_UI(QObject):
                                          clip_name=self.params.clip_name,
                                          # @param ['ViT-L/14', 'ViT-L/14@336px', 'ViT-B/16', 'ViT-B/32']
                                          clip_scale=self.params.clip_scale,
+                                         clip_prompt = self.params.clip_prompt,
                                          aesthetics_scale=self.params.aesthetics_scale,
                                          cutn=self.params.cutn,
                                          cut_pow=self.params.cut_pow,

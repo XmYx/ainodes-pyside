@@ -111,7 +111,8 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
             return paths
         if prompt != '':
             args.prompt = prompt
-            args.clip_prompt = prompt
+            args.clip_prompt = prompt if args.clip_prompt == '' else args.clip_prompt
+
 
             all_images = []
 

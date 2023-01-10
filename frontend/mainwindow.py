@@ -305,12 +305,6 @@ class MainWindow(QMainWindow):
 
         self.widgets[self.current_widget].w.sampler.currentIndexChanged.connect(self.check_karras_enabled)
         self.widgets[self.current_widget].w.hires.toggled.connect(self.set_hires_strength_visablity)
-        self.widgets[self.current_widget].w.toggle_clip_prompt.toggled.connect(self.set_clip_prompt_visablity)
-
-
-    def set_clip_prompt_visablity(self):
-        visable = self.widgets[self.current_widget].w.toggle_clip_prompt.isChecked()
-        self.widgets[self.current_widget].w.clip_prompt.setVisible(visable)
 
     def set_hires_strength_visablity(self):
         visable = self.widgets[self.current_widget].w.hires.isChecked()
@@ -715,8 +709,7 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.hires_strength_label.setVisible(False)
         self.widgets[self.current_widget].w.hires_strength.setVisible(False)
         self.widgets[self.current_widget].w.seamless.setVisible(False)
-        self.widgets[self.current_widget].w.clip_prompt.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_clip_prompt.setVisible(False)
+
 
 
         if self.widgets[self.current_widget].samHidden == False:
@@ -778,7 +771,7 @@ class MainWindow(QMainWindow):
             self.widgets[self.current_widget].w.mode.setVisible(True)
             self.widgets[self.current_widget].w.hires.setVisible(True)
             self.widgets[self.current_widget].w.seamless.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_clip_prompt.setVisible(True)
+
             self.set_hires_strength_visablity()
             self.default_hidden = False
         else:

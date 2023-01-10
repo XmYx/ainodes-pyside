@@ -162,19 +162,6 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="1" colspan="3">
-           <widget class="QTextEdit" name="clip_prompt">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>100</height>
-             </size>
-            </property>
-            <property name="placeholderText">
-             <string>Clip Prompt</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="1" colspan="3">
            <widget class="QTextEdit" name="prompts">
             <property name="sizePolicy">
@@ -212,9 +199,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-337</y>
+            <y>-782</y>
             <width>682</width>
-            <height>2476</height>
+            <height>2549</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -299,6 +286,9 @@
               </property>
               <item row="15" column="4">
                <widget class="QCheckBox" name="toggle_embeddings">
+                <property name="toolTip">
+                 <string>Only works with 1.x Models. For 2.x it gets turned off during Image generation and has no effect.</string>
+                </property>
                 <property name="text">
                  <string>Aes. Gradient</string>
                 </property>
@@ -1844,7 +1834,7 @@
                  <item row="1" column="0" rowspan="3" colspan="4">
                   <widget class="QTabWidget" name="tabWidget">
                    <property name="currentIndex">
-                    <number>2</number>
+                    <number>1</number>
                    </property>
                    <widget class="QWidget" name="tab_2">
                     <attribute name="title">
@@ -3009,13 +2999,6 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="5">
-               <widget class="QCheckBox" name="toggle_clip_prompt">
-                <property name="text">
-                 <string>Clip Prompt</string>
-                </property>
-               </widget>
-              </item>
               <item row="5" column="0">
                <widget class="QCheckBox" name="hires">
                 <property name="text">
@@ -3072,6 +3055,9 @@
               </item>
               <item row="15" column="3">
                <widget class="QCheckBox" name="toggle_aesthetics">
+                <property name="toolTip">
+                 <string>Only works with 1.x Models. For 2.x it gets turned off during Image generation and has no effect.</string>
+                </property>
                 <property name="text">
                  <string>Aesthetics</string>
                 </property>
@@ -3147,22 +3133,11 @@
                  <property name="verticalSpacing">
                   <number>2</number>
                  </property>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_34">
-                   <property name="text">
-                    <string>Cut POW</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QSpinBox" name="cutn">
-                   <property name="maximum">
-                    <number>100</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1" colspan="2">
+                 <item row="1" column="1" colspan="2">
                   <widget class="QComboBox" name="clip_name">
+                   <property name="toolTip">
+                    <string>Used with aesthetics_scale&gt;0 and clip_scale&gt;0</string>
+                   </property>
                    <item>
                     <property name="text">
                      <string>ViT-L/14</string>
@@ -3190,31 +3165,62 @@
                    </item>
                   </widget>
                  </item>
-                 <item row="5" column="0">
+                 <item row="2" column="1">
+                  <widget class="QDoubleSpinBox" name="clip_scale">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;CLIP Guidance &lt;br/&gt;Values: 0 - 200&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="maximum">
+                    <double>200.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="0">
                   <widget class="QCheckBox" name="toggle_colors">
                    <property name="text">
                     <string>Colormatch Settings</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="1">
-                  <widget class="QDoubleSpinBox" name="aesthetics_scale"/>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_58">
+                   <property name="text">
+                    <string>Clip Model</string>
+                   </property>
+                  </widget>
                  </item>
-                 <item row="7" column="0">
+                 <item row="8" column="0">
                   <widget class="QCheckBox" name="toggle_grad">
                    <property name="text">
                     <string>Gradient Settings</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0">
+                 <item row="4" column="1">
+                  <widget class="QSpinBox" name="cutn">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of times CLIP views the image for each step&lt;/p&gt;&lt;p&gt;This variable only matters under these conditions: &lt;/p&gt;&lt;p&gt;Extremely large&lt;/p&gt;&lt;p&gt;images bigger than 2688 x 2688px, or &lt;/p&gt;&lt;p&gt;decode_method = autoencoder &lt;/p&gt;&lt;p&gt;This is because&lt;/p&gt;&lt;p&gt;clip looks at the decoded image, which is small when decode_method=linear &lt;/p&gt;&lt;p&gt;Values: 0 - 6&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="maximum">
+                    <number>6</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
                   <widget class="QLabel" name="label_68">
                    <property name="text">
                     <string>Clip Scale</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="8" column="0" colspan="4">
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_33">
+                   <property name="text">
+                    <string>Cut Number</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="0" colspan="4">
                   <widget class="QFrame" name="grad_values">
                    <property name="frameShape">
                     <enum>QFrame::StyledPanel</enum>
@@ -3264,6 +3270,9 @@
                     </item>
                     <item row="2" column="1">
                      <widget class="QComboBox" name="decode_method">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gradient conditioning decodes the latent at every step.&lt;/p&gt;&lt;p&gt;Linear is a shortcut that quickly translates the latent to a small (default 64x64) image. linear decoding is not implemented for every model, so if your results with conditioning look noisy, try “autoencoder”.&lt;/p&gt;&lt;p&gt;Autoencoder is much slower, but higher quality. It uses the same decoding method the model already uses after the last step.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <item>
                        <property name="text">
                         <string>linear</string>
@@ -3283,6 +3292,9 @@
                     </item>
                     <item row="0" column="1">
                      <widget class="QLineEdit" name="grad_inject_timing">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Applies the gradient only at a limited number of steps&lt;/p&gt;&lt;p&gt;	Interpreted differently based on the type of grad_inject_timing&lt;/p&gt;&lt;p&gt;	if grad_inject_timing is:&lt;/p&gt;&lt;p&gt;int: compute every inject_timing steps, eg. 2 mean apply grad every other step&lt;/p&gt;&lt;p&gt;list of floats: compute on these decimal fraction steps (eg, [0.5, 1.0] for 50 steps would be at steps 25 and 50)&lt;/p&gt;&lt;p&gt;list of ints: compute on these steps&lt;/p&gt;&lt;p&gt;None: Compute on all steps &lt;/p&gt;&lt;p&gt;This can be used to generate an image faster, or apply conditioning to different sections of the gen. For example, overall composition is usually decided in the first 20% of steps, so if colormatch conditioning is only applied in the last half of steps it will result in practically the same image but with different colors.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="text">
                        <string>0.8</string>
                       </property>
@@ -3290,6 +3302,9 @@
                     </item>
                     <item row="4" column="1">
                      <widget class="QDoubleSpinBox" name="clamp_start">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;used with grad_threshold_type “dynamic”&lt;/p&gt;&lt;p&gt;clamp_grad_threshold value at the first step, linearly changes to clamp_stop at the last step &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="decimals">
                        <number>1</number>
                       </property>
@@ -3303,6 +3318,9 @@
                     </item>
                     <item row="3" column="1">
                      <widget class="QDoubleSpinBox" name="clamp_grad_threshold">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;used with grad_threshold_types “static” “mean” and “dynamic” &lt;/p&gt;&lt;p&gt;Value: 0-1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="decimals">
                        <number>1</number>
                       </property>
@@ -3316,6 +3334,9 @@
                     </item>
                     <item row="5" column="1">
                      <widget class="QDoubleSpinBox" name="clamp_stop">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;used with grad_threshold_type “dynamic”&lt;/p&gt;&lt;p&gt;clamp_grad_threshold value at the last step, linearly changes from clamp_start from the first step&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="maximum">
                        <double>1.000000000000000</double>
                       </property>
@@ -3326,6 +3347,9 @@
                     </item>
                     <item row="1" column="1">
                      <widget class="QComboBox" name="gradient_add_to">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gradient is added to the cfg cond or uncond or both&lt;/p&gt;&lt;p&gt;&amp;quot;cond&amp;quot; or &amp;quot;uncond&amp;quot; only applies if cond_uncond_sync == False&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <item>
                        <property name="text">
                         <string>cond</string>
@@ -3366,14 +3390,17 @@
                     </item>
                     <item row="6" column="1">
                      <widget class="QComboBox" name="gradient_wrt">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;“x0_pred” &lt;/p&gt;&lt;p&gt;Applies the gradient calculation only to the denoised image at each step&lt;/p&gt;&lt;p&gt;Much faster&lt;/p&gt;&lt;p&gt;May require higher *_scale values&lt;/p&gt;&lt;p&gt;Does not work very well with clip_scale or aesthetic_scale guidance&lt;/p&gt;&lt;p&gt;“x”&lt;/p&gt;&lt;p&gt;Applies the gradient calculation through the unet&lt;/p&gt;&lt;p&gt;Much slower&lt;/p&gt;&lt;p&gt;Takes the content of the image more into consideration because the grad uses the unet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <item>
                        <property name="text">
-                        <string>x0_pred</string>
+                        <string>x</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>x</string>
+                        <string>x0_pred</string>
                        </property>
                       </item>
                      </widget>
@@ -3394,6 +3421,9 @@
                     </item>
                     <item row="7" column="1">
                      <widget class="QComboBox" name="grad_threshold_type">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The final gradient is clamped before it’s added to the image. This is to avoid the overexposed look.&lt;/p&gt;&lt;p&gt;dynamic: thresholding from the imagen paper (May 2022)&lt;/p&gt;&lt;p&gt;static: simple clamping&lt;/p&gt;&lt;p&gt;mean: rescales out of range values based on the mean&lt;/p&gt;&lt;p&gt;schedule: uses clamp_start and clamp_stop to set a threshold value that changes linearly at each step. Like “mean” but with changing clamp_grad_threshold over time&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <item>
                        <property name="text">
                         <string>dynamic</string>
@@ -3419,41 +3449,23 @@
                    </layout>
                   </widget>
                  </item>
-                 <item row="4" column="1">
+                 <item row="5" column="1">
                   <widget class="QDoubleSpinBox" name="cut_pow">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Used when clip_scale &amp;gt; 0 &lt;/p&gt;&lt;p&gt;Affects the size&lt;/p&gt;&lt;p&gt;of the view window when CLIP sees the image &lt;/p&gt;&lt;p&gt;When cut_pow is&lt;/p&gt;&lt;p&gt;very small, the view window is large, and vise versa &lt;/p&gt;&lt;p&gt;Only matters for&lt;/p&gt;&lt;p&gt;extremely large images or autoencoder decode_method, see cutn &lt;/p&gt;&lt;p&gt;Values: 0.00001 - 100000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="decimals">
-                    <number>3</number>
+                    <number>9</number>
                    </property>
                    <property name="maximum">
-                    <double>1.000000000000000</double>
+                    <double>10000000.000000000000000</double>
                    </property>
                    <property name="singleStep">
                     <double>0.001000000000000</double>
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_58">
-                   <property name="text">
-                    <string>Clip Model</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_69">
-                   <property name="text">
-                    <string>Aest. Scale</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="label_33">
-                   <property name="text">
-                    <string>Cut Number</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="6" column="0" colspan="4">
+                 <item row="7" column="0" colspan="4">
                   <widget class="QFrame" name="color_expo_values">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -3607,15 +3619,28 @@
                      <widget class="QLineEdit" name="init_mse_image"/>
                     </item>
                     <item row="6" column="2">
-                     <widget class="QDoubleSpinBox" name="init_mse_scale"/>
+                     <widget class="QDoubleSpinBox" name="init_mse_scale">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Guide the image to match init_mse_image pixel-by-pixel&lt;br/&gt;Values: 0-1000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="maximum">
+                       <double>1000.000000000000000</double>
+                      </property>
+                     </widget>
                     </item>
                     <item row="7" column="2">
                      <widget class="QDoubleSpinBox" name="blue_scale"/>
                     </item>
                     <item row="10" column="2">
                      <widget class="QDoubleSpinBox" name="mean_scale">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pushes the pixel values towards middle gray&lt;/p&gt;&lt;p&gt;Samples have values between -1 and 1. Mean_scale guides pixels toward 0, hence gray&lt;/p&gt;&lt;p&gt;Values: 0 - 400&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="minimum">
+                       <double>0.000000000000000</double>
+                      </property>
                       <property name="maximum">
-                       <double>50.000000000000000</double>
+                       <double>400.000000000000000</double>
                       </property>
                       <property name="singleStep">
                        <double>0.010000000000000</double>
@@ -3624,21 +3649,27 @@
                     </item>
                     <item row="11" column="2">
                      <widget class="QDoubleSpinBox" name="var_scale">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pushes pixels towards lower variance&lt;br/&gt;Values: -200 - 200&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="decimals">
                        <number>0</number>
                       </property>
                       <property name="minimum">
-                       <double>-300.000000000000000</double>
+                       <double>-200.000000000000000</double>
                       </property>
                       <property name="maximum">
-                       <double>300.000000000000000</double>
+                       <double>200.000000000000000</double>
                       </property>
                      </widget>
                     </item>
                     <item row="12" column="2">
                      <widget class="QDoubleSpinBox" name="exposure_scale">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Targeted mean loss. Uses exposure_target variable. &lt;/p&gt;&lt;p&gt;When exposure_target == 0, exposure_scale is equivalent to mean_scale&lt;/p&gt;&lt;p&gt;Use it to compensate for very high cfg scale, for example.&lt;/p&gt;&lt;p&gt;Values: 0 - 400&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="maximum">
-                       <double>50.000000000000000</double>
+                       <double>400.000000000000000</double>
                       </property>
                       <property name="singleStep">
                        <double>0.010000000000000</double>
@@ -3647,6 +3678,12 @@
                     </item>
                     <item row="13" column="2">
                      <widget class="QDoubleSpinBox" name="exposure_target">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Used with exposure_scale &lt;/p&gt;&lt;p&gt;Negative values push towards a darker image, positive values toward a brighter image &lt;/p&gt;&lt;p&gt;Values: -1 - 1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
                       <property name="maximum">
                        <double>1.000000000000000</double>
                       </property>
@@ -3657,6 +3694,9 @@
                     </item>
                     <item row="14" column="2">
                      <widget class="QDoubleSpinBox" name="colormatch_scale">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Guides the image towards a color palette.&lt;/p&gt;&lt;p&gt;Palette is extracted from an input image colormatch_image&lt;/p&gt;&lt;p&gt;Best matching results when decode_method == “autoencoder”&lt;/p&gt;&lt;p&gt;Works best when gradient_wrt == &amp;quot;x0_pred”, but will still work well with “x”&lt;/p&gt;&lt;p&gt;Values: 0 - 1000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="decimals">
                        <number>0</number>
                       </property>
@@ -3667,6 +3707,9 @@
                     </item>
                     <item row="18" column="2">
                      <widget class="QSpinBox" name="colormatch_n_colors">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of colors in the palette &lt;br/&gt;Values: 1 - 20&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="maximum">
                        <number>20</number>
                       </property>
@@ -3674,6 +3717,9 @@
                     </item>
                     <item row="19" column="2">
                      <widget class="QDoubleSpinBox" name="ignore_sat_weight">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount to ignore the saturation when using colormatch_scale. &lt;/p&gt;&lt;p&gt;High ignore_sat_weight will allow a higher colormatch_scale without making the colors look overblown&lt;/p&gt;&lt;p&gt;Values: 0 - 5&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="decimals">
                        <number>1</number>
                       </property>
@@ -3688,8 +3734,36 @@
                    </layout>
                   </widget>
                  </item>
-                 <item row="1" column="1">
-                  <widget class="QDoubleSpinBox" name="clip_scale"/>
+                 <item row="3" column="1">
+                  <widget class="QDoubleSpinBox" name="aesthetics_scale">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Recommended to use with gradient_wrt=’x’ &lt;br/&gt;Values: 0 - 10&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="maximum">
+                    <double>10.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_34">
+                   <property name="text">
+                    <string>Cut POW</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_69">
+                   <property name="text">
+                    <string>Aest. Scale</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0" colspan="4">
+                  <widget class="QTextEdit" name="clip_prompt">
+                   <property name="placeholderText">
+                    <string>Clip Prompt,</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -3731,6 +3805,20 @@
                 </property>
                 <property name="text">
                  <string>Multi Dim Prompt</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="QRadioButton" name="radioButton">
+                <property name="text">
+                 <string>Negative Prompt</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="2">
+               <widget class="QRadioButton" name="radioButton_2">
+                <property name="text">
+                 <string>Weighted</string>
                 </property>
                </widget>
               </item>

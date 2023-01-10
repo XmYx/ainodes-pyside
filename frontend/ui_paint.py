@@ -65,6 +65,7 @@ class Rectangle(object):
         self.img_path = img_path
         #self.signals = RectangleCallbacks()
         self.timer = QtCore.QTimer()
+
     def play(self):
         if self.parent.running == True:
             if self.images != []:
@@ -273,6 +274,7 @@ class Canvas(QGraphicsView):
         self.signals.update_selected.emit()
         self.parent.parent.render_index = 0
         self.parent.parent.thumbs.w.thumbnails.clear()
+
     def reset(self):
         self.zoom = 1
         self.rotate = 0
@@ -639,6 +641,7 @@ class Canvas(QGraphicsView):
                 for items in rows:
                     self.draw_tempRects(items["x"], items["y"], self.w, self.h, items["order"], x)
                     x += 1
+        #self.rectsdrawn = True
 
     def draw_rects(self):
         self.rectsdrawn = False

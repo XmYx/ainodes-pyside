@@ -199,9 +199,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-782</y>
+            <y>-71</y>
             <width>682</width>
-            <height>2549</height>
+            <height>2551</height>
            </rect>
           </property>
           <property name="maximumSize">
@@ -2097,6 +2097,13 @@
                        </property>
                       </widget>
                      </item>
+                     <item row="3" column="3">
+                      <widget class="QPushButton" name="resize_canvas">
+                       <property name="text">
+                        <string>set canvas size</string>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
                    </widget>
                    <widget class="QWidget" name="tab_4">
@@ -3452,7 +3459,7 @@
                  <item row="5" column="1">
                   <widget class="QDoubleSpinBox" name="cut_pow">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Used when clip_scale &amp;gt; 0 &lt;/p&gt;&lt;p&gt;Affects the size&lt;/p&gt;&lt;p&gt;of the view window when CLIP sees the image &lt;/p&gt;&lt;p&gt;When cut_pow is&lt;/p&gt;&lt;p&gt;very small, the view window is large, and vise versa &lt;/p&gt;&lt;p&gt;Only matters for&lt;/p&gt;&lt;p&gt;extremely large images or autoencoder decode_method, see cutn &lt;/p&gt;&lt;p&gt;Values: 0.00001 - 100000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Used when clip_scale &amp;gt; 0&lt;br/&gt;Affects the size&lt;br/&gt;of the view window when CLIP sees the image&lt;br/&gt;When cut_pow is&lt;br/&gt;very small, the view window is large, and vise versa&lt;br/&gt;Only matters for&lt;br/&gt;extremely large images or autoencoder decode_method, see cutn&lt;br/&gt;Values: 0.00001 - 100000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="decimals">
                     <number>9</number>
@@ -3760,6 +3767,9 @@
                  </item>
                  <item row="0" column="0" colspan="4">
                   <widget class="QTextEdit" name="clip_prompt">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gets used if clip_sclae &amp;gt; 0&lt;br/&gt;If left empty clip_prompt will equal the prompt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="placeholderText">
                     <string>Clip Prompt,</string>
                    </property>

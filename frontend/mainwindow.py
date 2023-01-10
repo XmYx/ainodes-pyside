@@ -249,6 +249,7 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.redo.clicked.connect(self.redo_current_outpaint)
         self.widgets[self.current_widget].w.delete_2.clicked.connect(self.delete_outpaint_frame)
         self.widgets[self.current_widget].w.preview_batch.clicked.connect(self.preview_batch_outpaint)
+        self.widgets[self.current_widget].w.resize_canvas.clicked.connect(self.resize_canvas)
         self.widgets[self.current_widget].w.prepare_batch.clicked.connect(self.prepare_batch_outpaint_thread)
         self.widgets[self.current_widget].w.run_batch.clicked.connect(self.run_prepared_outpaint_batch_thread)
         self.widgets[self.current_widget].w.run_hires.clicked.connect(self.run_hires_batch_thread)
@@ -1164,6 +1165,7 @@ class MainWindow(QMainWindow):
         self.callbackbusy = True
         self.busy = False
         offset = self.widgets[self.current_widget].w.mask_offset.value()
+        overlap = self.widgets[self.current_widget].w.rect_overlap.value()
         # self.preview_batch_outpaint()
         self.params = self.sessionparams.update_params()
         if gobig_img_path is not None:
@@ -1173,20 +1175,15 @@ class MainWindow(QMainWindow):
             width, height = pil_image.size
             target_h = int(int(height) * upscale_factor)
             target_w = int(int(width) * upscale_factor)
-            #self.canvas.H.setValue(int(target_h))
-            #self.canvas.W.setValue(int(target_w))
-            self.canvas.canvas.resize_canvas(target_w, target_h)
+            self.canvas.H.setValue(int(target_h))
+            self.canvas.W.setValue(int(target_w))
             pil_image = pil_image.resize((target_w, target_h),Image.Resampling.LANCZOS).convert("RGBA")
             qimage = ImageQt(pil_image)
-
-
-            overlap = self.widgets[self.current_widget].w.rect_overlap.value()
             chops_x, chops_y = self.get_num_tiles(target_h, target_w, tilesize, overlap, overlap)
-            print(chops_x, chops_y)
+            self.preview_batch_outpaint(chops_x=chops_x, chops_y=chops_y)
 
-            #chops_x = int(qimage.width() / tilesize)
-            #chops_y = int(qimage.width() / tilesize)
-            self.preview_batch_outpaint(with_chops=chops_x, chops_y=chops_y)
+
+
         rparams = self.sessionparams.update_params()
         # print(self.tempsize_int)
         prompt_series = pd.Series([np.nan for a in range(self.tempsize_int)])
@@ -1399,12 +1396,26 @@ class MainWindow(QMainWindow):
         self.busy = False
         return x
 
-    def preview_batch_outpaint(self, with_chops=None, chops_y=None):
-        if with_chops is None:
+    def resize_canvas(self):
+        tilesize = 512
+        overlap = (self.widgets[self.current_widget].w.rect_overlap.value())
+        overlap = overlap - (overlap / 3)
+
+        target_h = (self.widgets[self.current_widget].w.batch_rows.value() * (tilesize - overlap)) + (2 * self.widgets[self.current_widget].w.start_offset_x.value()) + overlap
+        target_w = (self.widgets[self.current_widget].w.batch_columns.value() * (tilesize - overlap)) + (2 * self.widgets[self.current_widget].w.start_offset_y.value()) + overlap
+        print('tagetsize = ', target_w, target_h)
+        self.canvas.H.setValue(int(target_h))
+        self.canvas.W.setValue(int(target_w))
+
+
+    def preview_batch_outpaint(self, chops_x=None, chops_y=None):
+        tilesize = 512
+        overlap = self.widgets[self.current_widget].w.rect_overlap.value()
+        if chops_x is None:
             self.canvas.canvas.cols = self.widgets[self.current_widget].w.batch_columns.value()
             self.canvas.canvas.rows = self.widgets[self.current_widget].w.batch_rows.value()
         else:
-            self.canvas.canvas.cols = with_chops
+            self.canvas.canvas.cols = chops_x
             self.canvas.canvas.rows = chops_y
         self.canvas.canvas.offset = self.widgets[self.current_widget].w.rect_overlap.value()
         self.canvas.canvas.maskoffset = self.widgets[self.current_widget].w.mask_offset.value()
@@ -1416,6 +1427,7 @@ class MainWindow(QMainWindow):
         prompts = self.widgets[self.current_widget].w.prompts.toPlainText()
         # keyframes = self.prompt.w.keyFrames.toPlainText()
         keyframes = ""
+
         self.canvas.canvas.create_tempBatch(prompts, keyframes, startOffsetX, startOffsetY, randomize)
         templist = []
         if spiral:
@@ -1425,7 +1437,11 @@ class MainWindow(QMainWindow):
             self.canvas.canvas.tempbatch.reverse()
         # print(len(self.canvas.canvas.tempbatch))
         self.tempsize_int = self.canvas.canvas.cols * self.canvas.canvas.rows
+
         self.canvas.canvas.draw_tempBatch(self.canvas.canvas.tempbatch)
+        self.canvas.update()
+
+
 
     def outpaint_rect_overlap(self):
         self.canvas.canvas.rectPreview = self.widgets[self.current_widget].w.enable_overlap.isChecked()

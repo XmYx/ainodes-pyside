@@ -441,8 +441,7 @@ class WebcamWidget(QtWidgets.QWidget):
         #print(self.filename[0])
 
     def process_video(self, video_path = None, progress_callback = None):
-        self.prepare_for_run()
-        video_path=self.filename[0]
+        video_path = self.filename[0]
         # Create a VideoCapture object for reading the video file
         capture = cv2.VideoCapture(video_path)
         # Read the first frame to get the video dimensions
@@ -452,36 +451,32 @@ class WebcamWidget(QtWidgets.QWidget):
         frame_height = frame_height // factor
         frame_width = frame_width // factor
 
-
         frame_rate = 24
-        output_codec = "libx264"
-        # Create a ffmpeg writer to write the output video
-
-        if self.save_video_stream.isChecked() == True:
-            import skvideo.io
-            skvideo.setFFmpegPath("ffmpeg.exe")
-            output_path = "out_video.mp4"
-            writer = skvideo.io.FFmpegWriter(output_path, outputdict={'-r': str(frame_rate)})
-        os.makedirs("video_out", exist_ok=True)
-
+        # State for interpolating between diffusion steps
+        self.prepare_for_run()
         self.images = []
         self.index = 0
         self.lastinit = None
         self.seedint = 0
-        self.run = True
-        #if self.loadedmodel == "inpaint":
-        #    gs.models["sd"] = None
+        if self.save_video_stream.isChecked() == True:
+            import skvideo.io
+            skvideo.setFFmpegPath("ffmpeg.exe")
+            output_path = "out_stream.mp4"
+            frame_rate = 24
+            writer = skvideo.io.FFmpegWriter(output_path, outputdict={'-r': str(frame_rate)})
         if self.loadedmodel == "normal":
             with autocast("cuda"):
                 self.return_seedint()
                 seed_everything(self.seedint)
                 self.uc = gs.models["sd"].get_learned_conditioning(1 * [""])
                 self.promptstring = self.prompt.toPlainText()
+                # prompts = list(self.promptstring)
                 self.c = gs.models["sd"].get_learned_conditioning(self.promptstring)
-                self.sigmas = sampling.get_sigmas_karras(n=self.steps.value(), sigma_min=0.1, sigma_max=10, device="cuda")
+                self.sigmas = sampling.get_sigmas_karras(n=self.steps.value(), sigma_min=0.1, sigma_max=10,
+                                                         device="cuda")
                 self.sigmas = self.sigmas[len(self.sigmas) - int(self.strength.value() * self.steps.value()) - 1:]
-            #self.init_mask_model()
             self.model_wrap = CompVisDenoiser(gs.models["sd"], quantize=False)
+
             loss_fns_scales = [
                 [None, 0.0],
                 [None, 0.0],
@@ -496,15 +491,16 @@ class WebcamWidget(QtWidgets.QWidget):
                                     clamp_schedule=[0])
             grad_inject_timing_fn = make_inject_timing_fn(1, self.model_wrap, 10)
             self.cfg_model = CFGDenoiserWithGrad(self.model_wrap,
-                                            loss_fns_scales,
-                                            clamp_fn,
-                                            None,
-                                            None,
-                                            True,
-                                            decode_method=None,
-                                            grad_inject_timing_fn=grad_inject_timing_fn,
-                                            grad_consolidate_fn=None,
-                                            verbose=False)
+                                                 loss_fns_scales,
+                                                 clamp_fn,
+                                                 None,
+                                                 None,
+                                                 True,
+                                                 decode_method=None,
+                                                 grad_inject_timing_fn=grad_inject_timing_fn,
+                                                 grad_consolidate_fn=None,
+                                                 verbose=False)
+
         self.args = SimpleNamespace()
         self.args.use_init = True
         self.args.scale = 7.5
@@ -515,41 +511,40 @@ class WebcamWidget(QtWidgets.QWidget):
         self.image_label.setScaledContents(True)
         self.args.log_weighted_subprompts = False
         self.args.normalize_prompt_weights = False
-        # Initialize a counter variable to skip frames
+        # torch.backends.cudnn.benchmark = True
         frame_count = 0
-        frame_skip = 2
-        # Iterate through all frames in the video
+        frame_skip = 1
         while success:
             if self.run == True:
                 with torch.autocast("cuda"):
-                    # Convert the frame to RGB
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     # Call the predict function and get the resulting image
+                    self.return_seedint()
                     prompt = self.prompt.toPlainText()
                     steps = self.steps.value()
                     strength = self.strength.value()
                     eta = self.eta.value()
                     if prompt != self.prompt:
                         self.promptstring = self.prompt.toPlainText()
-                        prompts = list(self.promptstring)
-                        self.c = gs.models["sd"].get_learned_conditioning(prompts)
-                    self.seedint = ""
-                    self.return_seedint()
-                    result_image = self.img2img(frame, prompt, steps, 1, 7.5, self.seedint, eta, strength)
-                    self.images = [result_image]
+                        self.c = gs.models["sd"].get_learned_conditioning(self.promptstring)
+                    self.images = [self.img2img(frame, prompt,
+                                                steps, 1, 7.5, self.seedint, eta, strength)]
                     frame_count += 1
-                    if self.save_frames.isChecked():
-                        filepath = f"video_out/video_out_frame_{frame_count}.png"
-                        self.images[0].save(filepath)
-                    self.update_image_signal()
-                    if self.save_video_stream.isChecked() == True:
-                        # Add the resulting image to the output video
-                        writer.writeFrame(result_image)
-                    # Increment the counter variable
-
                     # Skip the next `frame_skip` frames
                     for i in range(frame_skip):
                         success, frame = capture.read()
+
+                    if self.save_frames.isChecked():
+                        filepath = f"video_out/video_out_frame_{frame_count}.png"
+                        self.images[0].save(filepath)
+                    if self.save_video_stream.isChecked() == True:
+                        # Add the resulting image to the output video
+                        writer.writeFrame(self.images[0])
+                    self.update_image_signal()
+                if self.run == False:
+                    if self.save_video_stream.isChecked() == True:
+                        writer.close()
+                    break
             else:
                 if self.save_video_stream.isChecked() == True:
                     writer.close()

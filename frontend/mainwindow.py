@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import re
 from io import BytesIO
@@ -56,6 +57,7 @@ from backend.maintain_models import check_models_exist
 from backend.sqlite import db_base
 from backend.sqlite import model_db_civitai
 from backend.web_requests.web_images import WebImages
+from backend.outpaint import Outpainting
 
 # please don't remove it totally, just remove what we know is not used
 class Callbacks(QObject):
@@ -71,6 +73,8 @@ class Callbacks(QObject):
     set_download_percent = Signal(int)
 
 
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -79,6 +83,7 @@ class MainWindow(QMainWindow):
         self.thumbs = ThumbsUI()
         self.canvas = PaintUI(self)
         self.setCentralWidget(self.canvas)
+
         self.setWindowTitle("aiNodes - Still Mode")
         self.timeline = Timeline(self)
         self.animKeyEditor = AnimKeyEditor()
@@ -88,6 +93,9 @@ class MainWindow(QMainWindow):
         self.widgets = {}
         self.current_widget = 'unicontrol'
         self.widgets[self.current_widget] = UniControl(self)
+        self.outpaint = Outpainting(self)
+        self.outpaint.signals.add_rect.connect(self.outpaint.add_rect)
+        self.outpaint.signals.canvas_update.connect(self.outpaint.canvas_update)
         self.load_last_prompt()
 
         self.sessionparams = SessionParams(self)
@@ -227,12 +235,11 @@ class MainWindow(QMainWindow):
     def connections(self):
         self.deforum_ui.signals.txt2img_image_cb.connect(self.image_preview_func)
         self.deforum_ui.signals.deforum_step.connect(self.tensor_preview_schedule)
-        self.deforum_ui.signals.prepare_hires_batch.connect(self.run_create_outpaint_img2img_batch)
         self.canvas.W.valueChanged.connect(self.canvas.canvas.change_resolution)
         self.canvas.H.valueChanged.connect(self.canvas.canvas.change_resolution)
 
-        self.canvas.canvas.signals.update_selected.connect(self.show_outpaint_details)
-        self.canvas.canvas.signals.update_params.connect(self.create_params)
+        self.canvas.canvas.signals.update_selected.connect(self.outpaint.show_outpaint_details)
+        self.canvas.canvas.signals.update_params.connect(self.outpaint.create_params)
         self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
         self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_six_txt2img_thread)
 
@@ -246,26 +253,26 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
         self.widgets[self.current_widget].w.lucky.clicked.connect(self.show_default)
 
-        self.widgets[self.current_widget].w.redo.clicked.connect(self.redo_current_outpaint)
-        self.widgets[self.current_widget].w.delete_2.clicked.connect(self.delete_outpaint_frame)
-        self.widgets[self.current_widget].w.preview_batch.clicked.connect(self.preview_batch_outpaint)
+        self.widgets[self.current_widget].w.redo.clicked.connect(self.outpaint.redo_current_outpaint)
+        self.widgets[self.current_widget].w.delete_2.clicked.connect(self.outpaint.delete_outpaint_frame)
+        self.widgets[self.current_widget].w.preview_batch.clicked.connect(self.outpaint.preview_batch_outpaint)
         self.widgets[self.current_widget].w.resize_canvas.clicked.connect(self.resize_canvas)
         self.widgets[self.current_widget].w.prepare_batch.clicked.connect(self.prepare_batch_outpaint_thread)
         self.widgets[self.current_widget].w.run_batch.clicked.connect(self.run_prepared_outpaint_batch_thread)
         self.widgets[self.current_widget].w.run_hires.clicked.connect(self.run_hires_batch_thread)
         self.widgets[self.current_widget].w.prep_hires.clicked.connect(self.run_create_outpaint_img2img_batch)
-        self.widgets[self.current_widget].w.update_params.clicked.connect(self.update_params)
+        self.widgets[self.current_widget].w.update_params.clicked.connect(self.outpaint.update_params)
         self.widgets[self.current_widget].w.load_model.clicked.connect(
             self.deforum_ui.deforum_six.load_model_from_config)
         self.widgets[self.current_widget].w.load_inpaint_model.clicked.connect(
             self.deforum_ui.deforum_six.load_inpaint_model)
         self.widgets[self.current_widget].w.cleanup_memory.clicked.connect(model_killer)
 
-        self.widgets[self.current_widget].w.W.valueChanged.connect(self.update_outpaint_parameters)
-        self.widgets[self.current_widget].w.H.valueChanged.connect(self.update_outpaint_parameters)
-        self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.outpaint_offset_signal)
+        self.widgets[self.current_widget].w.W.valueChanged.connect(self.outpaint.update_outpaint_parameters)
+        self.widgets[self.current_widget].w.H.valueChanged.connect(self.outpaint.update_outpaint_parameters)
+        self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.outpaint.outpaint_offset_signal)
         # self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.widgets[self.current_widget].w.mask_offset.value())))  # todo does this work?
-        self.widgets[self.current_widget].w.rect_overlap.valueChanged.connect(self.outpaint_rect_overlap)
+        self.widgets[self.current_widget].w.rect_overlap.valueChanged.connect(self.outpaint.outpaint_rect_overlap)
         self.widgets[self.current_widget].w.selected_model.currentIndexChanged.connect(self.select_new_model)
 
         self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
@@ -298,7 +305,7 @@ class MainWindow(QMainWindow):
         self.model_download.civit_ai_api.signals.civitai_no_more_models.connect(self.all_civitai_model_data_loaded_thread)
         self.model_download.civit_ai_api.signals.civitai_start_model_update.connect(self.civitai_start_model_update_thread)
         self.model_download.signals.show_model_preview_images.connect(self.show_model_preview_images)
-        self.thumbs.w.thumbnails.itemClicked.connect(self.select_outpaint_image)
+        self.thumbs.w.thumbnails.itemClicked.connect(self.outpaint.select_outpaint_image)
 
         self.system_setup.w.ok.clicked.connect(self.sessionparams.update_system_params)
         self.system_setup.w.cancel.clicked.connect(self.update_ui_from_system_params)
@@ -854,6 +861,7 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.rectlist[self.render_index].img_path = gs.temppath
                 self.canvas.canvas.newimage = True
                 self.canvas.canvas.update()
+                print('13 redraw')
                 self.canvas.canvas.redraw()
                 qimage = None
                 pixmap = None
@@ -882,6 +890,7 @@ class MainWindow(QMainWindow):
                 self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
                 self.canvas.canvas.rectlist[self.render_index].params = self.params
         self.canvas.canvas.newimage = True
+        print('14 redraw')
         self.canvas.canvas.redraw()
         self.canvas.canvas.update()
         self.callbackbusy = False
@@ -981,23 +990,10 @@ class MainWindow(QMainWindow):
         else:
             return upper_multiple
 
-    def outpaint_offset_signal(self):
 
-        value = int(self.widgets[self.current_widget].w.mask_offset.value())
-        self.canvas.canvas.set_offset(value)
 
-    @Slot()
-    def update_outpaint_parameters(self):
-        W = self.widgets[self.current_widget].w.W.value()
-        H = self.widgets[self.current_widget].w.H.value()
-        # W, H = map(lambda x: x - x % 64, (W, H))
-        self.widgets[self.current_widget].w.W.setValue(W)
-        self.widgets[self.current_widget].w.H.setValue(H)
-
-        self.canvas.canvas.w = W
-        self.canvas.canvas.h = H
-
-    def prep_rect_params(self, prompt=None):
+    # not used ???
+    def prep_rect_params_(self, prompt=None):
         # prompt = str(prompt)
         # steps = self.widgets[self.current_widget].w.stepsSlider.value()
         params = {"prompts": self.widgets[self.current_widget].w.prompts.toPlainText(),
@@ -1018,115 +1014,17 @@ class MainWindow(QMainWindow):
 
         return params
 
-    @Slot(str)
-    def update_params(self, uid=None, params=None):
 
-        if self.canvas.canvas.selected_item is not None:
-            for i in self.canvas.canvas.rectlist:
-                if uid is not None:
-                    if i.id == uid:
-                        if params == None:
-                            params = self.get_params()
-                        i.params = copy.deepcopy(params)
-                else:
-                    if i.id == self.canvas.canvas.selected_item:
-                        params = self.get_params()
-                        i.params = copy.deepcopy(params)
 
-    @Slot(str)
-    def create_params(self, uid=None):
-        for i in self.canvas.canvas.rectlist:
-            if i.id == uid:
-                i.params = copy.deepcopy(self.params)
 
-    def get_params(self):
-        params = self.sessionparams.update_params()
-        # print(f"Created Params")
-        return params
 
-    @Slot()
-    def show_outpaint_details(self):
-        self.thumbs.w.thumbnails.clear()
-        if self.canvas.canvas.selected_item is not None:
 
-            for items in self.canvas.canvas.rectlist:
-                if items.id == self.canvas.canvas.selected_item:
-                    # print(items.params)
-                    try:
-                        self.sessionparams.params = items.params.__dict__
-                        self.update_ui_from_params()
-                    except Exception as e:
-                        print(f"Error, could not update  because of: {e}")
 
-                    if items.params != {}:
-                        pass
-                        # print(f"showing strength of {items.params['strength'] * 100}")
-                        # self.widgets[self.current_widget].w.steps.setValue(items.params.steps)
-                        # self.widgets[self.current_widget].w.steps_slider.setValue(items.params.steps)
-                        # self.widgets[self.current_widget].w.scale.setValue(items.params['scale'] * 10)
-                        # self.widgets[self.current_widget].w.scale_slider.setValue(items.params['scale'] * 10)
-                        # self.widgets[self.current_widget].w.strength.setValue(int(items.params['strength'] * 100))
-                        # self.widgets[self.current_widget].w.strength_slider.setValue(int(items.params['strength'] * 100))
-                        # self.widgets[self.current_widget].w.reconstruction_blur.setValue(items.params['reconstruction_blur'])
-                        # self.widgets[self.current_widget].w.mask_blur.setValue(items.params['mask_blur'])
-                        # self.widgets[self.current_widget].w.prompts.setText(items.params['prompts'])
-                        # self.widgets[self.current_widget].w.seed.setText(str(items.params['seed']))
-                        # self.widgets[self.current_widget].w.mask_offset.setValue(items.params['mask_offset'])
 
-                    if items.images is not []:
-                        for i in items.images:
-                            if i is not None:
-                                image = i.copy(0, 0, i.width(), i.height())
-                                pixmap = QPixmap.fromImage(image)
-                                self.thumbs.w.thumbnails.addItem(
-                                    QListWidgetItem(QIcon(pixmap), f"{items.render_index}"))
 
-    def redo_current_outpaint(self):
-        self.canvas.canvas.redo_outpaint(self.canvas.canvas.selected_item)
 
-    def select_outpaint_image(self, item):
-        width = self.widgets[self.current_widget].w.W.value()
-        height = self.widgets[self.current_widget].w.H.value()
-        templist = self.canvas.canvas.rectlist
-        imageSize = item.icon().actualSize(QtCore.QSize(width, height))
-        if self.canvas.canvas.selected_item is not None:
-            for i in templist:
-                if i.id == self.canvas.canvas.selected_item:
-                    qimage = QImage(item.icon().actualSize(QtCore.QSize(width, height)), QImage.Format_ARGB32)
-                    painter = QPainter()
-                    painter.begin(qimage)
-                    painter.drawPixmap(0, 0, item.icon().pixmap(imageSize))
-                    painter.end()
-                    i.image = qimage
-                    i.timestring = time.time()
-        self.canvas.canvas.update()
-        self.canvas.canvas.rectlist = templist
-        self.canvas.canvas.newimage = True
-        self.canvas.canvas.update()
 
-    def delete_outpaint_frame(self):
-        # self.canvas.canvas.undoitems = []
-        if self.canvas.canvas.selected_item is not None:
-            x = 0
-            for i in self.canvas.canvas.rectlist:
-                if i.id == self.canvas.canvas.selected_item:
-                    self.canvas.canvas.undoitems.append(i)
-                    self.canvas.canvas.rectlist.pop(x)
-                    pass
-                x += 1
-        self.canvas.canvas.pixmap.fill(Qt.transparent)
-        self.canvas.canvas.newimage = True
-        self.canvas.canvas.selected_item = None
-        self.canvas.canvas.update()
-        # self.canvas.canvas.draw_rects()
-        self.thumbs.w.thumbnails.clear()
 
-    def test_save_outpaint(self):
-
-        self.canvas.canvas.pixmap = self.canvas.canvas.pixmap.copy(QRect(64, 32, 512, 512))
-
-        self.canvas.canvas.setPixmap(self.canvas.canvas.pixmap)
-        self.canvas.canvas.update()
 
     @Slot()
     def stop_processing(self):
@@ -1135,266 +1033,22 @@ class MainWindow(QMainWindow):
     def sort_rects(self, e):
         return e.order
 
-    def run_batch_outpaint(self, progress_callback=False):
-        self.stopprocessing = False
-        self.callbackbusy = False
-        self.sleepytime = 0.0
-        self.choice = "Outpaint"
-        self.create_outpaint_batch()
-
-
-    def get_num_tiles(self, width, height, tile_size, overlap_x, overlap_y):
-        # Calculate the effective size of the tiles
-        effective_tile_size_x = tile_size - overlap_x * 2
-        effective_tile_size_y = tile_size - overlap_y * 2
-
-        # Calculate the number of columns and rows
-        num_cols = width // effective_tile_size_x
-        if width % effective_tile_size_x > 0:
-            num_cols += 1
-        num_rows = height // effective_tile_size_y
-        if height % effective_tile_size_y > 0:
-            num_rows += 1
-
-        return num_cols, num_rows
-
-
-    def create_outpaint_batch(self, gobig_img_path=None):
-        tilesize = 512
-        self.sessionparams.params.advanced = True
-        self.callbackbusy = True
-        self.busy = False
-        offset = self.widgets[self.current_widget].w.mask_offset.value()
-        overlap = self.widgets[self.current_widget].w.rect_overlap.value()
-        # self.preview_batch_outpaint()
-        self.params = self.sessionparams.update_params()
-        if gobig_img_path is not None:
-            tilesize = int(self.widgets[self.current_widget].w.batch_upscale_tile_size.currentText())
-            upscale_factor = self.widgets[self.current_widget].w.batch_upscale_factor.value()
-            pil_image = Image.open(gobig_img_path)
-            width, height = pil_image.size
-            target_h = int(int(height) * upscale_factor)
-            target_w = int(int(width) * upscale_factor)
-            self.canvas.H.setValue(int(target_h))
-            self.canvas.W.setValue(int(target_w))
-            pil_image = pil_image.resize((target_w, target_h),Image.Resampling.LANCZOS).convert("RGBA")
-            qimage = ImageQt(pil_image)
-            chops_x, chops_y = self.get_num_tiles(target_h, target_w, tilesize, overlap, overlap)
-            self.preview_batch_outpaint(chops_x=chops_x, chops_y=chops_y)
 
 
 
-        rparams = self.sessionparams.update_params()
-        # print(self.tempsize_int)
-        prompt_series = pd.Series([np.nan for a in range(self.tempsize_int)])
-        # print(prompt_series)
-        if rparams.keyframes == '':
-            rparams.keyframes = "0"
-        prom = rparams.prompts
-        key = rparams.keyframes
-
-        new_prom = list(prom.split("\n"))
-        new_key = list(key.split("\n"))
-
-        prompts = dict(zip(new_key, new_prom))
-
-        for i, prompt in prompts.items():
-            n = int(i)
-            prompt_series[n] = prompt
-        animation_prompts = prompt_series.ffill().bfill()
-        print(animation_prompts)
-        x = 0
-        for items in self.canvas.canvas.tempbatch:
-            if type(items) == list:
-                for item in items:
-
-                    if gobig_img_path is not None:
-                        rect = QRect(item['x'], item['y'], self.canvas.canvas.w, self.canvas.canvas.h)
-                        image = qimage.copy(rect)
-                        index = None
-                        self.hires_source = pil_image
-
-                    else:
-                        image = None
-                        index = None
-                        self.hires_source = None
-                    offset = offset + tilesize
-                    rparams.prompts = animation_prompts[x]
-                    if rparams.seed_behavior == 'random':
-                        rparams.seed = random.randint(0, 2 ** 32 - 1)
-                    # print(f"seed bhavior:{rparams.seed_behavior} {rparams.seed}")
-                    self.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image,
-                                                     render_index=index, order=item["order"],
-                                                     params=copy.deepcopy(rparams))
-                    print(animation_prompts[x])
-                    if rparams.seed_behavior == 'iter':
-                        rparams.seed += 1
-                    while self.busy == True:
-                        time.sleep(0.25)
-                    x += 1
-            elif type(items) == dict:
 
 
-                if gobig_img_path is not None:
-                    rect = QRect(items['x'], items['y'], self.canvas.canvas.w, self.canvas.canvas.h)
-                    image = qimage.copy(rect)
-                    index = None
-                    self.hires_source = pil_image
 
-                else:
-                    image = None
-                    index = None
-                    self.hires_source = None
-                offset = offset + tilesize
-                rparams.prompts = animation_prompts[x]
-                # print(rparams.prompts)
-                if rparams.seed_behavior == 'random':
-                    rparams.seed = random.randint(0, 2 ** 32 - 1)
-                self.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image,
-                                                 render_index=index, order=items["order"],
-                                                 params=copy.deepcopy(rparams))
 
-                if rparams.seed_behavior == 'iter':
-                    rparams.seed += 1
-                while self.busy == True:
-                    time.sleep(0.25)
-                x += 1
-        self.callbackbusy = False
 
-    def run_hires_batch(self, progress_callback=None):
-        self.sessionparams.params.advanced = True
-        # multi = self.widgets[self.current_widget].w.multiBatch.isChecked()
-        # batch_n = self.widgets[self.current_widget].w.multiBatchvalue.value()
-        multi = False
-        batch_n = 1
-        gs.stop_all = False
-        self.callbackbusy = False
-        self.sleepytime = 0.0
-        self.choice = "Outpaint"
 
-        for i in range(batch_n):
-            while self.callbackbusy == True:
-                time.sleep(0.5)
-            time.sleep(1)
-            betterslices = []
-            og_size = (512, 512)
-            tiles = (self.canvas.canvas.cols - 1) * (self.canvas.canvas.rows - 1)
-            for x in range(int(tiles)):
-                if gs.stop_all != True:
-                    self.run_hires_step_x(x)
-                    betterslices.append((self.image.convert('RGBA'), self.canvas.canvas.rectlist[x].x,
-                                         self.canvas.canvas.rectlist[x].y))
-                else:
-                    break
 
-            source_image = self.hires_source
-            alpha = Image.new("L", og_size, color=0xFF)
-            alpha_gradient = ImageDraw.Draw(alpha)
-            a = 0
-            i = 0
-            overlap = self.widgets[self.current_widget].w.rect_overlap.value()
-            shape = (og_size, (0, 0))
-            while i < overlap:
-                alpha_gradient.rectangle(shape, fill=a)
-                a += 4
-                i += 1
-                shape = ((og_size[0] - i, og_size[1] - i), (i, i))
-            mask = Image.new("RGBA", og_size, color=0)
-            mask.putalpha(alpha)
-            finished_slices = []
-            for betterslice, x, y in betterslices:
-                finished_slice = addalpha(betterslice, mask)
-                finished_slices.append((finished_slice, x, y))
-            # # Once we have all our images, use grid_merge back onto the source, then save
-            final_output = grid_merge(
-                source_image.convert("RGBA"), finished_slices
-            ).convert("RGBA")
-            final_output.save('output/test_hires.png')
-            # base_filename = f"{base_filename}d"
-            print(f"All time wasted: {self.sleepytime} seconds.")
-            self.hires_source = final_output
-            self.deforum_ui.signals.prepare_hires_batch.emit('output/test_hires.png')
 
-    def run_hires_step_x(self, x):
-        self.choice = 'Outpaint'
-        image = self.canvas.canvas.rectlist[x].image
-        image.save('output/temp/temp.png', "PNG")
-        self.canvas.canvas.selected_item = self.canvas.canvas.rectlist[x].id
-        self.render_index = x
 
-        self.deforum_ui.run_deforum_six_txt2img(hiresinit='output/temp/temp.png')
-        while self.callbackbusy == True:
-            time.sleep(0.25)
-            self.sleepytime += 0.25
-        time.sleep(0.25)
-        self.sleepytime += 0.25
-        x += 1
 
-        self.busy = False
-        return x
 
-    def run_prepared_outpaint_batch(self, progress_callback=None):
-        gs.stop_all = False
-        self.callbackbusy = False
-        self.sleepytime = 0.0
-        self.choice = "Outpaint"
-        self.params.advanced = True
 
-        # multi = self.widgets[self.current_widget].w.multiBatch.isChecked()
-        # batch_n = self.widgets[self.current_widget].w.multiBatchvalue.value()
 
-        multi = False
-        batch_n = 1
-
-        tiles = len(self.canvas.canvas.rectlist)
-
-        print(f"Tiles to Outpaint:{tiles}")
-
-        if multi == True:
-            print("multi outpaint batch")
-            for i in range(batch_n):
-                if i != 0:
-                    filename = str(random.randint(1111111, 9999999))
-                    self.canvas.canvas.save_rects_as_json(filename=filename)
-                    self.canvas.canvas.save_canvas()
-                    self.canvas.canvas.rectlist.clear()
-                    self.create_outpaint_batch()
-                for x in range(tiles):
-                    # print(x)
-                    if gs.stop_all == False:
-                        self.run_outpaint_step_x(x)
-                    else:
-                        break
-        else:
-            for x in range(tiles):
-                if gs.stop_all == False:
-                    print(f"running step {x}")
-                    self.run_outpaint_step_x(x)
-                else:
-                    break
-            # self.canvas.canvas.save_canvas()
-
-            print(f"All time wasted: {self.sleepytime} seconds.")
-
-    def run_outpaint_step_x(self, x):
-
-        # print("it should not do anything....")
-
-        self.busy = True
-        self.canvas.canvas.reusable_outpaint(self.canvas.canvas.rectlist[x].id)
-        while self.canvas.canvas.busy == True:
-            time.sleep(0.25)
-            self.sleepytime += 0.25
-        self.deforum_ui.run_deforum_outpaint(self.canvas.canvas.rectlist[x].params)
-        while self.callbackbusy == True:
-            time.sleep(0.25)
-            self.sleepytime += 0.25
-        time.sleep(0.25)
-        self.sleepytime += 0.25
-        x += 1
-
-        self.busy = False
-        return x
 
     def resize_canvas(self):
         tilesize = 512
@@ -1408,48 +1062,8 @@ class MainWindow(QMainWindow):
         self.canvas.W.setValue(int(target_w))
 
 
-    def preview_batch_outpaint(self, chops_x=None, chops_y=None):
-        tilesize = 512
-        overlap = self.widgets[self.current_widget].w.rect_overlap.value()
-        if chops_x is None:
-            self.canvas.canvas.cols = self.widgets[self.current_widget].w.batch_columns.value()
-            self.canvas.canvas.rows = self.widgets[self.current_widget].w.batch_rows.value()
-        else:
-            self.canvas.canvas.cols = chops_x
-            self.canvas.canvas.rows = chops_y
-        self.canvas.canvas.offset = self.widgets[self.current_widget].w.rect_overlap.value()
-        self.canvas.canvas.maskoffset = self.widgets[self.current_widget].w.mask_offset.value()
-        randomize = self.widgets[self.current_widget].w.randomize.isChecked()
-        spiral = self.widgets[self.current_widget].w.spiral.isChecked()
-        reverse = self.widgets[self.current_widget].w.reverse.isChecked()
-        startOffsetX = self.widgets[self.current_widget].w.start_offset_x.value()
-        startOffsetY = self.widgets[self.current_widget].w.start_offset_y.value()
-        prompts = self.widgets[self.current_widget].w.prompts.toPlainText()
-        # keyframes = self.prompt.w.keyFrames.toPlainText()
-        keyframes = ""
-
-        self.canvas.canvas.create_tempBatch(prompts, keyframes, startOffsetX, startOffsetY, randomize)
-        templist = []
-        if spiral:
-            # self.canvas.canvas.tempbatch = random_path(self.canvas.canvas.tempbatch, self.canvas.canvas.cols)
-            self.canvas.canvas.tempbatch = spiralOrder(self.canvas.canvas.tempbatch)
-        if reverse:
-            self.canvas.canvas.tempbatch.reverse()
-        # print(len(self.canvas.canvas.tempbatch))
-        self.tempsize_int = self.canvas.canvas.cols * self.canvas.canvas.rows
-
-        self.canvas.canvas.draw_tempBatch(self.canvas.canvas.tempbatch)
-        self.canvas.update()
 
 
-
-    def outpaint_rect_overlap(self):
-        self.canvas.canvas.rectPreview = self.widgets[self.current_widget].w.enable_overlap.isChecked()
-        if self.canvas.canvas.rectPreview == False:
-            self.canvas.canvas.newimage = True
-            self.canvas.canvas.redraw()
-        elif self.canvas.canvas.rectPreview == True:
-            self.canvas.canvas.visualize_rects()
 
     def prepare_batch_outpaint_thread(self):
         # self.prompt.w.stopButton.clicked.connect(self.stop_processing)
@@ -1458,25 +1072,32 @@ class MainWindow(QMainWindow):
         # if self.canvas.canvas.tempbatch == [] or self.canvas.canvas.tempbatch is None:
         #    self.preview_batch_outpaint()
         #    #self.create_outpaint_batch()
-        worker = Worker(self.run_batch_outpaint)
+        worker = Worker(self.outpaint.run_batch_outpaint)
         self.threadpool.start(worker)
 
     @Slot(str)
     def run_create_outpaint_img2img_batch(self, input=None):
+        self.run_create_outpaint_img2img_batch_thread(input)
+
+
+    def run_create_outpaint_img2img_batch_thread(self, input=None):
         if input != False:
             data = input
         else:
             data = self.getfile()
-        self.create_outpaint_batch(gobig_img_path=data)
+        self.outpaint.create_outpaint_batch(gobig_img_path=data)
+
+        #worker = Worker(self.outpaint.create_outpaint_batch, False, gobig_img_path=data)
+        #self.threadpool.start(worker)
 
     def run_prepared_outpaint_batch_thread(self):
         if self.canvas.canvas.rectlist == []:
-            self.create_outpaint_batch()
-        worker = Worker(self.run_prepared_outpaint_batch)
+            self.outpaint.create_outpaint_batch()
+        worker = Worker(self.outpaint.run_prepared_outpaint_batch)
         self.threadpool.start(worker)
 
     def run_hires_batch_thread(self):
-        worker = Worker(self.run_hires_batch)
+        worker = Worker(self.outpaint.run_hires_batch)
         self.threadpool.start(worker)
 
     def getfile(self, file_ext='', text='', button_caption='', button_type=0, title='Load', save=False):
@@ -1621,20 +1242,3 @@ def get_inbetweens(key_frames, max_frames, integer=False, interp_method='Linear'
     if integer:
         return key_frame_series.astype(int)
     return key_frame_series
-
-
-def addalpha(im, mask):
-    imr, img, imb, ima = im.split()
-    mmr, mmg, mmb, mma = mask.split()
-    im = Image.merge(
-        "RGBA", [imr, img, imb, mma]
-    )  # we want the RGB from the original, but the transparency from the mask
-    return im
-
-
-# Alternative method composites a grid of images at the positions provided
-def grid_merge(source, slices):
-    source.convert("RGBA")
-    for slice, posx, posy in slices:  # go in reverse to get proper stacking
-        source.alpha_composite(slice, (posx, posy))
-    return source

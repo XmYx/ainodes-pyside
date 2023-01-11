@@ -1834,7 +1834,7 @@
                  <item row="1" column="0" rowspan="3" colspan="4">
                   <widget class="QTabWidget" name="tabWidget">
                    <property name="currentIndex">
-                    <number>1</number>
+                    <number>2</number>
                    </property>
                    <widget class="QWidget" name="tab_2">
                     <attribute name="title">
@@ -2132,7 +2132,7 @@
                      <item row="1" column="1">
                       <widget class="QSpinBox" name="batch_upscale_factor">
                        <property name="toolTip">
-                        <string>The upscale factor, output size = input size * factor. H and W will be calculated the same way. The aspect ratio will be keept. </string>
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The upscale factor&lt;/p&gt;&lt;p&gt;output size = input size * factor. H and W will be calculated the same way. &lt;/p&gt;&lt;p&gt;The aspect ratio will be keept. &lt;/p&gt;&lt;p&gt;be aware that more big means more time to render all the images&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="minimum">
                         <number>1</number>

@@ -38,6 +38,8 @@ from backend.torch_gc import torch_gc
 from backend.hypernetworks import hypernetwork
 import backend.hypernetworks.modules.sd_hijack
 from backend.deforum.six.hijack import hijack_deforum
+from ldm_v2.data.util import AddMiDaS
+from ldm_v2.models.diffusion.ddim import DDIMSampler
 
 gs = singleton
 import os, sys
@@ -67,7 +69,16 @@ torch.set_grad_enabled(False)
 
 import cv2
 import numpy as np
+def initialize_model(config, ckpt):
+    config = OmegaConf.load(config)
+    model = instantiate_from_config(config.model)
+    model.load_state_dict(torch.load(ckpt)["state_dict"], strict=False)
 
+    device = torch.device(
+        "cuda") if torch.cuda.is_available() else torch.device("cpu")
+    model = model.half().to(device)
+    #sampler = DDIMSampler(model)
+    return model
 class aiNodesPlugin():
     def __init__(self, parent):
         self.parent = parent
@@ -136,9 +147,9 @@ class WebcamWidget(QtWidgets.QWidget):
         self.seed = QLineEdit()
         self.samplercombobox = QComboBox()
         self.samplercombobox.addItems(["euler", "dpm2", "dpm2_ancestral", "heun", "klms", "euler_ancestral",
-                                        "dpm_fast", "dpmpp_2s_a", "dpmpp_2m", "dpmpp_sde", "dpm_adaptive"])
+                                        "dpm_fast", "dpmpp_2s_a", "dpmpp_2m", "dpmpp_sde", "dpm_adaptive", "ddim_depth"])
         self.modelselect = QComboBox()
-        self.modelselect.addItems(["Normal"])
+        self.modelselect.addItems(["Normal", "Depth"])
 
         self.save_video_stream = QCheckBox("Save Video Stream")
         self.save_frames = QCheckBox("Save Individual Frames")
@@ -212,6 +223,7 @@ class WebcamWidget(QtWidgets.QWidget):
         #gs.models["sd"] = None
         self.seedint = None
         self.return_seedint()
+        self.lastinit = None
     def dec_seed(self):
         if self.seed.text() == "":
             self.seed.setText(str(self.seedint))
@@ -259,16 +271,29 @@ class WebcamWidget(QtWidgets.QWidget):
     def stop_threads(self):
         self.run = False
 
-    def start_video_input(self):
-
+    def model_check(self):
         inference = self.modelselect.currentText()
-        if self.loadedmodel != "normal":
-            #self.model = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
-            #                                    "data/models/v1-5-pruned-emaonly.ckpt")
+        if inference == 'Depth' and self.loadedmodel != "depth":
+           # self.model = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
+           #                                     "data/models/v1-5-pruned-emaonly.ckpt")
+            try:
+                gs.models["sd"].to("cpu")
+            except:
+                pass
+            gs.models["sd"] = None
+        elif inference == 'Normal' and self.loadedmodel != 'normal':
+            try:
+                gs.models["sd"].to("cpu")
+            except:
+                pass
+            gs.models["sd"] = None
+            del gs.models["sd"]
             self.loadedmodel = "normal"
             self.midas_trafo = None
             self.sampler = None
+    def start_video_input(self):
 
+        self.model_check()
         """Start the continuous capture in a separate thread."""
         self.run = True
         self.select_video_file()
@@ -278,14 +303,7 @@ class WebcamWidget(QtWidgets.QWidget):
         self.threadpool.start(worker)
         self.index = 0
     def start_continuous_capture(self):
-
-        inference = self.modelselect.currentText()
-        if self.loadedmodel != "normal":
-           # self.model = load_model_from_config("data/models/v1-5-pruned-emaonly.yaml",
-           #                                     "data/models/v1-5-pruned-emaonly.ckpt")
-            self.loadedmodel = "normal"
-            self.midas_trafo = None
-            self.sampler = None
+        self.model_check()
 
         """Start the continuous capture in a separate thread."""
         self.run = True
@@ -298,15 +316,34 @@ class WebcamWidget(QtWidgets.QWidget):
     def make_sampler_schedule(self):
         steps = self.steps.value()
         eta = self.eta.value()
-        if self.loadedmodel == 'normal':
-            #self.sampler.make_schedule(steps, ddim_eta=eta, verbose=True)
+        if self.loadedmodel == 'normal' or self.loadedmodel == 'depth':
             self.sigmas = sampling.get_sigmas_karras(n=self.steps.value(), sigma_min=0.1, sigma_max=10, device="cuda")
             self.sigmas = self.sigmas[len(self.sigmas) - int(self.strength.value() * self.steps.value()) - 1:]
+        elif self.loadedmodel == 'depth' and self.samplercombobox.currentText() == 'ddim_depth':
+            self.sampler.make_schedule(steps, ddim_eta=eta, verbose=True)
+
+
+    def init_depth_inference(self):
+
+        if self.loadedmodel != 'depth':
+            gs.models["sd"] = initialize_model("data/models/v2-midas-inference.yaml",
+                                          "data/models/512-depth-ema.ckpt")
+            #self.sampler = DDIMSampler(self.model)
+            model_type = "dpt_hybrid"
+            self.midas_trafo = AddMiDaS(model_type=model_type)
+            self.loadedmodel = "depth"
+        else:
+            print("Depth model already loaded")
+
 
     def continuous_capture(self, progress_callback=None):
         """Capture images from the webcam continuously."""
         # State for interpolating between diffusion steps
-        self.prepare_for_run()
+        print(self.modelselect.currentText())
+        if self.modelselect.currentText() == 'Normal':
+            self.prepare_for_run()
+        elif self.modelselect.currentText() == 'Depth':
+            self.init_depth_inference()
         self.images = []
         self.index = 0
         self.lastinit = None
@@ -352,6 +389,10 @@ class WebcamWidget(QtWidgets.QWidget):
                                             grad_inject_timing_fn=grad_inject_timing_fn,
                                             grad_consolidate_fn=None,
                                             verbose=False)
+        elif self.loadedmodel == 'depth':
+            self.model_wrap = CompVisVDenoiser(gs.models["sd"])
+
+
         _, frame = self.capture.read()
         self.args = SimpleNamespace()
         self.args.use_init = True
@@ -377,9 +418,16 @@ class WebcamWidget(QtWidgets.QWidget):
                 eta = self.eta.value()
                 if prompt != self.prompt:
                     self.promptstring = self.prompt.toPlainText()
+                    #self.c = gs.models["sd"].get_learned_conditioning(self.promptstring)
                     self.c = gs.models["sd"].get_learned_conditioning(self.promptstring)
-                self.images = [self.img2img(frame, prompt,
-                                            steps, 1, 7.5, self.seedint, eta, strength)]
+                if self.modelselect.currentText() == 'Normal':
+
+                    self.images = [self.img2img(frame, prompt,
+                                                steps, 1, 7.5, self.seedint, eta, strength)]
+                elif self.modelselect.currentText() == 'Depth':
+
+                    self.images = [self.predict(frame, prompt,
+                                                steps, 1, 7.5, self.seedint, eta, strength)]
                 frame_count += 1
                 if self.save_frames.isChecked():
                     filepath = f"video_out/webcam_out_frame_{frame_count}.png"
@@ -399,6 +447,7 @@ class WebcamWidget(QtWidgets.QWidget):
                 pass
     def prepare_for_run(self):
         check = self.load_model_from_config(config=None, ckpt=None)
+        print(check)
         if check == -1:
             return check
 
@@ -441,6 +490,12 @@ class WebcamWidget(QtWidgets.QWidget):
         #print(self.filename[0])
 
     def process_video(self, video_path = None, progress_callback = None):
+        if self.modelselect.currentText() == 'Normal:':
+            self.prepare_for_run()
+        elif  self.modelselect.currentText() == 'Depth':
+            self.init_depth_inference()
+
+
         video_path = self.filename[0]
         # Create a VideoCapture object for reading the video file
         capture = cv2.VideoCapture(video_path)
@@ -453,7 +508,7 @@ class WebcamWidget(QtWidgets.QWidget):
 
         frame_rate = 24
         # State for interpolating between diffusion steps
-        self.prepare_for_run()
+        #self.prepare_for_run()
         self.images = []
         self.index = 0
         self.lastinit = None
@@ -500,7 +555,8 @@ class WebcamWidget(QtWidgets.QWidget):
                                                  grad_inject_timing_fn=grad_inject_timing_fn,
                                                  grad_consolidate_fn=None,
                                                  verbose=False)
-
+        elif self.loadedmodel == 'depth':
+            self.model_wrap = CompVisVDenoiser(gs.models["sd"])
         self.args = SimpleNamespace()
         self.args.use_init = True
         self.args.scale = 7.5
@@ -526,9 +582,16 @@ class WebcamWidget(QtWidgets.QWidget):
                     eta = self.eta.value()
                     if prompt != self.prompt:
                         self.promptstring = self.prompt.toPlainText()
-                        self.c = gs.models["sd"].get_learned_conditioning(self.promptstring)
-                    self.images = [self.img2img(frame, prompt,
-                                                steps, 1, 7.5, self.seedint, eta, strength)]
+                        #self.c = gs.models["sd"].get_learned_conditioning(self.promptstring)
+                        #self.c = self.model.get_learned_conditioning(self.promptstring)
+                    if self.modelselect.currentText() == 'Normal':
+
+                        self.images = [self.img2img(frame, prompt,
+                                                    steps, 1, 7.5, self.seedint, eta, strength)]
+                    elif self.modelselect.currentText() == 'Depth':
+
+                        self.images = [self.predict(frame, prompt,
+                                                    steps, 1, 7.5, self.seedint, eta, strength)]
                     frame_count += 1
                     # Skip the next `frame_skip` frames
                     for i in range(frame_skip):
@@ -541,10 +604,6 @@ class WebcamWidget(QtWidgets.QWidget):
                         # Add the resulting image to the output video
                         writer.writeFrame(self.images[0])
                     self.update_image_signal()
-                if self.run == False:
-                    if self.save_video_stream.isChecked() == True:
-                        writer.close()
-                    break
             else:
                 if self.save_video_stream.isChecked() == True:
                     writer.close()
@@ -568,6 +627,13 @@ class WebcamWidget(QtWidgets.QWidget):
                 QtGui.QPixmap.fromImage(ImageQt(self.images[len(self.images) - 1])))
 
     def img2img(self, input_image, prompt, steps, num_samples, scale, seed, eta, strength):
+        if self.lastinit != None:
+            img1 = self.lastinit
+            img2 = Image.fromarray(input_image)
+            img2 = img2.resize(img1.size, resample=Image.Resampling.LANCZOS)
+            blend_img = Image.blend(img1, img2, 0.78)
+            input_image = np.asarray(blend_img)
+
         image = input_image.astype(np.float32) / 255.0
         image = image[None].transpose(0, 3, 1, 2)
         image = torch.from_numpy(image)
@@ -575,7 +641,7 @@ class WebcamWidget(QtWidgets.QWidget):
         image = image.half().to("cuda")
         t_enc = int(strength * steps)
         torch.cuda.manual_seed_all(seed)
-
+        seed_everything(seed)
         #with torch.autocast("cuda"):
         torch.backends.cudnn.benchmark = True
         self.init_latent = gs.models["sd"].get_first_stage_encoding(gs.models["sd"].encode_first_stage(image))
@@ -606,6 +672,7 @@ class WebcamWidget(QtWidgets.QWidget):
         x_samples = torch.clamp((x_samples + 1.0) / 2.0, min=0.0, max=1.0)
         x_sample = 255. * rearrange(x_samples[0].cpu().numpy(), 'c h w -> h w c')
         image = Image.fromarray(x_sample.astype(np.uint8))
+        self.lastinit = image.resize((int(image.size[0] * factor), int(image.size[1] * factor)), resample=Image.Resampling.LANCZOS)
         return image
 
     def predict(self, input_image, prompt, steps, num_samples, scale, seed, eta, strength):
@@ -613,9 +680,10 @@ class WebcamWidget(QtWidgets.QWidget):
         t_enc = min(int(strength * steps), steps-1)
         input_image = Image.fromarray(input_image)
         width, height = input_image.size
+        self.make_sampler_schedule()
         result = self.paint(
-            sampler=self.sampler,
-            model=self.sampler.model,
+            sampler=None,
+            model=gs.models["sd"],
             image=input_image,
             image_quad=input_image,
             prompt=prompt,
@@ -627,13 +695,100 @@ class WebcamWidget(QtWidgets.QWidget):
             do_full_sample=do_full_sample
             )
         return result
+    def paint(self, sampler, model, image, image_quad, prompt, t_enc, seed, scale, num_samples=1, callback=None,
+              do_full_sample=False):
+        device = torch.device(
+            "cuda") if torch.cuda.is_available() else torch.device("cpu")
+        #seed_everything(seed)
+        with torch.autocast("cuda"):
+            seed_everything(seed)
+            print(prompt)
+            batch = self.make_batch_sd(
+                image, txt=prompt, device=device, num_samples=num_samples)
+            z = model.get_first_stage_encoding(model.encode_first_stage(
+                batch[model.first_stage_key]))
+            c = model.cond_stage_model.encode(batch["txt"])
+            c_cat = list()
+            for ck in model.concat_keys:
+                cc = batch[ck]
+                cc = model.depth_model(cc)
+                cc = torch.nn.functional.interpolate(
+                    cc,
+                    size=z.shape[2:],
+                    mode="bicubic",
+                    align_corners=False,
+                )
+                depth_min, depth_max = torch.amin(cc, dim=[1, 2, 3], keepdim=True), torch.amax(cc, dim=[1, 2, 3],
+                                                                                               keepdim=True)
+                cc = 2. * (cc - depth_min) / (depth_max - depth_min) - 1.
+                c_cat.append(cc)
+            c_cat = torch.cat(c_cat, dim=1)
+            cond = {"c_concat": [c_cat], "c_crossattn": [c]}
+
+            uc_cross = model.get_unconditional_conditioning(num_samples, "")
+            uc_full = {"c_concat": [c_cat], "c_crossattn": [uc_cross]}
+            z_enc = torch.randn_like(z)
+            # decode it
+            #
+
+            self.args.W = z.shape[3] * 8
+            self.args.H = z.shape[2] * 8
+            self.args.steps = self.steps.value()
+            self.args.seed = seed
+            self.args.sampler = self.samplercombobox.currentText()
+            #model_wrap = CompVisVDenoiser(gs.models["sd"])
+            if self.args.sampler == 'ddim_depth':
+                self.sampler = DDIMSampler(gs.models["sd"])
+                self.sampler.make_schedule(self.steps.value(), ddim_eta=self.eta.value(), verbose=False)
+                samples = self.sampler.decode(z_enc, cond, t_enc, unconditional_guidance_scale=scale,
+                                                                  unconditional_conditioning=uc_full, callback=callback)
+                del self.sampler
+            else:
+                samples = self.sampler_fn(
+                    c=cond,
+                    uc=uc_full,
+                    args=self.args,
+                    model_wrap=self.model_wrap,
+                    init_latent=z,
+                    t_enc=t_enc,
+                    device="cuda",
+                    cb=None,
+                    verbose=False)
+
+            #
+            x_samples_ddim = model.decode_first_stage(samples)
+            result = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
+            result = result.cpu().numpy().transpose(0, 2, 3, 1) * 255
+            image = [Image.fromarray(img.astype(np.uint8)) for img in result]
+        return image[0]
+    def make_batch_sd(
+            self,
+            image,
+            txt,
+            device,
+            num_samples=1,
+            model_type="dpt_hybrid"
+    ):
+        image = np.array(image)
+        image = torch.from_numpy(image).to(dtype=torch.float32) / 127.5 - 1.0
+        batch = {
+            "jpg": image,
+            "txt": num_samples * [txt],
+        }
+        batch = self.midas_trafo(batch)
+        batch["jpg"] = rearrange(batch["jpg"], 'h w c -> 1 c h w')
+        batch["jpg"] = repeat(batch["jpg"].to(device=device),
+                              "1 ... -> n ...", n=num_samples)
+        batch["midas_in"] = repeat(torch.from_numpy(batch["midas_in"][None, ...]).to(
+            device=device), "1 ... -> n ...", n=num_samples)
+        return batch
 
     def sampler_fn(
             self,
             c: torch.Tensor,
             uc: torch.Tensor,
             args,
-            model_wrap: CompVisVDenoiser,
+            model_wrap: CompVisDenoiser,
             init_latent: Optional[torch.Tensor] = None,
             t_enc: Optional[torch.Tensor] = None,
             device=torch.device("cpu")
@@ -649,11 +804,11 @@ class WebcamWidget(QtWidgets.QWidget):
                 + torch.randn([args.n_samples, *shape], device=device) * self.sigmas[0]
         )
         sampler_args = {
-            "model": self.cfg_model,
+            "model": model_wrap,
             "x": x,
             "sigmas": self.sigmas,
-            "extra_args": {"cond": self.c, "uncond": self.uc, "cond_scale": args.scale},
-            "disable": True,
+            "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
+            "disable": False,
             "callback": None,
         }
         if args.sampler in ["dpm_fast"]:
@@ -664,12 +819,12 @@ class WebcamWidget(QtWidgets.QWidget):
                     min = i.item()
 
             sampler_args = {
-                "model": self.cfg_model,
+                "model": model_wrap,
                 "x": x,
                 "sigma_min": min,
                 "sigma_max": max,
-                "extra_args": {"cond": self.c, "uncond": self.uc, "cond_scale": args.scale},
-                "disable": True,
+                "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
+                "disable": False,
                 "callback": None,
                 "n": args.steps,
                 "eta": 0.0,
@@ -683,12 +838,12 @@ class WebcamWidget(QtWidgets.QWidget):
                     min = i.item()
 
             sampler_args = {
-                "model": self.cfg_model,
+                "model": model_wrap,
                 "x": x,
                 "sigma_min": min,
                 "sigma_max": max,
-                "extra_args": {"cond": self.c, "uncond": self.uc, "cond_scale": args.scale},
-                "disable": True,
+                "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
+                "disable": False,
                 "callback": None,
                 "order": 3,
                 "rtol": 0.05,
@@ -703,10 +858,10 @@ class WebcamWidget(QtWidgets.QWidget):
 
         elif args.sampler in ["dpmpp_sde", "dpmpp_2s_a"]:
             sampler_args = {
-                "model": self.cfg_model,
+                "model": model_wrap,
                 "x": x,
                 "sigmas": self.sigmas,
-                "extra_args": {"cond": self.c, "uncond": self.uc, "cond_scale": args.scale},
+                "extra_args": {"cond": c, "uncond": uc, "cond_scale": args.scale},
                 "disable": True,
                 "callback": None,
                 "eta": 1.0,
@@ -829,7 +984,10 @@ class WebcamWidget(QtWidgets.QWidget):
             return config, version
     def switch_model(self):
         if "sd" in gs.models:
-            gs.models["sd"].to("cpu")
+            try:
+                gs.models["sd"].to("cpu")
+            except:
+                pass
             gs.models["sd"] = None
             del gs.models["sd"]
         gs.models["sd"] = None

@@ -230,7 +230,7 @@ class Outpainting:
         # self.preview_batch_outpaint()
 
         if gobig_img_path is not None:
-            tilesize = int(self.parent.widgets[self.current_widget].w.batch_upscale_tile_size.currentText())
+            tilesize = int(self.parent.widgets[self.current_widget].w.batch_upscale_tile_size.currentText()) - overlap
             upscale_factor = self.parent.widgets[self.current_widget].w.batch_upscale_factor.value()
             pil_image = Image.open(gobig_img_path)
             width, height = pil_image.size
@@ -241,7 +241,12 @@ class Outpainting:
             pil_image = pil_image.resize((target_w, target_h),Image.Resampling.LANCZOS).convert("RGBA")
             qimage = ImageQt(pil_image)
             chops_x = int(qimage.width() / self.parent.canvas.canvas.w) + 1
-            chops_y = int(qimage.width() / self.parent.canvas.canvas.h)
+            chops_y = int(qimage.height() / self.parent.canvas.canvas.h) + 1
+            chops_x = int(target_w / tilesize) + 1
+            chops_y = int(target_h / tilesize) #+ 1
+            print('chops_x, chops_y', chops_x, chops_y)
+            print('chops_y claculated size',chops_y * tilesize)
+            print('chops_x claculated size',chops_x * tilesize)
             self.parent.widgets[self.current_widget].w.rect_overlap.setValue(overlap)
             self.preview_batch_outpaint(chops_x=chops_x, chops_y=chops_y)
 
@@ -264,7 +269,7 @@ class Outpainting:
             n = int(i)
             prompt_series[n] = prompt
         animation_prompts = prompt_series.ffill().bfill()
-        print(animation_prompts)
+        #print(animation_prompts)
         x = 0
         for items in self.parent.canvas.canvas.tempbatch:
             if type(items) == list:
@@ -289,7 +294,7 @@ class Outpainting:
                     self.parent.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image,
                                                      render_index=index, order=item["order"],
                                                      params=copy.deepcopy(rparams))
-                    print(animation_prompts[x])
+                    #print(animation_prompts[x])
                     if rparams.seed_behavior == 'iter':
                         rparams.seed += 1
                     self.wait_parent_busy()
@@ -464,11 +469,12 @@ class Outpainting:
             self.parent.canvas.canvas.cols = chops_x
             self.parent.canvas.canvas.rows = chops_y
 
-        print('self.parent.canvas.canvas.cols',self.parent.canvas.canvas.cols)
-        print('self.parent.canvas.canvas.rows',self.parent.canvas.canvas.rows)
+        #print('self.parent.canvas.canvas.cols',self.parent.canvas.canvas.cols)
+        #print('self.parent.canvas.canvas.rows',self.parent.canvas.canvas.rows)
 
         self.parent.canvas.canvas.offset = self.parent.widgets[self.current_widget].w.rect_overlap.value()
         self.parent.canvas.canvas.maskoffset = self.parent.widgets[self.current_widget].w.mask_offset.value()
+
         randomize = self.parent.widgets[self.current_widget].w.randomize.isChecked()
         spiral = self.parent.widgets[self.current_widget].w.spiral.isChecked()
         reverse = self.parent.widgets[self.current_widget].w.reverse.isChecked()

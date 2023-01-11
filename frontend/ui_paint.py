@@ -583,8 +583,8 @@ class Canvas(QGraphicsView):
 
     @Slot()
     def create_tempBatch(self, prompts, keyframes, startOffsetX=0, startOffsetY=0, randomize = False):
-        print('self.cols', self.cols)
-        print('self.rows', self.rows)
+        #print('self.cols', self.cols)
+        #print('self.rows', self.rows)
         self.rows = self.rows + 1
         self.cols = self.cols + 1
         self.first_image = True
@@ -617,10 +617,10 @@ class Canvas(QGraphicsView):
             row = row + 1
             y = (y + self.h - self.offset + (random.randint(-50, 50))) if randomize else (y + self.h - self.offset) #
 
-            print('y', y)
-            print('compare to', self.pixmap.height() - ((self.rows -1) * self.offset))
-            print('self.offset', self.offset)
-            print('self.pixmap.height()', self.pixmap.height())
+            #print('y', y)
+            #print('compare to', self.pixmap.height() - ((self.rows -1) * self.offset))
+            #print('self.offset', self.offset)
+            #print('self.pixmap.height()', self.pixmap.height())
             if y >= self.pixmap.height():
                 print('y to big', y)
                 row = self.rows+1
@@ -650,9 +650,9 @@ class Canvas(QGraphicsView):
             thiscol.append(batch)
             self.counter = self.counter + 1
             col = col + 1
-            print('x', x)
-            print('self.pixmap.width()', self.pixmap.width())
-            if x >= self.pixmap.width():
+            #print('x', x)
+            #print('self.pixmap.width()', self.pixmap.width())
+            if x >= self.pixmap.width()+512:
                 print('x to big', x)
                 col = cols
         self.tempbatch.append(thiscol)
@@ -751,7 +751,7 @@ class Canvas(QGraphicsView):
             if params == None:
                 params = self.parent.parent.sessionparams.update_params()
             rect[uid] = Rectangle(self, prompt, x, y, self.w, self.h, uid, order = order, image=image, render_index=None, params=copy.deepcopy(params))
-            print(f"adding rect with seed {params.seed}")
+            #print(f"adding rect with seed {params.seed}")
             self.selected_item = uid
             if self.rectlist == []:
                 self.txt2img = True
@@ -803,7 +803,7 @@ class Canvas(QGraphicsView):
             if params == None:
                 params = self.parent.parent.sessionparams.update_params()
             rect[uid] = Rectangle(self, prompt, x, y, self.w, self.h, uid, order = order, image=image, render_index=None, params=copy.deepcopy(params))
-            print(f"adding rect with seed {params.seed}")
+            #print(f"adding rect with seed {params.seed}")
             self.selected_item = uid
             if self.rectlist == []:
                 self.txt2img = True

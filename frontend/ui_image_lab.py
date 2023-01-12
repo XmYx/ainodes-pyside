@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 from PIL import Image
 from PySide6 import QtUiTools, QtCore, QtWidgets, QtGui
-from PySide6.QtCore import QObject, QFile, Signal
+from PySide6.QtCore import QObject, QFile, Signal, Slot
 from PySide6.QtWidgets import QFileDialog
 
 from backend.modelloader import load_upscaler
@@ -83,8 +83,9 @@ class Callbacks(QObject):
 
 class ImageLab():  # for signaling, could be a QWidget  too
 
-    def __init__(self):
+    def __init__(self, parent):
         super().__init__()
+        self.parent = parent
         self.signals = Callbacks()
         self.imageLab = ImageLab_ui()
         self.dropWidget = DropListView()
@@ -108,6 +109,67 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.imageLab.w.run_volta_accel.clicked.connect(self.signal_run_volta_accel)
         self.imageLab.w.upscale_20.clicked.connect(self.run_upscale_20)
 
+
+
+    @Slot()
+    def run_upscale_20_thread(self):
+        self.parent.run_as_thread(self.run_upscale_20)
+
+
+    @Slot()
+    def run_volta_accel_thread(self):
+        self.parent.run_as_thread(self.run_volta_accel)
+
+
+    @Slot()
+    def run_interrogation_thread(self):
+        self.parent.run_as_thread(self.run_interrogation)
+
+    @Slot()
+    def ebl_model_merge_start(self):
+        self.parent.run_as_thread(self.ebl_model_merge_start)
+
+
+    @Slot()
+    def run_aestetic_prediction_thread(self):
+        self.parent.run_as_thread(self.run_aestetic_prediction)
+
+
+    @Slot()
+    def run_interrogation_thread(self):
+        self.parent.run_as_thread(self.run_interrogation)
+
+
+    @Slot()
+    def img_to_text_start(self):
+        self.parent.run_as_thread(self.run_img2txt)
+
+
+    @Slot()
+    def watermark_start(self):
+        self.parent.run_as_thread(self.run_watermark)
+
+
+    @Slot()
+    def model_merge_start(self):
+        self.parent.run_as_thread(self.model_merge_start)
+
+
+
+    @Slot()
+    def upscale_start(self):
+        self.parent.signals.setStatusBar.emit("Upscale started...")
+        self.upscale_thread()
+
+    def upscale_stop(self):
+        self.parent.signals.setStatusBar.emit("Upscale finished...")
+
+    def upscale_count(self, num):
+        self.parent.signals.setStatusBar.emit(f"Upscaled {str(num)} image(s)...")
+
+    @Slot()
+    def upscale_thread(self):
+        self.parent.run_as_thread(self.run_upscale)
 
 
     def run_upscale_20(self, progress_callback=False):

@@ -49,6 +49,15 @@ class Deforum_UI(QObject):
         self.deforum_six = DeforumSix(self)
         self.signals = Callbacks()
         #self.deforum_six = DeforumSix()
+
+    def deforum_six_txt2img_thread(self):
+        self.update = 0
+
+        self.parent.params = self.parent.sessionparams.update_params()
+        self.parent.sessionparams.add_state_to_history()
+        # Prepare next rectangle, widen canvas:
+        self.parent.run_as_thread(self.run_deforum_six_txt2img)
+
     def run(self):
         params = self.parent.sessionparams.update_params()
         ##print(f"updated parameters to: {params}")

@@ -75,6 +75,9 @@ class DeforumSix:
         self.full_precision = False
         self.prev_seamless = False
 
+
+
+
     def load_low_memory(self):
         if "model" not in gs.models:
             config = "optimizedSD/v1-inference.yaml"
@@ -400,7 +403,16 @@ class DeforumSix:
         gs.models["sd"].linear_decode = make_linear_decode(autoencoder_version, self.device)
         # return model
 
-    def load_inpaint_model(self):
+    def load_inpaint_model(self, modelname):
+
+        """if inpaint in model name: force inpaint
+        else
+        try load normal
+        except error
+            load inpaint"""
+
+
+
         if "sd" in gs.models:
             gs.models["sd"].to('cpu')
             del gs.models["sd"]
@@ -1077,9 +1089,10 @@ class DeforumSix:
 
         elif with_inpaint == True:
             torch_gc()
-            if "inpaint" not in gs.models:
-                self.load_inpaint_model()
-            sampler = DDIMSampler(gs.models["inpaint"])
+            if "sd" not in gs.models:
+                #self.load_inpaint_model()
+                self.load_model_from_config()
+            sampler = DDIMSampler(gs.models["sd"])
             image_guide = image_path_to_torch(init_image, self.device)
             [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(self.device, blend_mask,
                                                                                             blur=mask_blur,
@@ -1159,16 +1172,16 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, mask_
         with torch.autocast("cuda"):
             batch = make_batch_sd(image, mask, txt=prompt, device=device, num_samples=num_samples)
 
-            c = gs.models["inpaint"].cond_stage_model.encode(batch["txt"])
+            c = gs.models["sd"].cond_stage_model.encode(batch["txt"])
 
             c_cat = list()
-            for ck in gs.models["inpaint"].concat_keys:
+            for ck in gs.models["sd"].concat_keys:
                 cc = batch[ck].float()
-                if ck != gs.models["inpaint"].masked_image_key:
+                if ck != gs.models["sd"].masked_image_key:
                     bchw = [num_samples, 4, h // 8, w // 8]
                     cc = torch.nn.functional.interpolate(cc, size=bchw[-2:])
                 else:
-                    cc = gs.models["inpaint"].get_first_stage_encoding(gs.models["inpaint"].encode_first_stage(cc))
+                    cc = gs.models["sd"].get_first_stage_encoding(gs.models["sd"].encode_first_stage(cc))
                 c_cat.append(cc)
             c_cat = torch.cat(c_cat, dim=1)
 
@@ -1176,12 +1189,12 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, mask_
             cond = {"c_concat": [c_cat], "c_crossattn": [c]}
 
             # uncond cond
-            uc_cross = gs.models["inpaint"].get_unconditional_conditioning(num_samples, "")
+            uc_cross = gs.models["sd"].get_unconditional_conditioning(num_samples, "")
             uc_full = {"c_concat": [c_cat], "c_crossattn": [uc_cross]}
 
             # gs.models["inpaint"].cond_stage_model.to("cpu")
             # gs.models["inpaint"].model.to(device)
-            shape = [gs.models["inpaint"].channels, h // 8, w // 8]
+            shape = [gs.models["sd"].channels, h // 8, w // 8]
             samples_cfg, intermediates = sampler.sample(
                 ddim_steps,
                 num_samples,
@@ -1195,7 +1208,7 @@ def inpaint(sampler, image, mask, prompt, seed, scale, ddim_steps, device, mask_
                 img_callback=callback,
             )
             x_samples = encoded_to_torch_image(
-                gs.models["inpaint"], samples_cfg)  # [1, 3, 512, 512]
+                gs.models["sd"], samples_cfg)  # [1, 3, 512, 512]
             all_samples = []
             if masked_image_for_blend is not None:
                 x_samples = mask_for_reconstruction * x_samples + masked_image_for_blend

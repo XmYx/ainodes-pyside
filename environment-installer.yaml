@@ -10,4 +10,4 @@ dependencies:
   - torchvision=0.13.1
   - numpy=1.23.1
   - pip:
-        - PySide6
+        - PySide6=6.3.2

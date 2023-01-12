@@ -36,31 +36,59 @@ class PromptFetcher_UI:
         self.signals = Callbacks()
         self.connections()
 
-
     def connections(self):
         self.prompt_fetcher.w.getPrompts.clicked.connect(self.run_get_lexica_prompts)
         self.prompt_fetcher.w.getKreaPrompts.clicked.connect(self.run_get_krea_prompts)
         self.prompt_fetcher.w.aiPrompt.clicked.connect(self.run_ai_prompt)
-        self.prompt_fetcher.w.usePrompt.clicked.connect(self.parent.use_prompt)
-        self.prompt_fetcher.w.dreamPrompt.clicked.connect(self.parent.dream_prompt)
+        self.prompt_fetcher.w.usePrompt.clicked.connect(self.use_prompt)
+        self.prompt_fetcher.w.dreamPrompt.clicked.connect(self.dream_prompt)
         self.prompt_fetcher.w.img2prompt.clicked.connect(self.image_to_prompt)
 
+    @Slot()
+    def dream_prompt(self):
+        prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
+        if prompt == '':
+            prompt = 'No prompt selected, please select the prompt you want to use'
+
+        self.parent.widgets[self.parent.current_widget].w.prompts.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
+        self.parent.task_switcher()
+
+    @Slot()
+    def use_prompt(self):
+        prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
+        self.parent.widgets[self.parent.current_widget].w.prompts.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
+
+    @Slot()
+    def image_to_prompt_thread(self):
+        self.parent.run_as_thread(self.get_img_to_prompt)
+
+    @Slot()
+    def set_lexica_prompts(self, prompts):
+        self.prompt_fetcher.w.output.setPlainText(prompts)
+
+    @Slot()
+    def get_lexica_prompts_thread(self):
+        self.parent.run_as_thread(self.get_lexica_prompts)
+
+    @Slot()
+    def get_krea_prompts_thread(self):
+        self.parent.run_as_thread(self.get_krea_prompts)
+
+    @Slot()
     def run_get_lexica_prompts(self):
         self.signals.get_lexica_prompts.emit()
 
+    @Slot()
     def run_get_krea_prompts(self):
         self.signals.get_krea_prompts.emit()
 
+    @Slot()
     def run_ai_prompt(self):
         self.signals.run_ai_prompt.emit()
 
     def image_to_prompt(self):
         filename = list(QFileDialog.getOpenFileName(caption='Load Input Image', filter='Images (*.png *.jpg)'))
-        filename = filename[0]
-        pixmap = QPixmap(filename)
-        #self.parent.preview_init_image.w.label.setPixmap(pixmap)
-        #self.parent.preview_init_image.w.dockWidget.show()
-        self.prompt_image = filename
+        self.prompt_image = filename[0]
         self.signals.run_img_to_prompt.emit()
 
     def get_img_to_prompt(self, progress_callback=False):
@@ -73,17 +101,14 @@ class PromptFetcher_UI:
         self.prompt_fetcher.w.output.setPlainText(str(image_filename))
 
     @Slot()
-    def set_lexica_prompts(self, prompts):
-        self.prompt_fetcher.w.output.setPlainText(prompts)
-
-    @Slot()
     def set_krea_prompts(self, prompts):
+        if prompts == '':
+            prompts = 'Nothing was found'
         self.prompt_fetcher.w.output.setPlainText(prompts)
 
     def set_ai_prompt(self, txt):
         self.prompt_fetcher.w.output.setPlainText(txt)
         self.parent.signals.setStatusBar.emit("Ai Prompt finished...")
-
 
     def get_lexica_prompts(self, progress_callback=False):
         out_text = ''

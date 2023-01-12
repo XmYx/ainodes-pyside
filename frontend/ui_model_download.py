@@ -7,7 +7,7 @@ import urllib.request
 import urllib.parse
 
 from PySide6 import QtUiTools, QtNetwork, QtCore
-from PySide6.QtCore import QObject, QFile, Signal
+from PySide6.QtCore import QObject, QFile, Signal, Slot
 from backend.poor_mans_wget import wget_progress, wget_headers
 from backend.sqlite import model_db_civitai
 from backend.singleton import singleton
@@ -34,7 +34,7 @@ class Callbacks(QObject):
     succeeded = Signal()
     # signal to push the list of preview images to be shownon canvas
     show_model_preview_images = Signal(dict)
-
+    set_download_percent = Signal(int)
 
 
 class ModelDownload():
@@ -52,13 +52,19 @@ class ModelDownload():
         self.civit_ai_api = model_db_civitai.civit_ai_api()
 
 
+    def model_download_progress_callback_signal(self, percent):
+        self.model_download.w.dl_progress.setValue(percent)
+
+    @Slot()
+    def download_model_thread(self):
+        self.parent.run_as_thread(self.download_model)
+
+    def model_download_progress_callback(self, percent):
+        self.signals.set_download_percent.emit(percent)
 
     def maintain_custom_models(self):
         self.civit_ai_api.civitai_start_model_update()
         #self.civit_ai_api.signals.civitai_start_model_update.emit()
-
-    def civitai_model_data_update(self):
-        self.civit_ai_api.get_model_list()
 
     def signal_download_model(self):
         self.signals.startDownload.emit()
@@ -260,11 +266,11 @@ NSFW: {model_info['item']['nsfw']}
             chunk_size = 8192
 
         try:
-            wget_progress(url=model_info['model']['downloadUrl'], filename=model_outpath, length=length, chunk_size=chunk_size, callback=self.parent.model_download_progress_callback)
-            self.parent.model_download_progress_callback(100)
+            wget_progress(url=model_info['model']['downloadUrl'], filename=model_outpath, length=length, chunk_size=chunk_size, callback=self.model_download_progress_callback)
+            self.model_download_progress_callback(100)
         except Exception as e:
             print('Download failed: ', e)
-            self.parent.model_download_progress_callback(0)
+            self.model_download_progress_callback(0)
 
         self.model_download.w.download_button.setEnabled(True)
         #self.do_download(model_info['model']['downloadUrl'],model_outpath)

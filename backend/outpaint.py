@@ -1,5 +1,4 @@
 import copy
-import math
 import random
 import time
 
@@ -8,9 +7,8 @@ import pandas as pd
 from PIL import Image, ImageDraw
 from PIL.ImageQt import ImageQt
 from PySide6 import QtCore
-from PySide6.QtCore import Slot, QRect, Signal, QObject, QThread, QMetaObject, Q_ARG
+from PySide6.QtCore import Slot, QRect, Signal, QObject
 from PySide6.QtGui import QPixmap, QIcon, QImage, QPainter, Qt
-
 from PySide6.QtWidgets import QListWidgetItem
 
 from backend.singleton import singleton
@@ -31,7 +29,37 @@ class Outpainting:
         self.parent = parent
         self.current_widget = parent.current_widget
         self.signals = mySignals()
+        self.tile_size = 512
 
+
+    @Slot(str)
+    def run_create_outpaint_img2img_batch(self, input=None):
+        if input != False:
+            data = input
+        else:
+            data = self.parent.getfile()
+        self.create_outpaint_batch(gobig_img_path=data)
+
+    @Slot()
+    def run_hires_batch_thread(self):
+        self.parent.run_as_thread(self.run_hires_batch)
+
+    @Slot()
+    def run_prepared_outpaint_batch_thread(self):
+        if self.parent.canvas.canvas.rectlist == []:
+            self.create_outpaint_batch()
+        self.parent.run_as_thread(self.run_prepared_outpaint_batch)
+
+    @Slot()
+    def preview_batch_outpaint_thread(self):
+        self.preview_batch_outpaint()
+        #worker = Worker(self.outpaint.preview_batch_outpaint)
+        #self.threadpool.start(worker)
+
+    @Slot()
+    def prepare_batch_outpaint_thread(self):
+        #self.outpaint.run_batch_outpaint()
+        self.parent.run_as_thread(self.run_batch_outpaint)
 
     def outpaint_offset_signal(self):
 
@@ -39,16 +67,16 @@ class Outpainting:
         self.parent.canvas.canvas.set_offset(value)
 
 
-    @Slot()
+
     def update_outpaint_parameters(self):
+        print('update outpaint')
         W = self.parent.widgets[self.current_widget].w.W.value()
         H = self.parent.widgets[self.current_widget].w.H.value()
         # W, H = map(lambda x: x - x % 64, (W, H))
         self.parent.widgets[self.current_widget].w.W.setValue(W)
         self.parent.widgets[self.current_widget].w.H.setValue(H)
 
-        self.parent.canvas.canvas.w = W
-        self.parent.canvas.canvas.h = H
+
 
     def get_params(self):
         params = self.parent.sessionparams.update_params()
@@ -203,23 +231,9 @@ class Outpainting:
         self.parent.canvas.canvas.update()
 
 
-    def thread_save_add_rect(self, items, image, index , params):
-        data_object = {
-            'prompt':items["prompt"],
-            'x':items['x'],
-            'y':items['y'],
-            'image':image,
-            'render_index':index,
-            'order':items["order"],
-            'params':copy.deepcopy(params)
-        }
-
-        QMetaObject.invokeMethod(self.parent.canvas.canvas, "addrect_atpos_object", Qt.QueuedConnection,Q_ARG(QObject, data_object))
-
-
 
     def create_outpaint_batch(self, gobig_img_path=None, progress_callback=False):
-        tilesize = 512
+        tilesize = self.tile_size
         self.parent.callbackbusy = True
         self.parent.busy = False
         self.parent.params = self.parent.sessionparams.update_params()
@@ -230,7 +244,7 @@ class Outpainting:
         # self.preview_batch_outpaint()
 
         if gobig_img_path is not None:
-            tilesize = int(self.parent.widgets[self.current_widget].w.batch_upscale_tile_size.currentText()) - overlap
+            overlap_tilesize = self.tile_size - overlap
             upscale_factor = self.parent.widgets[self.current_widget].w.batch_upscale_factor.value()
             pil_image = Image.open(gobig_img_path)
             width, height = pil_image.size
@@ -242,11 +256,11 @@ class Outpainting:
             qimage = ImageQt(pil_image)
             chops_x = int(qimage.width() / self.parent.canvas.canvas.w) + 1
             chops_y = int(qimage.height() / self.parent.canvas.canvas.h) + 1
-            chops_x = int(target_w / tilesize) + 1
-            chops_y = int(target_h / tilesize) #+ 1
+            chops_x = int(target_w / overlap_tilesize) + 1
+            chops_y = int(target_h / overlap_tilesize) #+ 1
             print('chops_x, chops_y', chops_x, chops_y)
-            print('chops_y claculated size',chops_y * tilesize)
-            print('chops_x claculated size',chops_x * tilesize)
+            print('chops_y claculated size',chops_y * overlap_tilesize)
+            print('chops_x claculated size',chops_x * overlap_tilesize)
             self.parent.widgets[self.current_widget].w.rect_overlap.setValue(overlap)
             self.preview_batch_outpaint(chops_x=chops_x, chops_y=chops_y)
 
@@ -271,6 +285,7 @@ class Outpainting:
         animation_prompts = prompt_series.ffill().bfill()
         #print(animation_prompts)
         x = 0
+        print(self.parent.canvas.canvas.tempbatch)
         for items in self.parent.canvas.canvas.tempbatch:
             if type(items) == list:
                 for item in items:
@@ -330,6 +345,7 @@ class Outpainting:
                 x += 1
         self.parent.callbackbusy = False
         print('15 redraw')
+        #self.parent.canvas.canvas.newimage = True
         self.parent.canvas.canvas.redraw()
 
     def run_hires_batch(self, progress_callback=None):
@@ -460,17 +476,31 @@ class Outpainting:
 
             print(f"All time wasted: {self.sleepytime} seconds.")
 
+    def resize_canvas(self):
+        tilesize = 512
+        overlap = (self.parent.widgets[self.current_widget].w.rect_overlap.value())
+        overlap = overlap - (overlap / 3)
 
-    def preview_batch_outpaint(self, chops_x=None, chops_y=None):
+        target_h = (self.parent.widgets[self.current_widget].w.batch_rows.value() * (tilesize - overlap)) + (2 * self.parent.widgets[self.current_widget].w.start_offset_x.value()) + overlap
+        target_w = (self.parent.widgets[self.current_widget].w.batch_columns.value() * (tilesize - overlap)) + (2 * self.parent.widgets[self.current_widget].w.start_offset_y.value()) + overlap
+        print('targetsize = ', target_w, target_h)
+        self.parent.canvas.H.setValue(int(target_h))
+        self.parent.canvas.W.setValue(int(target_w))
+        self.parent.canvas.canvas.change_resolution()
+
+    def preview_batch_outpaint(self, chops_x=None, chops_y=None, progress_callback=None):
+        # we resize canvas if preview batch
+        # no resize for img2img
+        if chops_x is None:
+            self.resize_canvas()
+            self.parent.canvas.canvas.scene.update()
+
         if chops_x is None:
             self.parent.canvas.canvas.cols = self.parent.widgets[self.current_widget].w.batch_columns.value()
-            self.parent.canvas.canvas.rows = self.parent.widgets[self.current_widget].w.batch_rows.value()
+            self.parent.canvas.canvas.rows = self.parent.widgets[self.current_widget].w.batch_rows.value() -1
         else:
             self.parent.canvas.canvas.cols = chops_x
             self.parent.canvas.canvas.rows = chops_y
-
-        #print('self.parent.canvas.canvas.cols',self.parent.canvas.canvas.cols)
-        #print('self.parent.canvas.canvas.rows',self.parent.canvas.canvas.rows)
 
         self.parent.canvas.canvas.offset = self.parent.widgets[self.current_widget].w.rect_overlap.value()
         self.parent.canvas.canvas.maskoffset = self.parent.widgets[self.current_widget].w.mask_offset.value()
@@ -488,15 +518,13 @@ class Outpainting:
         templist = []
         if spiral:
             print(self.parent.canvas.canvas.tempbatch)
-            # self.parent.canvas.canvas.tempbatch = random_path(self.parent.canvas.canvas.tempbatch, self.parent.canvas.canvas.cols)
             self.parent.canvas.canvas.tempbatch = spiralOrder(self.parent.canvas.canvas.tempbatch)
         if reverse:
             self.parent.canvas.canvas.tempbatch.reverse()
         # print(len(self.parent.canvas.canvas.tempbatch))
         self.tempsize_int = self.parent.canvas.canvas.cols * self.parent.canvas.canvas.rows
-
         self.parent.canvas.canvas.draw_tempBatch(self.parent.canvas.canvas.tempbatch)
-        self.parent.canvas.update()
+
 
     def outpaint_rect_overlap(self):
         self.parent.canvas.canvas.rectPreview = self.parent.widgets[self.current_widget].w.enable_overlap.isChecked()

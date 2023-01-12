@@ -70,7 +70,7 @@ class Callbacks(QObject):
     add_image_to_thumbnail_signal = Signal(str)
     setStatusBar = Signal(str)
     vid2vid_one_percent = Signal(int)
-    set_download_percent = Signal(int)
+
 
 
 
@@ -94,8 +94,7 @@ class MainWindow(QMainWindow):
         self.current_widget = 'unicontrol'
         self.widgets[self.current_widget] = UniControl(self)
         self.outpaint = Outpainting(self)
-        self.outpaint.signals.add_rect.connect(self.outpaint.add_rect)
-        self.outpaint.signals.canvas_update.connect(self.outpaint.canvas_update)
+
         self.load_last_prompt()
 
         self.sessionparams = SessionParams(self)
@@ -129,7 +128,7 @@ class MainWindow(QMainWindow):
         self.prompt_fetcher = FetchPrompts()
         self.prompt_fetcher_ui = PromptFetcher_UI(self)
 
-        self.image_lab = ImageLab()
+        self.image_lab = ImageLab(self)
         self.image_lab_ui = self.image_lab.imageLab
         self.model_download = ModelDownload(self)
         self.model_download_ui = self.model_download.model_download
@@ -199,7 +198,7 @@ class MainWindow(QMainWindow):
 
     def selftest(self):  # TODO Lets extend this function with everything we have and has to work
 
-        self.canvas.canvas.reset
+        self.canvas.canvas.reset()
         self.params = self.sessionparams.update_params()
         gs.stop_all = False
         self.task_switcher()
@@ -235,77 +234,79 @@ class MainWindow(QMainWindow):
     def connections(self):
         self.deforum_ui.signals.txt2img_image_cb.connect(self.image_preview_func)
         self.deforum_ui.signals.deforum_step.connect(self.tensor_preview_schedule)
-        self.canvas.W.valueChanged.connect(self.canvas.canvas.change_resolution)
-        self.canvas.H.valueChanged.connect(self.canvas.canvas.change_resolution)
-
-        self.canvas.canvas.signals.update_selected.connect(self.outpaint.show_outpaint_details)
-        self.canvas.canvas.signals.update_params.connect(self.outpaint.create_params)
-        self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
-        self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_six_txt2img_thread)
-
-        # self.canvas.canvas.signals.update_selected.connect(self.show_outpaint_details)
-        # self.canvas.canvas.signals.update_params.connect(self.create_params)
-        # self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
-        self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_six_txt2img_thread)
-
         self.widgets[self.current_widget].w.dream.clicked.connect(self.task_switcher)
-        self.widgets[self.current_widget].w.H.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
-        self.widgets[self.current_widget].w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
         self.widgets[self.current_widget].w.lucky.clicked.connect(self.show_default)
 
+        #canvas connections
+        self.canvas.W.valueChanged.connect(self.canvas.canvas.change_resolution)
+        self.canvas.H.valueChanged.connect(self.canvas.canvas.change_resolution)
+        self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
+        self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_ui.deforum_six_txt2img_thread)
+        self.widgets[self.current_widget].w.H.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
+        self.widgets[self.current_widget].w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
+
+        #outpaint connections
         self.widgets[self.current_widget].w.redo.clicked.connect(self.outpaint.redo_current_outpaint)
         self.widgets[self.current_widget].w.delete_2.clicked.connect(self.outpaint.delete_outpaint_frame)
-        self.widgets[self.current_widget].w.preview_batch.clicked.connect(self.outpaint.preview_batch_outpaint)
-        self.widgets[self.current_widget].w.resize_canvas.clicked.connect(self.resize_canvas)
-        self.widgets[self.current_widget].w.prepare_batch.clicked.connect(self.prepare_batch_outpaint_thread)
-        self.widgets[self.current_widget].w.run_batch.clicked.connect(self.run_prepared_outpaint_batch_thread)
-        self.widgets[self.current_widget].w.run_hires.clicked.connect(self.run_hires_batch_thread)
-        self.widgets[self.current_widget].w.prep_hires.clicked.connect(self.run_create_outpaint_img2img_batch)
+        self.widgets[self.current_widget].w.preview_batch.clicked.connect(self.outpaint.preview_batch_outpaint_thread)
+        self.widgets[self.current_widget].w.resize_canvas.clicked.connect(self.outpaint.resize_canvas)
+        self.widgets[self.current_widget].w.prepare_batch.clicked.connect(self.outpaint.prepare_batch_outpaint_thread)
+        self.widgets[self.current_widget].w.run_batch.clicked.connect(self.outpaint.run_prepared_outpaint_batch_thread)
+        self.widgets[self.current_widget].w.run_hires.clicked.connect(self.outpaint.run_hires_batch_thread)
+        self.widgets[self.current_widget].w.prep_hires.clicked.connect(self.outpaint.run_create_outpaint_img2img_batch)
         self.widgets[self.current_widget].w.update_params.clicked.connect(self.outpaint.update_params)
+        self.widgets[self.current_widget].w.W.valueChanged.connect(self.outpaint.update_outpaint_parameters)
+        self.widgets[self.current_widget].w.H.valueChanged.connect(self.outpaint.update_outpaint_parameters)
+        self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.outpaint.outpaint_offset_signal)
+        # self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.widgets[self.current_widget].w.mask_offset.value())))  # todo does this work?
+        self.widgets[self.current_widget].w.rect_overlap.valueChanged.connect(self.outpaint.outpaint_rect_overlap)
+        self.thumbs.w.thumbnails.itemClicked.connect(self.outpaint.select_outpaint_image)
+        self.outpaint.signals.add_rect.connect(self.outpaint.add_rect)
+        self.outpaint.signals.canvas_update.connect(self.outpaint.canvas_update)
+        self.canvas.canvas.signals.update_selected.connect(self.outpaint.show_outpaint_details)
+        self.canvas.canvas.signals.update_params.connect(self.outpaint.create_params)
+
         self.widgets[self.current_widget].w.load_model.clicked.connect(
             self.deforum_ui.deforum_six.load_model_from_config)
         self.widgets[self.current_widget].w.load_inpaint_model.clicked.connect(
             self.deforum_ui.deforum_six.load_inpaint_model)
         self.widgets[self.current_widget].w.cleanup_memory.clicked.connect(model_killer)
 
-        self.widgets[self.current_widget].w.W.valueChanged.connect(self.outpaint.update_outpaint_parameters)
-        self.widgets[self.current_widget].w.H.valueChanged.connect(self.outpaint.update_outpaint_parameters)
-        self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.outpaint.outpaint_offset_signal)
-        # self.widgets[self.current_widget].w.mask_offset.valueChanged.connect(self.canvas.canvas.set_offset(int(self.widgets[self.current_widget].w.mask_offset.value())))  # todo does this work?
-        self.widgets[self.current_widget].w.rect_overlap.valueChanged.connect(self.outpaint.outpaint_rect_overlap)
+
         self.widgets[self.current_widget].w.selected_model.currentIndexChanged.connect(self.select_new_model)
 
         self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
         self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
         self.animKeyEditor.w.keyButton.clicked.connect(self.addCurrentFrame)
 
-        self.image_lab.signals.upscale_start.connect(self.upscale_start)
-        self.image_lab.signals.upscale_stop.connect(self.upscale_stop)
-        self.image_lab.signals.upscale_counter.connect(self.upscale_count)
-        self.image_lab.signals.img_to_txt_start.connect(self.img_to_text_start)
-        self.image_lab.signals.watermark_start.connect(self.watermark_start)
-        self.image_lab.signals.model_merge_start.connect(self.model_merge_start)
-        self.image_lab.signals.ebl_model_merge_start.connect(self.ebl_model_merge_start)
-        self.image_lab.signals.run_aestetic_prediction.connect(self.run_aestetic_prediction_thread)
-        self.image_lab.signals.run_interrogation.connect(self.run_interrogation_thread)
-        self.image_lab.signals.run_volta_accel.connect(self.run_volta_accel_thread)
-        self.image_lab.signals.run_upscale_20.connect(self.run_upscale_20_thread)
+        #image labs connections
+        self.image_lab.signals.upscale_start.connect(self.image_lab.upscale_start)
+        self.image_lab.signals.upscale_stop.connect(self.image_lab.upscale_stop)
+        self.image_lab.signals.upscale_counter.connect(self.image_lab.upscale_count)
+        self.image_lab.signals.img_to_txt_start.connect(self.image_lab.img_to_text_start)
+        self.image_lab.signals.watermark_start.connect(self.image_lab.watermark_start)
+        self.image_lab.signals.model_merge_start.connect(self.image_lab.model_merge_start)
+        self.image_lab.signals.ebl_model_merge_start.connect(self.image_lab.ebl_model_merge_start)
+        self.image_lab.signals.run_aestetic_prediction.connect(self.image_lab.run_aestetic_prediction_thread)
+        self.image_lab.signals.run_interrogation.connect(self.image_lab.run_interrogation_thread)
+        self.image_lab.signals.run_volta_accel.connect(self.image_lab.run_volta_accel_thread)
+        self.image_lab.signals.run_upscale_20.connect(self.image_lab.run_upscale_20_thread)
 
         self.prompt_fetcher_ui.signals.run_ai_prompt.connect(self.ai_prompt_thread)
-        self.prompt_fetcher_ui.signals.run_img_to_prompt.connect(self.image_to_prompt_thread)
-        self.prompt_fetcher_ui.signals.get_lexica_prompts.connect(self.get_lexica_prompts_thread)
+        self.prompt_fetcher_ui.signals.run_img_to_prompt.connect(self.prompt_fetcher_ui.image_to_prompt_thread)
+        self.prompt_fetcher_ui.signals.get_lexica_prompts.connect(self.prompt_fetcher_ui.get_lexica_prompts_thread)
         self.prompt_fetcher_ui.signals.got_image_to_prompt.connect(self.prompt_fetcher_ui.set_img_to_prompt_text)
         self.prompt_fetcher_ui.signals.got_lexica_prompts.connect(self.prompt_fetcher_ui.set_lexica_prompts)
-        self.prompt_fetcher_ui.signals.get_krea_prompts.connect(self.get_krea_prompts_thread)
+        self.prompt_fetcher_ui.signals.get_krea_prompts.connect(self.prompt_fetcher_ui.get_krea_prompts_thread)
         self.prompt_fetcher_ui.signals.got_krea_prompts.connect(self.prompt_fetcher_ui.set_krea_prompts)
 
-        self.model_download.signals.startDownload.connect(self.download_model_thread)
-        self.signals.set_download_percent.connect(self.model_download_progress_callback_signal)
+        self.model_download.signals.startDownload.connect(self.model_download.download_model_thread)
+        self.model_download.signals.set_download_percent.connect(self.model_download.model_download_progress_callback_signal)
 
         self.model_download.civit_ai_api.signals.civitai_no_more_models.connect(self.all_civitai_model_data_loaded_thread)
         self.model_download.civit_ai_api.signals.civitai_start_model_update.connect(self.civitai_start_model_update_thread)
         self.model_download.signals.show_model_preview_images.connect(self.show_model_preview_images)
-        self.thumbs.w.thumbnails.itemClicked.connect(self.outpaint.select_outpaint_image)
+
 
         self.system_setup.w.ok.clicked.connect(self.sessionparams.update_system_params)
         self.system_setup.w.cancel.clicked.connect(self.update_ui_from_system_params)
@@ -313,6 +314,12 @@ class MainWindow(QMainWindow):
 
         self.widgets[self.current_widget].w.sampler.currentIndexChanged.connect(self.check_karras_enabled)
         self.widgets[self.current_widget].w.hires.toggled.connect(self.set_hires_strength_visablity)
+
+        self.canvas.canvas.signals.run_redraw.connect(self.run_redraw)
+        self.canvas.canvas.signals.draw_tempRects.connect(self.draw_tempRects_signal)
+
+    def run_redraw(self):
+        self.canvas.canvas.redraw_signal()
 
     def set_hires_strength_visablity(self):
         visable = self.widgets[self.current_widget].w.hires.isChecked()
@@ -339,8 +346,11 @@ class MainWindow(QMainWindow):
         self.web_images.get_image(url)
 
     def show_web_image_on_canvas(self, image_string):
-        self.image = Image.open(BytesIO(image_string)).resize((512,512))
-        self.image_preview_func()
+        try:
+            self.image = Image.open(BytesIO(image_string)).resize((512,512))
+            self.image_preview_func()
+        except:
+            pass
 
 
     def select_new_model(self):
@@ -386,7 +396,7 @@ class MainWindow(QMainWindow):
             self.canvas.canvas.reusable_outpaint(self.canvas.canvas.selected_item)
             self.deforum_ui.deforum_outpaint_thread()
         else:
-            self.deforum_six_txt2img_thread()
+            self.deforum_ui.deforum_six_txt2img_thread()
 
     def still_mode(self):
         pass
@@ -406,118 +416,13 @@ class MainWindow(QMainWindow):
     def help_mode(self):
         pass
 
-    @Slot()
-    def run_upscale_20_thread(self):
-        worker = Worker(self.image_lab.run_upscale_20)
-        self.threadpool.start(worker)
-
-    @Slot()
-    def run_volta_accel_thread(self):
-        worker = Worker(self.image_lab.run_volta_accel)
-        self.threadpool.start(worker)
-
-    @Slot()
-    def run_interrogation_thread(self):
-        worker = Worker(self.image_lab.run_interrogation)
-        self.threadpool.start(worker)
-
-    @Slot()
-    def ai_prompt_thread(self):
-        self.aiPrompt = AiPrompt()
-        self.aiPrompt.signals.ai_prompt_ready.connect(self.prompt_fetcher_ui.set_ai_prompt)
-        self.aiPrompt.signals.status_update.connect(self.set_status_bar)
-        worker = Worker(self.aiPrompt.get_prompts, self.prompt_fetcher.w.input.toPlainText())
-        self.threadpool.start(worker)
-
-    @Slot()
-    def image_to_prompt_thread(self):
-        worker = Worker(self.prompt_fetcher_ui.get_img_to_prompt)
-        self.threadpool.start(worker)
-
-    @Slot()
-    def use_prompt(self):
-        prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
-        self.widgets[self.current_widget].w.prompts.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
-
-    @Slot()
-    def dream_prompt(self):
-        prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
-        if prompt == '':
-            prompt = 'No prompt selected, please select the prompt you want to use'
-            #print(prompt)
-
-        self.widgets[self.current_widget].w.prompts.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
-        self.task_switcher()
-
-    @Slot()
-    def get_lexica_prompts_thread(self):
-        worker = Worker(self.prompt_fetcher_ui.get_lexica_prompts)
-        self.threadpool.start(worker)
-
-    def model_download_progress_callback(self, percent):
-        self.signals.set_download_percent.emit(percent)
-
-    def model_download_progress_callback_signal(self, percent):
-        self.model_download_ui.w.dl_progress.setValue(percent)
-
-    @Slot()
-    def download_model_thread(self):
-        worker = Worker(self.model_download.download_model)
-        self.threadpool.start(worker)
-
-    @Slot()
-    def get_krea_prompts_thread(self):
-        worker = Worker(self.prompt_fetcher_ui.get_krea_prompts)
-        self.threadpool.start(worker)
 
     @Slot()
     def set_status_bar(self, txt):
         self.statusBar().showMessage(txt)
 
-    def upscale_start(self):
-        self.signals.setStatusBar.emit("Upscale started...")
-        self.upscale_thread()
 
-    def upscale_stop(self):
-        self.signals.setStatusBar.emit("Upscale finished...")
 
-    def upscale_count(self, num):
-        self.signals.setStatusBar.emit(f"Upscaled {str(num)} image(s)...")
-
-    @Slot()
-    def upscale_thread(self):
-        worker = Worker(self.image_lab.run_upscale)
-        self.threadpool.start(worker)
-
-    @Slot()
-    def img_to_text_start(self):
-        worker = Worker(self.image_lab.run_img2txt)
-        self.threadpool.start(worker)
-
-    @Slot()
-    def watermark_start(self):
-        worker = Worker(self.image_lab.run_watermark)
-        self.threadpool.start(worker)
-
-    @Slot()
-    def model_merge_start(self):
-        worker = Worker(self.image_lab.model_merge_start)
-        self.threadpool.start(worker)
-
-    @Slot()
-    def ebl_model_merge_start(self):
-        worker = Worker(self.image_lab.ebl_model_merge_start)
-        self.threadpool.start(worker)
-
-    @Slot()
-    def run_aestetic_prediction_thread(self):
-        worker = Worker(self.image_lab.run_aestetic_prediction)
-        self.threadpool.start(worker)
-
-    @Slot()
-    def run_interrogation_thread(self):
-        worker = Worker(self.image_lab.run_interrogation)
-        self.threadpool.start(worker)
 
     @Slot()
     def ai_prompt_thread(self):
@@ -527,9 +432,21 @@ class MainWindow(QMainWindow):
         worker = Worker(self.aiPrompt.get_prompts, self.prompt_fetcher.w.input.toPlainText())
         self.threadpool.start(worker)
 
+    def run_as_thread(self, fn):
+        worker = Worker(fn)
+        self.threadpool.start(worker)
+
+
+
+
+
+
     @Slot()
-    def image_to_prompt_thread(self):
-        worker = Worker(self.prompt_fetcher_ui.get_img_to_prompt)
+    def ai_prompt_thread(self):
+        self.aiPrompt = AiPrompt()
+        self.aiPrompt.signals.ai_prompt_ready.connect(self.prompt_fetcher_ui.set_ai_prompt)
+        self.aiPrompt.signals.status_update.connect(self.set_status_bar)
+        worker = Worker(self.aiPrompt.get_prompts, self.prompt_fetcher.w.input.toPlainText())
         self.threadpool.start(worker)
 
     def update_ui_from_params(self):
@@ -806,16 +723,8 @@ class MainWindow(QMainWindow):
         gs.diffusion.prompt = data
         self.widgets[self.current_widget].w.prompts.setHtml(data)
 
-    def deforum_six_txt2img_thread(self):
-        self.update = 0
-        height = self.cheight
-        # for debug
-        # self.deforum_ui.run_deforum_txt2img()
-        self.params = self.sessionparams.update_params()
-        self.sessionparams.add_state_to_history()
-        # Prepare next rectangle, widen canvas:
-        worker = Worker(self.deforum_ui.run_deforum_six_txt2img)
-        self.threadpool.start(worker)
+
+
 
     def image_preview_signal(self, image, *args, **kwargs):
         while self.callbackbusy == True:
@@ -1014,16 +923,9 @@ class MainWindow(QMainWindow):
 
         return params
 
-
-
-
-
-
-
-
-
-
-
+    @Slot(object)
+    def draw_tempRects_signal(self, values):
+        self.canvas.canvas.draw_tempRects_signal(values)
 
 
     @Slot()
@@ -1032,73 +934,6 @@ class MainWindow(QMainWindow):
 
     def sort_rects(self, e):
         return e.order
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def resize_canvas(self):
-        tilesize = 512
-        overlap = (self.widgets[self.current_widget].w.rect_overlap.value())
-        overlap = overlap - (overlap / 3)
-
-        target_h = (self.widgets[self.current_widget].w.batch_rows.value() * (tilesize - overlap)) + (2 * self.widgets[self.current_widget].w.start_offset_x.value()) + overlap
-        target_w = (self.widgets[self.current_widget].w.batch_columns.value() * (tilesize - overlap)) + (2 * self.widgets[self.current_widget].w.start_offset_y.value()) + overlap
-        print('tagetsize = ', target_w, target_h)
-        self.canvas.H.setValue(int(target_h))
-        self.canvas.W.setValue(int(target_w))
-
-
-
-
-
-    def prepare_batch_outpaint_thread(self):
-        # self.prompt.w.stopButton.clicked.connect(self.stop_processing)
-        self.stopprocessing = False
-        # self.save_last_prompt()
-        # if self.canvas.canvas.tempbatch == [] or self.canvas.canvas.tempbatch is None:
-        #    self.preview_batch_outpaint()
-        #    #self.create_outpaint_batch()
-        worker = Worker(self.outpaint.run_batch_outpaint)
-        self.threadpool.start(worker)
-
-    @Slot(str)
-    def run_create_outpaint_img2img_batch(self, input=None):
-        self.run_create_outpaint_img2img_batch_thread(input)
-
-
-    def run_create_outpaint_img2img_batch_thread(self, input=None):
-        if input != False:
-            data = input
-        else:
-            data = self.getfile()
-        self.outpaint.create_outpaint_batch(gobig_img_path=data)
-
-        #worker = Worker(self.outpaint.create_outpaint_batch, False, gobig_img_path=data)
-        #self.threadpool.start(worker)
-
-    def run_prepared_outpaint_batch_thread(self):
-        if self.canvas.canvas.rectlist == []:
-            self.outpaint.create_outpaint_batch()
-        worker = Worker(self.outpaint.run_prepared_outpaint_batch)
-        self.threadpool.start(worker)
-
-    def run_hires_batch_thread(self):
-        worker = Worker(self.outpaint.run_hires_batch)
-        self.threadpool.start(worker)
 
     def getfile(self, file_ext='', text='', button_caption='', button_type=0, title='Load', save=False):
         filter = {

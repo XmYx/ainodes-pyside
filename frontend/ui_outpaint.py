@@ -22,6 +22,7 @@ gs = singleton
 class mySignals(QObject):
     add_rect = Signal(object)
     canvas_update = Signal()
+    rect_ready_in_ui = Signal()
 
 class Outpainting:
 
@@ -30,6 +31,11 @@ class Outpainting:
         self.current_widget = parent.current_widget
         self.signals = mySignals()
         self.tile_size = 512
+        self.batch_process = None
+        self.batch_process_busy = False
+        self.batch_process_items = None
+        self.gobbig_pil_image = None
+        self.gobig_img_path = None
 
 
     @Slot(str)
@@ -212,6 +218,11 @@ class Outpainting:
         time.sleep(0.25)
         self.sleepytime += 0.25
 
+    def wait_batch_busy(self):
+        while self.batch_process_busy:
+            time.sleep(0.25)
+        self.batch_process_busy = False
+
     def wait_canvas_busy(self):
         while self.parent.canvas.canvas.busy == True:
             time.sleep(0.25)
@@ -230,12 +241,63 @@ class Outpainting:
         print('update')
         self.parent.canvas.canvas.update()
 
+    def rect_ready_in_ui(self):
+        self.batch_process_busy = False
+        self.batch_step_number += 1
+        self.next_rect_from_batch()
 
+    def next_rect_from_batch(self):
+        print('self.parent.canvas.canvas.tempbatch', self.parent.canvas.canvas.tempbatch)
+        if self.batch_process == 'create_outpaint_batch':
+            if self.batch_process_items is not None and len(self.batch_process_items) > 0:
+                item = self.batch_process_items[0]
+                del self.batch_process_items[0]
+                self.next_rect_from_batch_list(item)
+            else:
+                if self.parent.canvas.canvas.tempbatch_work is not None and len(self.parent.canvas.canvas.tempbatch_work) > 0:
+                    self.batch_process_items = self.parent.canvas.canvas.tempbatch_work[0]
+                    del self.parent.canvas.canvas.tempbatch_work[0]
+                    if type(self.batch_process_items) == dict:
+                        self.batch_process_items = [self.batch_process_items]
+                    self.next_rect_from_batch()
+                else:
+                    self.batch_process = None
+                    self.parent.canvas.canvas.redraw()
+
+    def next_rect_from_batch_list(self, item):
+        tilesize = self.tile_size
+        if self.gobig_img_path is not None:
+            rect = QRect(item['x'], item['y'], self.parent.canvas.canvas.w, self.parent.canvas.canvas.h)
+            image = self.gobbig_qimage.copy(rect)
+            index = None
+            self.hires_source = self.gobbig_pil_image
+
+        else:
+            image = None
+            index = None
+            self.hires_source = None
+
+        offset = self.parent.widgets[self.current_widget].w.mask_offset.value() + tilesize
+        self.rparams.prompts = self.animation_prompts[self.batch_step_number]
+        if self.rparams.seed_behavior == 'random':
+            self.rparams.seed = random.randint(0, 2 ** 32 - 1)
+        # print(f"seed bhavior:{rparams.seed_behavior} {rparams.seed}")
+
+        self.parent.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image,
+                                                render_index=index, order=item["order"],
+                                                params=copy.deepcopy(self.rparams))
+        #print(animation_prompts[x])
+        if self.rparams.seed_behavior == 'iter':
+            self.rparams.seed += 1
+
+        print('self.batch_step_number', self.batch_step_number)
+        self.signals.rect_ready_in_ui.emit()
 
     def create_outpaint_batch(self, gobig_img_path=None, progress_callback=False):
+        self.batch_process = 'create_outpaint_batch'
+        self.gobig_img_path = gobig_img_path
         tilesize = self.tile_size
         self.parent.callbackbusy = True
-        self.parent.busy = False
         self.parent.params = self.parent.sessionparams.update_params()
         self.parent.sessionparams.params.advanced = True
 
@@ -243,19 +305,19 @@ class Outpainting:
         overlap = self.parent.widgets[self.current_widget].w.rect_overlap.value()
         # self.preview_batch_outpaint()
 
-        if gobig_img_path is not None:
+        if self.gobig_img_path is not None:
             overlap_tilesize = self.tile_size - overlap
             upscale_factor = self.parent.widgets[self.current_widget].w.batch_upscale_factor.value()
-            pil_image = Image.open(gobig_img_path)
-            width, height = pil_image.size
+            self.gobbig_pil_image = Image.open(self.gobig_img_path)
+            width, height = self.gobbig_pil_image.size
             target_h = int(int(height) * upscale_factor)
             target_w = int(int(width) * upscale_factor)
             self.parent.canvas.H.setValue(int(target_h))
             self.parent.canvas.W.setValue(int(target_w))
-            pil_image = pil_image.resize((target_w, target_h),Image.Resampling.LANCZOS).convert("RGBA")
-            qimage = ImageQt(pil_image)
-            chops_x = int(qimage.width() / self.parent.canvas.canvas.w) + 1
-            chops_y = int(qimage.height() / self.parent.canvas.canvas.h) + 1
+            self.gobbig_pil_image = self.gobbig_pil_image.resize((target_w, target_h),Image.Resampling.LANCZOS).convert("RGBA")
+            self.gobbig_qimage = ImageQt(self.gobbig_pil_image)
+            #chops_x = int(qimage.width() / self.parent.canvas.canvas.w) + 1
+            #chops_y = int(qimage.height() / self.parent.canvas.canvas.h) + 1
             chops_x = int(target_w / overlap_tilesize) + 1
             chops_y = int(target_h / overlap_tilesize) #+ 1
             print('chops_x, chops_y', chops_x, chops_y)
@@ -265,14 +327,14 @@ class Outpainting:
             self.preview_batch_outpaint(chops_x=chops_x, chops_y=chops_y)
 
 
-        rparams = self.parent.sessionparams.update_params()
+        self.rparams = self.parent.sessionparams.update_params()
         # print(self.tempsize_int)
         prompt_series = pd.Series([np.nan for a in range(self.tempsize_int)])
         # print(prompt_series)
-        if rparams.keyframes == '':
-            rparams.keyframes = "0"
-        prom = rparams.prompts
-        key = rparams.keyframes
+        if self.rparams.keyframes == '':
+            self.rparams.keyframes = "0"
+        prom = self.rparams.prompts
+        key = self.rparams.keyframes
 
         new_prom = list(prom.split("\n"))
         new_key = list(key.split("\n"))
@@ -282,158 +344,120 @@ class Outpainting:
         for i, prompt in prompts.items():
             n = int(i)
             prompt_series[n] = prompt
-        animation_prompts = prompt_series.ffill().bfill()
-        #print(animation_prompts)
-        x = 0
-        print(self.parent.canvas.canvas.tempbatch)
-        for items in self.parent.canvas.canvas.tempbatch:
-            if type(items) == list:
-                for item in items:
+        self.animation_prompts = prompt_series.ffill().bfill()
+        self.batch_step_number = 0
+        self.parent.canvas.canvas.tempbatch_work = copy.deepcopy(self.parent.canvas.canvas.tempbatch)
+        self.next_rect_from_batch()
 
-                    if gobig_img_path is not None:
-                        rect = QRect(item['x'], item['y'], self.parent.canvas.canvas.w, self.parent.canvas.canvas.h)
-                        image = qimage.copy(rect)
-                        index = None
-                        self.hires_source = pil_image
-
-                    else:
-                        image = None
-                        index = None
-                        self.hires_source = None
-                    offset = offset + tilesize
-                    rparams.prompts = animation_prompts[x]
-                    if rparams.seed_behavior == 'random':
-                        rparams.seed = random.randint(0, 2 ** 32 - 1)
-                    # print(f"seed bhavior:{rparams.seed_behavior} {rparams.seed}")
-
-                    self.parent.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image,
-                                                     render_index=index, order=item["order"],
-                                                     params=copy.deepcopy(rparams))
-                    #print(animation_prompts[x])
-                    if rparams.seed_behavior == 'iter':
-                        rparams.seed += 1
-                    self.wait_parent_busy()
-                    x += 1
-            elif type(items) == dict:
-
-
-                if gobig_img_path is not None:
-                    rect = QRect(items['x'], items['y'], self.parent.canvas.canvas.w, self.parent.canvas.canvas.h)
-                    image = qimage.copy(rect)
-                    index = None
-                    self.hires_source = pil_image
-
-                else:
-                    image = None
-                    index = None
-                    self.hires_source = None
-                offset = offset + tilesize
-                rparams.prompts = animation_prompts[x]
-                # print(rparams.prompts)
-                if rparams.seed_behavior == 'random':
-                    rparams.seed = random.randint(0, 2 ** 32 - 1)
-
-                #self.thread_save_add_rect(items, image, index , copy.deepcopy(rparams))
-
-                self.parent.canvas.canvas.addrect_atpos(prompt=items["prompt"], x=items['x'], y=items['y'], image=image,
-                                                 render_index=index, order=items["order"],
-                                                 params=copy.deepcopy(rparams))
-
-                if rparams.seed_behavior == 'iter':
-                    rparams.seed += 1
-
-                x += 1
-        self.parent.callbackbusy = False
-        print('15 redraw')
-        #self.parent.canvas.canvas.newimage = True
+    def image_ready_in_ui(self):
+        self.batch_process_busy = False
         self.parent.canvas.canvas.redraw()
+        self.parent.render_index += 1
+        self.parent.run_as_thread(self.next_image_from_batch)
+
+
+    def next_image_from_batch(self, progress_callback=None):
+        print('next_image_from_batch',self.batch_process)
+        if self.batch_process == 'run_prepared_outpaint_batch':
+            if len(self.rectlist_work) > 0:
+                if gs.stop_all == False:
+                    print(f"running step {self.batch_step_number}")
+                    self.batch_process_busy = True
+                    self.run_outpaint_step_x()
+
+            else:
+                self.batch_process = None
+
+        if self.batch_process == 'run_hires_batch':
+            print('run next hires batch image')
+            if self.parent.render_index > 0:
+                self.betterslices.append((self.parent.image.convert('RGBA'), self.parent.canvas.canvas.rectlist[self.parent.render_index - 1].x,
+                                          self.parent.canvas.canvas.rectlist[self.parent.render_index - 1].y))
+            if len(self.parent.canvas.canvas.rectlist) > 0 and len(self.parent.canvas.canvas.rectlist) > self.parent.render_index:
+                if gs.stop_all != True:
+                    self.run_hires_step_x()
+
+            else:
+
+                og_size = (512, 512)
+                source_image = self.hires_source
+                alpha = Image.new("L", og_size, color=0xFF)
+                alpha_gradient = ImageDraw.Draw(alpha)
+                a = 0
+                i = 0
+                overlap = self.parent.widgets[self.current_widget].w.rect_overlap.value()
+                shape = (og_size, (0, 0))
+                while i < overlap:
+                    alpha_gradient.rectangle(shape, fill=a)
+                    a += 4
+                    i += 1
+                    shape = ((og_size[0] - i, og_size[1] - i), (i, i))
+                mask = Image.new("RGBA", og_size, color=0)
+                mask.putalpha(alpha)
+                finished_slices = []
+                for betterslice, x, y in self.betterslices:
+                    finished_slice = self.addalpha(betterslice, mask)
+                    finished_slices.append((finished_slice, x, y))
+                # # Once we have all our images, use grid_merge back onto the source, then save
+                final_output = self.grid_merge(
+                    source_image.convert("RGBA"), finished_slices
+                ).convert("RGBA")
+                final_output.save('output/test_hires.png')
+                # base_filename = f"{base_filename}d"
+                print(f"All time wasted: {self.sleepytime} seconds.")
+                self.hires_source = final_output
+                self.parent.deforum_ui.signals.prepare_hires_batch.emit('output/test_hires.png')
+                self.batch_process = None
+
+
 
     def run_hires_batch(self, progress_callback=None):
+        self.batch_process = 'run_hires_batch'
+        self.batch_process_busy = False
         self.parent.sessionparams.update_params()
         self.parent.sessionparams.params.advanced = True
         # multi = self.parent.widgets[self.current_widget].w.multiBatch.isChecked()
         # batch_n = self.parent.widgets[self.current_widget].w.multiBatchvalue.value()
-        multi = False
-        batch_n = 1
+        # multi = False
+
         gs.stop_all = False
         self.parent.callbackbusy = False
         self.sleepytime = 0.0
         self.parent.choice = "Outpaint"
 
-        for i in range(batch_n):
-            self.wait_callback_busy()
-            time.sleep(1)
-            betterslices = []
-            og_size = (512, 512)
-            tiles = (self.parent.canvas.canvas.cols - 1) * (self.parent.canvas.canvas.rows)
-            for x in range(int(tiles)):
-                if gs.stop_all != True:
-                    self.run_hires_step_x(x)
-                    betterslices.append((self.parent.image.convert('RGBA'), self.parent.canvas.canvas.rectlist[x].x,
-                                         self.parent.canvas.canvas.rectlist[x].y))
-                else:
-                    break
+        self.wait_callback_busy()
+        self.wait_batch_busy()
+        self.batch_process_busy = True
 
-            source_image = self.hires_source
-            alpha = Image.new("L", og_size, color=0xFF)
-            alpha_gradient = ImageDraw.Draw(alpha)
-            a = 0
-            i = 0
-            overlap = self.parent.widgets[self.current_widget].w.rect_overlap.value()
-            shape = (og_size, (0, 0))
-            while i < overlap:
-                alpha_gradient.rectangle(shape, fill=a)
-                a += 4
-                i += 1
-                shape = ((og_size[0] - i, og_size[1] - i), (i, i))
-            mask = Image.new("RGBA", og_size, color=0)
-            mask.putalpha(alpha)
-            finished_slices = []
-            for betterslice, x, y in betterslices:
-                finished_slice = self.addalpha(betterslice, mask)
-                finished_slices.append((finished_slice, x, y))
-            # # Once we have all our images, use grid_merge back onto the source, then save
-            final_output = self.grid_merge(
-                source_image.convert("RGBA"), finished_slices
-            ).convert("RGBA")
-            final_output.save('output/test_hires.png')
-            # base_filename = f"{base_filename}d"
-            print(f"All time wasted: {self.sleepytime} seconds.")
-            self.hires_source = final_output
-            self.parent.deforum_ui.signals.prepare_hires_batch.emit('output/test_hires.png')
+        self.betterslices = []
 
-    def run_hires_step_x(self, x):
-        print('x', x)
+        self.parent.render_index = 0
+        self.next_image_from_batch()
+
+
+    def run_hires_step_x(self):
+        next_step = self.parent.canvas.canvas.rectlist[self.parent.render_index]
         self.parent.choice = 'Outpaint'
-        image = self.parent.canvas.canvas.rectlist[x].image
+        image = next_step.image
         image.save('output/temp/temp.png', "PNG")
-        self.parent.canvas.canvas.selected_item = self.parent.canvas.canvas.rectlist[x].id
+        self.parent.canvas.canvas.selected_item = next_step.id
         print('self.parent.canvas.canvas.selected_item',self.parent.canvas.canvas.selected_item)
-        self.parent.render_index = x
         self.parent.deforum_ui.run_deforum_six_txt2img(hiresinit='output/temp/temp.png')
 
-        self.wait_callback_busy()
-        x += 1
 
-        self.parent.busy = False
-        return x
 
-    def run_outpaint_step_x(self, x):
 
-        # print("it should not do anything....")
-
-        self.parent.busy = True
-        self.parent.canvas.canvas.reusable_outpaint(self.parent.canvas.canvas.rectlist[x].id)
+    def run_outpaint_step_x(self):
+        next_step = self.rectlist_work[0]
+        del self.rectlist_work[0]
+        self.parent.canvas.canvas.reusable_outpaint(next_step.id)
         self.wait_canvas_busy()
+        self.parent.deforum_ui.run_deforum_outpaint(next_step.params)
 
-        self.parent.deforum_ui.run_deforum_outpaint(self.parent.canvas.canvas.rectlist[x].params)
-        self.wait_callback_busy()
-        x += 1
-
-        self.parent.busy = False
-        #return x
 
     def run_prepared_outpaint_batch(self, progress_callback=None):
+        self.batch_process = 'run_prepared_outpaint_batch'
+        self.batch_process_busy = False
         gs.stop_all = False
         self.parent.callbackbusy = False
         self.sleepytime = 0.0
@@ -445,10 +469,12 @@ class Outpainting:
 
         multi = False
         batch_n = 1
-
+        self.batch_step_number = 0
         tiles = len(self.parent.canvas.canvas.rectlist)
-
+        self.rectlist_work = copy.deepcopy(self.parent.canvas.canvas.rectlist)
         print(f"Tiles to Outpaint:{tiles}")
+        self.next_image_from_batch()
+        return
 
         if multi == True:
             print("multi outpaint batch")
@@ -462,6 +488,7 @@ class Outpainting:
                 for x in range(tiles):
                     # print(x)
                     if gs.stop_all == False:
+                        self.batch_process_busy = True
                         self.run_outpaint_step_x(x)
                     else:
                         break
@@ -469,6 +496,7 @@ class Outpainting:
             for x in range(tiles):
                 if gs.stop_all == False:
                     print(f"running step {x}")
+                    self.batch_process_busy = True
                     self.run_outpaint_step_x(x)
                 else:
                     break

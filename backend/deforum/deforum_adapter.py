@@ -60,7 +60,6 @@ class mySignals(QObject):
     status_update = Signal(str)
 
 
-
 class DeforumSix:
 
     def __init__(self, parent):
@@ -75,6 +74,7 @@ class DeforumSix:
         self.prev_seamless = False
         self.start_time = None
         self.parent.parent.signals.image_ready.connect(self.stop_generating_timer)
+
 
 
 
@@ -866,7 +866,8 @@ class DeforumSix:
         torch_gc()
         return paths  # this gets images via colab api
 
-    def render_animation_new(self):
+    # does not get used, renamed to be deleted soon
+    def render_animation_new_out_of_order(self):
 
         if 'inpaint' in gs.models:
             del gs.models['inpaint']
@@ -889,6 +890,7 @@ class DeforumSix:
         if self.start_time is not None:
             runtime = int(time.time()) - self.start_time
             self.signals.status_update.emit(f'Image ready, generating took {runtime} seconds')
+            self.parent.signals.image_ready_in_ui.emit()
         self.start_time = None
 
     def start_generating_timer(self):

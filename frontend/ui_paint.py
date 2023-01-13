@@ -36,9 +36,9 @@ __idleColor__ = QColor(91, 48, 232)
 __selColor__ = QColor(255, 102, 102)
 
 class Rectangle(object):
-    def __init__(self, parent, prompt, x, y, w, h, id, order = None, img_path = None, image = None, render_index=None, params=None):
+    def __init__(self, prompt, x, y, w, h, id, order = None, img_path = None, image = None, render_index=None, params=None):
 
-        self.parent = parent
+        #self.parent = parent
         self.prompt = prompt
         self.id = id
         self.x = x
@@ -61,7 +61,7 @@ class Rectangle(object):
         self.running = False
         self.img_path = img_path
         #self.signals = RectangleCallbacks()
-        self.timer = QtCore.QTimer()
+        #self.timer = QtCore.QTimer()
 
     def play(self):
         if self.parent.running == True:
@@ -328,9 +328,9 @@ class Canvas(QGraphicsView):
         uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
         prompt = ""
         if dummy == False:
-            rect[uid] = Rectangle(self, prompt, self.scene.scenePos.x() - self.w / 2, self.scene.scenePos.y() - self.h / 2, self.w, self.h, uid, params=self.parent.parent.sessionparams.update_params())
+            rect[uid] = Rectangle(prompt, self.scene.scenePos.x() - self.w / 2, self.scene.scenePos.y() - self.h / 2, self.w, self.h, uid, params=self.parent.parent.sessionparams.update_params())
         else:
-            rect[uid] = Rectangle(self, prompt, 0, 0, 1, 1, 1)
+            rect[uid] = Rectangle(prompt, 0, 0, 1, 1, 1)
         #rect[uid].signals.set_new_signal.connect(self.set_new)
         self.selected_item = uid
         self.rectlist.append(rect[uid])
@@ -545,7 +545,7 @@ class Canvas(QGraphicsView):
                     #    print(e)
                     #    params = {}
                     #print(x)
-                rect[rect['id']] = Rectangle(self, rect['x'], rect['x'], rect['y'], rect['w'], rect['h'], rect['id'], rect['order'], rect['img_path'], params=None)
+                rect[rect['id']] = Rectangle(rect['x'], rect['x'], rect['y'], rect['w'], rect['h'], rect['id'], rect['order'], rect['img_path'], params=None)
                 self.rectlist.append(rect[rect['id']])
             for items in self.rectlist:
                 if items.img_path is not None:
@@ -742,7 +742,7 @@ class Canvas(QGraphicsView):
         if matchfound == False:
             if params == None:
                 params = self.parent.parent.sessionparams.update_params()
-            rect[uid] = Rectangle(self, prompt, x, y, self.w, self.h, uid, order = order, image=image, render_index=None, params=copy.deepcopy(params))
+            rect[uid] = Rectangle(prompt, x, y, self.w, self.h, uid, order = order, image=image, render_index=None, params=copy.deepcopy(params))
             #print(f"adding rect with seed {params.seed}")
             self.selected_item = uid
             if self.rectlist == []:
@@ -793,7 +793,7 @@ class Canvas(QGraphicsView):
         if matchfound == False:
             if params == None:
                 params = self.parent.parent.sessionparams.update_params()
-            rect[uid] = Rectangle(self, prompt, x, y, self.w, self.h, uid, order = order, image=image, render_index=None, params=copy.deepcopy(params))
+            rect[uid] = Rectangle(prompt, x, y, self.w, self.h, uid, order = order, image=image, render_index=None, params=copy.deepcopy(params))
             #print(f"adding rect with seed {params.seed}")
             self.selected_item = uid
             if self.rectlist == []:

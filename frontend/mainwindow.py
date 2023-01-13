@@ -92,6 +92,8 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget] = UniControl(self)
         self.outpaint = Outpainting(self)
 
+
+
         self.load_last_prompt()
 
         self.sessionparams = SessionParams(self)
@@ -243,6 +245,8 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
 
         #outpaint connections
+        self.outpaint.signals.rect_ready_in_ui.connect(self.outpaint.rect_ready_in_ui)
+        self.deforum_ui.signals.image_ready_in_ui.connect(self.outpaint.image_ready_in_ui)
         self.widgets[self.current_widget].w.redo.clicked.connect(self.outpaint.redo_current_outpaint)
         self.widgets[self.current_widget].w.delete_2.clicked.connect(self.outpaint.delete_outpaint_frame)
         self.widgets[self.current_widget].w.preview_batch.clicked.connect(self.outpaint.preview_batch_outpaint_thread)
@@ -717,6 +721,7 @@ class MainWindow(QMainWindow):
         self.deforum_ui.signals.add_image_to_thumbnail_signal.emit(image)
         self.deforum_ui.signals.txt2img_image_cb.emit()
         self.signals.image_ready.emit()
+
 
     @Slot()
     def image_preview_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):

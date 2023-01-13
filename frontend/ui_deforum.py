@@ -32,6 +32,7 @@ class Callbacks(QObject):
     status_update = Signal(str)
     vid2vid_one_percent = Signal(int)
     prepare_hires_batch = Signal(str)
+    image_ready_in_ui = Signal()
 
 
 class Deforum_UI(QObject):

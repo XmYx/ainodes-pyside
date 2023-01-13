@@ -177,6 +177,7 @@ def load_model(root):
             ckpt_valid = False
 
     def load_model_from_config(config, ckpt, verbose=False, device='cuda', half_precision=True,print_flag=False):
+
         map_location = "cuda" # ["cpu", "cuda"]
         print(f"..loading model")
         pl_sd = torch.load(ckpt, map_location=map_location)

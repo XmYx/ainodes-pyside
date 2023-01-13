@@ -29,7 +29,7 @@ class Callbacks(QObject):
     deforum_image_cb = Signal()
     compviscallback = Signal()
     add_image_to_thumbnail_signal = Signal(str)
-    setStatusBar = Signal(str)
+    status_update = Signal(str)
     vid2vid_one_percent = Signal(int)
     prepare_hires_batch = Signal(str)
 
@@ -47,8 +47,13 @@ class Deforum_UI(QObject):
         self.parent = parent
         #self.deforum = DeforumGenerator()
         self.deforum_six = DeforumSix(self)
+        self.deforum_six.signals.status_update.connect(self.status_bar_update)
+
         self.signals = Callbacks()
         #self.deforum_six = DeforumSix()
+
+    def status_bar_update(self, str):
+        self.parent.signals.status_update.emit(str)
 
     def deforum_six_txt2img_thread(self):
         self.update = 0

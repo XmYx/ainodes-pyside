@@ -9,6 +9,8 @@ import pandas as pd
 import torch
 import safetensors.torch
 from PIL import ImageFilter
+from PySide6.QtCore import QObject, Signal, Slot
+
 from backend.devices import choose_torch_device
 from omegaconf import OmegaConf
 from pytorch_lightning import seed_everything
@@ -54,19 +56,16 @@ loaded_vae_file = None
 checkpoint_info = None
 
 
-def load_model_from_config_lm(ckpt, verbose=False):
-    print(f"Loading model from {ckpt}")
-    pl_sd = torch.load(ckpt, map_location="cpu")
-    if "global_step" in pl_sd:
-        print(f"Global Step: {pl_sd['global_step']}")
-    sd = pl_sd["state_dict"]
-    return sd
+class mySignals(QObject):
+    status_update = Signal(str)
+
 
 
 class DeforumSix:
 
     def __init__(self, parent):
         self.parent = parent
+        self.signals = mySignals()
         self.root = None
         self.args = None
         self.anim_args = None
@@ -74,15 +73,29 @@ class DeforumSix:
         self.device = choose_torch_device()
         self.full_precision = False
         self.prev_seamless = False
+        self.start_time = None
+        self.parent.parent.signals.image_ready.connect(self.stop_generating_timer)
 
 
 
+    def load_model_from_config_lm(self, ckpt, verbose=False):
+        print(f"Loading model from {ckpt}")
+        ckpt_print = ckpt.replace('\\', '/')
+        self.signals.status_update.emit(f"Deforum Adapter - loading model from {ckpt_print}")
+        pl_sd = torch.load(ckpt, map_location="cpu")
+        if "global_step" in pl_sd:
+            print(f"Global Step: {pl_sd['global_step']}")
+        sd = pl_sd["state_dict"]
+        return sd
 
     def load_low_memory(self):
+        ckpt = gs.system.sd_model_file
+        if "sd" in gs.models:
+            del gs.models["sd"]
+
         if "model" not in gs.models:
             config = "optimizedSD/v1-inference.yaml"
-            ckpt = gs.system.sd_model_file
-            sd = load_model_from_config_lm(f"{ckpt}")
+            sd = self.load_model_from_config_lm(f"{ckpt}")
             li, lo = [], []
             for key, v_ in sd.items():
                 sp = key.split(".")
@@ -223,9 +236,13 @@ class DeforumSix:
         return config, version
 
     def load_model_from_config(self, config=None, ckpt=None, verbose=False):
+
         gs.force_inpaint = False
         if ckpt is None:
             ckpt = gs.system.sd_model_file
+
+        ckpt_print = ckpt.replace('\\', '/')
+        self.signals.status_update.emit(f"Deforum adapter  - loading model from {ckpt_print}")
         # Open the file in binary mode
 
         # loads config.yaml with the name of the model
@@ -654,6 +671,7 @@ class DeforumSix:
             if "modelFS" in gs.models:
                 del gs.models["modelFS"]
             check = self.load_model_from_config(config=None, ckpt=None)
+            self.start_generating_timer()
             if check == -1:
                 return check
 
@@ -866,6 +884,17 @@ class DeforumSix:
         torch_gc()
         return
 
+    @Slot()
+    def stop_generating_timer(self):
+        if self.start_time is not None:
+            runtime = int(time.time()) - self.start_time
+            self.signals.status_update.emit(f'Image ready, generating took {runtime} seconds')
+        self.start_time = None
+
+    def start_generating_timer(self):
+        self.start_time = int(time.time())
+        self.signals.status_update.emit('Deforum Adapter - start generating')
+
     def outpaint_txt2img(self,
                          init_image,
                          prompt="fantasy landscape",
@@ -891,6 +920,8 @@ class DeforumSix:
                          with_inpaint=False,
                          ):
         print("Using 1.5 InPaint model") if with_inpaint else None
+        W=512
+        H=512
         mask_img = Image.open("outpaint_mask.png")
         img = Image.open(init_image)
 
@@ -933,6 +964,8 @@ class DeforumSix:
 
         if with_inpaint == False:
             self.load_model_from_config()
+            self.start_generating_timer()
+
             gs.models["sd"].to('cuda')
             print(f"txt2img seed: {seed}   steps: {steps}  prompt: {prompt}")
             print(f"size:  {W}x{H}")
@@ -1092,6 +1125,7 @@ class DeforumSix:
             if "sd" not in gs.models:
                 #self.load_inpaint_model()
                 self.load_model_from_config()
+            self.start_generating_timer()
             sampler = DDIMSampler(gs.models["sd"])
             image_guide = image_path_to_torch(init_image, self.device)
             [mask_for_reconstruction, latent_mask_for_blend] = get_mask_for_latent_blending(self.device, blend_mask,
@@ -1101,25 +1135,31 @@ class DeforumSix:
 
             mask = mask_img
             image = Image.open(init_image)
-            result = inpaint(
-                # model=self.model,
-                sampler=sampler,
-                image=image,
-                mask=mask,
-                prompt=prompt,
-                seed=seed,
-                scale=scale,
-                ddim_steps=steps,
-                num_samples=1,
-                h=height, w=width,
-                device=self.device,
-                mask_for_reconstruction=mask_for_reconstruction,
-                masked_image_for_blend=masked_image_for_blend,
-                callback=step_callback)
-            fpath = os.path.join(sample_path, f"{base_name}_{base_count:05}.png")
-            result[0].save(fpath, 'PNG')
-            gs.temppath = fpath
-            image_callback(result[0])
+            try:
+                result = inpaint(
+                    # model=self.model,
+                    sampler=sampler,
+                    image=image,
+                    mask=mask,
+                    prompt=prompt,
+                    seed=seed,
+                    scale=scale,
+                    ddim_steps=steps,
+                    num_samples=1,
+                    h=height, w=width,
+                    device=self.device,
+                    mask_for_reconstruction=mask_for_reconstruction,
+                    masked_image_for_blend=masked_image_for_blend,
+                    callback=step_callback)
+            except:
+                result = -1
+            if result != -1:
+                fpath = os.path.join(sample_path, f"{base_name}_{base_count:05}.png")
+                result[0].save(fpath, 'PNG')
+                gs.temppath = fpath
+                image_callback(result[0])
+            else:
+                print('inpaint failed maybe due to model not an inpaint model')
 
         # global plms_sampler
         # global ddim_sampler

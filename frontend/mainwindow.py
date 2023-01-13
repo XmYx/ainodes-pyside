@@ -1,7 +1,5 @@
 import json
-import math
 import os
-import re
 from io import BytesIO
 
 import backend.settings as settings
@@ -19,32 +17,30 @@ from uuid import uuid4
 import numpy as np
 import pandas as pd
 import torch
-from PIL import Image, ImageDraw
-from PIL.ImageQt import ImageQt, QImage
-from PySide6.QtCore import QFile, QIODevice, QEasingCurve, Slot, QRect, QThreadPool, QDir, Signal, QObject, QPoint
-from PySide6.QtWidgets import QMainWindow, QToolBar, QPushButton, QGraphicsColorizeEffect, QListWidgetItem, QFileDialog, \
-    QLabel, QSlider, QFrame, QDockWidget, QWidget
+from PIL import Image
+from PIL.ImageQt import ImageQt
+from PySide6.QtCore import QEasingCurve, Slot, QThreadPool, QDir, Signal, QObject
+from PySide6.QtWidgets import QMainWindow, QToolBar, QListWidgetItem, QFileDialog, \
+    QLabel
 from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt
-from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore
 from backend.deforum.six.animation import check_is_number
 from einops import rearrange
-from pytorch_lightning import seed_everything
 import copy
 from backend.worker import Worker
 from frontend import plugin_loader
 # from frontend.ui_model_chooser import ModelChooser_UI
 
 from backend.prompt_ai.prompt_gen import AiPrompt
-from frontend.ui_paint import PaintUI, spiralOrder, random_path
-from frontend.ui_classes import Thumbnails, SystemSetup, ThumbsUI, AnimKeyEditor
+from frontend.ui_paint import PaintUI
+from frontend.ui_classes import SystemSetup, ThumbsUI, AnimKeyEditor
 from frontend.unicontrol import UniControl
 
 from frontend.ui_krea import Krea
 from frontend.ui_lexica import LexicArt
-from frontend.ui_model_download import ModelDownload, ModelDownload_UI
+from frontend.ui_model_download import ModelDownload
 from backend.shared import model_killer
 
-from backend.devices import choose_torch_device
 from frontend.ui_timeline import Timeline, KeyFrame
 
 # we had to load settings first before we can do this import
@@ -57,7 +53,7 @@ from backend.maintain_models import check_models_exist
 from backend.sqlite import db_base
 from backend.sqlite import model_db_civitai
 from backend.web_requests.web_images import WebImages
-from backend.outpaint import Outpainting
+from frontend.ui_outpaint import Outpainting
 
 # please don't remove it totally, just remove what we know is not used
 class Callbacks(QObject):
@@ -68,7 +64,8 @@ class Callbacks(QObject):
     deforum_image_cb = Signal()
     compviscallback = Signal()
     add_image_to_thumbnail_signal = Signal(str)
-    setStatusBar = Signal(str)
+    status_update = Signal(str)
+    image_ready = Signal()
     vid2vid_one_percent = Signal(int)
 
 
@@ -317,6 +314,7 @@ class MainWindow(QMainWindow):
 
         self.canvas.canvas.signals.run_redraw.connect(self.run_redraw)
         self.canvas.canvas.signals.draw_tempRects.connect(self.draw_tempRects_signal)
+        self.signals.status_update.connect(self.set_status_bar)
 
     def run_redraw(self):
         self.canvas.canvas.redraw_signal()
@@ -419,6 +417,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def set_status_bar(self, txt):
+        print('set_status_bar', txt)
         self.statusBar().showMessage(txt)
 
 
@@ -434,19 +433,6 @@ class MainWindow(QMainWindow):
 
     def run_as_thread(self, fn):
         worker = Worker(fn)
-        self.threadpool.start(worker)
-
-
-
-
-
-
-    @Slot()
-    def ai_prompt_thread(self):
-        self.aiPrompt = AiPrompt()
-        self.aiPrompt.signals.ai_prompt_ready.connect(self.prompt_fetcher_ui.set_ai_prompt)
-        self.aiPrompt.signals.status_update.connect(self.set_status_bar)
-        worker = Worker(self.aiPrompt.get_prompts, self.prompt_fetcher.w.input.toPlainText())
         self.threadpool.start(worker)
 
     def update_ui_from_params(self):
@@ -723,15 +709,14 @@ class MainWindow(QMainWindow):
         gs.diffusion.prompt = data
         self.widgets[self.current_widget].w.prompts.setHtml(data)
 
-
-
-
     def image_preview_signal(self, image, *args, **kwargs):
+        print('image_preview_signal')
         while self.callbackbusy == True:
             time.sleep(0.3)
         self.image = image
         self.deforum_ui.signals.add_image_to_thumbnail_signal.emit(image)
         self.deforum_ui.signals.txt2img_image_cb.emit()
+        self.signals.image_ready.emit()
 
     @Slot()
     def image_preview_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):

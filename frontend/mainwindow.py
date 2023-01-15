@@ -28,6 +28,8 @@ from PySide6 import QtCore
 from backend.deforum.six.animation import check_is_number
 from einops import rearrange
 import copy
+import torchvision.transforms as T
+
 from backend.worker import Worker
 from frontend import plugin_loader
 # from frontend.ui_model_chooser import ModelChooser_UI
@@ -47,7 +49,7 @@ from frontend.ui_timeline import Timeline, KeyFrame
 # we had to load settings first before we can do this import
 from frontend.ui_prompt_fetcher import PromptFetcher_UI, FetchPrompts
 from frontend.ui_image_lab import ImageLab
-from frontend.ui_deforum import Deforum_UI
+from frontend.ui_deforum import Deforum_UI, draw_grid_annotations
 from frontend.session_params import SessionParams
 from backend.shared import save_last_prompt
 from backend.maintain_models import check_models_exist
@@ -193,6 +195,7 @@ class MainWindow(QMainWindow):
         self.params = self.sessionparams.update_params()
         db_base.check_db_status()
         self.check_karras_enabled()
+        self.all_images = []
 
 
 
@@ -234,6 +237,7 @@ class MainWindow(QMainWindow):
     def connections(self):
         self.deforum_ui.signals.txt2img_image_cb.connect(self.image_preview_func_str)
         self.deforum_ui.signals.deforum_step.connect(self.tensor_preview_schedule)
+        self.deforum_ui.signals.plot_ready.connect(self.deforum_ui.plot_ready)
         self.widgets[self.current_widget].w.dream.clicked.connect(self.task_switcher)
         self.widgets[self.current_widget].w.lucky.clicked.connect(self.show_default)
 
@@ -805,7 +809,10 @@ class MainWindow(QMainWindow):
 
         if self.params.advanced == False and self.params.max_frames > 1:
             self.params.advanced = True
-        # self.signals.add_image_to_thumbnail_signal.emit(gs.temppath)
+
+        if self.make_grid:
+            self.all_images.append(T.functional.pil_to_tensor(image))
+
 
     def add_next_rect(self):
         w = self.widgets[self.current_widget].w.W.value()

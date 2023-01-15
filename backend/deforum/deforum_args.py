@@ -63,44 +63,44 @@ def DeforumArgs(attr):
     attr = SimpleNamespace(**attr)
 
     #@markdown **Image Settings**
-    W = attr.W #@param
-    H = attr.H #@param
+    W = int(attr.W) #@param
+    H = int(attr.H) #@param
     #W, H = map(lambda x: x - x % 64, (W, H))  # resize to integer multiple of 64
 
     #@markdown **Sampling Settings**
     seed = attr.seed #@param
-    sampler = attr.sampler #@param ["klms","dpm2","dpm2_ancestral","heun","euler","euler_ancestral","plms", "ddim"]
-    steps = attr.steps #@param
-    scale = attr.scale #@param
-    ddim_eta = attr.ddim_eta #@param
+    sampler = str(attr.sampler) #@param ["klms","dpm2","dpm2_ancestral","heun","euler","euler_ancestral","plms", "ddim"]
+    steps = int(attr.steps) #@param
+    scale = float(attr.scale) #@param
+    ddim_eta = float(attr.ddim_eta) #@param
     dynamic_threshold = attr.dynamic_threshold
     static_threshold = attr.static_threshold
 
     #@markdown **Save & Display Settings**
-    save_samples = attr.save_samples #@param {type:"boolean"}
-    save_settings = attr.save_settings #@param {type:"boolean"}
-    display_samples = attr.display_samples #@param {type:"boolean"}
-    save_sample_per_step = attr.save_sample_per_step #@param {type:"boolean"}
-    show_sample_per_step = attr.show_sample_per_step #@param {type:"boolean"}
+    save_samples = bool(attr.save_samples) #@param {type:"boolean"}
+    save_settings = bool(attr.save_settings) #@param {type:"boolean"}
+    display_samples = bool(attr.display_samples) #@param {type:"boolean"}
+    save_sample_per_step = bool(attr.save_sample_per_step) #@param {type:"boolean"}
+    show_sample_per_step = bool(attr.show_sample_per_step) #@param {type:"boolean"}
 
     #@markdown **Prompt Settings**
     prompt_weighting = attr.prompt_weighting #@param {type:"boolean"}
-    normalize_prompt_weights = attr.normalize_prompt_weights #@param {type:"boolean"}
+    normalize_prompt_weights = True #attr.normalize_prompt_weights #@param {type:"boolean"}
     log_weighted_subprompts = attr.log_weighted_subprompts #@param {type:"boolean"}
 
     #@markdown **Batch Settings**
     n_batch = int(attr.n_batch) #@param
-    batch_name = attr.batch_name #@param {type:"string"}
+    batch_name = str(attr.batch_name) #@param {type:"string"}
     filename_format = attr.filename_format #@param ["{timestring}_{index}_{seed}.png","{timestring}_{index}_{prompt}.png"]
-    seed_behavior = attr.seed_behavior #@param ["iter","fixed","random"]
-    make_grid = attr.make_grid #@param {type:"boolean"}
-    grid_rows = attr.grid_rows #@param
-    outdir = attr.outdir
+    seed_behavior = str(attr.seed_behavior) #@param ["iter","fixed","random"]
+    make_grid = bool(attr.make_grid) #@param {type:"boolean"}
+    grid_rows = int(attr.grid_rows) #@param
+    outdir = str(attr.outdir)
 
     #@markdown **Init Settings**
-    use_init = attr.use_init #@param {type:"boolean"}
-    strength = attr.strength #@param {type:"number"}
-    strength_0_no_init = attr.strength_0_no_init # Set the strength to 0 automatically when no init image is used
+    use_init = bool(attr.use_init) #@param {type:"boolean"}
+    strength = float(attr.strength) #@param {type:"number"}
+    strength_0_no_init = bool(attr.strength_0_no_init) # Set the strength to 0 automatically when no init image is used
     init_image = attr.init_image
     # Whiter areas of the mask are areas that change more
     use_mask = attr.use_mask #@param {type:"boolean"}
@@ -170,10 +170,10 @@ def DeforumArgs(attr):
     hires = attr.hires
     hires_strength = attr.hires_strength
     lowmem = attr.lowmem
-    seamless = False
-    axis = {'x'}
-    gradient_pass = 'Second'
-    return_type = 'latent'
+    seamless = attr.seamless
+    axis = attr.axis
+    gradient_pass = attr.gradient_pass
+    return_type = attr.return_type
 
     del attr
     return locals()

@@ -33,7 +33,7 @@ class Callbacks(QObject):
     vid2vid_one_percent = Signal(int)
     prepare_hires_batch = Signal(str)
     image_ready_in_ui = Signal()
-
+    plot_ready = Signal()
 
 class Deforum_UI(QObject):
     def __init__(self, parent):
@@ -289,7 +289,11 @@ class Deforum_UI(QObject):
                                          prompt=self.params.prompt,
                                          #use_hypernetwork=None,
                                          apply_strength=self.params.apply_strength,
-                                         apply_circular=self.params.apply_circular
+                                         apply_circular=self.params.apply_circular,
+                                         seamless=self.params.seamless,
+                                         axis=self.params.axis,
+                                         gradient_pass=self.params.gradient_pass,
+                                         return_type=self.params.return_type
                                          )
 
     def set_multi_dim_seed(self):
@@ -417,12 +421,6 @@ class Deforum_UI(QObject):
             self.params.use_init = True
             self.params.init_image = hiresinit
 
-
-        #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients_dir, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
-        #if gs.aesthetic_embedding_path == 'None':
-        #    gs.aesthetic_embedding_path = None
-        seed = random.randint(0, 2 ** 32 - 1)
-
         plotting = self.params.plotting
 
         if self.params.multi_dim_prompt:
@@ -430,8 +428,9 @@ class Deforum_UI(QObject):
 
         else:
 
-
             if plotting:
+                self.parent.make_grid = True
+                self.parent.all_images = []
 
                 attrib2 = self.params.plotX
                 attrib1 = self.params.plotY
@@ -461,9 +460,9 @@ class Deforum_UI(QObject):
                             print('Batch Directory found')
                             self.params.max_frames = 2
                     self.run_it()
-                    if plotting:
-                        all_images.append(T.functional.pil_to_tensor(self.parent.image))
-            if plotting:
+                    #if plotting:
+                    #    all_images.append(T.functional.pil_to_tensor(self.parent.image))
+            """if plotting:
                 ver_texts = []
                 hor_texts = []
                 for i in plotY:
@@ -480,7 +479,36 @@ class Deforum_UI(QObject):
                                                    self.params.H, self.params)
                 self.parent.image = grid_image
                 self.parent.image_preview_signal(grid_image)
-                grid_image.save(os.path.join(self.params.outdir, filename))
+                grid_image.save(os.path.join(self.params.outdir, filename))"""
+        if plotting:
+            self.signals.plot_ready.emit()
+
+    def plot_ready(self):
+        if self.parent.make_grid:
+            attrib2 = self.params.plotX
+            attrib1 = self.params.plotY
+            ploty_list_string = self.params.plotXLine
+            plotx_list_string = self.params.plotYLine
+            plotY = plotx_list_string.split(', ')
+            plotX = ploty_list_string.split(', ')
+
+            ver_texts = []
+            hor_texts = []
+            for i in plotY:
+                ver_texts.append([GridAnnotation(f"{attrib1}: {i}")])
+            for j in plotX:
+                hor_texts.append([GridAnnotation(f"{attrib2}: {j}")])
+            ##print(hor_texts)
+            grid = make_grid(self.parent.all_images, nrow=len(plotX))
+            grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
+            filename = f"{time.strftime('%Y%m%d%H%M%S')}_{attrib1}_{attrib2}_grid_{self.params.seed}.png"
+            grid_image = Image.fromarray(grid.astype(np.uint8))
+
+            grid_image = draw_grid_annotations(grid_image, grid_image.size[0], grid_image.size[1], hor_texts, ver_texts, self.params.W,
+                                               self.params.H, self.params)
+            self.parent.image_preview_signal(grid_image)
+            grid_image.save(os.path.join(self.params.outdir, filename))
+        self.parent.make_grid = False
 
 
     def run_deforum_outpaint(self, params=None, progress_callback=None):

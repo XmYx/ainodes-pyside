@@ -614,7 +614,11 @@ class DeforumSix:
                         # use_hypernetwork=None,
                         apply_strength=0,
                         apply_circular=False,
-                        lowmem=False
+                        lowmem=False,
+                        seamless = False,
+                        axis = {'x'},
+                        gradient_pass = 'Second',
+                        return_type = 'latent'
                         ):
         # if gs.system.xformer == True:
         #    backend.hypernetworks.modules.sd_hijack.apply_optimizations()
@@ -640,17 +644,6 @@ class DeforumSix:
         [args, anim_args, root] = prepare_args(locals())
         root.device = self.device
         device = self.device
-        for key, value in anim_args.__dict__.items():
-            try:
-                anim_args.__dict__[key] = self.parent.params.__dict__[key]
-                #print(f"settings {key} from {value} to {self.parent.params.__dict__[key]}")
-            except:
-                pass
-        for key, value in args.__dict__.items():
-            try:
-                args.__dict__[key] = self.parent.params.__dict__[key]
-            except:
-                pass
 
         if lowmem == True:
             print(f'-                 Low Memory Mode                             ')

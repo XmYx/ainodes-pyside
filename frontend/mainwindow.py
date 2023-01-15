@@ -195,6 +195,7 @@ class MainWindow(QMainWindow):
         self.params = self.sessionparams.update_params()
         db_base.check_db_status()
         self.check_karras_enabled()
+        self.make_grid = False
         self.all_images = []
 
 
@@ -427,14 +428,9 @@ class MainWindow(QMainWindow):
     def help_mode(self):
         pass
 
-
     @Slot()
     def set_status_bar(self, txt):
-        print('set_status_bar', txt)
         self.statusBar().showMessage(txt)
-
-
-
 
     @Slot()
     def ai_prompt_thread(self):
@@ -723,8 +719,6 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.prompts.setHtml(data)
 
     def image_preview_signal(self, image, *args, **kwargs):
-        print('image_preview_signal')
-        #self.image = image
         mode = image.mode
         size = image.size
         enc_image = base64.b64encode(image.tobytes()).decode()
@@ -774,10 +768,9 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.rectlist[self.render_index].img_path = gs.temppath
                 self.canvas.canvas.newimage = True
                 self.canvas.canvas.update()
-                print('13 redraw')
                 self.canvas.canvas.redraw()
-                qimage = None
-                pixmap = None
+                del qimage
+                del pixmap
         elif self.params.advanced == False:
             self.add_next_rect()
             self.render_index = len(self.canvas.canvas.rectlist) - 1
@@ -803,7 +796,6 @@ class MainWindow(QMainWindow):
                 self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
                 self.canvas.canvas.rectlist[self.render_index].params = self.params
         self.canvas.canvas.newimage = True
-        print('14 redraw')
         self.canvas.canvas.redraw()
         self.canvas.canvas.update()
 

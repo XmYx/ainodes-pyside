@@ -50,7 +50,6 @@ def save_settings(args, outfolder, prompt, index):
     os.makedirs(outfolder, exist_ok=True)
     # save settings for the batch
     if args.save_settings:
-        print(f"Saving to {outfolder}_*")
         filename = os.path.join(outfolder, f"{args.timestring}_{index:05}_{sanitize(prompt)[:160]}_settings.txt")
         output_data = copy.deepcopy(args.__dict__)
         output_data['actual_prompt'] = prompt

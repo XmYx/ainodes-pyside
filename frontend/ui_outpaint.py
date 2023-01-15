@@ -336,7 +336,6 @@ class Outpainting:
 
 
     def next_image_from_batch(self, progress_callback=None):
-        print('next_image_from_batch',self.batch_process)
         if self.batch_process == 'run_prepared_outpaint_batch':
             if len(self.rectlist_work) > 0:
                 if gs.stop_all == False:
@@ -354,9 +353,7 @@ class Outpainting:
             if len(self.parent.canvas.canvas.rectlist) > 0 and len(self.parent.canvas.canvas.rectlist) > self.parent.render_index:
                 if gs.stop_all != True:
                     self.run_hires_step_x()
-
             else:
-
                 og_size = (512, 512)
                 source_image = self.hires_source
                 alpha = Image.new("L", og_size, color=0xFF)
@@ -496,7 +493,6 @@ class Outpainting:
         self.parent.canvas.canvas.rectPreview = self.parent.widgets[self.current_widget].w.enable_overlap.isChecked()
         if self.parent.canvas.canvas.rectPreview == False:
             self.parent.canvas.canvas.newimage = True
-            print('16 redraw')
             self.parent.canvas.canvas.redraw()
         elif self.parent.canvas.canvas.rectPreview == True:
             self.parent.canvas.canvas.visualize_rects()

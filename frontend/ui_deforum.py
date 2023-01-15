@@ -423,6 +423,8 @@ class Deforum_UI(QObject):
 
         plotting = self.params.plotting
 
+        self.parent.make_grid = False
+
         if self.params.multi_dim_prompt:
             self.multi_dim_loop()
 

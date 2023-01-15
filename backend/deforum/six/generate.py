@@ -249,12 +249,9 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
 
     sampler = PLMSSampler(gs.models["sd"]) if args.sampler == 'plms' else DDIMSampler(gs.models["sd"])
     if gs.model_version in gs.system.gen_one_models or gs.model_resolution == 512:
-        print("using old denoiser")
-        # k_diffusion.external.CompVisVDenoiser = CompVisDenoiser
         model_wrap = CompVisDenoiser(gs.models["sd"])
         print(gs.model_version, gs.model_resolution)
     elif gs.model_version in gs.system.gen_two_models and gs.model_resolution == 768:
-        print("using new denoiser")
         gs.denoiser = 2
         model_wrap = CompVisVDenoiser(gs.models["sd"])
 
@@ -551,8 +548,8 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
                                                      c,
                                                      t_enc,
                                                      unconditional_guidance_scale=args.scale,
-                                                     unconditional_conditioning=uc,
-                                                     img_callback=callback)
+                                                     unconditional_conditioning=uc)#,
+                                                     #img_callback=callback)
                         elif args.sampler == 'plms':  # no "decode" function in plms, so use "sample"
                             shape = [args.C, args.H // args.f, args.W // args.f]
                             samples, _ = sampler.sample(S=args.steps,
@@ -563,8 +560,8 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
                                                         unconditional_guidance_scale=args.scale,
                                                         unconditional_conditioning=uc,
                                                         eta=args.ddim_eta,
-                                                        x_T=z_enc,
-                                                        img_callback=callback)
+                                                        x_T=z_enc)#,
+                                                        #img_callback=callback)
                         else:
                             raise Exception(f"Sampler {args.sampler} not recognised.")
 

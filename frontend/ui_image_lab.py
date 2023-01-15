@@ -120,25 +120,17 @@ class ImageLab():  # for signaling, could be a QWidget  too
     def run_volta_accel_thread(self):
         self.parent.run_as_thread(self.run_volta_accel)
 
-
-    @Slot()
-    def run_interrogation_thread(self):
-        self.parent.run_as_thread(self.run_interrogation)
-
     @Slot()
     def ebl_model_merge_start(self):
         self.parent.run_as_thread(self.ebl_model_merge_start)
-
 
     @Slot()
     def run_aestetic_prediction_thread(self):
         self.parent.run_as_thread(self.run_aestetic_prediction)
 
-
     @Slot()
     def run_interrogation_thread(self):
         self.parent.run_as_thread(self.run_interrogation)
-
 
     @Slot()
     def img_to_text_start(self):
@@ -158,14 +150,14 @@ class ImageLab():  # for signaling, could be a QWidget  too
 
     @Slot()
     def upscale_start(self):
-        self.parent.signals.setStatusBar.emit("Upscale started...")
+        self.parent.signals.status_update.emit("Upscale started...")
         self.upscale_thread()
 
     def upscale_stop(self):
-        self.parent.signals.setStatusBar.emit("Upscale finished...")
+        self.parent.signals.status_update.emit("Upscale finished...")
 
     def upscale_count(self, num):
-        self.parent.signals.setStatusBar.emit(f"Upscaled {str(num)} image(s)...")
+        self.parent.signals.status_update.emit(f"Upscaled {str(num)} image(s)...")
 
     @Slot()
     def upscale_thread(self):

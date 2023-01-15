@@ -178,7 +178,6 @@ class Canvas(QGraphicsView):
         if self.running == True:
             for i in self.rectlist:
                 i.stop()
-            print('12 redraw')
             self.redraw()
             self.maintimer.stop()
             self.running = False
@@ -409,14 +408,12 @@ class Canvas(QGraphicsView):
         #self.update()
 
     def save_canvas(self):
-        print('9 redraw')
         self.redraw(transparent=True)
         timestring = time.strftime('%Y-%m-%d-%H-%S')
         filename = f"output/canvas/canvas_{timestring}.png"
         os.makedirs('output/canvas', exist_ok=True)
         file = QFile(filename)
         self.pixmap.save(file, "PNG")
-        print('10 redraw')
         self.redraw()
 
     def first_rectangle(self):
@@ -557,7 +554,6 @@ class Canvas(QGraphicsView):
                     items.active = True
             self.newimage = True
             self.pixmap.fill(__backgroudColor__)
-            print('4 redraw')
             self.redraw()
 
     @Slot()
@@ -985,7 +981,6 @@ class Canvas(QGraphicsView):
         self.render_item = self.selected_item
         self.draw_rects()
         self.newimage = True
-        print('8 redraw')
         self.redraw()
 
         outpaintimage.save("outpaint.png")
@@ -1029,7 +1024,6 @@ class Canvas(QGraphicsView):
 
     def redraw_signal(self):
         transparent = self.redraw_transparent
-        print('redraw')
         if transparent:
             self.pixmap.fill(Qt.transparent)
         else:
@@ -1073,7 +1067,6 @@ class Canvas(QGraphicsView):
         return
         super(Canvas, self).paintEvent(e)
         if self.newimage == True:
-            print('7 redraw')
             self.newimage == False
             self.redraw()
 
@@ -1097,8 +1090,6 @@ class Canvas(QGraphicsView):
             self.scene.addItem(self.rectItem)
         except:
             pass
-
-        print('11 redraw')
         self.redraw()
 
 
@@ -1109,7 +1100,6 @@ class Canvas(QGraphicsView):
             self.scene.addItem(self.rectItem)
         except:
             pass
-        print('5 redraw')
         self.redraw()
 
     def drag_mode(self):
@@ -1119,7 +1109,6 @@ class Canvas(QGraphicsView):
             self.scene.removeItem(self.rectItem)
         except:
             pass
-        print('3 redraw')
         self.redraw()
         self.setUpdatesEnabled(True)
 
@@ -1134,7 +1123,6 @@ class Canvas(QGraphicsView):
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
         self.scene.addItem(self.rectItem)
         self.setUpdatesEnabled(True)
-        print('1 redraw')
         self.redraw()
 
     def inpaint_mode(self):
@@ -1143,7 +1131,6 @@ class Canvas(QGraphicsView):
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
         self.scene.addItem(self.rectItem)
         self.setUpdatesEnabled(True)
-        print('2 redraw')
         self.redraw(transparent=True)
 
     def keyPressEvent(self, e):
@@ -1289,7 +1276,6 @@ class Canvas(QGraphicsView):
         if self.scene.pos is not None:
             self.addrect()
             self.signals.update_selected.emit()
-            print('6 redraw')
             self.redraw()
             if self.ctrlmodifier == True:
                 self.reusable_outpaint(self.selected_item)

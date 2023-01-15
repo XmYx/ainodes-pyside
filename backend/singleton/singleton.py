@@ -1,6 +1,7 @@
 import datetime
 import threading
 from types import SimpleNamespace
+from PySide6.QtCore import Qt, QMutex, QMutexLocker, QObject, QWriteLocker
 from backend.torch_gc import torch_gc
 
 
@@ -132,7 +133,7 @@ state = State()
 # interrogate
 deepdanbooru = False
 interrogate_deepbooru_score_threshold = 0.0
-
+"""
 class Singleton:
 	_instance = None
 	_lock = threading.Lock()
@@ -145,4 +146,31 @@ class Singleton:
 				# instance is still nonexistent.
 				if not cls._instance:
 					cls._instance = super(Singleton, cls).__new__(cls)
+		return cls._instance
+"""
+
+
+
+
+class Singleton(QObject):
+	_instance = None
+	_mutex = QMutex()
+
+	def __new__(cls, *args, **kwargs):
+		with QMutexLocker(cls._mutex):
+			from PySide6.QtCore import Qt, QMutex, QMutexLocker, QObject
+
+class Singleton(QObject):
+	_instance = None
+	_mutex = QMutex()
+
+	def __new__(cls, *args, **kwargs):
+		with QMutexLocker(cls._mutex):
+		# Check if the instance is already created
+			if not cls._instance:
+				with QWriteLocker(cls._rwlock):
+					# Double-checking if the instance is still nonexistent
+					if not cls._instance:
+						cls._instance = super(Singleton, cls).__new__(cls)
+						QObject.__init__(cls._instance)
 		return cls._instance

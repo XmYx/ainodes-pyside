@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw
 from PIL.ImageQt import ImageQt
 from PySide6 import QtCore
 from PySide6.QtCore import Slot, QRect, Signal, QObject
-from PySide6.QtGui import QPixmap, QIcon, QImage, QPainter, Qt
+from PySide6.QtGui import QPixmap, QIcon, QImage, QPainter, Qt, QPen
 from PySide6.QtWidgets import QListWidgetItem
 
 from backend.singleton import singleton
@@ -32,7 +32,6 @@ class Outpainting:
         self.signals = mySignals()
         self.tile_size = 512
         self.batch_process = None
-        self.batch_process_busy = False
         self.batch_process_items = None
         self.gobbig_pil_image = None
         self.gobig_img_path = None
@@ -59,8 +58,8 @@ class Outpainting:
     @Slot()
     def preview_batch_outpaint_thread(self):
         self.preview_batch_outpaint()
-        #worker = Worker(self.outpaint.preview_batch_outpaint)
-        #self.threadpool.start(worker)
+        #self.parent.run_as_thread(self.preview_batch_outpaint)
+
 
     @Slot()
     def prepare_batch_outpaint_thread(self):
@@ -73,7 +72,6 @@ class Outpainting:
         self.parent.canvas.canvas.set_offset(value)
 
 
-
     def update_outpaint_parameters(self):
         print('update outpaint')
         W = self.parent.widgets[self.current_widget].w.W.value()
@@ -81,7 +79,6 @@ class Outpainting:
         # W, H = map(lambda x: x - x % 64, (W, H))
         self.parent.widgets[self.current_widget].w.W.setValue(W)
         self.parent.widgets[self.current_widget].w.H.setValue(H)
-
 
 
     def get_params(self):
@@ -121,15 +118,15 @@ class Outpainting:
 
             for items in self.parent.canvas.canvas.rectlist:
                 if items.id == self.parent.canvas.canvas.selected_item:
-                    # print(items.params)
                     try:
                         self.parent.sessionparams.params = items.params.__dict__
                         self.parent.update_ui_from_params()
                     except Exception as e:
                         print(f"Error, could not update  because of: {e}")
 
-                    if items.params != {}:
-                        pass
+                    # todo still needed?
+                    #if items.params != {}:
+                    #    pass
                         # print(f"showing strength of {items.params['strength'] * 100}")
                         # self.parent.widgets[self.current_widget].w.steps.setValue(items.params.steps)
                         # self.parent.widgets[self.current_widget].w.steps_slider.setValue(items.params.steps)
@@ -202,26 +199,11 @@ class Outpainting:
 
     def run_batch_outpaint(self, progress_callback=False):
         self.stopprocessing = False
-        self.parent.callbackbusy = False
-        self.sleepytime = 0.0
+
+
         self.parent.choice = "Outpaint"
         self.create_outpaint_batch()
 
-    def wait_parent_busy(self):
-        while self.parent.busy == True:
-            time.sleep(0.25)
-
-    def wait_callback_busy(self):
-        while self.parent.callbackbusy == True:
-            time.sleep(0.25)
-            self.sleepytime += 0.25
-        time.sleep(0.25)
-        self.sleepytime += 0.25
-
-    def wait_batch_busy(self):
-        while self.batch_process_busy:
-            time.sleep(0.25)
-        self.batch_process_busy = False
 
     def wait_canvas_busy(self):
         while self.parent.canvas.canvas.busy == True:
@@ -242,12 +224,10 @@ class Outpainting:
         self.parent.canvas.canvas.update()
 
     def rect_ready_in_ui(self):
-        self.batch_process_busy = False
         self.batch_step_number += 1
         self.next_rect_from_batch()
 
     def next_rect_from_batch(self):
-        print('self.parent.canvas.canvas.tempbatch', self.parent.canvas.canvas.tempbatch)
         if self.batch_process == 'create_outpaint_batch':
             if self.batch_process_items is not None and len(self.batch_process_items) > 0:
                 item = self.batch_process_items[0]
@@ -262,7 +242,9 @@ class Outpainting:
                     self.next_rect_from_batch()
                 else:
                     self.batch_process = None
+                    self.parent.canvas.canvas.draw_rects()
                     self.parent.canvas.canvas.redraw()
+
 
     def next_rect_from_batch_list(self, item):
         tilesize = self.tile_size
@@ -281,23 +263,21 @@ class Outpainting:
         self.rparams.prompts = self.animation_prompts[self.batch_step_number]
         if self.rparams.seed_behavior == 'random':
             self.rparams.seed = random.randint(0, 2 ** 32 - 1)
-        # print(f"seed bhavior:{rparams.seed_behavior} {rparams.seed}")
 
         self.parent.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image,
                                                 render_index=index, order=item["order"],
-                                                params=copy.deepcopy(self.rparams))
-        #print(animation_prompts[x])
+                                                params=copy.deepcopy(self.rparams), color=Qt.red)
+
         if self.rparams.seed_behavior == 'iter':
             self.rparams.seed += 1
 
-        print('self.batch_step_number', self.batch_step_number)
         self.signals.rect_ready_in_ui.emit()
 
     def create_outpaint_batch(self, gobig_img_path=None, progress_callback=False):
         self.batch_process = 'create_outpaint_batch'
         self.gobig_img_path = gobig_img_path
         tilesize = self.tile_size
-        self.parent.callbackbusy = True
+
         self.parent.params = self.parent.sessionparams.update_params()
         self.parent.sessionparams.params.advanced = True
 
@@ -350,7 +330,6 @@ class Outpainting:
         self.next_rect_from_batch()
 
     def image_ready_in_ui(self):
-        self.batch_process_busy = False
         self.parent.canvas.canvas.redraw()
         self.parent.render_index += 1
         self.parent.run_as_thread(self.next_image_from_batch)
@@ -362,7 +341,6 @@ class Outpainting:
             if len(self.rectlist_work) > 0:
                 if gs.stop_all == False:
                     print(f"running step {self.batch_step_number}")
-                    self.batch_process_busy = True
                     self.run_outpaint_step_x()
 
             else:
@@ -404,7 +382,7 @@ class Outpainting:
                 ).convert("RGBA")
                 final_output.save('output/test_hires.png')
                 # base_filename = f"{base_filename}d"
-                print(f"All time wasted: {self.sleepytime} seconds.")
+
                 self.hires_source = final_output
                 self.parent.deforum_ui.signals.prepare_hires_batch.emit('output/test_hires.png')
                 self.batch_process = None
@@ -413,7 +391,6 @@ class Outpainting:
 
     def run_hires_batch(self, progress_callback=None):
         self.batch_process = 'run_hires_batch'
-        self.batch_process_busy = False
         self.parent.sessionparams.update_params()
         self.parent.sessionparams.params.advanced = True
         # multi = self.parent.widgets[self.current_widget].w.multiBatch.isChecked()
@@ -421,13 +398,9 @@ class Outpainting:
         # multi = False
 
         gs.stop_all = False
-        self.parent.callbackbusy = False
-        self.sleepytime = 0.0
+
         self.parent.choice = "Outpaint"
 
-        self.wait_callback_busy()
-        self.wait_batch_busy()
-        self.batch_process_busy = True
 
         self.betterslices = []
 
@@ -451,58 +424,23 @@ class Outpainting:
         next_step = self.rectlist_work[0]
         del self.rectlist_work[0]
         self.parent.canvas.canvas.reusable_outpaint(next_step.id)
-        self.wait_canvas_busy()
+        #self.wait_canvas_busy()
         self.parent.deforum_ui.run_deforum_outpaint(next_step.params)
 
 
     def run_prepared_outpaint_batch(self, progress_callback=None):
         self.batch_process = 'run_prepared_outpaint_batch'
-        self.batch_process_busy = False
         gs.stop_all = False
-        self.parent.callbackbusy = False
-        self.sleepytime = 0.0
+
         self.parent.choice = "Outpaint"
         self.parent.params.advanced = True
 
-        # multi = self.parent.widgets[self.current_widget].w.multiBatch.isChecked()
-        # batch_n = self.parent.widgets[self.current_widget].w.multiBatchvalue.value()
-
-        multi = False
-        batch_n = 1
         self.batch_step_number = 0
         tiles = len(self.parent.canvas.canvas.rectlist)
         self.rectlist_work = copy.deepcopy(self.parent.canvas.canvas.rectlist)
         print(f"Tiles to Outpaint:{tiles}")
         self.next_image_from_batch()
-        return
 
-        if multi == True:
-            print("multi outpaint batch")
-            for i in range(batch_n):
-                if i != 0:
-                    filename = str(random.randint(1111111, 9999999))
-                    self.parent.canvas.canvas.save_rects_as_json(filename=filename)
-                    self.parent.canvas.canvas.save_canvas()
-                    self.parent.canvas.canvas.rectlist.clear()
-                    self.create_outpaint_batch()
-                for x in range(tiles):
-                    # print(x)
-                    if gs.stop_all == False:
-                        self.batch_process_busy = True
-                        self.run_outpaint_step_x(x)
-                    else:
-                        break
-        else:
-            for x in range(tiles):
-                if gs.stop_all == False:
-                    print(f"running step {x}")
-                    self.batch_process_busy = True
-                    self.run_outpaint_step_x(x)
-                else:
-                    break
-            # self.parent.canvas.canvas.save_canvas()
-
-            print(f"All time wasted: {self.sleepytime} seconds.")
 
     def resize_canvas(self):
         tilesize = 512
@@ -562,6 +500,7 @@ class Outpainting:
             self.parent.canvas.canvas.redraw()
         elif self.parent.canvas.canvas.rectPreview == True:
             self.parent.canvas.canvas.visualize_rects()
+
 
     def addalpha(self, im, mask):
         imr, img, imb, ima = im.split()

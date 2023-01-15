@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 from io import BytesIO
@@ -169,7 +170,7 @@ class MainWindow(QMainWindow):
         self.hide_default()
         self.mode = 'txt2img'
         self.stopwidth = False
-        self.callbackbusy = False
+
         self.init_plugin_loader()
         self.connections()
         self.resize(1280, 800)
@@ -231,7 +232,7 @@ class MainWindow(QMainWindow):
         os.makedirs(gs.system.aesthetic_gradients_dir, exist_ok=True)
 
     def connections(self):
-        self.deforum_ui.signals.txt2img_image_cb.connect(self.image_preview_func)
+        self.deforum_ui.signals.txt2img_image_cb.connect(self.image_preview_func_str)
         self.deforum_ui.signals.deforum_step.connect(self.tensor_preview_schedule)
         self.widgets[self.current_widget].w.dream.clicked.connect(self.task_switcher)
         self.widgets[self.current_widget].w.lucky.clicked.connect(self.show_default)
@@ -349,8 +350,12 @@ class MainWindow(QMainWindow):
 
     def show_web_image_on_canvas(self, image_string):
         try:
-            self.image = Image.open(BytesIO(image_string)).resize((512,512))
-            self.image_preview_func()
+            image = Image.open(BytesIO(image_string)).resize((512,512))
+            mode = image.mode
+            size = image.size
+            enc_image = base64.b64encode(image.tobytes()).decode()
+            self.deforum_ui.signals.txt2img_image_cb.emit(enc_image, mode, size)
+
         except:
             pass
 
@@ -715,20 +720,25 @@ class MainWindow(QMainWindow):
 
     def image_preview_signal(self, image, *args, **kwargs):
         print('image_preview_signal')
-        while self.callbackbusy == True:
-            time.sleep(0.3)
-        self.image = image
-        self.deforum_ui.signals.add_image_to_thumbnail_signal.emit(image)
-        self.deforum_ui.signals.txt2img_image_cb.emit()
+        #self.image = image
+        mode = image.mode
+        size = image.size
+        enc_image = base64.b64encode(image.tobytes()).decode()
+        self.deforum_ui.signals.txt2img_image_cb.emit(enc_image, mode, size)
         self.signals.image_ready.emit()
+
+    @Slot()
+    def image_preview_func_str(self, image, mode, size):
+        decoded_image = base64.b64decode(image.encode())
+        self.image_preview_func(Image.frombytes(mode, size, decoded_image))
 
 
     @Slot()
     def image_preview_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
-        self.callbackbusy = True
+
         x = 0
         y = 0
-        img = self.image
+        img = image #self.image
         if self.params.advanced == True:
             if self.canvas.canvas.rectlist != []:
                 if img is not None:
@@ -792,7 +802,7 @@ class MainWindow(QMainWindow):
         print('14 redraw')
         self.canvas.canvas.redraw()
         self.canvas.canvas.update()
-        self.callbackbusy = False
+
         if self.params.advanced == False and self.params.max_frames > 1:
             self.params.advanced = True
         # self.signals.add_image_to_thumbnail_signal.emit(gs.temppath)

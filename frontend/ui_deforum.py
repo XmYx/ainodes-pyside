@@ -24,7 +24,7 @@ gs = singleton
 class Callbacks(QObject):
     txt2img_step = Signal()
     reenable_runbutton = Signal()
-    txt2img_image_cb = Signal()
+    txt2img_image_cb = Signal(str, str, tuple)
     deforum_step = Signal()
     deforum_image_cb = Signal()
     compviscallback = Signal()

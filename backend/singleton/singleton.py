@@ -16,7 +16,6 @@ render_mode = ''
 device = ''
 modelFS = ''
 modelCS = ''
-callbackBusy = False
 windows_views = {}
 aesthetic_embedding_path = None
 T = 0

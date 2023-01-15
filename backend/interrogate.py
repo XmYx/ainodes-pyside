@@ -91,18 +91,21 @@ class InterrogateModels:
             if not gs.no_half and not self.running_on_cpu:
                 print('blip half')
                 self.blip_model = self.blip_model.half()
-
-        self.blip_model = self.blip_model.to(devices.device_interrogate)
+                torch.cuda.synchronize()
+        self.blip_model = self.blip_model.cuda()
+        torch.cuda.synchronize()
 
         if self.clip_model is None:
             self.clip_model, self.clip_preprocess = self.load_clip_model()
             if not gs.no_half and not self.running_on_cpu:
                 print('clip half')
                 self.clip_model = self.clip_model.half()
+                torch.cuda.synchronize()
+            self.clip_model = self.clip_model.cuda()
+            self.dtype = next(self.clip_model.parameters()).dtype
+            torch.cuda.synchronize()
 
-        self.clip_model = self.clip_model.to(devices.device_interrogate)
 
-        self.dtype = next(self.clip_model.parameters()).dtype
 
     def send_clip_to_ram(self):
         if not gs.interrogate_keep_models_in_memory:
@@ -141,12 +144,13 @@ class InterrogateModels:
 
     def generate_caption(self, pil_image):
         print(devices.device_interrogate)
+
         gpu_image = transforms.Compose([
             transforms.Resize((blip_image_eval_size, blip_image_eval_size), interpolation=InterpolationMode.BICUBIC),
             transforms.ToTensor(),
             transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
-        ])(pil_image).unsqueeze(0).type(self.dtype).to(devices.device_interrogate)
-
+        ])(pil_image).unsqueeze(0).type(self.dtype).to(devices.device_interrogate, non_blocking=False)
+        torch.cuda.synchronize()
 
         with torch.no_grad():
             caption = self.blip_model.generate(gpu_image, sample=False, num_beams=gs.interrogate_clip_num_beams, min_length=gs.interrogate_clip_min_length, max_length=gs.interrogate_clip_max_length)
@@ -155,9 +159,7 @@ class InterrogateModels:
 
     def interrogate(self, pil_image):
         res = None
-
         try:
-
             if gs.lowvram or gs.medvram:
                 lowvram.send_everything_to_cpu()
                 devices.torch_gc()
@@ -165,7 +167,7 @@ class InterrogateModels:
             self.load()
 
             caption = self.generate_caption(pil_image)
-            self.send_blip_to_ram()
+
             devices.torch_gc()
 
             res = caption

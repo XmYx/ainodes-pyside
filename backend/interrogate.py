@@ -86,6 +86,10 @@ class InterrogateModels:
         return model, preprocess
 
     def load(self):
+        # there is a bug when using model.to() then the first run creates kind of an error while the second and all
+        # following are working. so once we want to make this a variable setting to allow cpu,gpu or msc we have to
+        # check how to implement it so the error does not show up again
+
         if self.blip_model is None:
             self.blip_model = self.load_blip_model()
             if not gs.no_half and not self.running_on_cpu:

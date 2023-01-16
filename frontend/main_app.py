@@ -32,7 +32,7 @@ if __name__ == "__main__":
     icon = QIcon('frontend/main/splash_2.png')
     from frontend.mainwindow import MainWindow
 
-    sshFile="frontend/style/QTDark.stylesheet"
+    sshFile="frontend/style/elegantDark.stylesheet"
 
     mainWindow = MainWindow()
 

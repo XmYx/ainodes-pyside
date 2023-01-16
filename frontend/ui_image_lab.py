@@ -373,7 +373,8 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.imageLab.w.filesCount.display(str(len(self.fileList)))
 
     def upscale_count(self, num):
-        self.signals.upscale_counter.emit(num)
+        pass
+        #self.signals.upscale_counter.emit(num)
 
 
     def run_upscale(self, progress_callback=None):
@@ -386,7 +387,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
             if self.imageLab.w.RealESRGANAnime.isChecked():
                 model_name = 'RealESRGAN_x4plus_anime_6B'
 
-            load_upscaler(self.imageLab.w.GFPGAN.isChecked(), self.imageLab.w.ESRGAN.isChecked(), model_name)
+        load_upscaler(self.imageLab.w.GFPGAN.isChecked(), self.imageLab.w.ESRGAN.isChecked(), model_name)
         if len(self.fileList) > 0:
             if self.imageLab.w.ESRGAN.isChecked() or self.imageLab.w.GFPGAN.isChecked():
                 self.upscale.upscale_and_reconstruct(self.fileList,

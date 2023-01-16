@@ -117,7 +117,7 @@
              <bool>true</bool>
             </property>
             <property name="currentIndex">
-             <number>4</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="Upscale">
              <attribute name="title">
@@ -147,37 +147,6 @@
                 <property name="verticalSpacing">
                  <number>0</number>
                 </property>
-                <item row="4" column="0">
-                 <widget class="QLabel" name="esrStrength_lable">
-                  <property name="text">
-                   <string>RealESRGAN Strength</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="6" column="0">
-                 <widget class="QRadioButton" name="RealESRGAN">
-                  <property name="text">
-                   <string>RealESRGAN</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="10" column="0">
-                 <widget class="QLabel" name="label_3">
-                  <property name="text">
-                   <string>GFPGAN Strength</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="7" column="0">
-                 <widget class="QRadioButton" name="RealESRGANAnime">
-                  <property name="text">
-                   <string>RealESRGAN Anime</string>
-                  </property>
-                 </widget>
-                </item>
                 <item row="1" column="0">
                  <widget class="QCheckBox" name="ESRGAN">
                   <property name="text">
@@ -185,7 +154,14 @@
                   </property>
                  </widget>
                 </item>
-                <item row="13" column="0">
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label">
+                  <property name="text">
+                   <string>RealESRGAN Scale</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="12" column="0">
                  <spacer name="verticalSpacer">
                   <property name="orientation">
                    <enum>Qt::Vertical</enum>
@@ -197,6 +173,16 @@
                    </size>
                   </property>
                  </spacer>
+                </item>
+                <item row="10" column="1">
+                 <widget class="QLCDNumber" name="gfpStrengthNumber">
+                  <property name="intValue" stdset="0">
+                   <number>100</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLCDNumber" name="filesCount"/>
                 </item>
                 <item row="5" column="0">
                  <widget class="QSlider" name="esrStrength">
@@ -211,6 +197,67 @@
                   </property>
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="10" column="0">
+                 <widget class="QSlider" name="gfpStrength">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>100</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="0">
+                 <widget class="QRadioButton" name="RealESRGAN">
+                  <property name="text">
+                   <string>RealESRGAN</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QLCDNumber" name="esrScaleNumber">
+                  <property name="intValue" stdset="0">
+                   <number>2</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>Files</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="11" column="0">
+                 <widget class="QPushButton" name="startUpscale">
+                  <property name="text">
+                   <string>Start Upscale</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="9" column="0">
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>GFPGAN Strength</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="8" column="0">
+                 <widget class="QCheckBox" name="GFPGAN">
+                  <property name="text">
+                   <string>GFPGAN</string>
                   </property>
                  </widget>
                 </item>
@@ -230,60 +277,6 @@
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="label">
-                  <property name="text">
-                   <string>RealESRGAN Scale</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="8" column="0">
-                 <widget class="QRadioButton" name="GoBig">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="text">
-                   <string>Go Big</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="11" column="0">
-                 <widget class="QSlider" name="gfpStrength">
-                  <property name="minimum">
-                   <number>1</number>
-                  </property>
-                  <property name="maximum">
-                   <number>100</number>
-                  </property>
-                  <property name="value">
-                   <number>100</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="9" column="0">
-                 <widget class="QCheckBox" name="GFPGAN">
-                  <property name="text">
-                   <string>GFPGAN</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="12" column="0">
-                 <widget class="QPushButton" name="startUpscale">
-                  <property name="text">
-                   <string>Start Upscale</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="11" column="1">
-                 <widget class="QLCDNumber" name="gfpStrengthNumber">
-                  <property name="intValue" stdset="0">
-                   <number>100</number>
-                  </property>
-                 </widget>
-                </item>
                 <item row="5" column="1">
                  <widget class="QLCDNumber" name="esrStrengthNumber">
                   <property name="intValue" stdset="0">
@@ -291,22 +284,19 @@
                   </property>
                  </widget>
                 </item>
-                <item row="3" column="1">
-                 <widget class="QLCDNumber" name="esrScaleNumber">
-                  <property name="intValue" stdset="0">
-                   <number>2</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_2">
+                <item row="7" column="0">
+                 <widget class="QRadioButton" name="RealESRGANAnime">
                   <property name="text">
-                   <string>Files</string>
+                   <string>RealESRGAN Anime</string>
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="1">
-                 <widget class="QLCDNumber" name="filesCount"/>
+                <item row="4" column="0">
+                 <widget class="QLabel" name="esrStrength_lable">
+                  <property name="text">
+                   <string>RealESRGAN Strength</string>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </item>

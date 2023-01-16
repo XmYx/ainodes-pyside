@@ -1,6 +1,6 @@
 model:
   base_learning_rate: 1.0e-04
-  target: ldm_v2.models.diffusion.ddpm.LatentUpscaleDiffusion
+  target: ldm.models.diffusion.ddpm.LatentUpscaleDiffusion
   params:
     parameterization: "v"
     low_scale_key: "lr"
@@ -20,7 +20,7 @@ model:
     use_ema: False
 
     low_scale_config:
-      target: ldm_v2.modules.diffusionmodules.upscaling.ImageConcatWithNoiseAugmentation
+      target: ldm.modules.diffusionmodules.upscaling.ImageConcatWithNoiseAugmentation
       params:
         noise_schedule_config: # image space
           linear_start: 0.0001
@@ -28,7 +28,7 @@ model:
         max_noise_level: 350
 
     unet_config:
-      target: ldm_v2.modules.diffusionmodules.openaimodel.UNetModel
+      target: ldm.modules.diffusionmodules.openaimodel.UNetModel
       params:
         use_checkpoint: True
         num_classes: 1000  # timesteps for noise conditioning (here constant, just need one)
@@ -49,7 +49,7 @@ model:
         use_linear_in_transformer: True
 
     first_stage_config:
-      target: ldm_v2.models.autoencoder.AutoencoderKL
+      target: ldm.models.autoencoder.AutoencoderKL
       params:
         embed_dim: 4
         ddconfig:
@@ -69,7 +69,7 @@ model:
           target: torch.nn.Identity
 
     cond_stage_config:
-      target: ldm_v2.modules.encoders.modules.FrozenOpenCLIPEmbedder
+      target: ldm.modules.encoders.modules.FrozenOpenCLIPEmbedder
       params:
         freeze: True
         layer: "penultimate"

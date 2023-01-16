@@ -25,24 +25,27 @@ class Upscale:
     def run_gfpgan(self, image, strength, seed, upsampler_scale=4):
         print(f'>> GFPGAN - Restoring Faces for image seed:{seed}')
 
-        image = image.convert('RGB')
+        try:
+            image = image.convert('RGB')
 
-        cropped_faces, restored_faces, restored_img = gs.models["GFPGAN"].enhance(
-            np.array(image, dtype=np.uint8),
-            has_aligned=False,
-            only_center_face=False,
-            paste_back=True,
-        )
-        res = Image.fromarray(restored_img)
+            cropped_faces, restored_faces, restored_img = gs.models["GFPGAN"].enhance(
+                np.array(image, dtype=np.uint8),
+                has_aligned=False,
+                only_center_face=False,
+                paste_back=True,
+            )
+            res = Image.fromarray(restored_img)
 
-        if strength < 1.0:
-            # Resize the image to the new image if the sizes have changed
-            if restored_img.size != image.size:
-                image = image.resize(res.size)
-            res = Image.blend(image, res, strength)
+            if strength < 1.0:
+                # Resize the image to the new image if the sizes have changed
+                if restored_img.size != image.size:
+                    image = image.resize(res.size)
+                res = Image.blend(image, res, strength)
 
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        except Exception as e:
+            print('error gfpgan ', e)
 
         return res
 
@@ -99,6 +102,10 @@ class Upscale:
             image = Image.open(path)
             seed = 1
             try:
+                if use_gfpgan and strength > 0:
+                    image = self.run_gfpgan(
+                        image, strength, seed, 1
+                    )
                 if upscale:
                     if upscale_strength == 0:
                         upscale_strength = 0.75
@@ -108,10 +115,7 @@ class Upscale:
                         int(upscale_scale),
                         seed,
                     )
-                if use_gfpgan and strength > 0:
-                    image = self.run_gfpgan(
-                        image, strength, seed, 1
-                    )
+
             except Exception as e:
                 print(
                     f'>> Error running RealESRGAN or GFPGAN. Your image was not upscaled.\n{e}'

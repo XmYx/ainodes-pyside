@@ -26,8 +26,9 @@ def initialize_model(config, ckpt):
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     print('sr device', device)
-    model = model.to(device)
+    model = model.half().to(device)
     sampler = DDIMSampler(model)
+    del model
     return sampler
 
 
@@ -57,7 +58,8 @@ def make_noise_augmentation(model, batch, noise_level=None):
 def paint(sampler, image, prompt, seed, scale, h, w, steps, num_samples=1, callback=None, eta=0., noise_level=None):
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = sampler.model
-    seed_everything(seed)
+    noise_level=None
+    seed = seed_everything(seed)
     prng = np.random.RandomState(seed)
     start_code = prng.randn(num_samples, model.channels, h , w)
     start_code = torch.from_numpy(start_code).to(device=device, dtype=torch.float32)
@@ -116,10 +118,11 @@ def t_callback(**args):
 def run_sr(image_list , target_h, target_w, prompt, seed, num_samples, scale, steps, eta, noise_level):
 
     print('run_sr', locals())
-
-    if os.path.isfile(gs.system.sd_model_file) and os.path.isfile(gs.system.v2_upscale_inference_yaml_file):
+    upscale_model = 'data/models/support/upscale/x4-upscaler-ema.ckpt'
+    if os.path.isfile(upscale_model) and os.path.isfile(gs.system.v2_upscale_inference_yaml_file):
         print('ready to run upscale 2.0')
-        sampler = initialize_model(gs.system.v2_upscale_inference_yaml_file, gs.system.sd_model_file)
+
+        sampler = initialize_model(gs.system.v2_upscale_inference_yaml_file, upscale_model)
 
         for image in image_list:
             if image:

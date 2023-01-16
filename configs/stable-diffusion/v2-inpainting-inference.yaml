@@ -1,6 +1,6 @@
 model:
   base_learning_rate: 5.0e-05
-  target: ldm_v2.models.diffusion.ddpm.LatentInpaintDiffusion
+  target: ldm.models.diffusion.ddpm.LatentInpaintDiffusion
   params:
     linear_start: 0.00085
     linear_end: 0.0120
@@ -19,7 +19,7 @@ model:
     use_ema: False
 
     unet_config:
-      target: ldm_v2.modules.diffusionmodules.openaimodel.UNetModel
+      target: ldm.modules.diffusionmodules.openaimodel.UNetModel
       params:
         use_checkpoint: True
         image_size: 32 # unused
@@ -37,7 +37,7 @@ model:
         legacy: False
 
     first_stage_config:
-      target: ldm_v2.models.autoencoder.AutoencoderKL
+      target: ldm.models.autoencoder.AutoencoderKL
       params:
         embed_dim: 4
         monitor: val/rec_loss
@@ -61,14 +61,14 @@ model:
           target: torch.nn.Identity
 
     cond_stage_config:
-      target: ldm_v2.modules.encoders.modules.FrozenOpenCLIPEmbedder
+      target: ldm.modules.encoders.modules.FrozenOpenCLIPEmbedder
       params:
         freeze: True
         layer: "penultimate"
 
 
 data:
-  target: ldm_v2.data.laion.WebDataModuleFromConfig
+  target: ldm.data.laion.WebDataModuleFromConfig
   params:
     tar_base: null  # for concat as in LAION-A
     p_unsafe_threshold: 0.1
@@ -96,7 +96,7 @@ data:
         params:
           size: 512
       postprocess:
-        target: ldm_v2.data.laion.AddMask
+        target: ldm.data.laion.AddMask
         params:
           mode: "512train-large"
           p_drop: 0.25
@@ -115,7 +115,7 @@ data:
         params:
           size: 512
       postprocess:
-        target: ldm_v2.data.laion.AddMask
+        target: ldm.data.laion.AddMask
         params:
           mode: "512train-large"
           p_drop: 0.25

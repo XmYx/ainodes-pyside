@@ -272,7 +272,7 @@ class SessionParams():
             "cpudepth": self.parent.widgets[widget].w.cpudepth.isChecked(),
             "skip_video_for_run_all": False, # todo make variable
             "prompt_weighting": self.parent.widgets[widget].w.prompt_weighting.isChecked(),
-            "normalize_prompt_weights": self.parent.widgets[widget].w.normalized_prompts.isChecked(),
+            "normalize_prompt_weights": True,
             "lowmem": self.parent.widgets[widget].w.lowmem.isChecked(),
             "plotting": self.parent.widgets[widget].w.toggle_plotting.isChecked(),
             "plotX": self.parent.widgets[widget].w.plotX.currentText(),

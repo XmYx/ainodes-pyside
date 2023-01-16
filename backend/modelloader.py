@@ -25,10 +25,10 @@ def load_gfpgan():
                             device=torch.device('cpu'))
     elif gs.system.extra_models_gpu:
         instance = GFPGANer(model_path=model_path, upscale=1, arch='clean', channel_multiplier=2, bg_upsampler=None,
-                            device=torch.device(f'cuda:{gs.system.extra_models_gpu}'))
+                            device=torch.device(f'cuda'))
     else:
         instance = GFPGANer(model_path=model_path, upscale=1, arch='clean', channel_multiplier=2, bg_upsampler=None,
-                            device=torch.device(f'cuda:{gs.system.gpu}'))
+                            device=torch.device(f'cuda'))
     return instance
 
 
@@ -104,7 +104,7 @@ def load_upscaler(use_gfpgan=False, use_realesrgan=False, realesrgan_model="Real
             print("GFPGAN already loaded")
         else:
             # Load GFPGAN
-            if os.path.exists(gs.system.gfpgan_dir):
+            if os.path.exists(gs.system.gfpgan_model_file):
                 try:
                     gs.models["GFPGAN"] = load_gfpgan()
                     print("Loaded GFPGAN")
@@ -129,7 +129,7 @@ def load_upscaler(use_gfpgan=False, use_realesrgan=False, realesrgan_model="Real
                 pass
 
             if os.path.exists(gs.system.realesrgan_dir):
-                # st.session_state is used for keeping the models in memory across multiple pages or runs.
+                # gsis used for keeping the models in memory across multiple runs.
                 gs.models["RealESRGAN"] = load_realesrgan(realesrgan_model)
                 print("Loaded RealESRGAN with model " + gs.models["RealESRGAN"].model.name)
 

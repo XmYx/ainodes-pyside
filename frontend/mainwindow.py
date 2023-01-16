@@ -620,7 +620,7 @@ class MainWindow(QMainWindow):
         self.prompt_fetcher.w.dockWidget.setVisible(False)
         self.model_download_ui.w.dockWidget.setVisible(False)
         self.widgets[self.current_widget].w.cleanup_memory.setVisible(False)
-        self.widgets[self.current_widget].w.normalized_prompts.setVisible(False)
+
 
         self.widgets[self.current_widget].w.preview_mode_label.setVisible(False)
         self.widgets[self.current_widget].w.mode.setVisible(False)
@@ -685,7 +685,7 @@ class MainWindow(QMainWindow):
             self.animKeyEditor.w.dockWidget.setVisible(True)
             self.model_download_ui.w.dockWidget.setVisible(True)
             self.widgets[self.current_widget].w.cleanup_memory.setVisible(True)
-            self.widgets[self.current_widget].w.normalized_prompts.setVisible(True)
+
             self.widgets[self.current_widget].w.preview_mode_label.setVisible(True)
             self.widgets[self.current_widget].w.stop_dream.setVisible(True)
             self.widgets[self.current_widget].w.mode.setVisible(True)
@@ -1029,7 +1029,7 @@ class MainWindow(QMainWindow):
         self.timeline.timeline.update()
 
 
-def QIcon_from_svg(svg_filepath, color='white'):
+def QIcon_from_svg(svg_filepath, color='black'):
     img = QPixmap(svg_filepath)
     qp = QPainter(img)
     qp.setCompositionMode(QPainter.CompositionMode_SourceIn)

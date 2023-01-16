@@ -291,6 +291,7 @@ class MainWindow(QMainWindow):
         self.image_lab.signals.upscale_stop.connect(self.image_lab.upscale_stop)
         self.image_lab.signals.upscale_counter.connect(self.image_lab.upscale_count)
         self.image_lab.signals.img_to_txt_start.connect(self.image_lab.img_to_text_start)
+        self.image_lab.signals.image_text_ready.connect(self.image_lab.set_image_text)
         self.image_lab.signals.watermark_start.connect(self.image_lab.watermark_start)
         self.image_lab.signals.model_merge_start.connect(self.image_lab.model_merge_start)
         self.image_lab.signals.ebl_model_merge_start.connect(self.image_lab.ebl_model_merge_start)

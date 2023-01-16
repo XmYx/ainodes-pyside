@@ -80,6 +80,7 @@ class Callbacks(QObject):
     run_interrogation = Signal()
     run_volta_accel = Signal()
     run_upscale_20 = Signal()
+    image_text_ready = Signal(str)
 
 class ImageLab():  # for signaling, could be a QWidget  too
 
@@ -105,8 +106,6 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.imageLab.w.alphaNew.valueChanged.connect(self.update_alpha)
         self.imageLab.w.select_interrogation_output_folder.clicked.connect(self.set_interrogation_output_folder)
         self.imageLab.w.run_interrogation.clicked.connect(self.signal_run_interrogation)
-        self.imageLab.w.selected_model.clicked.connect(self.select_accel_model)
-        self.imageLab.w.run_volta_accel.clicked.connect(self.signal_run_volta_accel)
         self.imageLab.w.upscale_20.clicked.connect(self.run_upscale_20)
 
 
@@ -289,6 +288,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
         print('Aestetics calculation started')
         matcher = re.compile(r'(.*?)(\..*)')
         aesthetics_keep_folder_structure = self.imageLab.w.aesthetics_keep_folder_structure.isChecked()
+        out_folder = self.imageLab.w.aestetics_output_folder.text()
         if len(self.fileList) > 0:
             for file in self.fileList:
                 score = get_aestetics_score(file)
@@ -407,7 +407,11 @@ class ImageLab():  # for signaling, could be a QWidget  too
 
         if len(self.fileList) > 0:
             for path in self.fileList:
-                to_ascii(path, self.imageLab.w.img2txtRatio.value()/100, grayscale)
+                ascii_image = to_ascii(path, self.imageLab.w.img2txtRatio.value()/100, grayscale)
+                self.signals.image_text_ready.emit(ascii_image)
+
+    def set_image_text(self, ascii_image):
+        self.imageLab.w.image_text_output.setText(ascii_image)
 
     def run_watermark(self, progress_callback=None):
         text = self.imageLab.w.watermarkText.text()

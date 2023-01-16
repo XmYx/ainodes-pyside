@@ -33,3 +33,4 @@ def to_ascii(image_path, ratio=0.55, greysacale_type=1):
     f = open(image_path + '.txt', 'w')
     f.write(ascii_image)
     f.close
+    return ascii_image

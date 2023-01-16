@@ -116,8 +116,11 @@
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="toolTip">
+             <string>Is taking a lot of memory, maybe not usefull right now. It does need more that 24GB VRam to upscale a 512x512 image. So you have to use much smaler source images to getz it working on a RTX3090 orRTX 4090</string>
+            </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="Upscale">
              <attribute name="title">
@@ -519,17 +522,7 @@ hr { height: 1px; border-width: 0; }
                 <property name="verticalSpacing">
                  <number>0</number>
                 </property>
-                <item row="0" column="0">
-                 <widget class="QCheckBox" name="grayscaleType">
-                  <property name="text">
-                   <string>Grayscale Type 1</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="4" column="0">
+                <item row="5" column="0">
                  <spacer name="verticalSpacer_2">
                   <property name="orientation">
                    <enum>Qt::Vertical</enum>
@@ -541,13 +534,6 @@ hr { height: 1px; border-width: 0; }
                    </size>
                   </property>
                  </spacer>
-                </item>
-                <item row="3" column="0">
-                 <widget class="QPushButton" name="startImgToTxt">
-                  <property name="text">
-                   <string>Image to text</string>
-                  </property>
-                 </widget>
                 </item>
                 <item row="2" column="0">
                  <widget class="QSlider" name="img2txtRatio">
@@ -565,10 +551,10 @@ hr { height: 1px; border-width: 0; }
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="label_4">
+                <item row="3" column="0">
+                 <widget class="QPushButton" name="startImgToTxt">
                   <property name="text">
-                   <string>Ratio</string>
+                   <string>Image to text</string>
                   </property>
                  </widget>
                 </item>
@@ -576,6 +562,33 @@ hr { height: 1px; border-width: 0; }
                  <widget class="QLCDNumber" name="img2txtRatioNumber">
                   <property name="intValue" stdset="0">
                    <number>50</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>Ratio</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QCheckBox" name="grayscaleType">
+                  <property name="text">
+                   <string>Grayscale Type 1</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <widget class="QTextEdit" name="image_text_output">
+                  <property name="lineWrapMode">
+                   <enum>QTextEdit::NoWrap</enum>
+                  </property>
+                  <property name="textInteractionFlags">
+                   <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
                   </property>
                  </widget>
                 </item>
@@ -1027,84 +1040,6 @@ hr { height: 1px; border-width: 0; }
                <widget class="QCheckBox" name="keep_folder_structure">
                 <property name="text">
                  <string>Keep Folder Structure</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-            <widget class="QWidget" name="tab_3">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <attribute name="title">
-              <string>VoltaML</string>
-             </attribute>
-             <layout class="QGridLayout" name="gridLayout">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <property name="horizontalSpacing">
-               <number>2</number>
-              </property>
-              <property name="verticalSpacing">
-               <number>0</number>
-              </property>
-              <item row="2" column="0">
-               <widget class="QSpinBox" name="max_gpu_memory">
-                <property name="minimum">
-                 <number>4</number>
-                </property>
-                <property name="maximum">
-                 <number>80</number>
-                </property>
-                <property name="value">
-                 <number>12</number>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <spacer name="verticalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="2" column="1" colspan="2">
-               <widget class="QPushButton" name="run_volta_accel">
-                <property name="text">
-                 <string>Accelerate Model</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0" colspan="2">
-               <widget class="QLineEdit" name="accel_path"/>
-              </item>
-              <item row="0" column="2">
-               <widget class="QPushButton" name="selected_model">
-                <property name="text">
-                 <string>Select Model</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_14">
-                <property name="text">
-                 <string>Max GPU Mem</string>
                 </property>
                </widget>
               </item>

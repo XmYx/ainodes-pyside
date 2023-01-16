@@ -112,7 +112,7 @@ def paint(sampler, image, prompt, seed, scale, h, w, steps, num_samples=1, callb
     print(f"upscaled image shape: {result.shape}")
     return result
 
-def t_callback(**args):
+def t_callback(i, **args):
     print(args)
 
 def run_sr(image_list , target_h, target_w, prompt, seed, num_samples, scale, steps, eta, noise_level):

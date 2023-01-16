@@ -388,17 +388,23 @@ class ImageLab():  # for signaling, could be a QWidget  too
                 model_name = 'RealESRGAN_x4plus_anime_6B'
 
         load_upscaler(self.imageLab.w.GFPGAN.isChecked(), self.imageLab.w.ESRGAN.isChecked(), model_name)
-        if len(self.fileList) > 0:
-            if self.imageLab.w.ESRGAN.isChecked() or self.imageLab.w.GFPGAN.isChecked():
-                self.upscale.upscale_and_reconstruct(self.fileList,
-                                             upscale          = self.imageLab.w.ESRGAN.isChecked(),
-                                             upscale_scale    = self.imageLab.w.esrScale.value(),
-                                             upscale_strength = self.imageLab.w.esrStrength.value()/100,
-                                             use_gfpgan       = self.imageLab.w.GFPGAN.isChecked(),
-                                             strength         = self.imageLab.w.gfpStrength.value()/100,
-                                             image_callback   = None)
-
-        self.signals.upscale_stop.emit()
+        self.imageLab.w.startUpscale.setEnabled(False)
+        try:
+            if len(self.fileList) > 0:
+                if self.imageLab.w.ESRGAN.isChecked() or self.imageLab.w.GFPGAN.isChecked():
+                    self.upscale.upscale_and_reconstruct(self.fileList,
+                                                 upscale          = self.imageLab.w.ESRGAN.isChecked(),
+                                                 upscale_scale    = self.imageLab.w.esrScale.value(),
+                                                 upscale_strength = self.imageLab.w.esrStrength.value(),
+                                                 use_gfpgan       = self.imageLab.w.GFPGAN.isChecked(),
+                                                 strength         = self.imageLab.w.gfpStrength.value(),
+                                                 image_callback   = None,
+                                                 gfpgan_seed=int(self.imageLab.w.gfp_seed.text()))
+        except:
+            pass
+        finally:
+            self.imageLab.w.startUpscale.setEnabled(True)
+            self.signals.upscale_stop.emit()
 
     def run_img2txt(self, progress_callback=None):
         grayscale = 0
@@ -416,6 +422,18 @@ class ImageLab():  # for signaling, could be a QWidget  too
     def run_watermark(self, progress_callback=None):
         text = self.imageLab.w.watermarkText.text()
         font_size = self.imageLab.w.fontSize.value()
-        if len(self.fileList) > 0:
-            for path in self.fileList:
-                add_watermark(path=path, watermark=text, font_size=int(font_size))
+        rotation = self.imageLab.w.rotation.value()
+        pos_x = self.imageLab.w.pos_x.value()
+        pos_y = self.imageLab.w.pos_y.value()
+        fill = self.imageLab.w.fill.value()
+        self.imageLab.w.startWaterMark.setEnabled(False)
+        try:
+            if len(self.fileList) > 0:
+                for path in self.fileList:
+                    add_watermark(path=path, watermark=text, font_size=int(font_size),
+                                  rotation=rotation, pos_x=pos_x, pos_y=pos_y,
+                                    fill=fill)
+        except:
+            pass
+        finally:
+            self.imageLab.w.startWaterMark.setEnabled(True)

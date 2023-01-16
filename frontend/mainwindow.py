@@ -70,6 +70,7 @@ class Callbacks(QObject):
     status_update = Signal(str)
     image_ready = Signal()
     vid2vid_one_percent = Signal(int)
+    set_prompt = Signal(str)
 
 
 
@@ -125,8 +126,8 @@ class MainWindow(QMainWindow):
         self.lastheight = None
         self.cheight = gs.diffusion.H
 
-        self.lexicart = LexicArt()
-        self.krea = Krea()
+        self.lexicart = LexicArt(self)
+        self.krea = Krea(self)
         self.prompt_fetcher = FetchPrompts()
         self.prompt_fetcher_ui = PromptFetcher_UI(self)
 
@@ -236,6 +237,9 @@ class MainWindow(QMainWindow):
         os.makedirs(gs.system.aesthetic_gradients_dir, exist_ok=True)
 
     def connections(self):
+
+        self.signals.set_prompt.connect(self.widgets[self.current_widget].set_prompt)
+
         self.deforum_ui.signals.txt2img_image_cb.connect(self.image_preview_func_str)
         self.deforum_ui.signals.deforum_step.connect(self.tensor_preview_schedule)
         self.deforum_ui.signals.plot_ready.connect(self.deforum_ui.plot_ready)

@@ -8,13 +8,24 @@ from PySide6.QtWidgets import QListWidgetItem, QListView
 
 class LexicArt(QObject):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__()
         loader = QtUiTools.QUiLoader()
         file = QFile("frontend/ui/lexicart.ui")
         file.open(QFile.ReadOnly)
         self.w = loader.load(file)
         file.close()
         self.setup()
+        self.parent = parent
+        self.w.results.itemClicked.connect(self.item_clicked)
+        self.w.use_lexica_prompt.clicked.connect(self.use_lexica_prompt)
+
+    def item_clicked(self, item):
+        self.w.lexica_prompt.setPlainText(item.text())
+        self.parent.signals.set_prompt.emit()
+
+    def use_lexica_prompt(self):
+        self.parent.signals.set_prompt.emit(self.w.lexica_prompt.toPlainText())
 
     def setup(self):
         self.view = "icon"
@@ -46,23 +57,14 @@ class LexicArt(QObject):
             for i in responseDict["images"]:
                 self.prompts.append(i['prompt'])
             for i in responseDict["images"]:
-                #print(i['srcSmall'])
                 req = QtNetwork.QNetworkRequest(QtCore.QUrl(i['srcSmall']))
                 self.nam2.get(req)
-
-                #self.w.results.addItem(QIcon(QImage(i['srcSmall'])), i['prompt'])
-
-            #print(responseDict["images"])
-
-
-            #print(str(bytes_string, 'utf-8'))
         else:
             print("Error occured: ", er)
             print(reply.errorString())
 
 
     def handleImages(self, images):
-        #print(f"These will be the images: {images.error()}")
         er = images.error()
         if er == QtNetwork.QNetworkReply.NoError:
             bytes_string = images.readAll()
@@ -71,19 +73,19 @@ class LexicArt(QObject):
             pixmap = QPixmap.fromImage(img)
             self.w.results.addItem(QListWidgetItem(QIcon(pixmap), self.prompts[self.counter]))
             self.counter += 1
+
     def toggleView(self):
         self.w.update()
         self.w.zoom.setMinimum(25)
         self.w.zoom.setMaximum(1000)
         if self.view == "list":
             self.w.results.setViewMode(QListView.IconMode)
-            print("icon")
             self.view = "icon"
         elif self.view == "icon":
             self.w.results.setViewMode(QListView.ListMode)
             self.view = "list"
-            print("list")
         self.w.update()
+
     def setZoom(self):
         size = self.w.zoom.value()
         if self.view == "icon":

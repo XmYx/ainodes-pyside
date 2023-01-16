@@ -74,6 +74,8 @@ class UniControl(QObject):
         self.w.video_mask_path.setText(filename[0])
 
 
+    def set_prompt(self, prompt):
+        self.w.prompts.setPlainText(prompt)
 
     def stop_all(self):
         gs.stop_all = True

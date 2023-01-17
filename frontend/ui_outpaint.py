@@ -73,7 +73,7 @@ class Outpainting:
 
 
     def update_outpaint_parameters(self):
-        print('update outpaint')
+        #print('update outpaint')
         W = self.parent.widgets[self.current_widget].w.W.value()
         H = self.parent.widgets[self.current_widget].w.H.value()
         # W, H = map(lambda x: x - x % 64, (W, H))

@@ -86,7 +86,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.canvas)
 
         self.setWindowTitle("aiNodes - Still Mode")
-        self.timeline = Timeline(self)
+        #self.timeline = Timeline(self)
         self.animKeyEditor = AnimKeyEditor()
 
         self.resize(1280, 800)
@@ -105,8 +105,8 @@ class MainWindow(QMainWindow):
         self.sessionparams.create_system_params()
 
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.timeline)
-        self.tabifyDockWidget(self.timeline, self.thumbs.w.dockWidget)
+        #self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.timeline)
+        #self.tabifyDockWidget(self.timeline, self.thumbs.w.dockWidget)
 
         self.create_main_toolbar()
         self.create_secondary_toolbar()
@@ -143,8 +143,8 @@ class MainWindow(QMainWindow):
         self.krea.w.dockWidget.setWindowTitle("Krea")
         self.prompt_fetcher.w.dockWidget.setWindowTitle("Prompt Fetcher")
         self.model_download_ui.w.dockWidget.setWindowTitle("Model Download")
-        self.timeline.setWindowTitle("Timeline")
-        self.thumbs.w.dockWidget.setWindowTitle("History")
+        #self.timeline.setWindowTitle("Timeline")
+        self.thumbs.w.dockWidget.setWindowTitle("Outpaint rectangle history")
 
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.model_download_ui.w.dockWidget)
         self.model_download_ui.w.dockWidget.setMaximumHeight(self.height())
@@ -286,9 +286,9 @@ class MainWindow(QMainWindow):
 
         self.widgets[self.current_widget].w.selected_model.currentIndexChanged.connect(self.select_new_model)
 
-        self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
-        self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
-        self.animKeyEditor.w.keyButton.clicked.connect(self.addCurrentFrame)
+        #self.timeline.timeline.keyFramesUpdated.connect(self.updateKeyFramesFromTemp)
+        #self.animKeyEditor.w.comboBox.currentTextChanged.connect(self.showTypeKeyframes)
+        #self.animKeyEditor.w.keyButton.clicked.connect(self.addCurrentFrame)
 
         #image labs connections
         self.image_lab.signals.upscale_start.connect(self.image_lab.upscale_start)
@@ -297,8 +297,8 @@ class MainWindow(QMainWindow):
         self.image_lab.signals.img_to_txt_start.connect(self.image_lab.img_to_text_start)
         self.image_lab.signals.image_text_ready.connect(self.image_lab.set_image_text)
         self.image_lab.signals.watermark_start.connect(self.image_lab.watermark_start)
-        self.image_lab.signals.model_merge_start.connect(self.image_lab.model_merge_start)
-        self.image_lab.signals.ebl_model_merge_start.connect(self.image_lab.ebl_model_merge_start)
+        self.image_lab.signals.model_merge_start.connect(self.image_lab.model_merge_start_thread)
+        self.image_lab.signals.ebl_model_merge_start.connect(self.image_lab.ebl_model_merge_start_thread)
         self.image_lab.signals.run_aestetic_prediction.connect(self.image_lab.run_aestetic_prediction_thread)
         self.image_lab.signals.run_interrogation.connect(self.image_lab.run_interrogation_thread)
         self.image_lab.signals.run_volta_accel.connect(self.image_lab.run_volta_accel_thread)
@@ -383,9 +383,13 @@ class MainWindow(QMainWindow):
 
         if 'custom/' in self.widgets[self.current_widget].w.selected_model.currentText():
             custom_model_info = self.civitai_api.civitai_get_model_data(self.widgets[self.current_widget].w.selected_model.currentText().replace('custom/',''))
-            custom_model_info = custom_model_info[0]
-            self.widgets[self.current_widget].w.selected_model.setToolTip(custom_model_info['description'])
-            self.widgets[self.current_widget].w.prompts.setPlaceholderText(custom_model_info['trained_words'])
+            if len(custom_model_info) > 0:
+                custom_model_info = custom_model_info[0]
+                self.widgets[self.current_widget].w.selected_model.setToolTip(custom_model_info['description'])
+                self.widgets[self.current_widget].w.prompts.setPlaceholderText(custom_model_info['trained_words'])
+            else:
+                self.widgets[self.current_widget].w.selected_model.setToolTip('')
+                self.widgets[self.current_widget].w.prompts.setPlaceholderText('Enter your prompt here')
         else:
             self.widgets[self.current_widget].w.selected_model.setToolTip('')
             self.widgets[self.current_widget].w.prompts.setPlaceholderText('Enter your prompt here')

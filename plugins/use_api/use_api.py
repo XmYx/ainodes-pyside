@@ -91,7 +91,6 @@ class Callbacks(QObject):
     add_image_to_thumbnail_signal = Signal(str)
     setStatusBar = Signal(str)
     vid2vid_one_percent = Signal(int)
-    prepare_hires_batch = Signal(str)
 
 class DeforumAPI(QObject):
     def __init__(self, parent):

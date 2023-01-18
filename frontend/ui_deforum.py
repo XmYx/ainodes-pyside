@@ -31,7 +31,6 @@ class Callbacks(QObject):
     add_image_to_thumbnail_signal = Signal(str)
     status_update = Signal(str)
     vid2vid_one_percent = Signal(int)
-    prepare_hires_batch = Signal(str)
     image_ready_in_ui = Signal()
     plot_ready = Signal()
 

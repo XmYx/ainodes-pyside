@@ -71,6 +71,8 @@ class Callbacks(QObject):
     image_ready = Signal()
     vid2vid_one_percent = Signal(int)
     set_prompt = Signal(str)
+    image_loaded = Signal(str, str, tuple, object)
+
 
 
 
@@ -135,6 +137,7 @@ class MainWindow(QMainWindow):
         self.image_lab_ui = self.image_lab.imageLab
         self.model_download = ModelDownload(self)
         self.model_download_ui = self.model_download.model_download
+        self.model_download.maintain_custom_models()
         # self.model_chooser = ModelChooser_UI(self)
         self.widgets[self.current_widget].w.dockWidget.setWindowTitle("Parameters")
         self.system_setup.w.dockWidget.setWindowTitle("System Settings")
@@ -318,7 +321,8 @@ class MainWindow(QMainWindow):
         self.model_download.civit_ai_api.signals.civitai_no_more_models.connect(self.all_civitai_model_data_loaded_thread)
         self.model_download.civit_ai_api.signals.civitai_start_model_update.connect(self.civitai_start_model_update_thread)
         self.model_download.signals.show_model_preview_images.connect(self.show_model_preview_images)
-
+        self.model_download.signals.add_model_search_item.connect(self.model_download.add_model_search_item)
+        self.model_download.signals.set_download_info_text.connect(self.model_download.set_download_info_text)
 
         self.system_setup.w.ok.clicked.connect(self.sessionparams.update_system_params)
         self.system_setup.w.cancel.clicked.connect(self.update_ui_from_system_params)
@@ -330,6 +334,7 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.signals.run_redraw.connect(self.run_redraw)
         self.canvas.canvas.signals.draw_tempRects.connect(self.draw_tempRects_signal)
         self.signals.status_update.connect(self.set_status_bar)
+        self.signals.image_loaded.connect(self.render_index_image_preview_func_str)
 
     def run_redraw(self):
         self.canvas.canvas.redraw_signal()
@@ -519,29 +524,28 @@ class MainWindow(QMainWindow):
         self.toolbar = QToolBar('Outpaint Tools')
         self.addToolBar(QtCore.Qt.TopToolBarArea, self.toolbar)
         still_mode = QAction(QIcon_from_svg('frontend/icons/instagram.svg'), 'Still', self)
-        anim_mode = QAction(QIcon_from_svg('frontend/icons/film.svg'), 'Anim', self)
-        node_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Nodes', self)
-        gallery_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Gallery', self)
-        settings_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Settings', self)
+        #anim_mode = QAction(QIcon_from_svg('frontend/icons/film.svg'), 'Anim', self)
+        #node_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Nodes', self)
+        #gallery_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Gallery', self)
+        #settings_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Settings', self)
         help_mode = QAction(QIcon_from_svg('frontend/icons/help-circle.svg'), 'Help', self)
         skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'Help', self)
         skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'Help', self)
-        test_mode = QAction(QIcon_from_svg('frontend/icons/alert-octagon.svg'), 'Run Self Test - It will take a while',
-                            self)
+        #test_mode = QAction(QIcon_from_svg('frontend/icons/alert-octagon.svg'), 'Run Self Test - It will take a while', self)
 
         self.toolbar.addAction(still_mode)
         # self.toolbar.addAction(anim_mode)
         # self.toolbar.addAction(node_mode)
         # self.toolbar.addAction(gallery_mode)
         # self.toolbar.addAction(settings_mode)
-        self.toolbar.addAction(help_mode)
-        self.toolbar.addAction(skip_back)
-        self.toolbar.addAction(skip_forward)
-        self.toolbar.addAction(test_mode)
+        #self.toolbar.addAction(help_mode)
+        #self.toolbar.addAction(skip_back)
+        #self.toolbar.addAction(skip_forward)
+        #self.toolbar.addAction(test_mode)
 
         skip_back.triggered.connect(self.canvas.canvas.skip_back)
         skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
-        test_mode.triggered.connect(self.selftest)
+        #test_mode.triggered.connect(self.selftest)
 
     def create_secondary_toolbar(self):
         self.secondary_toolbar = QToolBar('Outpaint Tools')
@@ -690,7 +694,7 @@ class MainWindow(QMainWindow):
             self.lexicart.w.dockWidget.setVisible(True)
             self.krea.w.dockWidget.setVisible(True)
             self.prompt_fetcher.w.dockWidget.setVisible(True)
-            self.thumbs.w.dockWidget.setVisible(True)
+
             self.animKeyEditor.w.dockWidget.setVisible(True)
             self.model_download_ui.w.dockWidget.setVisible(True)
             self.widgets[self.current_widget].w.cleanup_memory.setVisible(True)
@@ -741,11 +745,97 @@ class MainWindow(QMainWindow):
 
 
     @Slot()
-    def image_preview_func(self, image=None, seed=None, upscaled=False, use_prefix=None, first_seed=None, advance=True):
+    def render_index_image_preview_func_str(self, image, mode, size, render_index):
+        decoded_image = base64.b64decode(image.encode())
+        self.render_index_image_preview_func(Image.frombytes(mode, size, decoded_image), render_index)
 
-        x = 0
-        y = 0
+    @Slot()
+    def render_index_image_preview_func(self, image=None, render_index=None):
+
+        img = image
+        if self.outpaint.batch_process == 'run_hires_batch':
+            self.outpaint.last_batch_image = img
+        if self.params.advanced == True:
+            if self.canvas.canvas.rectlist != []:
+                if img is not None:
+                    if self.canvas.canvas.rectlist[render_index].images is not None:
+                        templist = self.canvas.canvas.rectlist[render_index].images
+                    else:
+                        templist = []
+                    self.canvas.canvas.rectlist[render_index].PILImage = img
+                    qimage = ImageQt(img.convert("RGBA"))
+                    pixmap = QPixmap.fromImage(qimage)
+                    print(self.canvas.canvas.rectlist[render_index].render_index)
+                    self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap),
+                                                                     f"{self.canvas.canvas.rectlist[render_index].render_index}"))
+
+                    if self.canvas.canvas.anim_inpaint == True:
+                        templist[self.canvas.canvas.rectlist[render_index].render_index] = qimage
+                        self.canvas.canvas.anim_inpaint = False
+                    elif self.canvas.canvas.anim_inpaint == False:
+                        templist.append(qimage)
+                        if self.canvas.canvas.rectlist[render_index].render_index == None:
+                            self.canvas.canvas.rectlist[render_index].render_index = 0
+                        else:
+                            self.canvas.canvas.rectlist[render_index].render_index += 1
+                    self.canvas.canvas.rectlist[render_index].images = templist
+                    self.canvas.canvas.rectlist[render_index].image = \
+                        self.canvas.canvas.rectlist[render_index].images[
+                            self.canvas.canvas.rectlist[render_index].render_index]
+                    self.canvas.canvas.rectlist[render_index].timestring = time.time()
+                    self.canvas.canvas.rectlist[render_index].img_path = gs.temppath
+                self.canvas.canvas.newimage = True
+                self.canvas.canvas.update()
+                self.canvas.canvas.redraw()
+                del qimage
+                del pixmap
+        elif self.params.advanced == False:
+            self.add_next_rect()
+            render_index = len(self.canvas.canvas.rectlist) - 1
+            if img is not None:
+                image = img
+                # for items in self.canvas.canvas.rectlist:
+                #    if items.id == self.canvas.canvas.render_item:
+                if self.canvas.canvas.rectlist[render_index].images is not None:
+                    templist = self.canvas.canvas.rectlist[render_index].images
+                else:
+                    templist = []
+                self.canvas.canvas.rectlist[render_index].PILImage = image
+                qimage = ImageQt(image.convert("RGBA"))
+                templist.append(qimage)
+                self.canvas.canvas.rectlist[render_index].images = templist
+                if self.canvas.canvas.rectlist[render_index].render_index == None:
+                    self.canvas.canvas.rectlist[render_index].render_index = 0
+                else:
+                    self.canvas.canvas.rectlist[render_index].render_index += 1
+                self.canvas.canvas.rectlist[render_index].image = \
+                    self.canvas.canvas.rectlist[render_index].images[
+                        self.canvas.canvas.rectlist[render_index].render_index]
+                self.canvas.canvas.rectlist[render_index].timestring = time.time()
+                self.canvas.canvas.rectlist[render_index].params = self.params
+        self.canvas.canvas.newimage = True
+        self.canvas.canvas.redraw()
+        self.canvas.canvas.update()
+
+        if self.params.advanced == False and self.params.max_frames > 1:
+            self.params.advanced = True
+
+        if self.make_grid:
+            self.all_images.append(T.functional.pil_to_tensor(image))
+
+
+    @Slot()
+    def image_preview_func(self, image=None):
+
         img = image #self.image
+        # store the last image for a part of the batch hires process
+        if self.outpaint.batch_process == 'run_hires_batch':
+            index = self.render_index
+            if index < 0:
+                index = 0
+            self.outpaint.betterslices.append((img.convert('RGBA'),
+                                      self.canvas.canvas.rectlist[index].x,
+                                      self.canvas.canvas.rectlist[index].y))
         if self.params.advanced == True:
             if self.canvas.canvas.rectlist != []:
                 if img is not None:
@@ -777,7 +867,7 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.rectlist[self.render_index].img_path = gs.temppath
                 self.canvas.canvas.newimage = True
                 self.canvas.canvas.update()
-                self.canvas.canvas.redraw()
+                #self.canvas.canvas.redraw()
                 del qimage
                 del pixmap
         elif self.params.advanced == False:
@@ -785,6 +875,7 @@ class MainWindow(QMainWindow):
             self.render_index = len(self.canvas.canvas.rectlist) - 1
             if img is not None:
                 image = img
+                h, w = image.size
                 # for items in self.canvas.canvas.rectlist:
                 #    if items.id == self.canvas.canvas.render_item:
                 if self.canvas.canvas.rectlist[self.render_index].images is not None:
@@ -804,9 +895,11 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.rectlist[self.render_index].render_index]
                 self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
                 self.canvas.canvas.rectlist[self.render_index].params = self.params
-        self.canvas.canvas.newimage = True
-        self.canvas.canvas.redraw()
-        self.canvas.canvas.update()
+                self.canvas.canvas.rectlist[self.render_index].h = h
+                self.canvas.canvas.rectlist[self.render_index].w = w
+                self.canvas.canvas.newimage = True
+                self.canvas.canvas.redraw()
+                self.canvas.canvas.update()
 
         if self.params.advanced == False and self.params.max_frames > 1:
             self.params.advanced = True
@@ -963,7 +1056,10 @@ class MainWindow(QMainWindow):
         if title:
             t.setWindowTitle(title)
             t.exec_()
-        return t.selectedFiles()[0]
+        if len(t.selectedFiles()) > 0:
+            return t.selectedFiles()[0]
+        else:
+            return
 
     # Timeline functions
     def showTypeKeyframes(self):

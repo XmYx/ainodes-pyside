@@ -315,8 +315,11 @@ class UniControl(QObject):
         self.init_anims()
         if self.outHidden is True:
             self.showOutAnim.start()
+            self.parent.thumbs.w.dockWidget.setVisible(True)
+            self.w.mode.setCurrentIndex(1)
         else:
             self.hideOutAnim.start()
+            self.parent.thumbs.w.dockWidget.setVisible(False)
         self.outHidden = not self.outHidden
 
     def hideEmbedding_anim(self):

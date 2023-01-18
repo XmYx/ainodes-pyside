@@ -989,6 +989,9 @@
                      </item>
                      <item row="1" column="1" colspan="2">
                       <widget class="QSpinBox" name="mask_offset">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Adds an offset to the outpaint mask, so the mask doesnt cover the whole image, this way the inpaint model has a few pixels to &amp;quot;adapt&amp;quot;, and it becomes seamless&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="minimum">
                         <number>-128</number>
                        </property>
@@ -999,6 +1002,9 @@
                      </item>
                      <item row="1" column="3" colspan="2">
                       <widget class="QCheckBox" name="randomize">
+                       <property name="toolTip">
+                        <string>Adds a random of +-50 pixels to the overlap</string>
+                       </property>
                        <property name="text">
                         <string>Randomize</string>
                        </property>
@@ -1006,6 +1012,9 @@
                      </item>
                      <item row="1" column="5">
                       <widget class="QCheckBox" name="reverse">
+                       <property name="toolTip">
+                        <string>Will reverse the order of the previewed batch</string>
+                       </property>
                        <property name="text">
                         <string>Reverse</string>
                        </property>
@@ -1020,6 +1029,9 @@
                      </item>
                      <item row="2" column="1" colspan="2">
                       <widget class="QSpinBox" name="rect_overlap">
+                       <property name="toolTip">
+                        <string>How many pixels the tiles will overlap each other</string>
+                       </property>
                        <property name="maximum">
                         <number>1024</number>
                        </property>
@@ -1030,6 +1042,9 @@
                      </item>
                      <item row="2" column="3" colspan="2">
                       <widget class="QCheckBox" name="spiral">
+                       <property name="toolTip">
+                        <string>The batch will be crated as a spiral from outside to inside, you can use reverse to go from inside to outside. Makes some difference when using inpaint.</string>
+                       </property>
                        <property name="text">
                         <string>Spiral Batch</string>
                        </property>
@@ -1051,6 +1066,9 @@
                      </item>
                      <item row="3" column="1" colspan="2">
                       <widget class="QSpinBox" name="batch_rows">
+                       <property name="toolTip">
+                        <string>How many rows the batch process will fill with images</string>
+                       </property>
                        <property name="maximum">
                         <number>32</number>
                        </property>
@@ -1068,6 +1086,9 @@
                      </item>
                      <item row="4" column="1" colspan="2">
                       <widget class="QSpinBox" name="batch_columns">
+                       <property name="toolTip">
+                        <string>How many columns each row will have</string>
+                       </property>
                        <property name="maximum">
                         <number>32</number>
                        </property>
@@ -1085,6 +1106,9 @@
                      </item>
                      <item row="5" column="1" colspan="2">
                       <widget class="QSpinBox" name="start_offset_x">
+                       <property name="toolTip">
+                        <string>How far from the left side the of the canvas the bach images will start</string>
+                       </property>
                        <property name="maximum">
                         <number>8192</number>
                        </property>
@@ -1099,6 +1123,9 @@
                      </item>
                      <item row="6" column="1" colspan="2">
                       <widget class="QSpinBox" name="start_offset_y">
+                       <property name="toolTip">
+                        <string>How many pixels from top of the canvas the images will start</string>
+                       </property>
                        <property name="maximum">
                         <number>8192</number>
                        </property>
@@ -1113,6 +1140,9 @@
                      </item>
                      <item row="7" column="1" colspan="2">
                       <widget class="QSpinBox" name="mask_blur">
+                       <property name="toolTip">
+                        <string>Blurs the outpaint mask</string>
+                       </property>
                        <property name="maximum">
                         <number>20</number>
                        </property>
@@ -1120,6 +1150,9 @@
                      </item>
                      <item row="3" column="3">
                       <widget class="QPushButton" name="resize_canvas">
+                       <property name="toolTip">
+                        <string>Sets the canvas size to fit the selected batch settings</string>
+                       </property>
                        <property name="text">
                         <string>set canvas size</string>
                        </property>

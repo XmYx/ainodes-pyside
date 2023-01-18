@@ -199,7 +199,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-29</y>
+            <y>0</y>
             <width>682</width>
             <height>2852</height>
            </rect>
@@ -284,29 +284,39 @@
               <property name="verticalSpacing">
                <number>5</number>
               </property>
-              <item row="15" column="4">
+              <item row="7" column="5">
+               <widget class="QComboBox" name="multi_dim_seed_behavior">
+                <item>
+                 <property name="text">
+                  <string>fixed</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>iter</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>random</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="cfglabel">
+                <property name="text">
+                 <string>CFG</string>
+                </property>
+               </widget>
+              </item>
+              <item row="16" column="5" colspan="2">
                <widget class="QCheckBox" name="toggle_embeddings">
                 <property name="toolTip">
                  <string>Only works with 1.x Models. For 2.x it gets turned off during Image generation and has no effect.</string>
                 </property>
                 <property name="text">
                  <string>Aes. Gradient</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QSpinBox" name="W">
-                <property name="minimum">
-                 <number>256</number>
-                </property>
-                <property name="maximum">
-                 <number>2048</number>
-                </property>
-                <property name="singleStep">
-                 <number>64</number>
-                </property>
-                <property name="value">
-                 <number>512</number>
                 </property>
                </widget>
               </item>
@@ -333,7 +343,964 @@
                 </property>
                </widget>
               </item>
-              <item row="20" column="0" colspan="7">
+              <item row="5" column="3">
+               <widget class="QCheckBox" name="prompt_weighting">
+                <property name="text">
+                 <string>Weighted</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="0" colspan="2">
+               <widget class="QCheckBox" name="toggle_sampler">
+                <property name="text">
+                 <string>Sampling Settings</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="3" colspan="2">
+               <widget class="QCheckBox" name="toggle_negative_prompt">
+                <property name="minimumSize">
+                 <size>
+                  <width>155</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Negative prompt</string>
+                </property>
+               </widget>
+              </item>
+              <item row="16" column="4">
+               <widget class="QCheckBox" name="toggle_aesthetics">
+                <property name="toolTip">
+                 <string>Only works with 1.x Models. For 2.x it gets turned off during Image generation and has no effect.</string>
+                </property>
+                <property name="text">
+                 <string>Aesthetics</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="stepslabel">
+                <property name="text">
+                 <string>Steps</string>
+                </property>
+               </widget>
+              </item>
+              <item row="25" column="0" colspan="7">
+               <widget class="QFrame" name="plotting_frame">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_3">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="horizontalSpacing">
+                  <number>2</number>
+                 </property>
+                 <property name="verticalSpacing">
+                  <number>5</number>
+                 </property>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_71">
+                   <property name="text">
+                    <string>Grid Setup</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QComboBox" name="plotY">
+                   <item>
+                    <property name="text">
+                     <string>seed</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>sampler</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>steps</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ddim_eta</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>strength</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>mean_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>var_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>exposure_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>exposure_target</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>colormatch_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>colormatch_image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>colormatch_n_colors</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ignore_sat_weight</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clip_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>aesthetics_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>cutn</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>cut_pow</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>init_mse_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>init_mse_image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>blue_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>gradient_wrt</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>gradient_add_to</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>decode_method</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>grad_threshold_type</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clamp_grad_threshold</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clamp_start</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clamp_stop</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>grad_inject_timing</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>T</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>lr</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QComboBox" name="plotX">
+                   <item>
+                    <property name="text">
+                     <string>seed</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>sampler</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>steps</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ddim_eta</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>strength</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>mean_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>var_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>exposure_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>exposure_target</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>colormatch_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>colormatch_image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>colormatch_n_colors</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ignore_sat_weight</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clip_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>aesthetics_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>cutn</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>cut_pow</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>init_mse_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>init_mse_image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>blue_scale</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>gradient_wrt</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>gradient_add_to</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>decode_method</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>grad_threshold_type</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clamp_grad_threshold</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clamp_start</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>clamp_stop</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>grad_inject_timing</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>T</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>lr</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLineEdit" name="plotYLine"/>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLineEdit" name="plotXLine"/>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_74">
+                   <property name="text">
+                    <string>Axis</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QComboBox" name="axis">
+                   <item>
+                    <property name="text">
+                     <string>X</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Y</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Both</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="heightlabel">
+                <property name="text">
+                 <string>Height</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="3" colspan="2">
+               <widget class="QCheckBox" name="multi_dim_prompt">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Have a look into multiDimParams.txt for more informations&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Multi Dim Prompt</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <widget class="QSpinBox" name="steps">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>300</number>
+                </property>
+                <property name="value">
+                 <number>20</number>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="hires_strength_label">
+                <property name="text">
+                 <string>HiRes Strength</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="3">
+               <widget class="QCheckBox" name="seamless">
+                <property name="text">
+                 <string>Seamless</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="widthlabel">
+                <property name="text">
+                 <string>Width</string>
+                </property>
+               </widget>
+              </item>
+              <item row="18" column="0" colspan="7">
+               <widget class="QFrame" name="outpaint_values">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="horizontalSpacing">
+                  <number>2</number>
+                 </property>
+                 <property name="verticalSpacing">
+                  <number>0</number>
+                 </property>
+                 <item row="1" column="0" rowspan="3" colspan="4">
+                  <widget class="QTabWidget" name="tabWidget">
+                   <property name="currentIndex">
+                    <number>1</number>
+                   </property>
+                   <widget class="QWidget" name="tab_2">
+                    <attribute name="title">
+                     <string>Manual In/Outpaint</string>
+                    </attribute>
+                    <layout class="QGridLayout" name="gridLayout_20">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="horizontalSpacing">
+                      <number>2</number>
+                     </property>
+                     <property name="verticalSpacing">
+                      <number>5</number>
+                     </property>
+                     <item row="1" column="0">
+                      <widget class="QPushButton" name="delete_2">
+                       <property name="text">
+                        <string>Delete</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_17">
+                       <property name="text">
+                        <string>Reconstruction Blur</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="2">
+                      <spacer name="horizontalSpacer">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QSpinBox" name="recons_blur">
+                       <property name="maximum">
+                        <number>200</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QPushButton" name="redo">
+                       <property name="text">
+                        <string>Redo</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
+                      <spacer name="verticalSpacer_2">
+                       <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>20</width>
+                         <height>40</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </widget>
+                   <widget class="QWidget" name="tab_3">
+                    <attribute name="title">
+                     <string>Batch in/outpaint</string>
+                    </attribute>
+                    <layout class="QGridLayout" name="gridLayout_21">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="horizontalSpacing">
+                      <number>2</number>
+                     </property>
+                     <property name="verticalSpacing">
+                      <number>5</number>
+                     </property>
+                     <item row="0" column="0" colspan="2">
+                      <widget class="QPushButton" name="preview_batch">
+                       <property name="text">
+                        <string>Preview Batch</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="2" colspan="2">
+                      <widget class="QPushButton" name="prepare_batch">
+                       <property name="text">
+                        <string>Prepare Batch</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="4" colspan="2">
+                      <widget class="QPushButton" name="run_batch">
+                       <property name="text">
+                        <string>Run Batch</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_4">
+                       <property name="text">
+                        <string>Outpaint Mask Offset</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1" colspan="2">
+                      <widget class="QSpinBox" name="mask_offset">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Adds an offset to the outpaint mask, so the mask doesnt cover the whole image, this way the inpaint model has a few pixels to &amp;quot;adapt&amp;quot;, and it becomes seamless&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
+                       <property name="minimum">
+                        <number>-128</number>
+                       </property>
+                       <property name="maximum">
+                        <number>128</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="3" colspan="2">
+                      <widget class="QCheckBox" name="randomize">
+                       <property name="toolTip">
+                        <string>Adds a random of +-50 pixels to the overlap</string>
+                       </property>
+                       <property name="text">
+                        <string>Randomize</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="5">
+                      <widget class="QCheckBox" name="reverse">
+                       <property name="toolTip">
+                        <string>Will reverse the order of the previewed batch</string>
+                       </property>
+                       <property name="text">
+                        <string>Reverse</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_5">
+                       <property name="text">
+                        <string>Batch Outpaint Overlap</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1" colspan="2">
+                      <widget class="QSpinBox" name="rect_overlap">
+                       <property name="toolTip">
+                        <string>How many pixels the tiles will overlap each other</string>
+                       </property>
+                       <property name="maximum">
+                        <number>1024</number>
+                       </property>
+                       <property name="value">
+                        <number>128</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="3" colspan="2">
+                      <widget class="QCheckBox" name="spiral">
+                       <property name="toolTip">
+                        <string>The batch will be crated as a spiral from outside to inside, you can use reverse to go from inside to outside. Makes some difference when using inpaint.</string>
+                       </property>
+                       <property name="text">
+                        <string>Spiral Batch</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="5">
+                      <widget class="QCheckBox" name="enable_overlap">
+                       <property name="text">
+                        <string>Enable Overlap</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="label_6">
+                       <property name="text">
+                        <string>Batch Rows</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1" colspan="2">
+                      <widget class="QSpinBox" name="batch_rows">
+                       <property name="toolTip">
+                        <string>How many rows the batch process will fill with images</string>
+                       </property>
+                       <property name="maximum">
+                        <number>32</number>
+                       </property>
+                       <property name="value">
+                        <number>3</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="0">
+                      <widget class="QLabel" name="label_7">
+                       <property name="text">
+                        <string>Batch Columns</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="1" colspan="2">
+                      <widget class="QSpinBox" name="batch_columns">
+                       <property name="toolTip">
+                        <string>How many columns each row will have</string>
+                       </property>
+                       <property name="maximum">
+                        <number>32</number>
+                       </property>
+                       <property name="value">
+                        <number>3</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="0">
+                      <widget class="QLabel" name="label_8">
+                       <property name="text">
+                        <string>Start Offset X</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="1" colspan="2">
+                      <widget class="QSpinBox" name="start_offset_x">
+                       <property name="toolTip">
+                        <string>How far from the left side the of the canvas the bach images will start</string>
+                       </property>
+                       <property name="maximum">
+                        <number>8192</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="6" column="0">
+                      <widget class="QLabel" name="label_9">
+                       <property name="text">
+                        <string>Start Offset Y</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="6" column="1" colspan="2">
+                      <widget class="QSpinBox" name="start_offset_y">
+                       <property name="toolTip">
+                        <string>How many pixels from top of the canvas the images will start</string>
+                       </property>
+                       <property name="maximum">
+                        <number>8192</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="7" column="0">
+                      <widget class="QLabel" name="label_11">
+                       <property name="text">
+                        <string>Mask Blur</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="7" column="1" colspan="2">
+                      <widget class="QSpinBox" name="mask_blur">
+                       <property name="toolTip">
+                        <string>Blurs the outpaint mask</string>
+                       </property>
+                       <property name="maximum">
+                        <number>20</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="3">
+                      <widget class="QPushButton" name="resize_canvas">
+                       <property name="toolTip">
+                        <string>Sets the canvas size to fit the selected batch settings</string>
+                       </property>
+                       <property name="text">
+                        <string>set canvas size</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                   <widget class="QWidget" name="tab_4">
+                    <attribute name="title">
+                     <string>Batch img2img upscale</string>
+                    </attribute>
+                    <layout class="QGridLayout" name="gridLayout_22">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="horizontalSpacing">
+                      <number>2</number>
+                     </property>
+                     <property name="verticalSpacing">
+                      <number>5</number>
+                     </property>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_85">
+                       <property name="text">
+                        <string>Upscale factor</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="4">
+                      <spacer name="horizontalSpacer_2">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item row="0" column="2" colspan="2">
+                      <widget class="QPushButton" name="run_hires">
+                       <property name="toolTip">
+                        <string>Runs the whole process of upscaling and image to image the input image tile by tile. Click stop in the upper right corner if you like to stop the process</string>
+                       </property>
+                       <property name="text">
+                        <string>Run Hires</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1" colspan="3">
+                      <widget class="QSpinBox" name="batch_upscale_factor">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The upscale factor&lt;/p&gt;&lt;p&gt;output size = input size * factor. H and W will be calculated the same way. &lt;/p&gt;&lt;p&gt;The aspect ratio will be keept. &lt;/p&gt;&lt;p&gt;be aware that more big means more time to render all the images&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
+                       <property name="minimum">
+                        <number>1</number>
+                       </property>
+                       <property name="maximum">
+                        <number>10</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <spacer name="verticalSpacer_3">
+                       <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>20</width>
+                         <height>40</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item row="0" column="0" colspan="2">
+                      <widget class="QPushButton" name="prep_hires">
+                       <property name="toolTip">
+                        <string>Open a filechooser to select the image you want to work with</string>
+                       </property>
+                       <property name="text">
+                        <string>Prep Hires</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="with_inpaint">
+                   <property name="text">
+                    <string>With inpaint</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="load_inpaint_model">
+                   <property name="text">
+                    <string>PreLoad Inpaint Model</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QPushButton" name="update_params">
+                   <property name="text">
+                    <string>Update Params</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="8" column="1">
+               <widget class="QDoubleSpinBox" name="scale">
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <double>30.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>7.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="QLabel" name="preview_mode_label">
+                <property name="text">
+                 <string>Preview Mode</string>
+                </property>
+               </widget>
+              </item>
+              <item row="21" column="0" colspan="7">
                <widget class="QFrame" name="embedding_values">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -536,14 +1503,726 @@
                 </item>
                </widget>
               </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="heightlabel">
-                <property name="text">
-                 <string>Height</string>
+              <item row="24" column="0" colspan="7">
+               <widget class="QFrame" name="aesthetic_values">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
                 </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_15">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="horizontalSpacing">
+                  <number>2</number>
+                 </property>
+                 <property name="verticalSpacing">
+                  <number>5</number>
+                 </property>
+                 <item row="1" column="1" colspan="2">
+                  <widget class="QComboBox" name="clip_name">
+                   <property name="toolTip">
+                    <string>Used with aesthetics_scale&gt;0 and clip_scale&gt;0</string>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>ViT-L/14</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ViT-L/14@336px</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ViT-B/16</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ViT-B/32</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ViT-H/14</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QDoubleSpinBox" name="clip_scale">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;CLIP Guidance &lt;br/&gt;Values: 0 - 200&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="maximum">
+                    <double>200.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="0">
+                  <widget class="QCheckBox" name="toggle_colors">
+                   <property name="text">
+                    <string>Colormatch Settings</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_58">
+                   <property name="text">
+                    <string>Clip Model</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="0">
+                  <widget class="QCheckBox" name="toggle_grad">
+                   <property name="text">
+                    <string>Gradient Settings</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QSpinBox" name="cutn">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of times CLIP views the image for each step&lt;/p&gt;&lt;p&gt;This variable only matters under these conditions: &lt;/p&gt;&lt;p&gt;Extremely large&lt;/p&gt;&lt;p&gt;images bigger than 2688 x 2688px, or &lt;/p&gt;&lt;p&gt;decode_method = autoencoder &lt;/p&gt;&lt;p&gt;This is because&lt;/p&gt;&lt;p&gt;clip looks at the decoded image, which is small when decode_method=linear &lt;/p&gt;&lt;p&gt;Values: 0 - 6&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="maximum">
+                    <number>6</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_68">
+                   <property name="text">
+                    <string>Clip Scale</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_33">
+                   <property name="text">
+                    <string>Cut Number</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="0" colspan="4">
+                  <widget class="QFrame" name="grad_values">
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_14">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="horizontalSpacing">
+                     <number>2</number>
+                    </property>
+                    <property name="verticalSpacing">
+                     <number>5</number>
+                    </property>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_3">
+                      <property name="text">
+                       <string>Decode Method</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_60">
+                      <property name="text">
+                       <string>Gradient add to</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="Clamp">
+                      <property name="text">
+                       <string>Clamp Grad Threshold</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QComboBox" name="decode_method">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gradient conditioning decodes the latent at every step.&lt;/p&gt;&lt;p&gt;Linear is a shortcut that quickly translates the latent to a small (default 64x64) image. linear decoding is not implemented for every model, so if your results with conditioning look noisy, try “autoencoder”.&lt;/p&gt;&lt;p&gt;Autoencoder is much slower, but higher quality. It uses the same decoding method the model already uses after the last step.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>linear</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>None</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>autoencoder</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLineEdit" name="grad_inject_timing">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Applies the gradient only at a limited number of steps&lt;/p&gt;&lt;p&gt;	Interpreted differently based on the type of grad_inject_timing&lt;/p&gt;&lt;p&gt;	if grad_inject_timing is:&lt;/p&gt;&lt;p&gt;int: compute every inject_timing steps, eg. 2 mean apply grad every other step&lt;/p&gt;&lt;p&gt;list of floats: compute on these decimal fraction steps (eg, [0.5, 1.0] for 50 steps would be at steps 25 and 50)&lt;/p&gt;&lt;p&gt;list of ints: compute on these steps&lt;/p&gt;&lt;p&gt;None: Compute on all steps &lt;/p&gt;&lt;p&gt;This can be used to generate an image faster, or apply conditioning to different sections of the gen. For example, overall composition is usually decided in the first 20% of steps, so if colormatch conditioning is only applied in the last half of steps it will result in practically the same image but with different colors.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="text">
+                       <string>0.8</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="1">
+                     <widget class="QDoubleSpinBox" name="clamp_start">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;used with grad_threshold_type “dynamic”&lt;/p&gt;&lt;p&gt;clamp_grad_threshold value at the first step, linearly changes to clamp_stop at the last step &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="decimals">
+                       <number>1</number>
+                      </property>
+                      <property name="maximum">
+                       <double>1.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.100000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
+                     <widget class="QDoubleSpinBox" name="clamp_grad_threshold">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;used with grad_threshold_types “static” “mean” and “dynamic” &lt;/p&gt;&lt;p&gt;Value: 0-1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="decimals">
+                       <number>1</number>
+                      </property>
+                      <property name="maximum">
+                       <double>1.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.100000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="5" column="1">
+                     <widget class="QDoubleSpinBox" name="clamp_stop">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;used with grad_threshold_type “dynamic”&lt;/p&gt;&lt;p&gt;clamp_grad_threshold value at the last step, linearly changes from clamp_start from the first step&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="maximum">
+                       <double>1.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QComboBox" name="gradient_add_to">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gradient is added to the cfg cond or uncond or both&lt;/p&gt;&lt;p&gt;&amp;quot;cond&amp;quot; or &amp;quot;uncond&amp;quot; only applies if cond_uncond_sync == False&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>cond</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>uncond</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>both</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                    <item row="5" column="0">
+                     <widget class="QLabel" name="Clamp_3">
+                      <property name="text">
+                       <string>Clamp Stop</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="0">
+                     <widget class="QLabel" name="Clamp_2">
+                      <property name="text">
+                       <string>Clamp Start</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="Clamp_4">
+                      <property name="text">
+                       <string>Grad Inject Timing</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="6" column="1">
+                     <widget class="QComboBox" name="gradient_wrt">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;“x0_pred” &lt;/p&gt;&lt;p&gt;Applies the gradient calculation only to the denoised image at each step&lt;/p&gt;&lt;p&gt;Much faster&lt;/p&gt;&lt;p&gt;May require higher *_scale values&lt;/p&gt;&lt;p&gt;Does not work very well with clip_scale or aesthetic_scale guidance&lt;/p&gt;&lt;p&gt;“x”&lt;/p&gt;&lt;p&gt;Applies the gradient calculation through the unet&lt;/p&gt;&lt;p&gt;Much slower&lt;/p&gt;&lt;p&gt;Takes the content of the image more into consideration because the grad uses the unet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>x</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>x0_pred</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                    <item row="6" column="0">
+                     <widget class="QLabel" name="label_59">
+                      <property name="text">
+                       <string>Gradient WRT</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="0">
+                     <widget class="QLabel" name="label_61">
+                      <property name="text">
+                       <string>Grad Threshold Type</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="1">
+                     <widget class="QComboBox" name="grad_threshold_type">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The final gradient is clamped before it’s added to the image. This is to avoid the overexposed look.&lt;/p&gt;&lt;p&gt;dynamic: thresholding from the imagen paper (May 2022)&lt;/p&gt;&lt;p&gt;static: simple clamping&lt;/p&gt;&lt;p&gt;mean: rescales out of range values based on the mean&lt;/p&gt;&lt;p&gt;schedule: uses clamp_start and clamp_stop to set a threshold value that changes linearly at each step. Like “mean” but with changing clamp_grad_threshold over time&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>dynamic</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>static</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>mean</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>schedule</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QDoubleSpinBox" name="cut_pow">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Used when clip_scale &amp;gt; 0&lt;br/&gt;Affects the size&lt;br/&gt;of the view window when CLIP sees the image&lt;br/&gt;When cut_pow is&lt;br/&gt;very small, the view window is large, and vise versa&lt;br/&gt;Only matters for&lt;br/&gt;extremely large images or autoencoder decode_method, see cutn&lt;br/&gt;Values: 0.00001 - 100000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="decimals">
+                    <number>9</number>
+                   </property>
+                   <property name="maximum">
+                    <double>10000000.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.001000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="0" colspan="4">
+                  <widget class="QFrame" name="color_expo_values">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>400</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_7">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="horizontalSpacing">
+                     <number>2</number>
+                    </property>
+                    <property name="verticalSpacing">
+                     <number>5</number>
+                    </property>
+                    <item row="4" column="4">
+                     <widget class="QPushButton" name="select_mse_init">
+                      <property name="text">
+                       <string>Select</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="11" column="0">
+                     <widget class="QLabel" name="label_25">
+                      <property name="text">
+                       <string>Var Scale</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="2" colspan="2">
+                     <widget class="QLineEdit" name="lineEdit_2"/>
+                    </item>
+                    <item row="19" column="0">
+                     <widget class="QLabel" name="label_32">
+                      <property name="text">
+                       <string>Ignore Sat Weight</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="4">
+                     <widget class="QPushButton" name="pushButton_2">
+                      <property name="text">
+                       <string>Edit Path / Url</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="0">
+                     <widget class="QLabel" name="label_16">
+                      <property name="text">
+                       <string>Init MSE Image</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_30">
+                      <property name="text">
+                       <string>Colormatch Preview</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="12" column="0">
+                     <widget class="QLabel" name="label_26">
+                      <property name="text">
+                       <string>Expo Scale</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="18" column="0">
+                     <widget class="QLabel" name="label_31">
+                      <property name="text">
+                       <string>Colormatch N Colors</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="14" column="0">
+                     <widget class="QLabel" name="label_28">
+                      <property name="text">
+                       <string>Colormatch Scale</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="6" column="0">
+                     <widget class="QLabel" name="label_57">
+                      <property name="text">
+                       <string>Init MSE Scale</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="4">
+                     <widget class="QPushButton" name="select_color_match_image">
+                      <property name="text">
+                       <string>Select</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="10" column="0">
+                     <widget class="QLabel" name="label_23">
+                      <property name="text">
+                       <string>Mean Scale</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="2" colspan="2">
+                     <widget class="QLineEdit" name="colormatch_image"/>
+                    </item>
+                    <item row="13" column="0">
+                     <widget class="QLabel" name="label_27">
+                      <property name="text">
+                       <string>Expo Target</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="0">
+                     <widget class="QLabel" name="label_70">
+                      <property name="text">
+                       <string>Blue Scale</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_29">
+                      <property name="text">
+                       <string>Colormatch Image</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="2" colspan="2">
+                     <widget class="QLineEdit" name="init_mse_image"/>
+                    </item>
+                    <item row="6" column="2">
+                     <widget class="QDoubleSpinBox" name="init_mse_scale">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Guide the image to match init_mse_image pixel-by-pixel&lt;br/&gt;Values: 0-1000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="maximum">
+                       <double>1000.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="2">
+                     <widget class="QDoubleSpinBox" name="blue_scale"/>
+                    </item>
+                    <item row="10" column="2">
+                     <widget class="QDoubleSpinBox" name="mean_scale">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pushes the pixel values towards middle gray&lt;/p&gt;&lt;p&gt;Samples have values between -1 and 1. Mean_scale guides pixels toward 0, hence gray&lt;/p&gt;&lt;p&gt;Values: 0 - 400&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="minimum">
+                       <double>0.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>400.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="11" column="2">
+                     <widget class="QDoubleSpinBox" name="var_scale">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pushes pixels towards lower variance&lt;br/&gt;Values: -200 - 200&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="decimals">
+                       <number>0</number>
+                      </property>
+                      <property name="minimum">
+                       <double>-200.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>200.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="12" column="2">
+                     <widget class="QDoubleSpinBox" name="exposure_scale">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Targeted mean loss. Uses exposure_target variable. &lt;/p&gt;&lt;p&gt;When exposure_target == 0, exposure_scale is equivalent to mean_scale&lt;/p&gt;&lt;p&gt;Use it to compensate for very high cfg scale, for example.&lt;/p&gt;&lt;p&gt;Values: 0 - 400&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="maximum">
+                       <double>400.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="13" column="2">
+                     <widget class="QDoubleSpinBox" name="exposure_target">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Used with exposure_scale &lt;/p&gt;&lt;p&gt;Negative values push towards a darker image, positive values toward a brighter image &lt;/p&gt;&lt;p&gt;Values: -1 - 1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>1.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="14" column="2">
+                     <widget class="QDoubleSpinBox" name="colormatch_scale">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Guides the image towards a color palette.&lt;/p&gt;&lt;p&gt;Palette is extracted from an input image colormatch_image&lt;/p&gt;&lt;p&gt;Best matching results when decode_method == “autoencoder”&lt;/p&gt;&lt;p&gt;Works best when gradient_wrt == &amp;quot;x0_pred”, but will still work well with “x”&lt;/p&gt;&lt;p&gt;Values: 0 - 1000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="decimals">
+                       <number>0</number>
+                      </property>
+                      <property name="maximum">
+                       <double>1000.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="18" column="2">
+                     <widget class="QSpinBox" name="colormatch_n_colors">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of colors in the palette &lt;br/&gt;Values: 1 - 20&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="maximum">
+                       <number>20</number>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="19" column="2">
+                     <widget class="QDoubleSpinBox" name="ignore_sat_weight">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount to ignore the saturation when using colormatch_scale. &lt;/p&gt;&lt;p&gt;High ignore_sat_weight will allow a higher colormatch_scale without making the colors look overblown&lt;/p&gt;&lt;p&gt;Values: 0 - 5&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="decimals">
+                       <number>1</number>
+                      </property>
+                      <property name="maximum">
+                       <double>10.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.100000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QDoubleSpinBox" name="aesthetics_scale">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Recommended to use with gradient_wrt=’x’ &lt;br/&gt;Values: 0 - 10&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="maximum">
+                    <double>10.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_34">
+                   <property name="text">
+                    <string>Cut POW</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_69">
+                   <property name="text">
+                    <string>Aest. Scale</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0" colspan="4">
+                  <widget class="QTextEdit" name="clip_prompt">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gets used if clip_sclae &amp;gt; 0&lt;br/&gt;If left empty clip_prompt will equal the prompt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="placeholderText">
+                    <string>Clip Prompt,</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
-              <item row="18" column="0" colspan="7">
+              <item row="26" column="0" colspan="7">
+               <widget class="QFrame" name="plugin_values">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_17">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="horizontalSpacing">
+                  <number>2</number>
+                 </property>
+                 <property name="verticalSpacing">
+                  <number>5</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label">
+                   <property name="text">
+                    <string>Plugins</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QPushButton" name="loadbutton">
+                   <property name="text">
+                    <string>Load</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QComboBox" name="plugins"/>
+                 </item>
+                 <item row="0" column="3">
+                  <widget class="QPushButton" name="unloadbutton">
+                   <property name="text">
+                    <string>Unload</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="19" column="0" colspan="7">
                <widget class="QFrame" name="anim_values">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -570,7 +2249,7 @@
                  <item>
                   <widget class="QTabWidget" name="anim_values_tab">
                    <property name="currentIndex">
-                    <number>2</number>
+                    <number>0</number>
                    </property>
                    <widget class="QWidget" name="tab">
                     <property name="sizePolicy">
@@ -1421,897 +3100,35 @@
                 </layout>
                </widget>
               </item>
-              <item row="3" column="3">
-               <widget class="QLabel" name="preview_mode_label">
-                <property name="text">
-                 <string>Preview Mode</string>
+              <item row="3" column="1">
+               <widget class="QSpinBox" name="W">
+                <property name="minimum">
+                 <number>256</number>
+                </property>
+                <property name="maximum">
+                 <number>2048</number>
+                </property>
+                <property name="singleStep">
+                 <number>64</number>
+                </property>
+                <property name="value">
+                 <number>512</number>
                 </property>
                </widget>
               </item>
-              <item row="6" column="0">
-               <widget class="QLabel" name="hires_strength_label">
-                <property name="text">
-                 <string>HiRes Strength</string>
+              <item row="4" column="1">
+               <widget class="QSpinBox" name="H">
+                <property name="minimum">
+                 <number>256</number>
                 </property>
-               </widget>
-              </item>
-              <item row="24" column="0" colspan="7">
-               <widget class="QFrame" name="plotting_frame">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
+                <property name="maximum">
+                 <number>2048</number>
                 </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
+                <property name="singleStep">
+                 <number>64</number>
                 </property>
-                <layout class="QGridLayout" name="gridLayout_3">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="horizontalSpacing">
-                  <number>2</number>
-                 </property>
-                 <property name="verticalSpacing">
-                  <number>5</number>
-                 </property>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_71">
-                   <property name="text">
-                    <string>Grid Setup</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QComboBox" name="plotY">
-                   <item>
-                    <property name="text">
-                     <string>seed</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>sampler</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>steps</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>ddim_eta</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>strength</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>mean_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>var_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>exposure_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>exposure_target</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>colormatch_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>colormatch_image</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>colormatch_n_colors</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>ignore_sat_weight</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clip_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>aesthetics_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>cutn</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>cut_pow</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>init_mse_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>init_mse_image</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>blue_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>gradient_wrt</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>gradient_add_to</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>decode_method</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>grad_threshold_type</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clamp_grad_threshold</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clamp_start</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clamp_stop</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>grad_inject_timing</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>T</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>lr</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QComboBox" name="plotX">
-                   <item>
-                    <property name="text">
-                     <string>seed</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>sampler</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>steps</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>ddim_eta</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>strength</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>mean_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>var_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>exposure_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>exposure_target</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>colormatch_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>colormatch_image</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>colormatch_n_colors</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>ignore_sat_weight</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clip_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>aesthetics_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>cutn</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>cut_pow</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>init_mse_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>init_mse_image</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>blue_scale</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>gradient_wrt</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>gradient_add_to</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>decode_method</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>grad_threshold_type</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clamp_grad_threshold</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clamp_start</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>clamp_stop</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>grad_inject_timing</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>T</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>lr</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QLineEdit" name="plotYLine"/>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QLineEdit" name="plotXLine"/>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_74">
-                   <property name="text">
-                    <string>Axis</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QComboBox" name="axis">
-                   <item>
-                    <property name="text">
-                     <string>X</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Y</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Both</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="17" column="0" colspan="7">
-               <widget class="QFrame" name="outpaint_values">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="horizontalSpacing">
-                  <number>2</number>
-                 </property>
-                 <property name="verticalSpacing">
-                  <number>0</number>
-                 </property>
-                 <item row="1" column="0" rowspan="3" colspan="4">
-                  <widget class="QTabWidget" name="tabWidget">
-                   <property name="currentIndex">
-                    <number>1</number>
-                   </property>
-                   <widget class="QWidget" name="tab_2">
-                    <attribute name="title">
-                     <string>Manual In/Outpaint</string>
-                    </attribute>
-                    <layout class="QGridLayout" name="gridLayout_20">
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>5</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="horizontalSpacing">
-                      <number>2</number>
-                     </property>
-                     <property name="verticalSpacing">
-                      <number>5</number>
-                     </property>
-                     <item row="1" column="0">
-                      <widget class="QPushButton" name="delete_2">
-                       <property name="text">
-                        <string>Delete</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="0">
-                      <widget class="QLabel" name="label_17">
-                       <property name="text">
-                        <string>Reconstruction Blur</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="2">
-                      <spacer name="horizontalSpacer">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item row="2" column="1">
-                      <widget class="QSpinBox" name="recons_blur">
-                       <property name="maximum">
-                        <number>200</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="0">
-                      <widget class="QPushButton" name="redo">
-                       <property name="text">
-                        <string>Redo</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="3" column="1">
-                      <spacer name="verticalSpacer_2">
-                       <property name="orientation">
-                        <enum>Qt::Vertical</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>20</width>
-                         <height>40</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </widget>
-                   <widget class="QWidget" name="tab_3">
-                    <attribute name="title">
-                     <string>Batch in/outpaint</string>
-                    </attribute>
-                    <layout class="QGridLayout" name="gridLayout_21">
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>5</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="horizontalSpacing">
-                      <number>2</number>
-                     </property>
-                     <property name="verticalSpacing">
-                      <number>5</number>
-                     </property>
-                     <item row="0" column="0" colspan="2">
-                      <widget class="QPushButton" name="preview_batch">
-                       <property name="text">
-                        <string>Preview Batch</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="2" colspan="2">
-                      <widget class="QPushButton" name="prepare_batch">
-                       <property name="text">
-                        <string>Prepare Batch</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="4" colspan="2">
-                      <widget class="QPushButton" name="run_batch">
-                       <property name="text">
-                        <string>Run Batch</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="label_4">
-                       <property name="text">
-                        <string>Outpaint Mask Offset</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="1" colspan="2">
-                      <widget class="QSpinBox" name="mask_offset">
-                       <property name="minimum">
-                        <number>-128</number>
-                       </property>
-                       <property name="maximum">
-                        <number>128</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="3" colspan="2">
-                      <widget class="QCheckBox" name="randomize">
-                       <property name="text">
-                        <string>Randomize</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="5">
-                      <widget class="QCheckBox" name="reverse">
-                       <property name="text">
-                        <string>Reverse</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="0">
-                      <widget class="QLabel" name="label_5">
-                       <property name="text">
-                        <string>Batch Outpaint Overlap</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="1" colspan="2">
-                      <widget class="QSpinBox" name="rect_overlap">
-                       <property name="maximum">
-                        <number>1024</number>
-                       </property>
-                       <property name="value">
-                        <number>128</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="3" colspan="2">
-                      <widget class="QCheckBox" name="spiral">
-                       <property name="text">
-                        <string>Spiral Batch</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="5">
-                      <widget class="QCheckBox" name="enable_overlap">
-                       <property name="text">
-                        <string>Enable Overlap</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="3" column="0">
-                      <widget class="QLabel" name="label_6">
-                       <property name="text">
-                        <string>Batch Rows</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="3" column="1" colspan="2">
-                      <widget class="QSpinBox" name="batch_rows">
-                       <property name="maximum">
-                        <number>32</number>
-                       </property>
-                       <property name="value">
-                        <number>3</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="4" column="0">
-                      <widget class="QLabel" name="label_7">
-                       <property name="text">
-                        <string>Batch Columns</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="4" column="1" colspan="2">
-                      <widget class="QSpinBox" name="batch_columns">
-                       <property name="maximum">
-                        <number>32</number>
-                       </property>
-                       <property name="value">
-                        <number>3</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="5" column="0">
-                      <widget class="QLabel" name="label_8">
-                       <property name="text">
-                        <string>Start Offset X</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="5" column="1" colspan="2">
-                      <widget class="QSpinBox" name="start_offset_x">
-                       <property name="maximum">
-                        <number>8192</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="6" column="0">
-                      <widget class="QLabel" name="label_9">
-                       <property name="text">
-                        <string>Start Offset Y</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="6" column="1" colspan="2">
-                      <widget class="QSpinBox" name="start_offset_y">
-                       <property name="maximum">
-                        <number>8192</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="7" column="0">
-                      <widget class="QLabel" name="label_11">
-                       <property name="text">
-                        <string>Mask Blur</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="7" column="1" colspan="2">
-                      <widget class="QSpinBox" name="mask_blur">
-                       <property name="maximum">
-                        <number>20</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="3" column="3">
-                      <widget class="QPushButton" name="resize_canvas">
-                       <property name="text">
-                        <string>set canvas size</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                   <widget class="QWidget" name="tab_4">
-                    <attribute name="title">
-                     <string>Batch img2img upscale</string>
-                    </attribute>
-                    <layout class="QGridLayout" name="gridLayout_22">
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>5</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="horizontalSpacing">
-                      <number>2</number>
-                     </property>
-                     <property name="verticalSpacing">
-                      <number>5</number>
-                     </property>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="label_85">
-                       <property name="text">
-                        <string>Upscale factor</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="4">
-                      <spacer name="horizontalSpacer_2">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item row="0" column="2" colspan="2">
-                      <widget class="QPushButton" name="run_hires">
-                       <property name="toolTip">
-                        <string>Runs the whole process of upscaling and image to image the input image tile by tile. Click stop in the upper right corner if you like to stop the process</string>
-                       </property>
-                       <property name="text">
-                        <string>Run Hires</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="1" colspan="3">
-                      <widget class="QSpinBox" name="batch_upscale_factor">
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The upscale factor&lt;/p&gt;&lt;p&gt;output size = input size * factor. H and W will be calculated the same way. &lt;/p&gt;&lt;p&gt;The aspect ratio will be keept. &lt;/p&gt;&lt;p&gt;be aware that more big means more time to render all the images&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
-                       <property name="minimum">
-                        <number>1</number>
-                       </property>
-                       <property name="maximum">
-                        <number>10</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="0">
-                      <spacer name="verticalSpacer_3">
-                       <property name="orientation">
-                        <enum>Qt::Vertical</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>20</width>
-                         <height>40</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item row="0" column="0" colspan="2">
-                      <widget class="QPushButton" name="prep_hires">
-                       <property name="toolTip">
-                        <string>Open a filechooser to select the image you want to work with</string>
-                       </property>
-                       <property name="text">
-                        <string>Prep Hires</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QCheckBox" name="with_inpaint">
-                   <property name="text">
-                    <string>With inpaint</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QPushButton" name="load_inpaint_model">
-                   <property name="text">
-                    <string>PreLoad Inpaint Model</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QPushButton" name="update_params">
-                   <property name="text">
-                    <string>Update Params</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="4" column="3" colspan="2">
-               <widget class="QCheckBox" name="toggle_negative_prompt">
-                <property name="minimumSize">
-                 <size>
-                  <width>155</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Negative prompt</string>
-                </property>
-               </widget>
-              </item>
-              <item row="25" column="0" colspan="7">
-               <widget class="QFrame" name="plugin_values">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_17">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="horizontalSpacing">
-                  <number>2</number>
-                 </property>
-                 <property name="verticalSpacing">
-                  <number>5</number>
-                 </property>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label">
-                   <property name="text">
-                    <string>Plugins</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QPushButton" name="loadbutton">
-                   <property name="text">
-                    <string>Load</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QComboBox" name="plugins"/>
-                 </item>
-                 <item row="0" column="3">
-                  <widget class="QPushButton" name="unloadbutton">
-                   <property name="text">
-                    <string>Unload</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="8" column="3">
-               <widget class="QCheckBox" name="seamless">
-                <property name="text">
-                 <string>Seamless</string>
+                <property name="value">
+                 <number>512</number>
                 </property>
                </widget>
               </item>
@@ -2954,829 +3771,45 @@
                 </layout>
                </widget>
               </item>
-              <item row="8" column="0">
-               <widget class="QLabel" name="cfglabel">
-                <property name="text">
-                 <string>CFG</string>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="0" colspan="2">
-               <widget class="QCheckBox" name="toggle_sampler">
-                <property name="text">
-                 <string>Sampling Settings</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="0">
-               <widget class="QLabel" name="stepslabel">
-                <property name="text">
-                 <string>Steps</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
+              <item row="5" column="0" colspan="2">
                <widget class="QCheckBox" name="hires">
                 <property name="text">
                  <string>HiRes Mode</string>
                 </property>
                </widget>
               </item>
-              <item row="7" column="5">
-               <widget class="QComboBox" name="multi_dim_seed_behavior">
-                <item>
-                 <property name="text">
-                  <string>fixed</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>iter</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>random</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="15" column="1">
-               <widget class="QCheckBox" name="toggle_animations">
-                <property name="text">
-                 <string>Animation</string>
-                </property>
-               </widget>
-              </item>
-              <item row="15" column="0">
-               <widget class="QCheckBox" name="toggle_outpaint">
-                <property name="text">
-                 <string>Outpaint</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="widthlabel">
-                <property name="text">
-                 <string>Width</string>
-                </property>
-               </widget>
-              </item>
-              <item row="15" column="5">
-               <widget class="QCheckBox" name="toggle_plugins">
-                <property name="text">
-                 <string>Plugins</string>
-                </property>
-               </widget>
-              </item>
-              <item row="15" column="3">
-               <widget class="QCheckBox" name="toggle_aesthetics">
-                <property name="toolTip">
-                 <string>Only works with 1.x Models. For 2.x it gets turned off during Image generation and has no effect.</string>
-                </property>
-                <property name="text">
-                 <string>Aesthetics</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="3">
-               <widget class="QCheckBox" name="prompt_weighting">
-                <property name="text">
-                 <string>Weighted</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="3">
-               <widget class="QLabel" name="multi_dim_label">
-                <property name="text">
-                 <string>MD Seed Mode</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="1">
-               <widget class="QSpinBox" name="steps">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>300</number>
-                </property>
-                <property name="value">
-                 <number>20</number>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QSpinBox" name="H">
-                <property name="minimum">
-                 <number>256</number>
-                </property>
-                <property name="maximum">
-                 <number>2048</number>
-                </property>
-                <property name="singleStep">
-                 <number>64</number>
-                </property>
-                <property name="value">
-                 <number>512</number>
-                </property>
-               </widget>
-              </item>
-              <item row="23" column="0" colspan="7">
-               <widget class="QFrame" name="aesthetic_values">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_15">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="horizontalSpacing">
-                  <number>2</number>
-                 </property>
-                 <property name="verticalSpacing">
-                  <number>5</number>
-                 </property>
-                 <item row="1" column="1" colspan="2">
-                  <widget class="QComboBox" name="clip_name">
-                   <property name="toolTip">
-                    <string>Used with aesthetics_scale&gt;0 and clip_scale&gt;0</string>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>ViT-L/14</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>ViT-L/14@336px</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>ViT-B/16</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>ViT-B/32</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>ViT-H/14</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QDoubleSpinBox" name="clip_scale">
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;CLIP Guidance &lt;br/&gt;Values: 0 - 200&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="maximum">
-                    <double>200.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="6" column="0">
-                  <widget class="QCheckBox" name="toggle_colors">
-                   <property name="text">
-                    <string>Colormatch Settings</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_58">
-                   <property name="text">
-                    <string>Clip Model</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="8" column="0">
-                  <widget class="QCheckBox" name="toggle_grad">
-                   <property name="text">
-                    <string>Gradient Settings</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="1">
-                  <widget class="QSpinBox" name="cutn">
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of times CLIP views the image for each step&lt;/p&gt;&lt;p&gt;This variable only matters under these conditions: &lt;/p&gt;&lt;p&gt;Extremely large&lt;/p&gt;&lt;p&gt;images bigger than 2688 x 2688px, or &lt;/p&gt;&lt;p&gt;decode_method = autoencoder &lt;/p&gt;&lt;p&gt;This is because&lt;/p&gt;&lt;p&gt;clip looks at the decoded image, which is small when decode_method=linear &lt;/p&gt;&lt;p&gt;Values: 0 - 6&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="maximum">
-                    <number>6</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_68">
-                   <property name="text">
-                    <string>Clip Scale</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_33">
-                   <property name="text">
-                    <string>Cut Number</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="9" column="0" colspan="4">
-                  <widget class="QFrame" name="grad_values">
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                   </property>
-                   <layout class="QGridLayout" name="gridLayout_14">
-                    <property name="leftMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>5</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="horizontalSpacing">
-                     <number>2</number>
-                    </property>
-                    <property name="verticalSpacing">
-                     <number>5</number>
-                    </property>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_3">
-                      <property name="text">
-                       <string>Decode Method</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_60">
-                      <property name="text">
-                       <string>Gradient add to</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="Clamp">
-                      <property name="text">
-                       <string>Clamp Grad Threshold</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1">
-                     <widget class="QComboBox" name="decode_method">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gradient conditioning decodes the latent at every step.&lt;/p&gt;&lt;p&gt;Linear is a shortcut that quickly translates the latent to a small (default 64x64) image. linear decoding is not implemented for every model, so if your results with conditioning look noisy, try “autoencoder”.&lt;/p&gt;&lt;p&gt;Autoencoder is much slower, but higher quality. It uses the same decoding method the model already uses after the last step.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>linear</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>None</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>autoencoder</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QLineEdit" name="grad_inject_timing">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Applies the gradient only at a limited number of steps&lt;/p&gt;&lt;p&gt;	Interpreted differently based on the type of grad_inject_timing&lt;/p&gt;&lt;p&gt;	if grad_inject_timing is:&lt;/p&gt;&lt;p&gt;int: compute every inject_timing steps, eg. 2 mean apply grad every other step&lt;/p&gt;&lt;p&gt;list of floats: compute on these decimal fraction steps (eg, [0.5, 1.0] for 50 steps would be at steps 25 and 50)&lt;/p&gt;&lt;p&gt;list of ints: compute on these steps&lt;/p&gt;&lt;p&gt;None: Compute on all steps &lt;/p&gt;&lt;p&gt;This can be used to generate an image faster, or apply conditioning to different sections of the gen. For example, overall composition is usually decided in the first 20% of steps, so if colormatch conditioning is only applied in the last half of steps it will result in practically the same image but with different colors.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="text">
-                       <string>0.8</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QDoubleSpinBox" name="clamp_start">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;used with grad_threshold_type “dynamic”&lt;/p&gt;&lt;p&gt;clamp_grad_threshold value at the first step, linearly changes to clamp_stop at the last step &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="decimals">
-                       <number>1</number>
-                      </property>
-                      <property name="maximum">
-                       <double>1.000000000000000</double>
-                      </property>
-                      <property name="singleStep">
-                       <double>0.100000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="1">
-                     <widget class="QDoubleSpinBox" name="clamp_grad_threshold">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;used with grad_threshold_types “static” “mean” and “dynamic” &lt;/p&gt;&lt;p&gt;Value: 0-1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="decimals">
-                       <number>1</number>
-                      </property>
-                      <property name="maximum">
-                       <double>1.000000000000000</double>
-                      </property>
-                      <property name="singleStep">
-                       <double>0.100000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="5" column="1">
-                     <widget class="QDoubleSpinBox" name="clamp_stop">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;used with grad_threshold_type “dynamic”&lt;/p&gt;&lt;p&gt;clamp_grad_threshold value at the last step, linearly changes from clamp_start from the first step&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="maximum">
-                       <double>1.000000000000000</double>
-                      </property>
-                      <property name="singleStep">
-                       <double>0.010000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QComboBox" name="gradient_add_to">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gradient is added to the cfg cond or uncond or both&lt;/p&gt;&lt;p&gt;&amp;quot;cond&amp;quot; or &amp;quot;uncond&amp;quot; only applies if cond_uncond_sync == False&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>cond</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>uncond</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>both</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                    <item row="5" column="0">
-                     <widget class="QLabel" name="Clamp_3">
-                      <property name="text">
-                       <string>Clamp Stop</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="Clamp_2">
-                      <property name="text">
-                       <string>Clamp Start</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="Clamp_4">
-                      <property name="text">
-                       <string>Grad Inject Timing</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="6" column="1">
-                     <widget class="QComboBox" name="gradient_wrt">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;“x0_pred” &lt;/p&gt;&lt;p&gt;Applies the gradient calculation only to the denoised image at each step&lt;/p&gt;&lt;p&gt;Much faster&lt;/p&gt;&lt;p&gt;May require higher *_scale values&lt;/p&gt;&lt;p&gt;Does not work very well with clip_scale or aesthetic_scale guidance&lt;/p&gt;&lt;p&gt;“x”&lt;/p&gt;&lt;p&gt;Applies the gradient calculation through the unet&lt;/p&gt;&lt;p&gt;Much slower&lt;/p&gt;&lt;p&gt;Takes the content of the image more into consideration because the grad uses the unet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>x</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>x0_pred</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                    <item row="6" column="0">
-                     <widget class="QLabel" name="label_59">
-                      <property name="text">
-                       <string>Gradient WRT</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="0">
-                     <widget class="QLabel" name="label_61">
-                      <property name="text">
-                       <string>Grad Threshold Type</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="1">
-                     <widget class="QComboBox" name="grad_threshold_type">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The final gradient is clamped before it’s added to the image. This is to avoid the overexposed look.&lt;/p&gt;&lt;p&gt;dynamic: thresholding from the imagen paper (May 2022)&lt;/p&gt;&lt;p&gt;static: simple clamping&lt;/p&gt;&lt;p&gt;mean: rescales out of range values based on the mean&lt;/p&gt;&lt;p&gt;schedule: uses clamp_start and clamp_stop to set a threshold value that changes linearly at each step. Like “mean” but with changing clamp_grad_threshold over time&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>dynamic</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>static</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>mean</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>schedule</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item row="5" column="1">
-                  <widget class="QDoubleSpinBox" name="cut_pow">
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Used when clip_scale &amp;gt; 0&lt;br/&gt;Affects the size&lt;br/&gt;of the view window when CLIP sees the image&lt;br/&gt;When cut_pow is&lt;br/&gt;very small, the view window is large, and vise versa&lt;br/&gt;Only matters for&lt;br/&gt;extremely large images or autoencoder decode_method, see cutn&lt;br/&gt;Values: 0.00001 - 100000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="decimals">
-                    <number>9</number>
-                   </property>
-                   <property name="maximum">
-                    <double>10000000.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.001000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="0" colspan="4">
-                  <widget class="QFrame" name="color_expo_values">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>400</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                   </property>
-                   <layout class="QGridLayout" name="gridLayout_7">
-                    <property name="leftMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>5</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="horizontalSpacing">
-                     <number>2</number>
-                    </property>
-                    <property name="verticalSpacing">
-                     <number>5</number>
-                    </property>
-                    <item row="4" column="4">
-                     <widget class="QPushButton" name="select_mse_init">
-                      <property name="text">
-                       <string>Select</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="11" column="0">
-                     <widget class="QLabel" name="label_25">
-                      <property name="text">
-                       <string>Var Scale</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="2" colspan="2">
-                     <widget class="QLineEdit" name="lineEdit_2"/>
-                    </item>
-                    <item row="19" column="0">
-                     <widget class="QLabel" name="label_32">
-                      <property name="text">
-                       <string>Ignore Sat Weight</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="4">
-                     <widget class="QPushButton" name="pushButton_2">
-                      <property name="text">
-                       <string>Edit Path / Url</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_16">
-                      <property name="text">
-                       <string>Init MSE Image</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_30">
-                      <property name="text">
-                       <string>Colormatch Preview</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="12" column="0">
-                     <widget class="QLabel" name="label_26">
-                      <property name="text">
-                       <string>Expo Scale</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="18" column="0">
-                     <widget class="QLabel" name="label_31">
-                      <property name="text">
-                       <string>Colormatch N Colors</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="14" column="0">
-                     <widget class="QLabel" name="label_28">
-                      <property name="text">
-                       <string>Colormatch Scale</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="6" column="0">
-                     <widget class="QLabel" name="label_57">
-                      <property name="text">
-                       <string>Init MSE Scale</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="4">
-                     <widget class="QPushButton" name="select_color_match_image">
-                      <property name="text">
-                       <string>Select</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="10" column="0">
-                     <widget class="QLabel" name="label_23">
-                      <property name="text">
-                       <string>Mean Scale</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="2" colspan="2">
-                     <widget class="QLineEdit" name="colormatch_image"/>
-                    </item>
-                    <item row="13" column="0">
-                     <widget class="QLabel" name="label_27">
-                      <property name="text">
-                       <string>Expo Target</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="0">
-                     <widget class="QLabel" name="label_70">
-                      <property name="text">
-                       <string>Blue Scale</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_29">
-                      <property name="text">
-                       <string>Colormatch Image</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="2" colspan="2">
-                     <widget class="QLineEdit" name="init_mse_image"/>
-                    </item>
-                    <item row="6" column="2">
-                     <widget class="QDoubleSpinBox" name="init_mse_scale">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Guide the image to match init_mse_image pixel-by-pixel&lt;br/&gt;Values: 0-1000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="maximum">
-                       <double>1000.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="2">
-                     <widget class="QDoubleSpinBox" name="blue_scale"/>
-                    </item>
-                    <item row="10" column="2">
-                     <widget class="QDoubleSpinBox" name="mean_scale">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pushes the pixel values towards middle gray&lt;/p&gt;&lt;p&gt;Samples have values between -1 and 1. Mean_scale guides pixels toward 0, hence gray&lt;/p&gt;&lt;p&gt;Values: 0 - 400&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="minimum">
-                       <double>0.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>400.000000000000000</double>
-                      </property>
-                      <property name="singleStep">
-                       <double>0.010000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="11" column="2">
-                     <widget class="QDoubleSpinBox" name="var_scale">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pushes pixels towards lower variance&lt;br/&gt;Values: -200 - 200&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="decimals">
-                       <number>0</number>
-                      </property>
-                      <property name="minimum">
-                       <double>-200.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>200.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="12" column="2">
-                     <widget class="QDoubleSpinBox" name="exposure_scale">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Targeted mean loss. Uses exposure_target variable. &lt;/p&gt;&lt;p&gt;When exposure_target == 0, exposure_scale is equivalent to mean_scale&lt;/p&gt;&lt;p&gt;Use it to compensate for very high cfg scale, for example.&lt;/p&gt;&lt;p&gt;Values: 0 - 400&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="maximum">
-                       <double>400.000000000000000</double>
-                      </property>
-                      <property name="singleStep">
-                       <double>0.010000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="13" column="2">
-                     <widget class="QDoubleSpinBox" name="exposure_target">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Used with exposure_scale &lt;/p&gt;&lt;p&gt;Negative values push towards a darker image, positive values toward a brighter image &lt;/p&gt;&lt;p&gt;Values: -1 - 1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>1.000000000000000</double>
-                      </property>
-                      <property name="singleStep">
-                       <double>0.010000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="14" column="2">
-                     <widget class="QDoubleSpinBox" name="colormatch_scale">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Guides the image towards a color palette.&lt;/p&gt;&lt;p&gt;Palette is extracted from an input image colormatch_image&lt;/p&gt;&lt;p&gt;Best matching results when decode_method == “autoencoder”&lt;/p&gt;&lt;p&gt;Works best when gradient_wrt == &amp;quot;x0_pred”, but will still work well with “x”&lt;/p&gt;&lt;p&gt;Values: 0 - 1000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="decimals">
-                       <number>0</number>
-                      </property>
-                      <property name="maximum">
-                       <double>1000.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="18" column="2">
-                     <widget class="QSpinBox" name="colormatch_n_colors">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of colors in the palette &lt;br/&gt;Values: 1 - 20&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="maximum">
-                       <number>20</number>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="19" column="2">
-                     <widget class="QDoubleSpinBox" name="ignore_sat_weight">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount to ignore the saturation when using colormatch_scale. &lt;/p&gt;&lt;p&gt;High ignore_sat_weight will allow a higher colormatch_scale without making the colors look overblown&lt;/p&gt;&lt;p&gt;Values: 0 - 5&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="decimals">
-                       <number>1</number>
-                      </property>
-                      <property name="maximum">
-                       <double>10.000000000000000</double>
-                      </property>
-                      <property name="singleStep">
-                       <double>0.100000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QDoubleSpinBox" name="aesthetics_scale">
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Recommended to use with gradient_wrt=’x’ &lt;br/&gt;Values: 0 - 10&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="maximum">
-                    <double>10.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="0">
-                  <widget class="QLabel" name="label_34">
-                   <property name="text">
-                    <string>Cut POW</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="label_69">
-                   <property name="text">
-                    <string>Aest. Scale</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0" colspan="4">
-                  <widget class="QTextEdit" name="clip_prompt">
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gets used if clip_sclae &amp;gt; 0&lt;br/&gt;If left empty clip_prompt will equal the prompt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="placeholderText">
-                    <string>Clip Prompt,</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="15" column="2">
+              <item row="16" column="3">
                <widget class="QCheckBox" name="toggle_plotting">
                 <property name="text">
                  <string>Plotting</string>
                 </property>
                </widget>
               </item>
-              <item row="8" column="1">
-               <widget class="QDoubleSpinBox" name="scale">
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <double>30.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                 <double>0.100000000000000</double>
-                </property>
-                <property name="value">
-                 <double>7.500000000000000</double>
+              <item row="16" column="2">
+               <widget class="QCheckBox" name="toggle_animations">
+                <property name="text">
+                 <string>Animation</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="3" colspan="2">
-               <widget class="QCheckBox" name="multi_dim_prompt">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Have a look into multiDimParams.txt for more informations&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
+              <item row="16" column="1">
+               <widget class="QCheckBox" name="toggle_outpaint">
                 <property name="text">
-                 <string>Multi Dim Prompt</string>
+                 <string>Outpaint</string>
+                </property>
+               </widget>
+              </item>
+              <item row="16" column="0">
+               <widget class="QCheckBox" name="toggle_plugins">
+                <property name="text">
+                 <string>Plugins</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="3" colspan="2">
+               <widget class="QLabel" name="multi_dim_label">
+                <property name="text">
+                 <string>MD Seed Mode</string>
                 </property>
                </widget>
               </item>

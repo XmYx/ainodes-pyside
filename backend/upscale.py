@@ -5,6 +5,7 @@ import traceback
 import numpy as np
 import torch
 from PIL import Image
+from pytorch_lightning import seed_everything
 
 from backend.modelloader import load_upscaler
 
@@ -22,7 +23,7 @@ class Upscale:
         self.signals = Callbacks()
 
 
-    def run_gfpgan(self, image, strength, seed, upsampler_scale=4):
+    def run_gfpgan(self, image, strength, seed):
         print(f'>> GFPGAN - Restoring Faces for image seed:{seed}')
 
         try:
@@ -49,9 +50,9 @@ class Upscale:
 
         return res
 
-    def real_esrgan_upscale(self, image, strength, upsampler_scale, seed):
+    def real_esrgan_upscale(self, image, strength, upsampler_scale):
         print(
-            f'>> Real-ESRGAN Upscaling seed:{seed} : scale:{upsampler_scale}x'
+            f'>> Real-ESRGAN Upscaling scale:{upsampler_scale}x'
         )
 
         output, img_mode = gs.models["RealESRGAN"].enhance(
@@ -82,9 +83,10 @@ class Upscale:
                                 image_list,
                                 upscale       = False,
                                 upscale_scale = 0 ,
-                                upscale_strength= 0,
+                                upscale_strength = 0,
                                 use_gfpgan    = False,
                                 strength      = 0.0,
+                                gfpgan_seed = 1,
                                 image_callback = None):
         try:
             if upscale:
@@ -100,11 +102,12 @@ class Upscale:
         for path in image_list:
 
             image = Image.open(path)
-            seed = 1
+            gfpgan_seed = seed_everything(gfpgan_seed)
+
             try:
                 if use_gfpgan and strength > 0:
                     image = self.run_gfpgan(
-                        image, strength, seed, 1
+                        image, strength, gfpgan_seed
                     )
                 if upscale:
                     if upscale_strength == 0:
@@ -112,8 +115,7 @@ class Upscale:
                     image = self.real_esrgan_upscale(
                         image,
                         upscale_strength,
-                        int(upscale_scale),
-                        seed,
+                        int(upscale_scale)
                     )
 
             except Exception as e:
@@ -128,7 +130,7 @@ class Upscale:
             self.torch_gc()
 
             if image_callback is not None:
-                image_callback(image, seed, upscaled=True)
+                image_callback(image, upscale_seed, upscaled=True)
             file_count += 1
             self.signals.upscale_counter.emit(file_count)
 

@@ -1,3 +1,4 @@
+import base64
 import copy
 import json
 import os
@@ -490,7 +491,10 @@ class Canvas(QGraphicsView):
         if title:
             t.setWindowTitle(title)
         t.exec_()
-        return t.selectedFiles()[0]
+        if len(t.selectedFiles()) > 0:
+            return t.selectedFiles()[0]
+        else:
+            return
 
     def load_img_into_rect(self):
         data = self.getfile()
@@ -499,13 +503,17 @@ class Canvas(QGraphicsView):
             if self.selected_item is not None:
                 for i in self.rectlist:
                     if i.id == self.selected_item:
-                        self.parent.parent.image = Image.open(data)
-                        i.w = self.parent.parent.image.size[0]
-                        i.h = self.parent.parent.image.size[1]
-                        self.parent.parent.render_index = self.rectlist.index(i)
-
+                        image = Image.open(data)
+                        i.w = image.size[0]
+                        i.h = image.size[1]
+                        render_index = self.rectlist.index(i)
                         self.parent.parent.params.advanced = True
-                        self.parent.parent.image_preview_func()
+
+                        mode = image.mode
+                        size = image.size
+                        enc_image = base64.b64encode(image.tobytes()).decode()
+                        self.parent.parent.signals.image_loaded.emit(enc_image, mode, size, render_index)
+
 
     def load_rects_from_json(self):
 
@@ -1032,11 +1040,8 @@ class Canvas(QGraphicsView):
         self.painter.begin(self.pixmap)
         self.painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         if self.rectlist is not [] and self.rectlist is not None:
-
             for i in self.rectlist:
-
                 if i.image is not None and i.active == True:
-
                     pic = i.image.copy(0, 0, i.image.width(), i.image.height())
                     pixmap = QPixmap.fromImage(pic)
                     self.painter.drawPixmap(int(i.x), int(i.y), i.w, i.h, pixmap, 0, 0, i.w, i.h)
@@ -1062,13 +1067,6 @@ class Canvas(QGraphicsView):
                 if items.id == self.hover_item:
                     help2 = f"hover item details:{items.x}, {items.y}"
 
-
-    def paintEvent2(self, e):
-        return
-        super(Canvas, self).paintEvent(e)
-        if self.newimage == True:
-            self.newimage == False
-            self.redraw()
 
     def generic_mouseMoveEvent(self, e):
 

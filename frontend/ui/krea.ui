@@ -49,7 +49,7 @@
         <number>2</number>
        </property>
        <property name="verticalSpacing">
-        <number>0</number>
+        <number>3</number>
        </property>
        <item row="1" column="0">
         <widget class="QPushButton" name="search">
@@ -65,7 +65,24 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="2">
+       <item row="1" column="2">
+        <widget class="QPushButton" name="use_krea_prompt">
+         <property name="text">
+          <string>Use Prompt</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="3">
+        <widget class="QPlainTextEdit" name="krea_prompt">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>100</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="3">
         <widget class="QListWidget" name="results">
          <property name="dragEnabled">
           <bool>true</bool>
@@ -87,10 +104,14 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QLineEdit" name="query"/>
+       <item row="0" column="0" colspan="3">
+        <widget class="QLineEdit" name="query">
+         <property name="placeholderText">
+          <string>Put your search term here</string>
+         </property>
+        </widget>
        </item>
-       <item row="3" column="0" colspan="2">
+       <item row="4" column="0" colspan="3">
         <layout class="QGridLayout" name="gridLayout">
          <property name="horizontalSpacing">
           <number>2</number>

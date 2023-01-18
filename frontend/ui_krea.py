@@ -8,7 +8,8 @@ from PySide6.QtWidgets import QListWidgetItem, QListView
 
 class Krea(QObject):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__()
         loader = QtUiTools.QUiLoader()
         file = QFile("frontend/ui/krea.ui")
         file.open(QFile.ReadOnly)
@@ -16,6 +17,16 @@ class Krea(QObject):
         file.close()
         self.setup()
         self.next = None
+        self.parent = parent
+        self.w.results.itemClicked.connect(self.item_clicked)
+        self.w.use_krea_prompt.clicked.connect(self.use_lexica_prompt)
+
+    def item_clicked(self, item):
+        self.w.krea_prompt.setPlainText(item.text())
+        self.parent.signals.set_prompt.emit(item.text())
+
+    def use_lexica_prompt(self):
+        self.parent.signals.set_prompt.emit(self.w.krea_prompt.toPlainText())
 
     def setup(self):
         self.view = "icon"

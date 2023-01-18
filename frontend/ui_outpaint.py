@@ -35,6 +35,7 @@ class Outpainting:
         self.batch_process_items = None
         self.gobbig_pil_image = None
         self.gobig_img_path = None
+        self.last_batch_image = None
 
 
     @Slot(str)
@@ -43,7 +44,8 @@ class Outpainting:
             data = input
         else:
             data = self.parent.getfile()
-        self.create_outpaint_batch(gobig_img_path=data)
+        if data is not None:
+            self.create_outpaint_batch(gobig_img_path=data)
 
     @Slot()
     def run_hires_batch_thread(self):
@@ -73,7 +75,7 @@ class Outpainting:
 
 
     def update_outpaint_parameters(self):
-        print('update outpaint')
+        #print('update outpaint')
         W = self.parent.widgets[self.current_widget].w.W.value()
         H = self.parent.widgets[self.current_widget].w.H.value()
         # W, H = map(lambda x: x - x % 64, (W, H))
@@ -347,57 +349,57 @@ class Outpainting:
 
         if self.batch_process == 'run_hires_batch':
             print('run next hires batch image')
-            if self.parent.render_index > 0:
-                self.betterslices.append((self.parent.image.convert('RGBA'), self.parent.canvas.canvas.rectlist[self.parent.render_index - 1].x,
-                                          self.parent.canvas.canvas.rectlist[self.parent.render_index - 1].y))
-            if len(self.parent.canvas.canvas.rectlist) > 0 and len(self.parent.canvas.canvas.rectlist) > self.parent.render_index:
-                if gs.stop_all != True:
+            if gs.stop_all != True:
+                if len(self.parent.canvas.canvas.rectlist) > 0 and len(self.parent.canvas.canvas.rectlist) > self.parent.render_index:
                     self.run_hires_step_x()
-            else:
-                og_size = (512, 512)
-                source_image = self.hires_source
-                alpha = Image.new("L", og_size, color=0xFF)
-                alpha_gradient = ImageDraw.Draw(alpha)
-                a = 0
-                i = 0
-                overlap = self.parent.widgets[self.current_widget].w.rect_overlap.value()
-                shape = (og_size, (0, 0))
-                while i < overlap:
-                    alpha_gradient.rectangle(shape, fill=a)
-                    a += 4
-                    i += 1
-                    shape = ((og_size[0] - i, og_size[1] - i), (i, i))
-                mask = Image.new("RGBA", og_size, color=0)
-                mask.putalpha(alpha)
-                finished_slices = []
-                for betterslice, x, y in self.betterslices:
-                    finished_slice = self.addalpha(betterslice, mask)
-                    finished_slices.append((finished_slice, x, y))
-                # # Once we have all our images, use grid_merge back onto the source, then save
-                final_output = self.grid_merge(
-                    source_image.convert("RGBA"), finished_slices
-                ).convert("RGBA")
-                final_output.save('output/test_hires.png')
-                # base_filename = f"{base_filename}d"
+                else:
+                    og_size = (512, 512)
+                    source_image = self.hires_source
+                    alpha = Image.new("L", og_size, color=0xFF)
+                    alpha_gradient = ImageDraw.Draw(alpha)
+                    a = 0
+                    i = 0
+                    overlap = self.parent.widgets[self.current_widget].w.rect_overlap.value()
+                    shape = (og_size, (0, 0))
+                    while i < overlap:
+                        alpha_gradient.rectangle(shape, fill=a)
+                        a += 4
+                        i += 1
+                        shape = ((og_size[0] - i, og_size[1] - i), (i, i))
+                    mask = Image.new("RGBA", og_size, color=0)
+                    mask.putalpha(alpha)
+                    finished_slices = []
+                    for betterslice, x, y in self.betterslices:
+                        #betterslice.save(f'output/betterslice_{x}_{y}.png')
+                        finished_slice = self.addalpha(betterslice, mask)
+                        finished_slices.append((finished_slice, x, y))
+                    # # Once we have all our images, use grid_merge back onto the source, then save
+                    final_output = self.grid_merge(
+                        source_image.convert("RGBA"), finished_slices
+                    ).convert("RGBA")
 
-                self.hires_source = final_output
-                self.parent.deforum_ui.signals.prepare_hires_batch.emit('output/test_hires.png')
-                self.batch_process = None
+                    # todo make this filename a dynamic name
+                    final_output.save('output/test_hires.png')
+                    # base_filename = f"{base_filename}d"
 
+                    self.hires_source = final_output
+                    self.parent.params.advanced = False
+                    self.finish_batch()
+                    self.parent.image_preview_signal(final_output.convert("RGB"))
 
+    def finish_batch(self):
+        self.parent.canvas.canvas.rectlist = []
+        self.batch_process = None
+        self.last_batch_image = None
 
     def run_hires_batch(self, progress_callback=None):
         self.batch_process = 'run_hires_batch'
         self.parent.sessionparams.update_params()
         self.parent.sessionparams.params.advanced = True
-        # multi = self.parent.widgets[self.current_widget].w.multiBatch.isChecked()
-        # batch_n = self.parent.widgets[self.current_widget].w.multiBatchvalue.value()
-        # multi = False
 
         gs.stop_all = False
 
         self.parent.choice = "Outpaint"
-
 
         self.betterslices = []
 
@@ -414,16 +416,12 @@ class Outpainting:
         print('self.parent.canvas.canvas.selected_item',self.parent.canvas.canvas.selected_item)
         self.parent.deforum_ui.run_deforum_six_txt2img(hiresinit='output/temp/temp.png')
 
-
-
-
     def run_outpaint_step_x(self):
         next_step = self.rectlist_work[0]
         del self.rectlist_work[0]
         self.parent.canvas.canvas.reusable_outpaint(next_step.id)
         #self.wait_canvas_busy()
         self.parent.deforum_ui.run_deforum_outpaint(next_step.params)
-
 
     def run_prepared_outpaint_batch(self, progress_callback=None):
         self.batch_process = 'run_prepared_outpaint_batch'
@@ -437,7 +435,6 @@ class Outpainting:
         self.rectlist_work = copy.deepcopy(self.parent.canvas.canvas.rectlist)
         print(f"Tiles to Outpaint:{tiles}")
         self.next_image_from_batch()
-
 
     def resize_canvas(self):
         tilesize = 512
@@ -488,7 +485,6 @@ class Outpainting:
         self.tempsize_int = self.parent.canvas.canvas.cols * self.parent.canvas.canvas.rows
         self.parent.canvas.canvas.draw_tempBatch(self.parent.canvas.canvas.tempbatch)
 
-
     def outpaint_rect_overlap(self):
         self.parent.canvas.canvas.rectPreview = self.parent.widgets[self.current_widget].w.enable_overlap.isChecked()
         if self.parent.canvas.canvas.rectPreview == False:
@@ -497,7 +493,6 @@ class Outpainting:
         elif self.parent.canvas.canvas.rectPreview == True:
             self.parent.canvas.canvas.visualize_rects()
 
-
     def addalpha(self, im, mask):
         imr, img, imb, ima = im.split()
         mmr, mmg, mmb, mma = mask.split()
@@ -505,7 +500,6 @@ class Outpainting:
             "RGBA", [imr, img, imb, mma]
         )  # we want the RGB from the original, but the transparency from the mask
         return im
-
 
     # Alternative method composites a grid of images at the positions provided
     def grid_merge(self, source, slices):

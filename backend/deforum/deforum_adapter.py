@@ -1146,7 +1146,8 @@ class DeforumSix:
                     mask_for_reconstruction=mask_for_reconstruction,
                     masked_image_for_blend=masked_image_for_blend,
                     callback=step_callback)
-            except:
+            except Exception as e:
+                print('inpainting caused an error: ', e)
                 result = -1
             if result != -1:
                 fpath = os.path.join(sample_path, f"{base_name}_{base_count:05}.png")

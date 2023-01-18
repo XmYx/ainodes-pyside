@@ -83,7 +83,6 @@ class civit_ai_api:
         else:
             print('error: ', er)
         if self.next_models_link is not None:
-            print('next page')
             req = QtNetwork.QNetworkRequest(QtCore.QUrl(self.next_models_link))
             self.nam.get(req)
         else:

@@ -74,6 +74,8 @@ class UniControl(QObject):
         self.w.video_mask_path.setText(filename[0])
 
 
+    def set_prompt(self, prompt):
+        self.w.prompts.setPlainText(prompt)
 
     def stop_all(self):
         gs.stop_all = True
@@ -269,10 +271,10 @@ class UniControl(QObject):
         self.init_anims()
         if self.aniHidden is True:
             self.showAniAnim.start()
-            self.parent.timeline.show_anim_action()
+            #self.parent.timeline.show_anim_action()
         else:
             self.hideAniAnim.start()
-            self.parent.timeline.hide_anim_action()
+            #self.parent.timeline.hide_anim_action()
         self.aniHidden = not self.aniHidden
 
 
@@ -313,8 +315,11 @@ class UniControl(QObject):
         self.init_anims()
         if self.outHidden is True:
             self.showOutAnim.start()
+            self.parent.thumbs.w.dockWidget.setVisible(True)
+            self.w.mode.setCurrentIndex(1)
         else:
             self.hideOutAnim.start()
+            self.parent.thumbs.w.dockWidget.setVisible(False)
         self.outHidden = not self.outHidden
 
     def hideEmbedding_anim(self):

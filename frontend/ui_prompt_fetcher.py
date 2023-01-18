@@ -56,7 +56,8 @@ class PromptFetcher_UI:
     @Slot()
     def use_prompt(self):
         prompt = self.prompt_fetcher.w.output.textCursor().selectedText()
-        self.parent.widgets[self.parent.current_widget].w.prompts.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
+        self.parent.signals.set_prompt.emit(prompt)
+        #self.parent.widgets[self.parent.current_widget].w.prompts.setPlainText(prompt.replace(u'\u2029\u2029', '\n'))
 
     @Slot()
     def image_to_prompt_thread(self):

@@ -80,6 +80,7 @@ class Callbacks(QObject):
     run_interrogation = Signal()
     run_volta_accel = Signal()
     run_upscale_20 = Signal()
+    image_text_ready = Signal(str)
 
 class ImageLab():  # for signaling, could be a QWidget  too
 
@@ -97,18 +98,15 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.imageLab.w.startWaterMark.clicked.connect(self.signal_start_watermark)
         self.imageLab.w.selectA.clicked.connect(self.selected_model_a)
         self.imageLab.w.selectB.clicked.connect(self.selected_model_b)
+        self.imageLab.w.selectC.clicked.connect(self.selected_model_c)
         self.imageLab.w.Merge.clicked.connect(self.start_merge)
-        self.imageLab.w.MergeEBL.clicked.connect(self.start_ebl_merge)
         self.imageLab.w.run_aestetic_prediction.clicked.connect(self.aestetic_prediction)
         self.imageLab.w.aestetics_prediction_output.clicked.connect(self.set_aestetic_prediction_output)
-        self.imageLab.w.alpha.valueChanged.connect(self.update_alpha)
-        self.imageLab.w.alphaNew.valueChanged.connect(self.update_alpha)
+
         self.imageLab.w.select_interrogation_output_folder.clicked.connect(self.set_interrogation_output_folder)
         self.imageLab.w.run_interrogation.clicked.connect(self.signal_run_interrogation)
-        self.imageLab.w.selected_model.clicked.connect(self.select_accel_model)
-        self.imageLab.w.run_volta_accel.clicked.connect(self.signal_run_volta_accel)
         self.imageLab.w.upscale_20.clicked.connect(self.run_upscale_20)
-
+        self.imageLab.w.select_watermark_output_folder.clicked.connect(self.set_watermark_output_folder)
 
 
     @Slot()
@@ -121,7 +119,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.parent.run_as_thread(self.run_volta_accel)
 
     @Slot()
-    def ebl_model_merge_start(self):
+    def ebl_model_merge_start_thread(self):
         self.parent.run_as_thread(self.ebl_model_merge_start)
 
     @Slot()
@@ -143,7 +141,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
 
 
     @Slot()
-    def model_merge_start(self):
+    def model_merge_start_thread(self):
         self.parent.run_as_thread(self.model_merge_start)
 
 
@@ -176,18 +174,6 @@ class ImageLab():  # for signaling, could be a QWidget  too
                eta=self.imageLab.w.ddim_eta.value(),
                noise_level=self.imageLab.w.noise_level.value()
         )
-
-    # todo get this working on linux boxes
-    def run_volta_accel(self, progress_callback=False):
-        args = {}
-        args['model_path'] = self.imageLab.w.accel_path.text()
-        args = SimpleNamespace(**args)
-        args.image_size = (512, 512)
-        args.max_seq_length = 77
-        args.max_gpu_memory = self.imageLab.w.max_gpu_memory.value()
-
-        convert_to_onnx(args)
-        convert_to_trt(args)
 
     def signal_run_volta_accel(self):
         self.signals.run_volta_accel.emit()
@@ -264,18 +250,14 @@ class ImageLab():  # for signaling, could be a QWidget  too
             del gs.models['clip']
 
 
-
+    def set_watermark_output_folder(self):
+        watermark_output_folder = QFileDialog.getExistingDirectory()
+        self.imageLab.w.watermark_output_folder.setText(watermark_output_folder)
 
 
     def set_interrogation_output_folder(self):
         interrogation_output_folder = QFileDialog.getExistingDirectory()
         self.imageLab.w.interrogation_output_folder.setText(interrogation_output_folder)
-
-
-    def update_alpha(self):
-        self.imageLab.w.alphaNumber.display(str(self.imageLab.w.alpha.value() / 10))
-        self.imageLab.w.alphaNewNumber.display(str(self.imageLab.w.alphaNew.value() / 10))
-
 
     def aestetic_prediction(self):
         self.signals.run_aestetic_prediction.emit()
@@ -289,6 +271,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
         print('Aestetics calculation started')
         matcher = re.compile(r'(.*?)(\..*)')
         aesthetics_keep_folder_structure = self.imageLab.w.aesthetics_keep_folder_structure.isChecked()
+        out_folder = self.imageLab.w.aestetics_output_folder.text()
         if len(self.fileList) > 0:
             for file in self.fileList:
                 score = get_aestetics_score(file)
@@ -319,20 +302,17 @@ class ImageLab():  # for signaling, could be a QWidget  too
 
     def selected_model_a(self):
         self.modela = list(QFileDialog.getOpenFileName())
-        print(list(self.modela))
-        print(type(self.modela))
         self.imageLab.w.modelApath.setText(self.modela[0])
 
-    def selectDirectory(self):
-
-        selected_directory = QFileDialog.getExistingDirectory()
-
-        # Use the selected directory...
-        print('selected_directory:', selected_directory)
 
     def selected_model_b(self):
         self.modelb = list(QFileDialog.getOpenFileName())
         self.imageLab.w.modelBpath.setText(self.modelb[0])
+
+    def selected_model_c(self):
+        self.modelc = list(QFileDialog.getOpenFileName())
+        self.imageLab.w.modelCpath.setText(self.modelc[0])
+
 
     def start_merge(self):
         self.signals.model_merge_start.emit()
@@ -341,10 +321,19 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.signals.ebl_model_merge_start.emit()
 
     def model_merge_start(self, progress_callback=None):
-        merge_models(self.modela[0], self.modelb[0], self.imageLab.w.alpha.value() / 10, self.imageLab.w.modelOutputName.text(),self.imageLab.w.device.currentText(),self.imageLab.w.save_as_safetensors.isChecked())
 
-    def ebl_model_merge_start(self, progress_callback=None):
-        merge_ebl_model(src=self.modela[0], dst=self.modelb[0],output=self.imageLab.w.modelOutputName.text(), alpha=self.imageLab.w.alpha.value() / 10, alpha_new=self.imageLab.w.alphaNew.value() / 10)
+        model_2 = None if self.imageLab.w.modelCpath.text() == '' else self.imageLab.w.modelCpath.text()
+        interp_method=self.imageLab.w.merge_mode.currentText()
+        if self.imageLab.w.modelCpath.text() != '':
+            interp_method = 'Add difference'
+        else:
+            interp_method = 'Weighted sum'
+
+        merge_models(model_0=self.imageLab.w.modelApath.text(), model_1=self.imageLab.w.modelBpath.text(),
+                     model_2=model_2, multiplier=self.imageLab.w.alpha.value(),
+                     output=self.imageLab.w.modelOutputName.text(),device=self.imageLab.w.device.currentText(),
+                     safe_tensors=self.imageLab.w.save_as_safetensors.isChecked(),
+                     interp_method=interp_method, save_as_half=self.imageLab.w.save_as_half.isChecked() )
 
     def signal_start_upscale(self):
         self.signals.upscale_start.emit()
@@ -388,17 +377,23 @@ class ImageLab():  # for signaling, could be a QWidget  too
                 model_name = 'RealESRGAN_x4plus_anime_6B'
 
         load_upscaler(self.imageLab.w.GFPGAN.isChecked(), self.imageLab.w.ESRGAN.isChecked(), model_name)
-        if len(self.fileList) > 0:
-            if self.imageLab.w.ESRGAN.isChecked() or self.imageLab.w.GFPGAN.isChecked():
-                self.upscale.upscale_and_reconstruct(self.fileList,
-                                             upscale          = self.imageLab.w.ESRGAN.isChecked(),
-                                             upscale_scale    = self.imageLab.w.esrScale.value(),
-                                             upscale_strength = self.imageLab.w.esrStrength.value()/100,
-                                             use_gfpgan       = self.imageLab.w.GFPGAN.isChecked(),
-                                             strength         = self.imageLab.w.gfpStrength.value()/100,
-                                             image_callback   = None)
-
-        self.signals.upscale_stop.emit()
+        self.imageLab.w.startUpscale.setEnabled(False)
+        try:
+            if len(self.fileList) > 0:
+                if self.imageLab.w.ESRGAN.isChecked() or self.imageLab.w.GFPGAN.isChecked():
+                    self.upscale.upscale_and_reconstruct(self.fileList,
+                                                 upscale          = self.imageLab.w.ESRGAN.isChecked(),
+                                                 upscale_scale    = self.imageLab.w.esrScale.value(),
+                                                 upscale_strength = self.imageLab.w.esrStrength.value(),
+                                                 use_gfpgan       = self.imageLab.w.GFPGAN.isChecked(),
+                                                 strength         = self.imageLab.w.gfpStrength.value(),
+                                                 image_callback   = None,
+                                                 gfpgan_seed=int(self.imageLab.w.gfp_seed.text()))
+        except:
+            pass
+        finally:
+            self.imageLab.w.startUpscale.setEnabled(True)
+            self.signals.upscale_stop.emit()
 
     def run_img2txt(self, progress_callback=None):
         grayscale = 0
@@ -407,11 +402,29 @@ class ImageLab():  # for signaling, could be a QWidget  too
 
         if len(self.fileList) > 0:
             for path in self.fileList:
-                to_ascii(path, self.imageLab.w.img2txtRatio.value()/100, grayscale)
+                ascii_image = to_ascii(path, self.imageLab.w.img2txtRatio.value()/100, grayscale)
+                self.signals.image_text_ready.emit(ascii_image)
+
+    def set_image_text(self, ascii_image):
+        self.imageLab.w.image_text_output.setText(ascii_image)
 
     def run_watermark(self, progress_callback=None):
         text = self.imageLab.w.watermarkText.text()
         font_size = self.imageLab.w.fontSize.value()
-        if len(self.fileList) > 0:
-            for path in self.fileList:
-                add_watermark(path=path, watermark=text, font_size=int(font_size))
+        rotation = self.imageLab.w.rotation.value()
+        pos_x = self.imageLab.w.pos_x.value()
+        pos_y = self.imageLab.w.pos_y.value()
+        fill = self.imageLab.w.fill.value()
+        self.imageLab.w.startWaterMark.setEnabled(False)
+        destination = self.imageLab.w.watermark_output_folder.text()
+        try:
+            if len(self.fileList) > 0:
+                for path in self.fileList:
+                    add_watermark(path=path, watermark=text, font_size=int(font_size),
+                                  rotation=rotation, pos_x=pos_x, pos_y=pos_y,
+                                    fill=fill, destination=destination)
+        except Exception as e:
+            print('Watermark failed due to: ', e)
+            pass
+        finally:
+            self.imageLab.w.startWaterMark.setEnabled(True)

@@ -31,13 +31,13 @@ class Callbacks(QObject):
     add_image_to_thumbnail_signal = Signal(str)
     status_update = Signal(str)
     vid2vid_one_percent = Signal(int)
-    prepare_hires_batch = Signal(str)
     image_ready_in_ui = Signal()
     plot_ready = Signal()
 
 class Deforum_UI(QObject):
     def __init__(self, parent):
         # super(QObject, self).__init__()
+        super().__init__(parent)
         self.renderedFrames = None
         self.currentFrames = None
         self.onePercent = None
@@ -516,9 +516,14 @@ class Deforum_UI(QObject):
     def run_deforum_outpaint(self, params=None, progress_callback=None):
         # self.deforum = DeforumGenerator()
         # self.deforum.signals = Callbacks()
+
+
         if params == None:
             params = self.parent.sessionparams.update_params()
             self.parent.params = self.parent.sessionparams.update_params()
+        if 'inpaint' in gs.system.sd_model_file:
+            params.with_inpaint = True
+            self.parent.with_inpaint = True
         self.progress = 0.0
         self.parent.update = 0
         self.onePercent = 100 / params.steps
@@ -542,12 +547,6 @@ class Deforum_UI(QObject):
         gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.toPlainText()
         aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.toPlainText()
         gs.aesthetic_text_negative = False if aesthetic_text_negative == '' else aesthetic_text_negative
-
-
-        #gs.aesthetic_embedding_path = os.path.join(gs.system.aesthetic_gradients_dir, self.parent.widgets[self.parent.current_widget].w.aesthetic_embedding.currentText())
-        #if params == None:
-        params = self.parent.sessionparams.update_params()
-
 
         steps = int(params.steps)
         H = int(params.H)

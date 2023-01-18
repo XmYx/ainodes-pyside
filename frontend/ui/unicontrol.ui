@@ -3116,13 +3116,6 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="3">
-               <widget class="QLabel" name="multi_dim_label">
-                <property name="text">
-                 <string>MD Seed Mode</string>
-                </property>
-               </widget>
-              </item>
               <item row="4" column="1">
                <widget class="QSpinBox" name="H">
                 <property name="minimum">
@@ -3810,6 +3803,13 @@
                <widget class="QCheckBox" name="toggle_plugins">
                 <property name="text">
                  <string>Plugins</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="3" colspan="2">
+               <widget class="QLabel" name="multi_dim_label">
+                <property name="text">
+                 <string>MD Seed Mode</string>
                 </property>
                </widget>
               </item>

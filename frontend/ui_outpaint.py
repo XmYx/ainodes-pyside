@@ -387,9 +387,6 @@ class Outpainting:
                     self.finish_batch()
                     self.parent.image_preview_signal(final_output.convert("RGB"))
 
-
-
-
     def finish_batch(self):
         self.parent.canvas.canvas.rectlist = []
         self.batch_process = None
@@ -419,16 +416,12 @@ class Outpainting:
         print('self.parent.canvas.canvas.selected_item',self.parent.canvas.canvas.selected_item)
         self.parent.deforum_ui.run_deforum_six_txt2img(hiresinit='output/temp/temp.png')
 
-
-
-
     def run_outpaint_step_x(self):
         next_step = self.rectlist_work[0]
         del self.rectlist_work[0]
         self.parent.canvas.canvas.reusable_outpaint(next_step.id)
         #self.wait_canvas_busy()
         self.parent.deforum_ui.run_deforum_outpaint(next_step.params)
-
 
     def run_prepared_outpaint_batch(self, progress_callback=None):
         self.batch_process = 'run_prepared_outpaint_batch'
@@ -442,7 +435,6 @@ class Outpainting:
         self.rectlist_work = copy.deepcopy(self.parent.canvas.canvas.rectlist)
         print(f"Tiles to Outpaint:{tiles}")
         self.next_image_from_batch()
-
 
     def resize_canvas(self):
         tilesize = 512
@@ -493,7 +485,6 @@ class Outpainting:
         self.tempsize_int = self.parent.canvas.canvas.cols * self.parent.canvas.canvas.rows
         self.parent.canvas.canvas.draw_tempBatch(self.parent.canvas.canvas.tempbatch)
 
-
     def outpaint_rect_overlap(self):
         self.parent.canvas.canvas.rectPreview = self.parent.widgets[self.current_widget].w.enable_overlap.isChecked()
         if self.parent.canvas.canvas.rectPreview == False:
@@ -502,7 +493,6 @@ class Outpainting:
         elif self.parent.canvas.canvas.rectPreview == True:
             self.parent.canvas.canvas.visualize_rects()
 
-
     def addalpha(self, im, mask):
         imr, img, imb, ima = im.split()
         mmr, mmg, mmb, mma = mask.split()
@@ -510,7 +500,6 @@ class Outpainting:
             "RGBA", [imr, img, imb, mma]
         )  # we want the RGB from the original, but the transparency from the mask
         return im
-
 
     # Alternative method composites a grid of images at the positions provided
     def grid_merge(self, source, slices):

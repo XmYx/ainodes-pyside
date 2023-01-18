@@ -790,10 +790,13 @@ class MainWindow(QMainWindow):
                 del qimage
                 del pixmap
         elif self.params.advanced == False:
-            self.add_next_rect()
-            render_index = len(self.canvas.canvas.rectlist) - 1
+
             if img is not None:
                 image = img
+                h, w = image.size
+                self.add_next_rect(h, w)
+                render_index = len(self.canvas.canvas.rectlist) - 1
+
                 # for items in self.canvas.canvas.rectlist:
                 #    if items.id == self.canvas.canvas.render_item:
                 if self.canvas.canvas.rectlist[render_index].images is not None:
@@ -871,11 +874,14 @@ class MainWindow(QMainWindow):
                 del qimage
                 del pixmap
         elif self.params.advanced == False:
-            self.add_next_rect()
-            self.render_index = len(self.canvas.canvas.rectlist) - 1
+
+
             if img is not None:
                 image = img
                 h, w = image.size
+                self.add_next_rect(h, w)
+                self.render_index = len(self.canvas.canvas.rectlist) - 1
+
                 # for items in self.canvas.canvas.rectlist:
                 #    if items.id == self.canvas.canvas.render_item:
                 if self.canvas.canvas.rectlist[self.render_index].images is not None:
@@ -895,8 +901,7 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.rectlist[self.render_index].render_index]
                 self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
                 self.canvas.canvas.rectlist[self.render_index].params = self.params
-                self.canvas.canvas.rectlist[self.render_index].h = h
-                self.canvas.canvas.rectlist[self.render_index].w = w
+
                 self.canvas.canvas.newimage = True
                 self.canvas.canvas.redraw()
                 self.canvas.canvas.update()
@@ -908,9 +913,9 @@ class MainWindow(QMainWindow):
             self.all_images.append(T.functional.pil_to_tensor(image))
 
 
-    def add_next_rect(self):
-        w = self.widgets[self.current_widget].w.W.value()
-        h = self.widgets[self.current_widget].w.H.value()
+    def add_next_rect(self, h, w):
+        #w = self.widgets[self.current_widget].w.W.value()
+        #h = self.widgets[self.current_widget].w.H.value()
         resize = False
 
         params = copy.deepcopy(self.params)
@@ -918,8 +923,8 @@ class MainWindow(QMainWindow):
             self.canvas.canvas.w = w
             self.canvas.canvas.h = h
             self.canvas.canvas.addrect_atpos(x=0, y=0, params=params)
-            self.cheight = self.widgets[self.current_widget].w.H.value()
-            self.w = self.widgets[self.current_widget].w.W.value()
+            self.cheight = h
+            self.w = w
             self.canvas.canvas.render_item = self.canvas.canvas.selected_item
             # print(f"this should only haappen once {self.cheight}")
             # self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)

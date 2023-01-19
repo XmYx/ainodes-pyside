@@ -315,42 +315,46 @@ class Deforum_UI(QObject):
         regex = r"(.*?)(--.*)"
         for prompt in raw_prompts:
             matches = re.match(regex, prompt, re.MULTILINE)
-            work_prompt = matches.groups()[0]
-            prompt_dimensions = matches.groups()[1]
-            prompt_args = prompt_dimensions.split('--')
-            args_dict={}
-            for arg in prompt_args:
-                if arg != '':
-                    arg = arg.rstrip()
-                    arg_name, args_list = arg.split('=')
-                    args_list=args_list.split(',')
-                    args_dict[arg_name] = args_list
-            print(args_dict)
-            pairs = [[(k, v) for v in args_dict[k]] for k in args_dict]
-            arg_combinations = list(itertools.product(*pairs))
-            for set in arg_combinations:
-                for arg in set:
-                    name = arg[0]
-                    value = arg[1]
-                    if name == 'aesthetic_weight': gs.aesthetic_weight = float(value) # todo make this normal params and remove from gs
-                    if name == 'gradient_steps': gs.T = int(value)
-                    if name == 'selected_aesthetic_embedding': gs.diffusion.selected_aesthetic_embedding = str(value)
-                    if name == 'slerp': gs.slerp = bool(value)
-                    if name == 'aesthetic_imgs_text': gs.aesthetic_imgs_text = str(value)
-                    if name == 'slerp_angle': gs.slerp_angle = float(value)
-                    if name == 'aesthetic_text_negative': gs.aesthetic_text_negative = str(value)
-                    if name == 'gradient_scale': gs.lr = float(value)
-                    if name in ints_vals:
-                        value = int(value)
-                    if name in float_vals:
-                        value = float(value)
-                    if name in bool_vals:
-                        value = bool(value)
-                    self.params.__dict__[name] = value
-                self.params.prompts = work_prompt
+            if matches is not None:
+                work_prompt = matches.groups()[0]
+                prompt_dimensions = matches.groups()[1]
+                prompt_args = prompt_dimensions.split('--')
+                args_dict={}
+                for arg in prompt_args:
+                    if arg != '':
+                        arg = arg.rstrip()
+                        arg_name, args_list = arg.split('=')
+                        args_list=args_list.split(',')
+                        args_dict[arg_name] = args_list
+                print(args_dict)
+                pairs = [[(k, v) for v in args_dict[k]] for k in args_dict]
+                arg_combinations = list(itertools.product(*pairs))
+                for set in arg_combinations:
+                    for arg in set:
+                        name = arg[0]
+                        value = arg[1]
+                        if name == 'aesthetic_weight': gs.aesthetic_weight = float(value) # todo make this normal params and remove from gs
+                        if name == 'gradient_steps': gs.T = int(value)
+                        if name == 'selected_aesthetic_embedding': gs.diffusion.selected_aesthetic_embedding = str(value)
+                        if name == 'slerp': gs.slerp = bool(value)
+                        if name == 'aesthetic_imgs_text': gs.aesthetic_imgs_text = str(value)
+                        if name == 'slerp_angle': gs.slerp_angle = float(value)
+                        if name == 'aesthetic_text_negative': gs.aesthetic_text_negative = str(value)
+                        if name == 'gradient_scale': gs.lr = float(value)
+                        if name in ints_vals:
+                            value = int(value)
+                        if name in float_vals:
+                            value = float(value)
+                        if name in bool_vals:
+                            value = bool(value)
+                        self.params.__dict__[name] = value
+                    self.params.prompts = work_prompt
+                    self.set_multi_dim_seed()
+                    self.run_it()
+            else:
+                self.params.prompts = prompt
                 self.set_multi_dim_seed()
                 self.run_it()
-
 
     def run_deforum_six_txt2img(self, hiresinit = None, progress_callback=None, plotting=True, params=None):
 

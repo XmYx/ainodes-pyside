@@ -107,6 +107,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
 
     for iprompt, prompt in enumerate(prompts):
         if gs.stop_all:
+            print('stopped by user action')
             return paths
         if prompt != '':
             args.prompt = prompt
@@ -117,6 +118,7 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
 
             for batch_index in range(args.n_batch):
                 if gs.stop_all:
+                    print('stopped by user action')
                     return paths
                 print(f"Batch {batch_index+1} of {args.n_batch}")
 
@@ -309,6 +311,7 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
     # print(f"frame idx = {anim_args.max_frames}")
     while frame_idx < anim_args.max_frames:
         if gs.stop_all:
+            print('stopped by user action')
             break
         print(f"Rendering animation frame {frame_idx} of {anim_args.max_frames}")
         noise = keys.noise_schedule_series[frame_idx]
@@ -496,6 +499,7 @@ def render_interpolation(args, anim_args, animation_prompts, root, image_callbac
 
     for i, prompt in animation_prompts.items():
         if gs.stop_all:
+            print('stopped by user action')
             return
         args.prompt = prompt
         args.clip_prompt = args.prompt

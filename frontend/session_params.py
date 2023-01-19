@@ -272,6 +272,7 @@ class SessionParams():
             "cpudepth": self.parent.widgets[widget].w.cpudepth.isChecked(),
             "skip_video_for_run_all": False, # todo make variable
             "prompt_weighting": self.parent.widgets[widget].w.prompt_weighting.isChecked(),
+            "toggle_negative_prompt": self.parent.widgets[widget].w.toggle_negative_prompt.isChecked(),
             "normalize_prompt_weights": True,
             "lowmem": self.parent.widgets[widget].w.lowmem.isChecked(),
             "plotting": self.parent.widgets[widget].w.toggle_plotting.isChecked(),
@@ -325,30 +326,57 @@ class SessionParams():
         print(f'sampler: {self.params.sampler} steps {self.params.steps}\nscale: {self.params.scale}\nddim_eta: {self.params.ddim_eta}')
         return self.params
 
+    def reverse_translate_sampler(self, sampler):
+        if sampler == "klms":
+            return "LMS"
+        elif sampler == "dpm2":
+            return "DPM 2"
+        elif sampler == "dpm2_ancestral":
+            return "DPM 2 Ancestral"
+        elif sampler == "heun":
+            return "Heun"
+        elif sampler == "euler":
+            return "Euler"
+        elif sampler == "euler_ancestral":
+            return "Euler Ancestral"
+        elif sampler == "dpm_fast":
+            return "DPM Fast"
+        elif sampler == "dpm_adaptive":
+            return "DPM Adaptive"
+        elif sampler == "dpmpp_2s_a":
+            return "DPMPP 2S Ancestral"
+        elif sampler == "dpmpp_2m":
+            return "DPMPP 2M"
+        elif sampler == "dpmpp_sde":
+            return "DPMPP SDE"
+        else:
+            return sampler
+
 
 def translate_sampler(sampler):
     if sampler == "LMS":
-        sampler = "klms"
+        return "klms"
     elif sampler == "DPM 2":
-        sampler = "dpm2"
+        return "dpm2"
     elif sampler == "DPM 2 Ancestral":
-        sampler = "dpm2_ancestral"
+        return "dpm2_ancestral"
     elif sampler == "Heun":
-        sampler = "heun"
+        return "heun"
     elif sampler == "Euler":
-        sampler = "euler"
+        return "euler"
     elif sampler == "Euler Ancestral":
-        sampler = "euler_ancestral"
+        return "euler_ancestral"
     elif sampler == "DPM Fast":
-        sampler = "dpm_fast"
+        return "dpm_fast"
     elif sampler == "DPM Adaptive":
-        sampler = "dpm_adaptive"
+        return "dpm_adaptive"
     elif sampler == "DPMPP 2S Ancestral":
-        sampler = "dpmpp_2s_a"
+        return "dpmpp_2s_a"
     elif sampler == "DPMPP 2M":
-        sampler = "dpmpp_2m"
+        return "dpmpp_2m"
     elif sampler == "DPMPP SDE":
-        sampler = "dpmpp_sde"
+        return "dpmpp_sde"
     else:
-        sampler = sampler
-    return sampler
+        return sampler
+
+

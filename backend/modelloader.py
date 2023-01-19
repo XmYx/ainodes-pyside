@@ -60,14 +60,14 @@ def load_realesrgan(model_name: str):
         instance.model.to('cpu')
     elif gs.system.extra_models_gpu:
         instance = RealESRGANer(scale=2, model_path=model_path, model=realesrgan_models[model_name], pre_pad=0,
-                                half=gs.diffusion.fullPrecision,)
+                                half=gs.diffusion.full_precision,)
                                 #device=torch.device(f'cuda:{gs.system.extra_models_gpu}'))
     else:
         instance = RealESRGANer(scale=2,
                                 model_path=model_path,
                                 model=realesrgan_models[model_name],
                                 pre_pad=0,
-                                half=gs.diffusion.fullPrecision,)
+                                half=gs.diffusion.full_precision,)
                                 #device=torch.device(f'cuda:{str(gs.system.gpu)}'))
     instance.model.name = model_name
 

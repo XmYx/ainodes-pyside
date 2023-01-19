@@ -36,7 +36,7 @@ class UniControl(QObject):
         self.w.toggle_plugins.stateChanged.connect(self.hidePlugins_anim)
         self.w.toggle_colors.stateChanged.connect(self.hideColors_anim)
         self.w.toggle_grad.stateChanged.connect(self.hideGrad_anim)
-        self.w.toggle_negative_prompt.stateChanged.connect(self.toggle_n_prompt)
+        self.w.toggle_negative_prompt.toggled.connect(self.toggle_n_prompt)
         self.w.update_models.clicked.connect(self.update_model_list)
         self.w.update_vae.clicked.connect(self.update_vae_list)
         self.w.update_hyper.clicked.connect(self.update_hypernetworks_list)

@@ -459,21 +459,36 @@ class MainWindow(QMainWindow):
         self.threadpool.start(worker)
 
     def update_ui_from_params(self):
-
+        current_widget = self.widgets[self.current_widget].w
         for key, value in self.sessionparams.params.items():
             try:
                 # We have to add check for Animation Mode as thats a radio checkbox with values 'anim2d', 'anim3d', 'animVid'
                 # add colormatch_image (it will be with a fancy preview)
-                type = str(getattr(self.widgets[self.current_widget].w, key))
+                obj_type = str(getattr(self.widgets[self.current_widget].w, key))
 
-                if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
+                if 'QSpinBox' in obj_type or 'QDoubleSpinBox' in obj_type:
                     getattr(self.widgets[self.current_widget].w, key).setValue(value)
-                elif 'QTextEdit' in type or 'QLineEdit' in type:
+                elif 'QTextEdit' in obj_type or 'QLineEdit' in obj_type:
                     getattr(self.widgets[self.current_widget].w, key).setText(str(value))
-                elif 'QCheckBox' in type:
+                elif 'QCheckBox' in obj_type or 'QRadioButton' in obj_type:
                     if value == True:
                         getattr(self.widgets[self.current_widget].w, key).setCheckState(QtCore.Qt.Checked)
-
+                elif 'QComboBox' in obj_type:
+                    if type(value) == str:
+                        if key == 'sampler':
+                            value = self.sessionparams.reverse_translate_sampler(value)
+                        item_count = getattr(current_widget, key).count()
+                        items = []
+                        for i in range(0, item_count):
+                            items.append(getattr(current_widget, key).itemText(i))
+                        if item_count > 0:
+                            getattr(current_widget, key).setCurrentIndex(items.index(value))
+                        else:
+                            getattr(current_widget, key).setCurrentIndex(0)
+                    elif type(value) == int:
+                        getattr(current_widget, key).setCurrentIndex(value)
+                    else:
+                        print(f'unknown type for combobox {type(value)}: {value}')
             except Exception as e:
                 print('setting still to be fixed ', e)
                 continue
@@ -482,24 +497,29 @@ class MainWindow(QMainWindow):
         for key, value in self.sessionparams.system_params.items():
             try:
                 current_widget = self.system_setup.w
-                type = str(getattr(current_widget, key))
+                obj_type = str(getattr(current_widget, key))
 
-                if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
+                if 'QSpinBox' in obj_type or 'QDoubleSpinBox' in obj_type:
                     getattr(current_widget, key).setValue(value)
-                elif 'QTextEdit' in type or 'QLineEdit' in type:
+                elif 'QTextEdit' in obj_type or 'QLineEdit' in obj_type:
                     getattr(current_widget, key).setText(str(value))
-                elif 'QCheckBox' in type:
+                elif 'QCheckBox' in obj_type or 'QRadioButton' in obj_type:
                     if value == True:
                         getattr(current_widget, key).setCheckState(QtCore.Qt.Checked)
-                elif 'QComboBox' in type:
-                    item_count = getattr(current_widget, key).count()
-                    items = []
-                    for i in range(0, item_count):
-                        items.append(getattr(current_widget, key).itemText(i))
-                    if item_count > 0:
-                        getattr(current_widget, key).setCurrentIndex(items.index(value))
+                elif 'QComboBox' in obj_type:
+                    if type(value) == str:
+                        item_count = getattr(current_widget, key).count()
+                        items = []
+                        for i in range(0, item_count):
+                            items.append(getattr(current_widget, key).itemText(i))
+                        if item_count > 0:
+                            getattr(current_widget, key).setCurrentIndex(items.index(value))
+                        else:
+                            getattr(current_widget, key).setCurrentIndex(0)
+                    elif type(value) == int:
+                        getattr(current_widget, key).setCurrentIndex(value)
                     else:
-                        getattr(current_widget, key).setCurrentIndex(0)
+                        print(f'unknown type for combobox {type(value)}: {value}')
 
             except Exception as e:
                 continue
@@ -598,32 +618,9 @@ class MainWindow(QMainWindow):
         self.toolbar.setVisible(False)
         self.secondary_toolbar.setVisible(False)
 
-        self.widgets[self.current_widget].w.toggle_negative_prompt.setVisible(False)
+        self.widgets[self.current_widget].w.base_setup.setVisible(False)
+        self.widgets[self.current_widget].w.advanced_toppics.setVisible(False)
         self.widgets[self.current_widget].w.negative_prompts.setVisible(False)
-        self.widgets[self.current_widget].w.prompt_weighting.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_sampler.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_outpaint.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_animations.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_plotting.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_aesthetics.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_embeddings.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_plugins.setVisible(False)
-        self.widgets[self.current_widget].w.multi_dim_prompt.setVisible(False)
-        self.widgets[self.current_widget].w.multi_dim_seed_behavior.setVisible(False)
-        self.widgets[self.current_widget].w.multi_dim_label.setVisible(False)
-        # self.widgets[self.current_widget].w.showHideAll.setVisible(False)
-        self.widgets[self.current_widget].w.H.setVisible(False)
-        # self.widgets[self.current_widget].w.H_slider.setVisible(False)
-        self.widgets[self.current_widget].w.W.setVisible(False)
-        # self.widgets[self.current_widget].w.W_slider.setVisible(False)
-        self.widgets[self.current_widget].w.cfglabel.setVisible(False)
-        self.widgets[self.current_widget].w.heightlabel.setVisible(False)
-        self.widgets[self.current_widget].w.widthlabel.setVisible(False)
-        self.widgets[self.current_widget].w.steps.setVisible(False)
-        # self.widgets[self.current_widget].w.steps_slider.setVisible(False)
-        self.widgets[self.current_widget].w.scale.setVisible(False)
-        # self.widgets[self.current_widget].w.scale_slider.setVisible(False)
-        self.widgets[self.current_widget].w.stepslabel.setVisible(False)
         self.widgets[self.current_widget].w.keyframes.setVisible(False)
         self.system_setup.w.dockWidget.setVisible(False)
         self.animKeyEditor.w.dockWidget.setVisible(False)
@@ -663,31 +660,8 @@ class MainWindow(QMainWindow):
         if self.default_hidden == True:
             self.toolbar.setVisible(True)
             self.secondary_toolbar.setVisible(True)
-
-            self.widgets[self.current_widget].w.toggle_negative_prompt.setVisible(True)
-            self.widgets[self.current_widget].w.prompt_weighting.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_sampler.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_outpaint.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_animations.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_plotting.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_aesthetics.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_embeddings.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_plugins.setVisible(True)
-            self.widgets[self.current_widget].w.multi_dim_prompt.setVisible(True)
-            self.widgets[self.current_widget].w.multi_dim_seed_behavior.setVisible(True)
-            self.widgets[self.current_widget].w.multi_dim_label.setVisible(True)
-            self.widgets[self.current_widget].w.H.setVisible(True)
-            # self.widgets[self.current_widget].w.H_slider.setVisible(True)
-            self.widgets[self.current_widget].w.W.setVisible(True)
-            # self.widgets[self.current_widget].w.W_slider.setVisible(True)
-            self.widgets[self.current_widget].w.cfglabel.setVisible(True)
-            self.widgets[self.current_widget].w.heightlabel.setVisible(True)
-            self.widgets[self.current_widget].w.widthlabel.setVisible(True)
-            self.widgets[self.current_widget].w.steps.setVisible(True)
-            # self.widgets[self.current_widget].w.steps_slider.setVisible(True)
-            self.widgets[self.current_widget].w.scale.setVisible(True)
-            # self.widgets[self.current_widget].w.scale_slider.setVisible(True)
-            self.widgets[self.current_widget].w.stepslabel.setVisible(True)
+            self.widgets[self.current_widget].w.base_setup.setVisible(True)
+            self.widgets[self.current_widget].w.advanced_toppics.setVisible(True)
             self.widgets[self.current_widget].w.keyframes.setVisible(True)
             self.system_setup.w.dockWidget.setVisible(True)
             self.image_lab_ui.w.dockWidget.setVisible(True)

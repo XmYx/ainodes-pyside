@@ -340,16 +340,17 @@ class Outpainting:
     def next_image_from_batch(self, progress_callback=None):
         if self.batch_process == 'run_prepared_outpaint_batch':
             if len(self.rectlist_work) > 0:
-                if gs.stop_all == False:
+                if gs.stop_all is False:
                     print(f"running step {self.batch_step_number}")
                     self.run_outpaint_step_x()
 
             else:
+                print('stopped by user action')
                 self.batch_process = None
 
         if self.batch_process == 'run_hires_batch':
             print('run next hires batch image')
-            if gs.stop_all != True:
+            if gs.stop_all is False:
                 if len(self.parent.canvas.canvas.rectlist) > 0 and len(self.parent.canvas.canvas.rectlist) > self.parent.render_index:
                     self.run_hires_step_x()
                 else:
@@ -386,6 +387,8 @@ class Outpainting:
                     self.parent.params.advanced = False
                     self.finish_batch()
                     self.parent.image_preview_signal(final_output.convert("RGB"))
+            else:
+                print('stopped by user action')
 
     def finish_batch(self):
         self.parent.canvas.canvas.rectlist = []

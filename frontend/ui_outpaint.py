@@ -33,7 +33,7 @@ class Outpainting:
         self.tile_size = 512
         self.batch_process = None
         self.batch_process_items = None
-        self.gobbig_pil_image = None
+        self.gobig_pil_image = None  # had a typo here made by osi gobbig
         self.gobig_img_path = None
         self.last_batch_image = None
 
@@ -252,9 +252,9 @@ class Outpainting:
         tilesize = self.tile_size
         if self.gobig_img_path is not None:
             rect = QRect(item['x'], item['y'], self.parent.canvas.canvas.w, self.parent.canvas.canvas.h)
-            image = self.gobbig_qimage.copy(rect)
+            image = self.gobig_qimage.copy(rect)
             index = None
-            self.hires_source = self.gobbig_pil_image
+            self.hires_source = self.gobig_pil_image
 
         else:
             image = None
@@ -290,14 +290,14 @@ class Outpainting:
         if self.gobig_img_path is not None:
             overlap_tilesize = self.tile_size - overlap
             upscale_factor = self.parent.widgets[self.current_widget].w.batch_upscale_factor.value()
-            self.gobbig_pil_image = Image.open(self.gobig_img_path)
-            width, height = self.gobbig_pil_image.size
+            self.gobig_pil_image = Image.open(self.gobig_img_path)
+            width, height = self.gobig_pil_image.size
             target_h = int(int(height) * upscale_factor)
             target_w = int(int(width) * upscale_factor)
             self.parent.canvas.H.setValue(int(target_h))
             self.parent.canvas.W.setValue(int(target_w))
-            self.gobbig_pil_image = self.gobbig_pil_image.resize((target_w, target_h),Image.Resampling.LANCZOS).convert("RGBA")
-            self.gobbig_qimage = ImageQt(self.gobbig_pil_image)
+            self.gobig_pil_image = self.gobig_pil_image.resize((target_w, target_h),Image.Resampling.LANCZOS).convert("RGBA")
+            self.gobig_qimage = ImageQt(self.gobig_pil_image)
             #chops_x = int(qimage.width() / self.parent.canvas.canvas.w) + 1
             #chops_y = int(qimage.height() / self.parent.canvas.canvas.h) + 1
             chops_x = int(target_w / overlap_tilesize) + 1

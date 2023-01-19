@@ -37,6 +37,7 @@ class UniControl(QObject):
         self.w.toggle_colors.stateChanged.connect(self.hideColors_anim)
         self.w.toggle_grad.stateChanged.connect(self.hideGrad_anim)
         self.w.toggle_negative_prompt.toggled.connect(self.toggle_n_prompt)
+        self.w.seamless.toggled.connect(self.toggle_seamless)
         self.w.update_models.clicked.connect(self.update_model_list)
         self.w.update_vae.clicked.connect(self.update_vae_list)
         self.w.update_hyper.clicked.connect(self.update_hypernetworks_list)
@@ -226,6 +227,9 @@ class UniControl(QObject):
         if 'sd' in gs.models:
             del gs.models['sd']
         torch_gc()
+
+    def toggle_seamless(self):
+        self.w.axis.setVisible(self.w.seamless.isChecked())
 
     def toggle_n_prompt(self):
         self.w.negative_prompts.setVisible(self.w.toggle_negative_prompt.isChecked())

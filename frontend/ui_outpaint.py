@@ -349,7 +349,7 @@ class Outpainting:
                 self.batch_process = None
 
         if self.batch_process == 'run_hires_batch':
-            print('run next hires batch image')
+            print('run next hires image batch')
             if gs.stop_all is False:
                 if len(self.parent.canvas.canvas.rectlist) > 0 and len(self.parent.canvas.canvas.rectlist) > self.parent.render_index:
                     self.run_hires_step_x()

@@ -622,6 +622,7 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].w.advanced_toppics.setVisible(False)
         self.widgets[self.current_widget].w.negative_prompts.setVisible(False)
         self.widgets[self.current_widget].w.keyframes.setVisible(False)
+        self.widgets[self.current_widget].w.axis.setVisible(False)
         self.system_setup.w.dockWidget.setVisible(False)
         self.animKeyEditor.w.dockWidget.setVisible(False)
         self.image_lab_ui.w.dockWidget.setVisible(False)

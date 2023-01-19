@@ -282,8 +282,10 @@ class DreamBooth:
                                                                         # stored in a different place than the logs written in `default_root_dir`.
                                                                         # Can be remote file paths such as `s3://mybucket/path` or 'hdfs://path/'
                                                                         # Defaults to `default_root_dir`.
-                   val_check_interval=1.0                               # How often to check the validation set. Use float to check within a training epoch,
+                   val_check_interval=1.0,                               # How often to check the validation set. Use float to check within a training epoch,
                                                                         # use int to check every n steps (batches).
+                   base_lr=0.0005,
+                   bs=1
                    ):
         distributed_backend=None                # deprecated. Please use 'accelerator'
         reload_dataloaders_every_epoch=False    # deprecated. Please use ``reload_dataloaders_every_n_epochs``.
@@ -564,7 +566,9 @@ class DreamBooth:
                 print(f"{k}, {data.datasets[k].__class__.__name__}, {len(data.datasets[k])}")
 
             # configure learning rate
-            bs, base_lr = config.data.params.batch_size, config.model.base_learning_rate
+            #bs, base_lr = config.data.params.batch_size, config.model.base_learning_rate
+            base_lr = opt.base_lr
+            bs = opt.bs
             if not cpu:
                 ngpu = len(lightning_config.trainer.gpus.strip(",").split(','))
             else:
@@ -572,7 +576,7 @@ class DreamBooth:
             if 'accumulate_grad_batches' in lightning_config.trainer:
                 accumulate_grad_batches = lightning_config.trainer.accumulate_grad_batches
             else:
-                accumulate_grad_batches = 1
+                accumulate_grad_batches = opt.accumulate_grad_batches
             print(f"accumulate_grad_batches = {accumulate_grad_batches}")
             lightning_config.trainer.accumulate_grad_batches = accumulate_grad_batches
             if opt.scale_lr:

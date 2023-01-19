@@ -23,6 +23,7 @@ class mySignals(QObject):
     add_rect = Signal(object)
     canvas_update = Signal()
     rect_ready_in_ui = Signal()
+    txt2img_image_op = Signal(str, str, tuple)
 
 class Outpainting:
 
@@ -332,9 +333,10 @@ class Outpainting:
         self.next_rect_from_batch()
 
     def image_ready_in_ui(self):
-        self.parent.canvas.canvas.redraw()
-        self.parent.render_index += 1
-        self.parent.run_as_thread(self.next_image_from_batch)
+        if self.batch_process is not None:
+            self.parent.canvas.canvas.redraw()
+            self.parent.render_index += 1
+            self.parent.run_as_thread(self.next_image_from_batch)
 
 
     def next_image_from_batch(self, progress_callback=None):

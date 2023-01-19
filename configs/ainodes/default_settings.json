@@ -151,7 +151,6 @@
     "hires" : false,
     "recons_blur" : 10,
     "mask_overlay_blur" : 10,
-    "precision" : "",
     "timestring" : "",
     "clear_latent" : true,
     "clear_sample" : true,
@@ -168,6 +167,7 @@
     "discard_next_to_last_sigma": true,
     "multi_dim_prompt": false,
     "multi_dim_seed_behavior": 0,
-    "hires_strength": 0.0
+    "hires_strength": 0.0,
+    "preview_mode": 0
   }
 }

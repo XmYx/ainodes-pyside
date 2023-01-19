@@ -320,7 +320,7 @@ class UniControl(QObject):
         if self.outHidden is True:
             self.showOutAnim.start()
             self.parent.thumbs.w.dockWidget.setVisible(True)
-            self.w.mode.setCurrentIndex(1)
+            self.w.preview_mode.setCurrentIndex(1)
         else:
             self.hideOutAnim.start()
             self.parent.thumbs.w.dockWidget.setVisible(False)

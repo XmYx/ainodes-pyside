@@ -168,7 +168,7 @@ class SessionParams():
 
         self.params = {             # todo make this a one step thing not two steps
             # Basic Params
-            'mode': "",
+            'mode': self.parent.widgets[widget].w.preview_mode.currentText(),
             'sampler': translate_sampler(self.parent.widgets[widget].w.sampler.currentText()),
             'W': self.parent.widgets[widget].w.W.value(),
             'H': self.parent.widgets[widget].w.H.value(),

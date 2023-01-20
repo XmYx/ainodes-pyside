@@ -20,6 +20,8 @@ def get_uc_and_c(prompts, model, args, frame = 0):
         prompt, frame, not args.normalize_prompt_weights
     )
 
+    print('negative_subprompts, positive_subprompts', negative_subprompts, positive_subprompts)
+
     uc = get_learned_conditioning(model, negative_subprompts, "", args, -1)
     c = get_learned_conditioning(model, positive_subprompts, prompt, args, 1)
 

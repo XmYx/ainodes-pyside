@@ -18,6 +18,7 @@ from plugins.training.lora_diffusion.cli_lora_add import add as lom_merge_models
 from plugins.training.diffuser_to_sd import diff2sd
 from plugins.training.txt_inv.textual_inversion import create_txt_inv
 from plugins.training.preprocess.preprocess import preprocess
+from plugins.training.diffusers.dreambooth import run_diff_dreambooth
 
 class FineTune(QObject):
 
@@ -41,6 +42,9 @@ class aiNodesPlugin:
         self.parent = parent
         os.environ["PL_TORCH_DISTRIBUTED_BACKEND"] = "gloo"
         self.training = FineTune()
+        sshFile="frontend/style/elegantDark.stylesheet"
+        with open(sshFile,"r") as fh:
+            self.training.w.setStyleSheet(fh.read())
 
 
     def initme(self):
@@ -48,260 +52,14 @@ class aiNodesPlugin:
         gs.system.dreambooth_config = "plugins/training/configs/dreambooth"
         self.signals = Callbacks()
         self.connections()
-        self.init_anims()
         self.load_folder_content()
         self.dreambooth_training = DreamBooth()
         self.showAll = False
-        self.show_hide_all_anim()
         self.training.w.show()
         self.training.w.lom_select_model_a_lora.setVisible(False)
 
 
 
-    def hideProcessCaption_anim(self):
-        if self.pocHidden is True:
-            self.showPocAnim.start()
-        else:
-            self.hidePocAnim.start()
-        self.pocHidden = not self.pocHidden
-
-    def hideFocalPointCrop_anim(self):
-        if self.fpcHidden is True:
-            self.showFpcAnim.start()
-        else:
-            self.hideFpcAnim.start()
-        self.fpcHidden = not self.fpcHidden
-
-    def hideSampler_anim(self):
-        if self.aucHidden is True:
-            self.showAucAnim.start()
-        else:
-            self.hideAucAnim.start()
-        self.aucHidden = not self.aucHidden
-
-    def hideAutoCrop_anim(self):
-        if self.aucHidden is True:
-            self.showAucAnim.start()
-        else:
-            self.hideAucAnim.start()
-        self.aucHidden = not self.aucHidden
-
-    def hideDreambooth_anim(self):
-        if self.drbHidden is True:
-            self.showDrbAnim.start()
-        else:
-            self.hideDrbAnim.start()
-        self.drbHidden = not self.drbHidden
-
-    def hideLoraDreambooth_anim(self):
-        if self.ldbHidden is True:
-            self.showLdbAnim.start()
-        else:
-            self.hideLdbAnim.start()
-        self.ldbHidden = not self.ldbHidden
-
-    def hideHypernetwork_anim(self):
-        if self.hpnHidden is True:
-            self.showHpnAnim.start()
-        else:
-            self.hideHpnAnim.start()
-        self.hpnHidden = not self.hpnHidden
-
-    def hidePrepareInput_anim(self):
-        if self.pitHidden is True:
-            self.showPitAnim.start()
-        else:
-            self.hidePitAnim.start()
-        self.pitHidden = not self.pitHidden
-
-    def hideCkpt2diff_anim(self):
-        if self.cpdHidden is True:
-            self.showCpdAnim.start()
-        else:
-            self.hideCpdAnim.start()
-        self.cpdHidden = not self.cpdHidden
-
-    def hideLoraMerge_anim(self):
-        if self.lomHidden is True:
-            self.showLomAnim.start()
-        else:
-            self.hideLomAnim.start()
-        self.lomHidden = not self.lomHidden
-
-    def hideTextInvers_anim(self):
-        if self.txiHidden is True:
-            self.showTxiAnim.start()
-        else:
-            self.hideTxiAnim.start()
-        self.txiHidden = not self.txiHidden
-
-    def init_anims(self):
-        self.showPocAnim = QtCore.QPropertyAnimation(self.training.w.processCaption, b"maximumHeight")
-        self.showPocAnim.setDuration(500)
-        self.showPocAnim.setStartValue(0)
-        self.showPocAnim.setEndValue(100)
-        self.showPocAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.hidePocAnim = QtCore.QPropertyAnimation(self.training.w.processCaption, b"maximumHeight")
-        self.hidePocAnim.setDuration(500)
-        self.hidePocAnim.setStartValue(100)
-        self.hidePocAnim.setEndValue(0)
-        self.hidePocAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.showFpcAnim = QtCore.QPropertyAnimation(self.training.w.focalPointCrop, b"maximumHeight")
-        self.showFpcAnim.setDuration(500)
-        self.showFpcAnim.setStartValue(0)
-        self.showFpcAnim.setEndValue(250)
-        self.showFpcAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.hideFpcAnim = QtCore.QPropertyAnimation(self.training.w.focalPointCrop, b"maximumHeight")
-        self.hideFpcAnim.setDuration(500)
-        self.hideFpcAnim.setStartValue(250)
-        self.hideFpcAnim.setEndValue(0)
-        self.hideFpcAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.showAucAnim = QtCore.QPropertyAnimation(self.training.w.autoCrop, b"maximumHeight")
-        self.showAucAnim.setDuration(500)
-        self.showAucAnim.setStartValue(0)
-        self.showAucAnim.setEndValue(100)
-        self.showAucAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.hideAucAnim = QtCore.QPropertyAnimation(self.training.w.autoCrop, b"maximumHeight")
-        self.hideAucAnim.setDuration(500)
-        self.hideAucAnim.setStartValue(100)
-        self.hideAucAnim.setEndValue(0)
-        self.hideAucAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.showDrbAnim = QtCore.QPropertyAnimation(self.training.w.Dreambooth, b"maximumHeight")
-        self.showDrbAnim.setDuration(500)
-        self.showDrbAnim.setStartValue(0)
-        self.showDrbAnim.setEndValue(self.training.w.Dreambooth.height())
-        self.showDrbAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.hideDrbAnim = QtCore.QPropertyAnimation(self.training.w.Dreambooth, b"maximumHeight")
-        self.hideDrbAnim.setDuration(500)
-        self.hideDrbAnim.setStartValue(self.training.w.Dreambooth.height())
-        self.hideDrbAnim.setEndValue(0)
-        self.hideDrbAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.showLdbAnim = QtCore.QPropertyAnimation(self.training.w.LoraDreambooth, b"maximumHeight")
-        self.showLdbAnim.setDuration(500)
-        self.showLdbAnim.setStartValue(0)
-        self.showLdbAnim.setEndValue(self.training.w.LoraDreambooth.height())
-        self.showLdbAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.hideLdbAnim = QtCore.QPropertyAnimation(self.training.w.LoraDreambooth, b"maximumHeight")
-        self.hideLdbAnim.setDuration(500)
-        self.hideLdbAnim.setStartValue(self.training.w.LoraDreambooth.height())
-        self.hideLdbAnim.setEndValue(0)
-        self.hideLdbAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.showHpnAnim = QtCore.QPropertyAnimation(self.training.w.hypernetworks, b"maximumHeight")
-        self.showHpnAnim.setDuration(500)
-        self.showHpnAnim.setStartValue(0)
-        self.showHpnAnim.setEndValue(self.training.w.hypernetworks.height())
-        self.showHpnAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.hideHpnAnim = QtCore.QPropertyAnimation(self.training.w.hypernetworks, b"maximumHeight")
-        self.hideHpnAnim.setDuration(500)
-        self.hideHpnAnim.setStartValue(self.training.w.hypernetworks.height())
-        self.hideHpnAnim.setEndValue(0)
-        self.hideHpnAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.showPitAnim = QtCore.QPropertyAnimation(self.training.w.PrepareInput, b"maximumHeight")
-        self.showPitAnim.setDuration(500)
-        self.showPitAnim.setStartValue(0)
-        self.showPitAnim.setEndValue(self.training.w.PrepareInput.height())
-        self.showPitAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.hidePitAnim = QtCore.QPropertyAnimation(self.training.w.PrepareInput, b"maximumHeight")
-        self.hidePitAnim.setDuration(500)
-        self.hidePitAnim.setStartValue(self.training.w.PrepareInput.height())
-        self.hidePitAnim.setEndValue(0)
-        self.hidePitAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.showCpdAnim = QtCore.QPropertyAnimation(self.training.w.ckptToDiff, b"maximumHeight")
-        self.showCpdAnim.setDuration(500)
-        self.showCpdAnim.setStartValue(0)
-        self.showCpdAnim.setEndValue(self.training.w.ckptToDiff.height())
-        self.showCpdAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.hideCpdAnim = QtCore.QPropertyAnimation(self.training.w.ckptToDiff, b"maximumHeight")
-        self.hideCpdAnim.setDuration(500)
-        self.hideCpdAnim.setStartValue(self.training.w.ckptToDiff.height())
-        self.hideCpdAnim.setEndValue(0)
-        self.hideCpdAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.showLomAnim = QtCore.QPropertyAnimation(self.training.w.LoraMerge, b"maximumHeight")
-        self.showLomAnim.setDuration(500)
-        self.showLomAnim.setStartValue(0)
-        self.showLomAnim.setEndValue(self.training.w.LoraMerge.height())
-        self.showLomAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.hideLomAnim = QtCore.QPropertyAnimation(self.training.w.LoraMerge, b"maximumHeight")
-        self.hideLomAnim.setDuration(500)
-        self.hideLomAnim.setStartValue(self.training.w.LoraMerge.height())
-        self.hideLomAnim.setEndValue(0)
-        self.hideLomAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.showTxiAnim = QtCore.QPropertyAnimation(self.training.w.textInvers, b"maximumHeight")
-        self.showTxiAnim.setDuration(500)
-        self.showTxiAnim.setStartValue(0)
-        self.showTxiAnim.setEndValue(self.training.w.textInvers.height())
-        self.showTxiAnim.setEasingCurve(QEasingCurve.Linear)
-
-        self.hideTxiAnim = QtCore.QPropertyAnimation(self.training.w.textInvers, b"maximumHeight")
-        self.hideTxiAnim.setDuration(500)
-        self.hideTxiAnim.setStartValue(self.training.w.textInvers.height())
-        self.hideTxiAnim.setEndValue(0)
-        self.hideTxiAnim.setEasingCurve(QEasingCurve.Linear)
-
-    def show_hide_all_anim(self):
-        print(self.showAll)
-        if self.showAll == False:
-            self.hideTxiAnim.start()
-            self.txiHidden = True
-            self.hideCpdAnim.start()
-            self.cpdHidden = True
-            self.hidePitAnim.start()
-            self.pitHidden = True
-            self.hidePocAnim.start()
-            self.pocHidden = True
-            self.hideFpcAnim.start()
-            self.fpcHidden = True
-            self.hideAucAnim.start()
-            self.aucHidden = True
-            self.hideDrbAnim.start()
-            self.drbHidden = True
-            self.hideLdbAnim.start()
-            self.ldbHidden = True
-            self.hideHpnAnim.start()
-            self.hpnHidden = True
-            self.hideLomAnim.start()
-            self.lomHidden = True
-            self.showAll = True
-        elif self.showAll == True:
-            self.showTxiAnim.start()
-            self.txiHidden = False
-            self.showCpdAnim.start()
-            self.cpdHidden = False
-            self.showPitAnim.start()
-            self.pitHidden = False
-            self.showPocAnim.start()
-            self.pocHidden = False
-            self.showFpcAnim.start()
-            self.fpcHidden = False
-            self.showAucAnim.start()
-            self.aucHidden = False
-            self.showDrbAnim.start()
-            self.drbHidden = False
-            self.showLdbAnim.start()
-            self.ldbHidden = False
-            self.showHpnAnim.start()
-            self.hpnHidden = False
-            self.showLomAnim.start()
-            self.lomHidden = False
-            self.showAll = False
 
     def connections(self):
         self.training.w.pathInputImages.clicked.connect(self.set_path_to_input_image)
@@ -313,17 +71,6 @@ class aiNodesPlugin:
         self.training.w.ckpt2diff_start_process.clicked.connect(self.ckpt2diff_start_process)
         self.training.w.ckpt2diff_select_source.clicked.connect(self.ckpt2diff_select_source)
         self.training.w.ckpt2diff_select_destination.clicked.connect(self.ckpt2diff_select_destination)
-
-        self.training.w.toggle_ckpt2diff.stateChanged.connect(self.hideCkpt2diff_anim)
-        self.training.w.toggle_caption.stateChanged.connect(self.hideProcessCaption_anim)
-        self.training.w.toggle_focal_crop.stateChanged.connect(self.hideFocalPointCrop_anim)
-        self.training.w.toggle_split_oversize.stateChanged.connect(self.hideAutoCrop_anim)
-        self.training.w.toggle_dreambooth.stateChanged.connect(self.hideDreambooth_anim)
-        self.training.w.toggle_lora_dreambooth.stateChanged.connect(self.hideLoraDreambooth_anim)
-        self.training.w.toggle_hypernetwork.stateChanged.connect(self.hideHypernetwork_anim)
-        self.training.w.toggle_prepare_input.stateChanged.connect(self.hidePrepareInput_anim)
-        self.training.w.toggle_lora_merge.stateChanged.connect(self.hideLoraMerge_anim)
-        self.training.w.toggle_textual_inversion.stateChanged.connect(self.hideTextInvers_anim)
 
         self.training.w.ldb_select_pretrained_model_name_or_path.clicked.connect(self.ldb_select_pretrained_model_name_or_path)
         self.training.w.ldb_select_instance_data_dir.clicked.connect(self.ldb_select_instance_data_dir)
@@ -346,8 +93,45 @@ class aiNodesPlugin:
         self.training.w.ti_select_model.clicked.connect(self.ti_select_model)
 
         self.training.w.select_process_input_files.clicked.connect(self.select_process_input_files)
-        self.training.w.select_procerss_destination_folder.clicked.connect(self.select_procerss_destination_folder)
+        self.training.w.select_process_destination_folder.clicked.connect(self.select_procerss_destination_folder)
         self.training.w.runPreprocess.clicked.connect(self.start_preprocess)
+
+
+        self.training.w.df_select_model.clicked.connect(self.df_select_model)
+        self.training.w.df_select_images.clicked.connect(self.df_select_images)
+        self.training.w.df_select_class_images.clicked.connect(self.df_select_class_images)
+        self.training.w.df_select_output_folder.clicked.connect(self.df_select_output_folder)
+        self.training.w.df_select_log_folder.clicked.connect(self.df_select_log_folder)
+
+
+
+        self.training.w.start_diffuser_dreambooth.clicked.connect(self.run_df_dreambooth)
+
+
+    @Slot()
+    def df_select_model(self):
+        filename = QFileDialog.getExistingDirectory(caption='Model Path')
+        self.training.w.df_pretrained_model_name_or_path.setText(filename)
+
+    @Slot()
+    def df_select_images(self):
+        filename = QFileDialog.getExistingDirectory(caption='Input Images Path')
+        self.training.w.df_instance_data_dir.setText(filename)
+
+    @Slot()
+    def df_select_class_images(self):
+        filename = QFileDialog.getExistingDirectory(caption='Class Images Path')
+        self.training.w.df_class_data_dir.setText(filename)
+
+    @Slot()
+    def df_select_output_folder(self):
+        filename = QFileDialog.getExistingDirectory(caption='Output Path')
+        self.training.w.df_output_dir.setText(filename)
+
+    @Slot()
+    def df_select_log_folder(self):
+        filename = QFileDialog.getExistingDirectory(caption='Logging Path')
+        self.training.w.df_logging_dir.setText(filename)
 
 
     @Slot()
@@ -362,7 +146,7 @@ class aiNodesPlugin:
 
     def start_preprocess(self):
         torch_gc()
-        self.parent.plugin_thread(self.run_preprocess)
+        self.parent.run_as_thread(self.run_preprocess)
 
     def run_preprocess(self, progress_callback=False):
         gs.state.interrupted = False
@@ -415,7 +199,7 @@ class aiNodesPlugin:
 
     def lom_start_merge(self):
         torch_gc()
-        self.parent.plugin_thread(self.lom_start_merge_thread)
+        self.parent.run_as_thread(self.lom_start_merge_thread)
 
 
 
@@ -513,7 +297,7 @@ class aiNodesPlugin:
 
     def ldb_start_lora_dreambooth(self):
         torch_gc()
-        self.parent.plugin_thread(self.ldb_start_lora_dreambooth_thread)
+        self.parent.run_as_thread(self.ldb_start_lora_dreambooth_thread)
 
 
     def ldb_start_lora_dreambooth_thread(self, progress_callback=None):
@@ -577,7 +361,7 @@ class aiNodesPlugin:
 
     def ckpt2diff_start_process(self):
         gs.ti_grad_flag_switch = True
-        self.parent.plugin_thread(self.ckpt2diff_start_process_thread)
+        self.parent.run_as_thread(self.ckpt2diff_start_process_thread)
 
     def ckpt2diff_start_process_thread(self, progress_callback=None):
         print('translation ckpt to diffuser started')
@@ -595,7 +379,7 @@ class aiNodesPlugin:
 
     def start_dreambooth(self):
         gs.ti_grad_flag_switch = True
-        self.parent.plugin_thread(self.create_dreambooth_thread)
+        self.parent.run_as_thread(self.create_dreambooth_thread)
 
     def stop_dreambooth(self):
         self.signals.dreambooth_stop_signal.emit()
@@ -783,7 +567,7 @@ class aiNodesPlugin:
 
     def create_textual_inversion(self):
         gs.ti_grad_flag_switch = True
-        self.parent.plugin_thread(self.create_textual_inversion_thread)
+        self.parent.run_as_thread(self.create_textual_inversion_thread)
 
     def create_textual_inversion_thread(self, progress_callback=None):
         print('Textual Inversion training started')
@@ -817,3 +601,72 @@ class aiNodesPlugin:
                                        logging_dir=self.training.w.ti_logging_dir.text(),
                                        mixed_precision=self.training.w.ti_mixed_precision.currentText())
         print('Textual Inversion training finished')
+
+
+
+
+
+    def run_df_dreambooth(self):
+        gs.ti_grad_flag_switch = True
+        self.parent.run_as_thread(self.run_df_dreambooth_thread)
+    def run_df_dreambooth_thread(self, progress_callback=False):
+        run_diff_dreambooth(
+            pretrained_model_name_or_path=self.training.w.df_pretrained_model_name_or_path.text(),       # Path to pretrained model or model identifier from huggingface.co/models.
+            revision=None if self.training.w.df_revision.text() == '' else self.training.w.df_revision.text(),                           # Revision of pretrained model identifier from huggingface.co/models. Trainable model components should be float32 precision.
+            tokenizer_name=None if self.training.w.df_tokenizer_name.text() == '' else self.training.w.df_tokenizer_name.text(),                    # Pretrained tokenizer name or path if not the same as model_name
+            instance_data_dir=self.training.w.df_instance_data_dir.text(),        # A folder containing the training data of instance images.
+            class_data_dir=None if self.training.w.df_class_data_dir.text() == '' else self.training.w.df_class_data_dir.text(),                    # A folder containing the training data of class images.
+            instance_prompt=self.training.w.df_instance_prompt.text(),                   # The prompt with identifier specifying the instance
+            class_prompt=None if self.training.w.df_class_prompt.text() == '' else self.training.w.df_class_prompt.text(),                      # The prompt to specify images in the same class as provided instance images.
+            with_prior_preservation=None,           # Flag to add prior preservation loss.
+            prior_loss_weight=self.training.w.df_prior_loss_weight.value(),                  #
+            num_class_images=self.training.w.df_num_class_images.value(),                   # Minimal class images for prior preservation loss. If there are not enough images already present in
+            # class_data_dir, additional images will be sampled with class_prompt.
+            output_dir=self.training.w.df_output_dir.text(),      # The output directory where the model predictions and checkpoints will be written.
+            seed=seed_everything(self.training.w.df_seed.text()),                              # A seed for reproducible training.
+            resolution=self.training.w.df_resolution.value(),                         # The resolution for input images, all the images in the train/validation dataset will be resized to this resolution
+            center_crop=self.training.w.df_center_crop.isChecked(),                      # Whether to center crop images before resizing to resolution
+            train_text_encoder=self.training.w.df_train_text_encoder.isChecked(),               # Whether to train the text encoder. If set, the text encoder should be float32 precision.
+            # will take additional VRAM
+            train_batch_size=self.training.w.df_train_batch_size.value(),                     # Batch size (per device) for the training dataloader.
+            sample_batch_size=self.training.w.df_sample_batch_size.value(),                    # Batch size (per device) for sampling images.
+            num_train_epochs=self.training.w.df_num_train_epochs.value(),                     # how many epochs are to be trained
+            max_train_steps=None if self.training.w.df_max_train_steps.value() == 0 else self.training.w.df_max_train_steps.value(),                   # Total number of training steps to perform. If provided, overrides num_train_epochs.
+            checkpointing_steps=self.training.w.df_checkpointing_steps.value(),                # Save a checkpoint of the training state every X updates. These checkpoints can be used both as final
+            # checkpoints in case they are better than the last checkpoint, and are also suitable for resuming
+            # training using `--resume_from_checkpoint`.
+            resume_from_checkpoint=None,            # Whether training should be resumed from a previous checkpoint. Use a path saved by
+            # `--checkpointing_steps`, or `"latest"` to automatically select the last available checkpoint.
+            gradient_accumulation_steps=self.training.w.df_gradient_accumulation_steps.value(),          # Number of updates steps to accumulate before performing a backward/update pass.
+            gradient_checkpointing=self.training.w.df_gradient_checkpointing.isChecked(),           # Whether or not to use gradient checkpointing to save memory at the expense of slower backward pass.
+            learning_rate=self.training.w.df_learning_rate.value(),                     # Initial learning rate (after the potential warmup period) to use.
+            scale_lr=self.training.w.df_scale_lr.isChecked(),                         # Scale the learning rate by the number of GPUs, gradient accumulation steps, and batch size.
+            lr_scheduler=self.training.w.df_lr_scheduler.currentText(),                # The scheduler type to use. Choose between ["linear", "cosine", "cosine_with_restarts", "polynomial",
+            # "constant", "constant_with_warmup"]
+            lr_warmup_steps=self.training.w.df_lr_warmup_steps.value(),                      # Number of steps for the warmup in the lr scheduler.
+            lr_num_cycles=self.training.w.df_lr_num_cycles.value(),                        # Number of hard resets of the lr in cosine_with_restarts scheduler.
+            lr_power=self.training.w.df_lr_power.value(),                           # Power factor of the polynomial scheduler.
+            use_8bit_adam=False,                    # Whether to use 8-bit Adam from bitsandbytes.
+            adam_beta1=self.training.w.df_adam_beta1.value(),                         # The beta1 parameter for the Adam optimizer.
+            adam_beta2=self.training.w.df_adam_beta2.value(),                       # The beta2 parameter for the Adam optimizer.
+            adam_weight_decay=self.training.w.df_adam_weight_decay.value(),                 # Weight decay to use.
+            adam_epsilon=float(self.training.w.df_adam_epsilon.text()),                     # Epsilon value for the Adam optimizer
+            max_grad_norm=self.training.w.df_max_grad_norm.value(),                      # Max gradient norm.
+            push_to_hub=False,                      # Whether to push the model to the Hub.
+            hub_token=None,                         # The token to use to push to the Model Hub.
+            hub_model_id=None,                      # The name of the repository to keep in sync with the local `output_dir`.
+            logging_dir=self.training.w.df_logging_dir.text(),                # [TensorBoard](https://www.tensorflow.org/tensorboard) log directory. Will default to
+            # *output_dir/runs/**CURRENT_DATETIME_HOSTNAME***.
+            allow_tf32=self.training.w.df_allow_tf32.isChecked(),                       # Whether or not to allow TF32 on Ampere GPUs. Can be used to speed up training. For more information, see
+            # https://pytorch.org/docs/stable/notes/cuda.html#tensorfloat-32-tf32-on-ampere-devices
+            report_to="tensorboard",                # The integration to report the results and logs to. Supported platforms are `"tensorboard"`
+            # (default), `"wandb"` and `"comet_ml"`. Use `"all"` to report to all integrations.
+            mixed_precision=None if self.training.w.df_mixed_precision.currentText() == 'no' else self.training.w.df_mixed_precision.currentText(),                   # ["no", "fp16", "bf16"]
+            # Whether to use mixed precision. Choose between fp16 and bf16 (bfloat16). Bf16 requires PyTorch >=
+            # 1.10.and an Nvidia Ampere GPU.  Default to the value of accelerate config of the current system or the
+            # flag passed with the `accelerate.launch` command. Use this argument to override the accelerate config.
+            prior_generation_precision=None if self.training.w.df_prior_generation_precision.currentText() == 'no' else self.training.w.df_prior_generation_precision.currentText(),        # ["no", "fp32", "fp16", "bf16"]
+            # Choose prior generation precision between fp32, fp16 and bf16 (bfloat16). Bf16 requires PyTorch >=
+            # 1.10.and an Nvidia Ampere GPU.  Default to  fp16 if a GPU is available else fp32.
+            local_rank=-1,                          # For distributed training: local_rank
+            enable_xformers_memory_efficient_attention=self.training.w.df_enable_xformers_memory_efficient_attention.isChecked())

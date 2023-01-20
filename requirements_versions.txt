@@ -127,3 +127,4 @@ gdown>=4.6.0
 torchdiffeq>=0.2.3
 fire>=0.5.0
 test-tube
+datasets

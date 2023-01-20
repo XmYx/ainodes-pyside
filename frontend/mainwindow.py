@@ -203,6 +203,7 @@ class MainWindow(QMainWindow):
         self.make_grid = False
         self.all_images = []
         self.advanced_temp = False
+        print(torch.cuda.get_arch_list())
 
 
 

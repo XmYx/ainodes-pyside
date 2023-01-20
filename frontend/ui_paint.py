@@ -165,6 +165,16 @@ class Canvas(QGraphicsView):
         self.anim_inpaint = False
         self.busy = False
         self.tile_size = 512
+        self.setRenderHint(QPainter.Antialiasing)
+        self.setRenderHint(QPainter.SmoothPixmapTransform)
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.setOptimizationFlag(QGraphicsView.DontAdjustForAntialiasing, True)
+        self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
+        #self.setRenderHint(QPainter.HighQualityAntialiasing)
+        self.setRenderHint(QPainter.TextAntialiasing)
+        self.setRenderHint(QPainter.SmoothPixmapTransform)
 
     @Slot()
     def start_main_clock(self):
@@ -1350,13 +1360,10 @@ class Canvas(QGraphicsView):
 
     def wheelEvent(self, event):
         print('wheelEvent')
-        x = event.angleDelta().y() / 120
-        if x > 0:
-            self.zoom *= 1.05
-            self.updateView()
-        elif x < 0:
-            self.zoom /= 1.05
-            self.updateView()
+        zoom_in = event.angleDelta().y() > 0
+        factor = 1.2 if zoom_in else 1/1.2
+        self.scale(factor, factor)
+
 
     def updateView(self):
         print('updateView')

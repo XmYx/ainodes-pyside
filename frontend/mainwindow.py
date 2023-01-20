@@ -202,6 +202,7 @@ class MainWindow(QMainWindow):
         self.check_karras_enabled()
         self.make_grid = False
         self.all_images = []
+        self.advanced_temp = False
 
 
 
@@ -839,6 +840,7 @@ class MainWindow(QMainWindow):
                                       self.canvas.canvas.rectlist[index].y))
         if self.params.advanced == True and (self.canvas.canvas.rectlist == [] or self.canvas.canvas.rectlist is None):
             self.params.advanced = False
+            self.advanced_temp = True
 
         if self.params.advanced == True:
 
@@ -876,6 +878,9 @@ class MainWindow(QMainWindow):
                 del pixmap
         elif self.params.advanced == False:
 
+            if self.advanced_temp == True:
+                self.advanced_temp = False
+                self.params.advanced = True
 
             if img is not None:
                 image = img

@@ -69,6 +69,7 @@ class Callbacks(QObject):
     add_image_to_thumbnail_signal = Signal(str)
     status_update = Signal(str)
     image_ready = Signal()
+    image_ready_op = Signal()
     vid2vid_one_percent = Signal(int)
     set_prompt = Signal(str)
     image_loaded = Signal(str, str, tuple, object)
@@ -201,6 +202,7 @@ class MainWindow(QMainWindow):
         self.check_karras_enabled()
         self.make_grid = False
         self.all_images = []
+        self.advanced_temp = False
 
 
 
@@ -458,48 +460,83 @@ class MainWindow(QMainWindow):
         worker = Worker(fn)
         self.threadpool.start(worker)
 
-    def update_ui_from_params(self):
+    def translate_settings_values(self, key, value):
+        if key == 'sampler':
+            value = self.sessionparams.reverse_translate_sampler(value)
+        if key == 'axis':
+            if value == {'x'}:
+                value = 'X'
+            elif value == {'y'}:
+                value = 'Y'
+            elif value == {'x', 'y'}:
+                value = 'Both'
+        return value
 
+    def update_ui_from_params(self):
+        current_widget = self.widgets[self.current_widget].w
         for key, value in self.sessionparams.params.items():
             try:
+                #print(f'key {key} value {value} type {type(value)}' )
+                if type(value) == set:
+                    value = self.translate_settings_values(key, value)
                 # We have to add check for Animation Mode as thats a radio checkbox with values 'anim2d', 'anim3d', 'animVid'
                 # add colormatch_image (it will be with a fancy preview)
-                type = str(getattr(self.widgets[self.current_widget].w, key))
+                obj_type = str(getattr(self.widgets[self.current_widget].w, key))
 
-                if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
+                if 'QSpinBox' in obj_type or 'QDoubleSpinBox' in obj_type:
                     getattr(self.widgets[self.current_widget].w, key).setValue(value)
-                elif 'QTextEdit' in type or 'QLineEdit' in type:
+                elif 'QTextEdit' in obj_type or 'QLineEdit' in obj_type:
                     getattr(self.widgets[self.current_widget].w, key).setText(str(value))
-                elif 'QCheckBox' in type:
+                elif 'QCheckBox' in obj_type or 'QRadioButton' in obj_type:
                     if value == True:
                         getattr(self.widgets[self.current_widget].w, key).setCheckState(QtCore.Qt.Checked)
-
+                elif 'QComboBox' in obj_type:
+                    if type(value) == str:
+                        value = self.translate_settings_values(key, value)
+                        item_count = getattr(current_widget, key).count()
+                        items = []
+                        for i in range(0, item_count):
+                            items.append(getattr(current_widget, key).itemText(i))
+                        if item_count > 0:
+                            getattr(current_widget, key).setCurrentIndex(items.index(value))
+                        else:
+                            getattr(current_widget, key).setCurrentIndex(0)
+                    elif type(value) == int:
+                        getattr(current_widget, key).setCurrentIndex(value)
+                    else:
+                        print(f'unknown type for combobox {key} {type(value)}: {value}')
             except Exception as e:
-                print('setting still to be fixed ', e)
+                #print(f'setting still to be fixed {key} {value}', e)
                 continue
 
     def update_ui_from_system_params(self):
         for key, value in self.sessionparams.system_params.items():
             try:
                 current_widget = self.system_setup.w
-                type = str(getattr(current_widget, key))
+                obj_type = str(getattr(current_widget, key))
 
-                if 'QSpinBox' in type or 'QDoubleSpinBox' in type:
+                if 'QSpinBox' in obj_type or 'QDoubleSpinBox' in obj_type:
                     getattr(current_widget, key).setValue(value)
-                elif 'QTextEdit' in type or 'QLineEdit' in type:
+                elif 'QTextEdit' in obj_type or 'QLineEdit' in obj_type:
                     getattr(current_widget, key).setText(str(value))
-                elif 'QCheckBox' in type:
+                elif 'QCheckBox' in obj_type or 'QRadioButton' in obj_type:
                     if value == True:
                         getattr(current_widget, key).setCheckState(QtCore.Qt.Checked)
-                elif 'QComboBox' in type:
-                    item_count = getattr(current_widget, key).count()
-                    items = []
-                    for i in range(0, item_count):
-                        items.append(getattr(current_widget, key).itemText(i))
-                    if item_count > 0:
-                        getattr(current_widget, key).setCurrentIndex(items.index(value))
+                elif 'QComboBox' in obj_type:
+                    if type(value) == str:
+                        value = self.translate_settings_values(key, value)
+                        item_count = getattr(current_widget, key).count()
+                        items = []
+                        for i in range(0, item_count):
+                            items.append(getattr(current_widget, key).itemText(i))
+                        if item_count > 0:
+                            getattr(current_widget, key).setCurrentIndex(items.index(value))
+                        else:
+                            getattr(current_widget, key).setCurrentIndex(0)
+                    elif type(value) == int:
+                        getattr(current_widget, key).setCurrentIndex(value)
                     else:
-                        getattr(current_widget, key).setCurrentIndex(0)
+                        print(f'unknown type for combobox {type(value)}: {value}')
 
             except Exception as e:
                 continue
@@ -539,8 +576,8 @@ class MainWindow(QMainWindow):
         # self.toolbar.addAction(gallery_mode)
         # self.toolbar.addAction(settings_mode)
         #self.toolbar.addAction(help_mode)
-        #self.toolbar.addAction(skip_back)
-        #self.toolbar.addAction(skip_forward)
+        self.toolbar.addAction(skip_back)
+        self.toolbar.addAction(skip_forward)
         #self.toolbar.addAction(test_mode)
 
         skip_back.triggered.connect(self.canvas.canvas.skip_back)
@@ -598,33 +635,11 @@ class MainWindow(QMainWindow):
         self.toolbar.setVisible(False)
         self.secondary_toolbar.setVisible(False)
 
-        self.widgets[self.current_widget].w.toggle_negative_prompt.setVisible(False)
+        self.widgets[self.current_widget].w.base_setup.setVisible(False)
+        self.widgets[self.current_widget].w.advanced_toppics.setVisible(False)
         self.widgets[self.current_widget].w.negative_prompts.setVisible(False)
-        self.widgets[self.current_widget].w.prompt_weighting.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_sampler.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_outpaint.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_animations.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_plotting.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_aesthetics.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_embeddings.setVisible(False)
-        self.widgets[self.current_widget].w.toggle_plugins.setVisible(False)
-        self.widgets[self.current_widget].w.multi_dim_prompt.setVisible(False)
-        self.widgets[self.current_widget].w.multi_dim_seed_behavior.setVisible(False)
-        self.widgets[self.current_widget].w.multi_dim_label.setVisible(False)
-        # self.widgets[self.current_widget].w.showHideAll.setVisible(False)
-        self.widgets[self.current_widget].w.H.setVisible(False)
-        # self.widgets[self.current_widget].w.H_slider.setVisible(False)
-        self.widgets[self.current_widget].w.W.setVisible(False)
-        # self.widgets[self.current_widget].w.W_slider.setVisible(False)
-        self.widgets[self.current_widget].w.cfglabel.setVisible(False)
-        self.widgets[self.current_widget].w.heightlabel.setVisible(False)
-        self.widgets[self.current_widget].w.widthlabel.setVisible(False)
-        self.widgets[self.current_widget].w.steps.setVisible(False)
-        # self.widgets[self.current_widget].w.steps_slider.setVisible(False)
-        self.widgets[self.current_widget].w.scale.setVisible(False)
-        # self.widgets[self.current_widget].w.scale_slider.setVisible(False)
-        self.widgets[self.current_widget].w.stepslabel.setVisible(False)
         self.widgets[self.current_widget].w.keyframes.setVisible(False)
+        self.widgets[self.current_widget].w.axis.setVisible(False)
         self.system_setup.w.dockWidget.setVisible(False)
         self.animKeyEditor.w.dockWidget.setVisible(False)
         self.image_lab_ui.w.dockWidget.setVisible(False)
@@ -636,7 +651,7 @@ class MainWindow(QMainWindow):
 
 
         self.widgets[self.current_widget].w.preview_mode_label.setVisible(False)
-        self.widgets[self.current_widget].w.mode.setVisible(False)
+        self.widgets[self.current_widget].w.preview_mode.setVisible(False)
         self.widgets[self.current_widget].w.stop_dream.setVisible(False)
         self.widgets[self.current_widget].w.hires.setVisible(False)
         self.widgets[self.current_widget].w.hires_strength_label.setVisible(False)
@@ -663,31 +678,8 @@ class MainWindow(QMainWindow):
         if self.default_hidden == True:
             self.toolbar.setVisible(True)
             self.secondary_toolbar.setVisible(True)
-
-            self.widgets[self.current_widget].w.toggle_negative_prompt.setVisible(True)
-            self.widgets[self.current_widget].w.prompt_weighting.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_sampler.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_outpaint.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_animations.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_plotting.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_aesthetics.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_embeddings.setVisible(True)
-            self.widgets[self.current_widget].w.toggle_plugins.setVisible(True)
-            self.widgets[self.current_widget].w.multi_dim_prompt.setVisible(True)
-            self.widgets[self.current_widget].w.multi_dim_seed_behavior.setVisible(True)
-            self.widgets[self.current_widget].w.multi_dim_label.setVisible(True)
-            self.widgets[self.current_widget].w.H.setVisible(True)
-            # self.widgets[self.current_widget].w.H_slider.setVisible(True)
-            self.widgets[self.current_widget].w.W.setVisible(True)
-            # self.widgets[self.current_widget].w.W_slider.setVisible(True)
-            self.widgets[self.current_widget].w.cfglabel.setVisible(True)
-            self.widgets[self.current_widget].w.heightlabel.setVisible(True)
-            self.widgets[self.current_widget].w.widthlabel.setVisible(True)
-            self.widgets[self.current_widget].w.steps.setVisible(True)
-            # self.widgets[self.current_widget].w.steps_slider.setVisible(True)
-            self.widgets[self.current_widget].w.scale.setVisible(True)
-            # self.widgets[self.current_widget].w.scale_slider.setVisible(True)
-            self.widgets[self.current_widget].w.stepslabel.setVisible(True)
+            self.widgets[self.current_widget].w.base_setup.setVisible(True)
+            self.widgets[self.current_widget].w.advanced_toppics.setVisible(True)
             self.widgets[self.current_widget].w.keyframes.setVisible(True)
             self.system_setup.w.dockWidget.setVisible(True)
             self.image_lab_ui.w.dockWidget.setVisible(True)
@@ -701,7 +693,7 @@ class MainWindow(QMainWindow):
 
             self.widgets[self.current_widget].w.preview_mode_label.setVisible(True)
             self.widgets[self.current_widget].w.stop_dream.setVisible(True)
-            self.widgets[self.current_widget].w.mode.setVisible(True)
+            self.widgets[self.current_widget].w.preview_mode.setVisible(True)
             self.widgets[self.current_widget].w.hires.setVisible(True)
             self.widgets[self.current_widget].w.seamless.setVisible(True)
 
@@ -737,6 +729,15 @@ class MainWindow(QMainWindow):
         enc_image = base64.b64encode(image.tobytes()).decode()
         self.deforum_ui.signals.txt2img_image_cb.emit(enc_image, mode, size)
         self.signals.image_ready.emit()
+
+
+    def image_preview_signal_op(self, image, *args, **kwargs):
+        mode = image.mode
+        size = image.size
+        enc_image = base64.b64encode(image.tobytes()).decode()
+        self.deforum_ui.signals.txt2img_image_cb.emit(enc_image, mode, size)
+        self.signals.image_ready.emit()
+
 
     @Slot()
     def image_preview_func_str(self, image, mode, size):
@@ -811,9 +812,7 @@ class MainWindow(QMainWindow):
                     self.canvas.canvas.rectlist[render_index].render_index = 0
                 else:
                     self.canvas.canvas.rectlist[render_index].render_index += 1
-                self.canvas.canvas.rectlist[render_index].image = \
-                    self.canvas.canvas.rectlist[render_index].images[
-                        self.canvas.canvas.rectlist[render_index].render_index]
+                self.canvas.canvas.rectlist[render_index].image = self.canvas.canvas.rectlist[render_index].images[self.canvas.canvas.rectlist[render_index].render_index]
                 self.canvas.canvas.rectlist[render_index].timestring = time.time()
                 self.canvas.canvas.rectlist[render_index].params = self.params
         self.canvas.canvas.newimage = True
@@ -839,7 +838,12 @@ class MainWindow(QMainWindow):
             self.outpaint.betterslices.append((img.convert('RGBA'),
                                       self.canvas.canvas.rectlist[index].x,
                                       self.canvas.canvas.rectlist[index].y))
+        if self.params.advanced == True and (self.canvas.canvas.rectlist == [] or self.canvas.canvas.rectlist is None):
+            self.params.advanced = False
+            self.advanced_temp = True
+
         if self.params.advanced == True:
+
             if self.canvas.canvas.rectlist != []:
                 if img is not None:
                     if self.canvas.canvas.rectlist[self.render_index].images is not None:
@@ -863,18 +867,20 @@ class MainWindow(QMainWindow):
                         else:
                             self.canvas.canvas.rectlist[self.render_index].render_index += 1
                     self.canvas.canvas.rectlist[self.render_index].images = templist
-                    self.canvas.canvas.rectlist[self.render_index].image = \
-                    self.canvas.canvas.rectlist[self.render_index].images[
-                        self.canvas.canvas.rectlist[self.render_index].render_index]
+                    self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
+                    #self.canvas.canvas.rectlist[self.render_index].image = qimage
                     self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
                     self.canvas.canvas.rectlist[self.render_index].img_path = gs.temppath
                 self.canvas.canvas.newimage = True
                 self.canvas.canvas.update()
-                #self.canvas.canvas.redraw()
+                self.canvas.canvas.redraw()
                 del qimage
                 del pixmap
         elif self.params.advanced == False:
 
+            if self.advanced_temp == True:
+                self.advanced_temp = False
+                self.params.advanced = True
 
             if img is not None:
                 image = img

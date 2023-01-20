@@ -73,7 +73,7 @@
     "scale": 7.5,
     "n_samples": 1,
     "steps": 20,
-    "fullPrecision": false,
+    "full_precision": false,
     "seamless": false,
     "sampler": 0,
     "seed": "",
@@ -154,9 +154,11 @@
     "cpudepth" : false,
     "skip_video_for_run_all" : true,
     "mask_offset": 10,
-    "recons_blur": 5,
     "selected_hypernetwork": "None",
     "selected_vae": "None",
-    "selected_aesthetic_embedding": "None"
+    "selected_aesthetic_embedding": "None",
+    "multi_dim_prompt": false,
+    "multi_dim_seed_behavior": 0,
+    "hires_strength": 0.0
   }
 }

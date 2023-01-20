@@ -168,6 +168,7 @@ class Canvas(QGraphicsView):
 
     @Slot()
     def start_main_clock(self):
+        print('start_main_clock')
         if self.running == False:
             self.maintimer.start(80)
             self.running = True
@@ -176,6 +177,7 @@ class Canvas(QGraphicsView):
                 i.play()
 
     def stop_main_clock(self):
+        print('stop_main_clock')
         if self.running == True:
             for i in self.rectlist:
                 i.stop()
@@ -184,11 +186,12 @@ class Canvas(QGraphicsView):
             self.running = False
 
     def set_new(self):
-        ##print("triggered")
+        print('set_new')
         self.newimage = True
         self.update()
 
     def play_selected(self):
+        print('play_selected')
         if self.selected_item is not None:
             for i in self.rectlist:
                 if i.id == self.selected_item:
@@ -197,6 +200,7 @@ class Canvas(QGraphicsView):
                             i.play()
 
     def stop_selected(self):
+        print('stop_selected')
         if self.selected_item is not None:
             for i in self.rectlist:
                 if i.id == self.selected_item:
@@ -204,6 +208,7 @@ class Canvas(QGraphicsView):
                         i.stop()
 
     def skip_forward(self):
+        print('skip_forward')
         if self.selected_item is not None:
             for i in self.rectlist:
                 if i.id == self.selected_item:
@@ -212,6 +217,7 @@ class Canvas(QGraphicsView):
                     i.iterate()
 
     def skip_back(self):
+        print('skip_back')
         if self.selected_item is not None:
             for i in self.rectlist:
                 if i.id == self.selected_item:
@@ -220,6 +226,7 @@ class Canvas(QGraphicsView):
                     i.iterate_back()
 
     def resize_canvas(self, w, h):
+        print('resize_canvas')
         self.pixmap = QPixmap(w, h)
         self.bgitem.setPixmap(self.pixmap)
         self.newimage = True
@@ -227,17 +234,20 @@ class Canvas(QGraphicsView):
         self.currentHeight = h
 
     def change_resolution(self):
+        print('change_resolution')
         w = self.parent.W.value()
         h = self.parent.H.value()
         self.resize_canvas(w, h)
         self.redraw()
 
     def change_rect_resolutions(self):
+        print('change_rect_resolutions')
         self.w = self.parent.parent.widgets[self.parent.parent.current_widget].w.W.value()
         self.h = self.parent.parent.widgets[self.parent.parent.current_widget].w.H.value()
 
 
     def soft_reset(self, w=512, h=512):
+        print('soft_reset')
         w = self.parent.W.value()
         h = self.parent.H.value()
         self.pixmap = QPixmap(w, h)
@@ -267,6 +277,7 @@ class Canvas(QGraphicsView):
         self.parent.parent.thumbs.w.thumbnails.clear()
 
     def reset(self):
+        print('reset')
         self.zoom = 1
         self.rotate = 0
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
@@ -314,15 +325,19 @@ class Canvas(QGraphicsView):
         self.ctrlmodifier = False
 
     def getXScale(self):
+        print('getXScale')
         return float(1024)/float(self.width())
 
     def getYScale(self):
+        print('getYScale')
         return float(1024)/float(self.height())
 
     def set_pen_color(self, c):
+        print('set_pen_color')
         self.pen_color = QColor(c)
 
     def addrect(self, dummy=False):
+        print('addrect')
         rect = {}
         uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
         prompt = ""
@@ -335,9 +350,10 @@ class Canvas(QGraphicsView):
         self.rectlist.append(rect[uid])
         if dummy == True:
             self.rectlist.remove(rect[uid])
+        self.parent.parent.render_index = len(self.rectlist) - 1
 
     def tensor_preview(self):
-        ###print(self.tensor_preview_item)
+        print('tensor_preview')
         if self.tensor_preview_item is not None:
             w = self.tensor_preview_item.size().width() * 8
             h = self.tensor_preview_item.size().height() * 8
@@ -358,7 +374,7 @@ class Canvas(QGraphicsView):
 
 
     def drawRect(self, x=None, y=None, width=256, height=256):
-
+        print('drawRect')
         if x != None:
             Xscale = self.getXScale()
             Yscale = self.getYScale()
@@ -386,7 +402,7 @@ class Canvas(QGraphicsView):
         #self.update()
 
     def hoverCheck(self):
-
+        print('hoverCheck')
         self.hover_item = None
         self.sub_hover_item = None
         matchFound = False
@@ -406,9 +422,11 @@ class Canvas(QGraphicsView):
                 #self.update()
             if not matchFound:
                 self.hover_item = None
+        print(self.hover_item)
         #self.update()
 
     def save_canvas(self):
+        print('save_canvas')
         self.redraw(transparent=True)
         timestring = time.strftime('%Y-%m-%d-%H-%S')
         filename = f"output/canvas/canvas_{timestring}.png"
@@ -418,6 +436,7 @@ class Canvas(QGraphicsView):
         self.redraw()
 
     def first_rectangle(self):
+        print('first_rectangle')
         self.hoverCheck()
         if self.hover_item is None:
             self.addrect()
@@ -426,14 +445,17 @@ class Canvas(QGraphicsView):
 
     @Slot(int)
     def set_offset(self, offset):
+        print('set_offset')
         self.maskoffset = offset
         ###print(f"offset is now: {self.maskoffset}")
 
     def toJSON(self, item):
+        print('toJSON')
         return json.dumps(item, default=lambda o: o.__dict__,
             sort_keys=True, indent=4)
 
     def save_rects_as_json(self, filename=None):
+        print('save_rects_as_json')
         ###print(filename)
         # Save json to file (data.json)
         templist = []
@@ -472,6 +494,7 @@ class Canvas(QGraphicsView):
         print("File Saved")
 
     def getfile(self, file_ext='', text='', button_caption='', button_type=0, title='', save=False):
+        print('getfile')
         filter = {
             '': '',
             'txt': 'File (*.txt)',
@@ -497,6 +520,7 @@ class Canvas(QGraphicsView):
             return
 
     def load_img_into_rect(self):
+        print('load_img_into_rect')
         data = self.getfile()
         if data is not None:
             gs.temppath = data
@@ -516,7 +540,7 @@ class Canvas(QGraphicsView):
 
 
     def load_rects_from_json(self):
-
+        print('load_rects_from_json')
         #self.reset()
         #self.soft_reset()
 
@@ -566,6 +590,7 @@ class Canvas(QGraphicsView):
 
     @Slot()
     def create_tempBatch(self, prompts, keyframes, startOffsetX=0, startOffsetY=0, randomize = False):
+        print('create_tempBatch')
         #print('self.cols', self.cols)
         #print('self.rows', self.rows)
         self.rows = self.rows + 1
@@ -612,6 +637,7 @@ class Canvas(QGraphicsView):
         return self.tempbatch
 
     def add_cols(self, prompt_series, row, cols, offset, x, y, randomize = False):
+        print('add_cols')
         col = 1
         thiscol = []
         while col < cols:
@@ -641,6 +667,7 @@ class Canvas(QGraphicsView):
         self.tempbatch.append(thiscol)
 
     def draw_tempBatch(self, tempbatch, run = True):
+        print('draw_tempBatch')
         x = 0
         for rows in tempbatch:
             if type(rows) == dict:
@@ -653,12 +680,14 @@ class Canvas(QGraphicsView):
 
 
     def draw_rects(self):
+        print('draw_rects')
         x = 0
         for rect in self.rectlist:
             self.draw_permRects(rect.x, rect.y, rect.w, rect.h, rect.order, x)
             x += 1
 
     def draw_permRects(self, x, y, width, height, order, value):
+        print('draw_permRects')
         self.pen = QPen(Qt.red, int(3 / self.zoom), Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
         permRect = {
             'x': x,
@@ -671,6 +700,7 @@ class Canvas(QGraphicsView):
         self.signals.draw_tempRects.emit(permRect)
 
     def draw_tempRects(self, x, y, width, height, order, value):
+        print('draw_tempRects')
         self.pen = QPen(Qt.green, int(3 / self.zoom), Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
         tempRect = {
             'x': x,
@@ -683,6 +713,7 @@ class Canvas(QGraphicsView):
         self.signals.draw_tempRects.emit(tempRect)
 
     def draw_tempRects_signal(self, tempRect):
+        print('draw_tempRects_signal')
         self.painter.begin(self.pixmap)
         self.painter.setPen(self.pen)
         rect = QRect(tempRect['x'], tempRect['y'], tempRect['width'], tempRect['height'])
@@ -695,6 +726,7 @@ class Canvas(QGraphicsView):
         self.bgitem.setPixmap(self.pixmap)
 
     def visualize_rects(self, overlays=False):
+        print('visualize_rects')
         self.painter.begin(self.pixmap)
         self.painter.setCompositionMode(QtGui.QPainter.CompositionMode.CompositionMode_Overlay)
         self.pen = QPen(Qt.green, int(3 / self.zoom), Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
@@ -720,6 +752,7 @@ class Canvas(QGraphicsView):
 
 
     def addrect_atpos(self, prompt='', x=0, y=0, image=None, render_index=None, order=None, params=None, color=None):
+        print('addrect_atpos')
         if color is not None:
             self.pen = QPen(color, int(3 / self.zoom), Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
         rect = {}
@@ -758,7 +791,7 @@ class Canvas(QGraphicsView):
         return uid
 
     def addrect_atpos_object(self, data_object):
-
+        print('addrect_atpos_object')
         prompt=data_object['prompt']
         x=data_object['x']
         y=data_object['y']
@@ -804,12 +837,14 @@ class Canvas(QGraphicsView):
         return uid
 
     def inpaint_current_frame(self):
+        print('inpaint_current_frame')
         self.mode = "inpaint"
         self.anim_inpaint = True
         if self.selected_item is not None:
             self.reusable_inpaint(self.render_item)
 
     def reusable_inpaint(self, id):
+        print('reusable_inpaint')
         self.busy = True
 
         outpaintimage = QPixmap(self.w, self.h)
@@ -838,6 +873,7 @@ class Canvas(QGraphicsView):
         self.signals.outpaint_signal.emit()
 
     def reusable_outpaint(self, id):
+        print('reusable_outpaint')
         self.busy = True
         outpaintimage = QPixmap(self.w, self.h)
         outpaintimage.fill(Qt.transparent)
@@ -895,6 +931,7 @@ class Canvas(QGraphicsView):
         self.busy = False
 
     def redo_outpaint(self, id):
+        print('redo_outpaint')
         print('redo')
         outpaintimage = QPixmap(self.w, self.h)
         outpaintimage.fill(Qt.transparent)
@@ -950,6 +987,7 @@ class Canvas(QGraphicsView):
         self.signals.outpaint_signal.emit()
 
     def region_to_outpaint(self, event):
+        print('region_to_outpaint')
         outpaintimage = QPixmap(self.w, self.h)
         outpaintimage.fill(Qt.transparent)
         outpaintmaskimage = QPixmap(self.w, self.h)
@@ -997,29 +1035,34 @@ class Canvas(QGraphicsView):
         self.signals.outpaint_signal.emit()
 
     def mousePressEvent(self, e):
+        print('mousePressEvent')
         fn = getattr(self, "%s_mousePressEvent" % self.mode, None)
         if fn:
             fn(e)
             super(Canvas, self).mousePressEvent(e)
 
     def mouseMoveEvent(self, e):
+        #print('mouseMoveEvent')
         fn = getattr(self, "%s_mouseMoveEvent" % self.mode, None)
         if fn:
             fn(e)
             super(Canvas, self).mouseMoveEvent(e)
 
     def mouseReleaseEvent(self, e):
+        print(f'mouseReleaseEvent {self.selected_item}')
         fn = getattr(self, "%s_mouseReleaseEvent" % self.mode, None)
         if fn:
             fn(e)
             super(Canvas, self).mouseReleaseEvent(e)
 
     def mouseDoubleClickEvent(self, e):
+        print('mouseDoubleClickEvent')
         fn = getattr(self, "%s_mouseDoubleClickEvent" % self.mode, None)
         if fn:
             return fn(e)
 
     def sortRects(self, e):
+        print('sortRects')
         if e.order is not None:
             key = e.timestring
         else:
@@ -1027,10 +1070,12 @@ class Canvas(QGraphicsView):
         return key
 
     def redraw(self, transparent=None):
+        print('redraw')
         self.redraw_transparent = transparent
         self.signals.run_redraw.emit()
 
     def redraw_signal(self):
+        print('redraw_signal')
         transparent = self.redraw_transparent
         if transparent:
             self.pixmap.fill(Qt.transparent)
@@ -1060,7 +1105,7 @@ class Canvas(QGraphicsView):
         self.scene.update()
 
     def old_paintEvent(self):
-
+        print('old_paintEvent')
         help2 = "None"
         if self.hover_item is not None:
             for items in self.rectlist:
@@ -1069,11 +1114,12 @@ class Canvas(QGraphicsView):
 
 
     def generic_mouseMoveEvent(self, e):
-
+        print('generic_mouseMoveEvent')
         if self.scene.pos is not None:
             self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), self.w, self.h)
 
     def undoEvent(self):
+        print('undoEvent')
         if self.undoitems is not []:
             x = len(self.undoitems) - 1
             self.rectlist.append(self.undoitems[x])
@@ -1082,6 +1128,7 @@ class Canvas(QGraphicsView):
 
 
     def select_mode(self):
+        print('select_mode')
         self.mode = "select"
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
         try:
@@ -1090,8 +1137,18 @@ class Canvas(QGraphicsView):
             pass
         self.redraw()
 
+    def add_mode(self):
+        print('add_mode')
+        self.addrect(dummy=True)
+        self.mode = "outpaint"
+        self.setDragMode(QGraphicsView.DragMode.NoDrag)
+        self.scene.addItem(self.rectItem)
+        self.setUpdatesEnabled(True)
+        self.redraw()
+        print(self.selected_item)
 
     def move_mode(self):
+        print('move_mode')
         self.mode = "move"
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
         try:
@@ -1101,6 +1158,7 @@ class Canvas(QGraphicsView):
         self.redraw()
 
     def drag_mode(self):
+        print('drag_mode')
         self.mode = "drag"
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         try:
@@ -1111,19 +1169,12 @@ class Canvas(QGraphicsView):
         self.setUpdatesEnabled(True)
 
     def enterEvent(self, event):
+        print('enterEvent')
         self.bgitem.update()
         self.rectItem.update()
 
-
-    def add_mode(self):
-        self.addrect(dummy=True)
-        self.mode = "outpaint"
-        self.setDragMode(QGraphicsView.DragMode.NoDrag)
-        self.scene.addItem(self.rectItem)
-        self.setUpdatesEnabled(True)
-        self.redraw()
-
     def inpaint_mode(self):
+        print('inpaint_mode')
         self.addrect(dummy=True)
         self.mode = "inpaint"
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
@@ -1132,6 +1183,7 @@ class Canvas(QGraphicsView):
         self.redraw(transparent=True)
 
     def keyPressEvent(self, e):
+        print('keyPressEvent')
         super(Canvas, self).keyPressEvent(e)
         if e.key() == 67:
             self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
@@ -1158,10 +1210,12 @@ class Canvas(QGraphicsView):
             self.ctrlmodifier = None
 
     def keyReleaseEvent(self, e):
+        print('keyReleaseEvent')
         self.ctrlmodifier = False
         super(Canvas, self).keyReleaseEvent(e)
 
     def select_mousePressEvent(self, e):
+        print('select_mousePressEvent')
         if self.hover_item == self.selected_item:
 
             return
@@ -1180,45 +1234,50 @@ class Canvas(QGraphicsView):
 
 
     def select_mouseMoveEvent(self, e):
+        print('select_mouseMoveEvent')
         self.hoverCheck()
 
     def select_mouseReleaseEvent(self, event):
-        return
+        pass
 
     def generic_mousePressEvent(self, e):
+        print('generic_mousePressEvent')
         self._start = e.pos()
         self.posx = e.pos().x()
         self.posy = e.pos().y()
         self.first_rectangle()
-        return
+
 
     def generic_mouseReleaseEvent(self, e):
+        print('generic_mouseReleaseEvent')
         self.last_x = None
         self.last_y = None
 
     def drag_mouseMoveEvent(self, e):
-        return
+        pass
 
     def drag_mouseReleaseEvent(self, event):
-        return
+        pass
 
     def drag_mousePressEvent(self, event):
-        return
+        pass
 
     def move_mouseMoveEvent(self, e):
+        print('move_mouseMoveEvent')
         if self.scene.pos is not None:
             self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), self.w, self.h)
         self.update()
-        return
+
 
     def move_mouseReleaseEvent(self, event):
-        return
+        pass
 
     def move_mousePressEvent(self, event):
+        print('move_mousePressEvent')
         self.move_action()
-        return
 
     def move_action(self):
+        print('move_action')
         if self.selected_item is not None:
             for i in self.rectlist:
                 if i.id == self.selected_item:
@@ -1228,6 +1287,7 @@ class Canvas(QGraphicsView):
                     self.update()
 
     def inpaint_mousePressEvent(self, e):
+        print('inpaint_mousePressEvent')
         if e.button() == Qt.LeftButton:
             self.eraser_color = QColor(QColor(Qt.white))
             self.eraser_color.setAlpha(255)
@@ -1243,6 +1303,7 @@ class Canvas(QGraphicsView):
             self.reusable_inpaint(id)
 
     def inpaint_mouseMoveEvent(self, e):
+        print('inpaint_mouseMoveEvent')
         if self.scene.pos is not None:
             self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), self.w, self.h)
         self.update()
@@ -1256,21 +1317,24 @@ class Canvas(QGraphicsView):
             self.bgitem.setPixmap(self.pixmap)
             self.painter.end()
             self.bgitem.update()
-        return
+
 
     def inpaint_mouseReleaseEvent(self, e):
+        print('inpaint_mouseReleaseEvent')
         self.last_pos = None
 
     def outpaint_mouseMoveEvent(self, e):
+        print('outpaint_mouseMoveEvent')
         if self.scene.pos is not None:
             self.drawRect(self.scene.scenePos.x() / self.getXScale(), self.scene.scenePos.y() / self.getYScale(), self.w, self.h)
         self.update()
-        return
+
 
     def outpaint_mouseReleaseEvent(self, event):
-        return
+        pass
 
     def outpaint_mousePressEvent(self, event):
+        print('outpaint_mousePressEvent')
         if self.scene.pos is not None:
             self.addrect()
             self.signals.update_selected.emit()
@@ -1281,11 +1345,11 @@ class Canvas(QGraphicsView):
                 return
             elif self.ctrlmodifier == False:
                 self.drag_mode()
+        #print(self.selected_item)
 
-        return
 
     def wheelEvent(self, event):
-
+        print('wheelEvent')
         x = event.angleDelta().y() / 120
         if x > 0:
             self.zoom *= 1.05
@@ -1295,9 +1359,11 @@ class Canvas(QGraphicsView):
             self.updateView()
 
     def updateView(self):
+        print('updateView')
         self.setTransform(QTransform().scale(self.zoom, self.zoom).rotate(self.rotate))
 
     def dragEnterEvent(self, event):
+        print('dragEnterEvent')
         event.acceptProposedAction()
         print(event.mimeData())
 

@@ -398,7 +398,7 @@ class Deforum_UI(QObject):
         #print(gs.models)
         #if "inpaint" in gs.models:
         #    del gs.models["inpaint"]
-        mode = self.parent.widgets[self.parent.current_widget].w.mode.currentText()
+        mode = self.parent.widgets[self.parent.current_widget].w.preview_mode.currentText()
 
         #if mode == 'single' and self.selected_rect == None
 
@@ -579,7 +579,7 @@ class Deforum_UI(QObject):
                                           recons_blur=reconstruction_blur,
                                           scale=scale,
                                           ddim_eta=ddim_eta,
-                                          image_callback=self.parent.image_preview_signal,
+                                          image_callback=self.parent.image_preview_signal_op,
                                           step_callback=self.parent.tensor_preview_signal,
                                           with_inpaint=with_inpaint)
 

@@ -1,7 +1,7 @@
 import os
 import shutil
 from types import SimpleNamespace
-
+from pytorch_lightning import seed_everything
 from PySide6 import QtCore, QtUiTools
 from PySide6.QtWidgets import QDockWidget, QFileDialog
 from PySide6.QtCore import Slot, Signal, QObject, QFile, QEasingCurve
@@ -646,29 +646,29 @@ class aiNodesPlugin:
             # It will configure a default ModelCheckpoint callback if there is no user-defined ModelCheckpoint in
             # :paramref:`~pytorch_lightning.trainer.trainer.Trainer.callbacks`.
             check_val_every_n_epoch=self.training.w.check_val_every_n_epoch.value(),                           # Check val every n train epochs.
-            class_word='<xxx>',
-            default_root_dir=None,                               # Default path for logs and weights when no logger/ckpt_callback passed.
+            class_word=self.training.w.class_word.text(),    #'<xxx>'
+            default_root_dir=self.training.w.logdir.text(),                               # Default path for logs and weights when no logger/ckpt_callback passed.
             # Default: ``os.getcwd()``.
             # Can be remote file paths such as `s3://mybucket/path` or 'hdfs://path/'
             deterministic=self.training.w.deterministic.isChecked(),                                 # If true enables cudnn.deterministic.
             devices=None,                                        # Will be mapped to either `gpus`, `tpu_cores`, `num_processes` or `ipus`,
             # based on the accelerator type.
-            debug=False,
-            datadir_in_name=True,
+            debug=self.training.w.debug.isChecked(),   #False
+            datadir_in_name=self.training.w.datadir_in_name.isChecked(),   #True,
             data_root=self.training.w.data_root.text(),
-            detect_anomaly=False,
-            enable_checkpointing=True,
-            enable_model_summary=True,
-            enable_progress_bar=True,
+            detect_anomaly=self.training.w.detect_anomaly.isChecked(),   #False,
+            enable_checkpointing=self.training.w.enable_checkpointing.isChecked(),   #True,
+            enable_model_summary=self.training.w.enable_model_summary.isChecked(),   #True,
+            enable_progress_bar=self.training.w.enable_progress_bar.isChecked(),   #True,
             embedding_manager_ckpt='',
 
 
 
 
-            fast_dev_run=False,                                  # runs n if set to ``n`` (int) else 1 if set to ``True`` batch(es)
+            fast_dev_run=self.training.w.fast_dev_run.value(),                                  # runs n if set to ``n`` (int) else 1 if set to ``True`` batch(es)
             # of train, val and test to find any bugs (ie: a sort of unit test).
             flush_logs_every_n_steps=self.training.w.flush_logs_every_n_steps.value(),                        # How often to flush logs to disk (defaults to every 100 steps).
-            gpus='0,',                                           # number of gpus to train on (int) or which GPUs to train on (list or str) applied per node
+            gpus=self.training.w.gpus.text()+ ',',                                           # number of gpus to train on (int) or which GPUs to train on (list or str) applied per node
             gradient_clip_val=self.training.w.gradient_clip_val.value(),                                 # 0 means don't clip.
             gradient_clip_algorithm=self.training.w.gradient_clip_algorithm.currentText(),                      # 'value' means clip_by_value, 'norm' means clip_by_norm. Default: 'norm'
             ipus=None,                                           # How many IPUs to train on.
@@ -688,7 +688,7 @@ class aiNodesPlugin:
             # of the individual loggers.
             log_gpu_memory=None,                                 # 'min_max', 'all'. Might slow performance
 
-            log_every_n_steps=50,                                # How often to log within steps (defaults to every 50 steps).
+            log_every_n_steps=self.training.w.log_every_n_steps.value(),                                # How often to log within steps (defaults to every 50 steps).
             logdir=self.training.w.logdir.text(),
             move_metrics_to_cpu=self.training.w.move_metrics_to_cpu.isChecked(),                           # Whether to force internal logged metrics to be moved to cpu.
             # This can save some gpu memory, but can make training slower. Use with attention.
@@ -712,15 +712,15 @@ class aiNodesPlugin:
             num_sanity_val_steps=self.training.w.num_sanity_val_steps.value(),                           # Sanity check runs n validation batches before starting the training routine.
             # Set it to `-1` to run all batches in all validation dataloaders.
 
-            no_test=False,
-            overfit_batches=0.0,                                 # Overfit a fraction of training data (float) or a set number of batches (int).
+            no_test=self.training.w.no_test.isChecked(),
+            overfit_batches=int(self.training.w.overfit_batches.value()) if int(self.training.w.overfit_batches.value()) == self.training.w.overfit_batches.value() else self.training.w.overfit_batches.value(),                                 # Overfit a fraction of training data (float) or a set number of batches (int).
             project=None,
             postfix='',
 
             prepare_data_per_node=None,                          # If True, each LOCAL_RANK=0 will call prepare data.
             # Otherwise only NODE_RANK=0, LOCAL_RANK=0 will prepare data
             process_position=0,                                  # orders the progress bar when running multiple models on same machine.
-            progress_bar_refresh_rate=None,                      # How often to refresh progress bar (in steps). Value ``0`` disables progress bar.
+            progress_bar_refresh_rate=self.training.w.progress_bar_refresh_rate.value(),                      # How often to refresh progress bar (in steps). Value ``0`` disables progress bar.
             # Ignored when a custom progress bar is passed to :paramref:`~Trainer.callbacks`. Default: None, means
             # a suitable value will be chosen based on the environment (terminal, Google COLAB, etc.).
             profiler=None,                                       # To profile individual steps during training and assist in identifying bottlenecks.
@@ -737,25 +737,25 @@ class aiNodesPlugin:
             resume_from_checkpoint=None,                         # Path/URL of the checkpoint from which training is resumed. If there is
             # no checkpoint file at the path, start from scratch. If resuming from mid-epoch checkpoint,
             # training will start from the beginning of the next epoch.
-            replace_sampler_ddp=True,                            # Explicitly enables or disables sampler replacement. If not specified this
+            replace_sampler_ddp=self.training.w.replace_sampler_ddp.isChecked(),                            # Explicitly enables or disables sampler replacement. If not specified this
             # will toggled automatically when DDP is used. By default it will add ``shuffle=True`` for
             # train sampler and ``shuffle=False`` for val/test sampler. If you want to customize it,
             # you can set ``replace_sampler_ddp=False`` and add your own distributed sampler.
             resume='',
-            reg_data_root='data/input/regularization/images',
+            reg_data_root=self.training.w.reg_data_root.text(),
             stochastic_weight_avg=self.training.w.stochastic_weight_avg.isChecked(),                         # Whether to use `Stochastic Weight Averaging (SWA)
             # <https://pytorch.org/blog/pytorch-1.6-now-includes-stochastic-weight-averaging/>_
             strategy=None,
-            seed=23,
-            scale_lr=False,
-            sync_batchnorm=False,                                # Synchronize batch norm layers between process groups/whole world.
+            seed=seed_everything(int(self.training.w.seed.text()) if self.training.w.seed.text() != '' else -1),
+            scale_lr=self.training.w.db_scale_lr.isChecked(),
+            sync_batchnorm=self.training.w.sync_batchnorm.isChecked(),                                # Synchronize batch norm layers between process groups/whole world.
             terminate_on_nan=self.training.w.stochastic_weight_avg.isChecked(),                               # If set to True, will terminate training (by raising a `ValueError`) at the
             # end of each training batch, if any of the parameters or the loss are NaN or +/-inf.
             tpu_cores=None,                                      # How many TPU cores to train on (1 or 8) / Single TPU to train on [1]
 
             track_grad_norm=-1,                                  # -1 no tracking. Otherwise tracks that p-norm. May be set to 'inf' infinity-norm.
 
-            train=True,
+            train=self.training.w.train.isChecked(),
 
             weights_summary='top',                               # Prints a summary of the weights when training begins.
             weights_save_path=None,                              # Where to save weights if specified. Will override default_root_dir
@@ -763,8 +763,10 @@ class aiNodesPlugin:
             # stored in a different place than the logs written in `default_root_dir`.
             # Can be remote file paths such as `s3://mybucket/path` or 'hdfs://path/'
             # Defaults to `default_root_dir`.
-            val_check_interval=self.training.w.val_check_interval.value()                               # How often to check the validation set. Use float to check within a training epoch,
+            val_check_interval=self.training.w.val_check_interval.value(),                               # How often to check the validation set. Use float to check within a training epoch,
             # use int to check every n steps (batches).
+            base_lr=self.training.w.base_lr.value(),
+            bs=self.training.w.bs.value(),
         )
         """
         self.parent.ti.create_txt_inv(

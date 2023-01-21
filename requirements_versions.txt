@@ -37,7 +37,7 @@ numpy>=1.23.1
 pillow>=9.2.0
 pyyaml>=6.0
 opencv-python>=4.6.0.66
-clip>=1.0
+clip>=0.2.0
 scipy>=1.9.3
 ftfy
 future
@@ -121,7 +121,6 @@ transformers>=4.25.1
 diffusers>=0.10.2
 safetensors>=0.2.6
 k-diffusion
-xformers
 torchvision>=0.13.1
 gdown>=4.6.0
 torchdiffeq>=0.2.3

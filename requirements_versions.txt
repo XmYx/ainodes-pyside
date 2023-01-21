@@ -93,7 +93,6 @@ aiosignal
 frozenlist
 chardet
 tifffile
-shiboken6
 filterpy
 markdown
 oauthlib
@@ -118,7 +117,7 @@ fastapi>=0.88.0
 uvicorn>=0.20.0
 pydantic
 transformers>=4.25.1
-diffusers>=0.10.2
+diffusers>=0.11.1
 safetensors>=0.2.6
 k-diffusion
 torchvision>=0.13.1

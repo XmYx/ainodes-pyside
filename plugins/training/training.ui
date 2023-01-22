@@ -80,6 +80,9 @@
            </property>
            <item>
             <widget class="QTabWidget" name="tabWidget_2">
+             <property name="toolTip">
+              <string>LORA is fast and produces small files, they are to be merged to each other or with the usal checkpoints, use LORA merge for that</string>
+             </property>
              <property name="currentIndex">
               <number>6</number>
              </property>
@@ -3057,28 +3060,95 @@ flag passed with the `accelerate.launch` command. Use this argument to override 
                <string>Diffuser Dreambooth</string>
               </attribute>
               <layout class="QGridLayout" name="gridLayout_22">
-               <item row="23" column="0">
-                <widget class="QLabel" name="label_262">
+               <item row="24" column="3">
+                <widget class="QLineEdit" name="df_adam_epsilon">
                  <property name="text">
-                  <string>Gradient accumulation steps</string>
+                  <string>1e-08</string>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="2" colspan="2">
-                <widget class="QLineEdit" name="df_output_dir">
-                 <property name="text">
-                  <string>G:\training_up_to_5000_steps_UNET_300_text_encoder\output</string>
+               <item row="29" column="3">
+                <widget class="QSpinBox" name="df_lr_warmup_steps">
+                 <property name="maximum">
+                  <number>10000000</number>
+                 </property>
+                 <property name="value">
+                  <number>1</number>
                  </property>
                 </widget>
                </item>
-               <item row="12" column="0">
+               <item row="18" column="0">
                 <widget class="QLabel" name="label_253">
                  <property name="text">
                   <string>Prior loss weight</string>
                  </property>
                 </widget>
                </item>
+               <item row="39" column="0">
+                <widget class="QPushButton" name="start_diffuser_dreambooth">
+                 <property name="text">
+                  <string>Run Diffuser Dreambooth</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QPushButton" name="df_select_model">
+                 <property name="text">
+                  <string>Model dir</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="27" column="1">
+                <widget class="QSpinBox" name="df_gradient_accumulation_steps">
+                 <property name="maximum">
+                  <number>10000000</number>
+                 </property>
+                 <property name="value">
+                  <number>1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="21" column="3">
+                <widget class="QDoubleSpinBox" name="df_adam_weight_decay">
+                 <property name="maximum">
+                  <double>100.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.010000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.010000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="QSpinBox" name="df_num_class_images"/>
+               </item>
+               <item row="24" column="0">
+                <widget class="QLabel" name="label_258">
+                 <property name="text">
+                  <string>Sample batch size</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="26" column="1">
+                <widget class="QSpinBox" name="df_max_train_steps">
+                 <property name="maximum">
+                  <number>1000000</number>
+                 </property>
+                </widget>
+               </item>
                <item row="25" column="1">
+                <widget class="QSpinBox" name="df_num_train_epochs">
+                 <property name="maximum">
+                  <number>5000</number>
+                 </property>
+                 <property name="value">
+                  <number>1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="29" column="1">
                 <widget class="QDoubleSpinBox" name="df_learning_rate">
                  <property name="decimals">
                   <number>8</number>
@@ -3094,51 +3164,53 @@ flag passed with the `accelerate.launch` command. Use this argument to override 
                  </property>
                 </widget>
                </item>
-               <item row="18" column="0">
-                <widget class="QLabel" name="label_257">
-                 <property name="text">
-                  <string>Batch size</string>
+               <item row="24" column="1">
+                <widget class="QSpinBox" name="df_sample_batch_size">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="value">
+                  <number>4</number>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
-                <widget class="QPushButton" name="df_select_model">
+               <item row="18" column="3">
+                <widget class="QDoubleSpinBox" name="df_adam_beta1">
+                 <property name="decimals">
+                  <number>4</number>
+                 </property>
+                 <property name="maximum">
+                  <double>100.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.100000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.900000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1" colspan="3">
+                <widget class="QLineEdit" name="df_instance_data_dir">
                  <property name="text">
-                  <string>Model dir</string>
+                  <string>G:\training_up_to_5000_steps_UNET_300_text_encoder\TwinRealms-1024\TwinRealms-1024</string>
                  </property>
                 </widget>
                </item>
                <item row="29" column="0">
-                <widget class="QLabel" name="label_267">
+                <widget class="QLabel" name="label_263">
                  <property name="text">
-                  <string>LR power</string>
+                  <string>Learning rate (LR)</string>
                  </property>
                 </widget>
                </item>
-               <item row="21" column="1">
-                <widget class="QSpinBox" name="df_max_train_steps">
-                 <property name="maximum">
-                  <number>1000000</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="18" column="1">
-                <widget class="QSpinBox" name="df_train_batch_size">
-                 <property name="maximum">
-                  <number>500</number>
-                 </property>
-                 <property name="value">
-                  <number>1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="2" colspan="2">
-                <widget class="QLineEdit" name="df_class_data_dir"/>
-               </item>
-               <item row="3" column="0">
-                <widget class="QPushButton" name="df_select_class_images">
+               <item row="38" column="2">
+                <widget class="QCheckBox" name="df_enable_xformers_memory_efficient_attention">
                  <property name="text">
-                  <string>Class images dir</string>
+                  <string>Enable xformers</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
                  </property>
                 </widget>
                </item>
@@ -3149,28 +3221,21 @@ flag passed with the `accelerate.launch` command. Use this argument to override 
                  </property>
                 </widget>
                </item>
-               <item row="26" column="2">
+               <item row="32" column="2">
                 <widget class="QLabel" name="label_264">
                  <property name="text">
                   <string>LR scheduler</string>
                  </property>
                 </widget>
                </item>
-               <item row="9" column="2" colspan="2">
-                <widget class="QLineEdit" name="df_instance_prompt">
-                 <property name="text">
-                  <string>test</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="32" column="2">
+               <item row="37" column="2">
                 <widget class="QCheckBox" name="df_use_8bit_adam">
                  <property name="text">
                   <string>use 8bit adam</string>
                  </property>
                 </widget>
                </item>
-               <item row="26" column="3">
+               <item row="32" column="3">
                 <widget class="QComboBox" name="df_lr_scheduler">
                  <item>
                   <property name="text">
@@ -3204,331 +3269,7 @@ flag passed with the `accelerate.launch` command. Use this argument to override 
                  </item>
                 </widget>
                </item>
-               <item row="7" column="2" colspan="2">
-                <widget class="QLineEdit" name="df_revision">
-                 <property name="toolTip">
-                  <string>Leave empty until you know what you do</string>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="29" column="2">
-                <widget class="QLabel" name="label_266">
-                 <property name="text">
-                  <string>LR num cycles</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="25" column="0">
-                <widget class="QLabel" name="label_263">
-                 <property name="text">
-                  <string>Learning rate (LR)</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="35" column="0">
-                <spacer name="verticalSpacer_10">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="10" column="2" colspan="2">
-                <widget class="QLineEdit" name="df_class_prompt"/>
-               </item>
-               <item row="8" column="0">
-                <widget class="QLabel" name="label_118">
-                 <property name="text">
-                  <string>Tokenizer name</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="19" column="0">
-                <widget class="QLabel" name="label_258">
-                 <property name="text">
-                  <string>Sample batch size</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="20" column="1">
-                <widget class="QSpinBox" name="df_num_train_epochs">
-                 <property name="maximum">
-                  <number>5000</number>
-                 </property>
-                 <property name="value">
-                  <number>1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="12" column="1">
-                <widget class="QDoubleSpinBox" name="df_prior_loss_weight"/>
-               </item>
-               <item row="8" column="2" colspan="2">
-                <widget class="QLineEdit" name="df_tokenizer_name">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="2" colspan="2">
-                <widget class="QLineEdit" name="df_logging_dir">
-                 <property name="text">
-                  <string>G:\training_up_to_5000_steps_UNET_300_text_encoder\logs</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="26" column="0">
-                <widget class="QCheckBox" name="df_scale_lr">
-                 <property name="text">
-                  <string>Scale LR</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="19" column="1">
-                <widget class="QSpinBox" name="df_sample_batch_size">
-                 <property name="maximum">
-                  <number>100</number>
-                 </property>
-                 <property name="value">
-                  <number>4</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="13" column="1">
-                <widget class="QSpinBox" name="df_num_class_images"/>
-               </item>
-               <item row="5" column="0">
-                <widget class="QPushButton" name="df_select_log_folder">
-                 <property name="text">
-                  <string>Log dir</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="31" column="0">
-                <widget class="QCheckBox" name="df_center_crop">
-                 <property name="text">
-                  <string>Center Crop</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="label_117">
-                 <property name="text">
-                  <string>Revision</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="0">
-                <widget class="QLabel" name="label_252">
-                 <property name="text">
-                  <string>Class prompt</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="29" column="3">
-                <widget class="QSpinBox" name="df_lr_num_cycles">
-                 <property name="maximum">
-                  <number>1000000</number>
-                 </property>
-                 <property name="value">
-                  <number>1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QPushButton" name="df_select_images">
-                 <property name="text">
-                  <string>Images dir</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="15" column="0">
-                <widget class="QLabel" name="label_256">
-                 <property name="text">
-                  <string>Resolution</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="20" column="0">
-                <widget class="QLabel" name="label_259">
-                 <property name="text">
-                  <string>Num train epochs</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2" colspan="2">
-                <widget class="QLineEdit" name="df_pretrained_model_name_or_path">
-                 <property name="text">
-                  <string>runwayml/stable-diffusion-v1-5</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="31" column="2">
-                <widget class="QCheckBox" name="df_allow_tf32">
-                 <property name="text">
-                  <string>Allow tf32</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="23" column="1">
-                <widget class="QSpinBox" name="df_gradient_accumulation_steps">
-                 <property name="maximum">
-                  <number>10000000</number>
-                 </property>
-                 <property name="value">
-                  <number>1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="15" column="1">
-                <widget class="QSpinBox" name="df_resolution">
-                 <property name="maximum">
-                  <number>4068</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>64</number>
-                 </property>
-                 <property name="value">
-                  <number>512</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QPushButton" name="df_select_output_folder">
-                 <property name="text">
-                  <string>Output dir</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="2" colspan="2">
-                <widget class="QLineEdit" name="df_instance_data_dir">
-                 <property name="text">
-                  <string>G:\training_up_to_5000_steps_UNET_300_text_encoder\TwinRealms-1024\TwinRealms-1024</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="21" column="0">
-                <widget class="QLabel" name="label_260">
-                 <property name="text">
-                  <string>Max train steps</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="32" column="0">
-                <widget class="QCheckBox" name="df_train_text_encoder">
-                 <property name="text">
-                  <string>Train text encoder</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="13" column="0">
-                <widget class="QLabel" name="label_254">
-                 <property name="text">
-                  <string>Class Images</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="29" column="1">
-                <widget class="QSpinBox" name="df_lr_power">
-                 <property name="maximum">
-                  <number>1000000</number>
-                 </property>
-                 <property name="value">
-                  <number>1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="label_251">
-                 <property name="text">
-                  <string>Instance prompt</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="11" column="0">
-                <widget class="QLabel" name="label_255">
-                 <property name="text">
-                  <string>Seed</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="11" column="2" colspan="2">
-                <widget class="QLineEdit" name="df_seed"/>
-               </item>
-               <item row="12" column="2">
-                <widget class="QLabel" name="label_268">
-                 <property name="text">
-                  <string>Adam beta1</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="12" column="3">
-                <widget class="QDoubleSpinBox" name="df_adam_beta1">
-                 <property name="decimals">
-                  <number>4</number>
-                 </property>
-                 <property name="maximum">
-                  <double>100.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.100000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>0.900000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="13" column="2">
-                <widget class="QLabel" name="label_269">
-                 <property name="text">
-                  <string>Adam beta2</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="15" column="2">
-                <widget class="QLabel" name="label_270">
-                 <property name="text">
-                  <string>Adam weight decay</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="18" column="2">
-                <widget class="QLabel" name="label_271">
-                 <property name="text">
-                  <string>Adam epsilon</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="19" column="2">
-                <widget class="QLabel" name="label_272">
-                 <property name="text">
-                  <string>Max grad norm</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="20" column="2">
-                <widget class="QLabel" name="label_273">
-                 <property name="text">
-                  <string>Mixed precision</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="21" column="2">
-                <widget class="QLabel" name="label_274">
-                 <property name="text">
-                  <string>Prior generation precision</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="13" column="3">
+               <item row="19" column="3">
                 <widget class="QDoubleSpinBox" name="df_adam_beta2">
                  <property name="decimals">
                   <number>4</number>
@@ -3544,27 +3285,7 @@ flag passed with the `accelerate.launch` command. Use this argument to override 
                  </property>
                 </widget>
                </item>
-               <item row="15" column="3">
-                <widget class="QDoubleSpinBox" name="df_adam_weight_decay">
-                 <property name="maximum">
-                  <double>100.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.010000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>0.010000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="18" column="3">
-                <widget class="QLineEdit" name="df_adam_epsilon">
-                 <property name="text">
-                  <string>1e-08</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="19" column="3">
+               <item row="25" column="3">
                 <widget class="QDoubleSpinBox" name="df_max_grad_norm">
                  <property name="singleStep">
                   <double>0.100000000000000</double>
@@ -3574,7 +3295,99 @@ flag passed with the `accelerate.launch` command. Use this argument to override 
                  </property>
                 </widget>
                </item>
-               <item row="20" column="3">
+               <item row="10" column="0">
+                <widget class="QPushButton" name="df_select_log_folder">
+                 <property name="text">
+                  <string>Log dir</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="24" column="2">
+                <widget class="QLabel" name="label_271">
+                 <property name="text">
+                  <string>Adam epsilon</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="40" column="0">
+                <spacer name="verticalSpacer_10">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="13" column="1" colspan="3">
+                <widget class="QLineEdit" name="df_class_prompt"/>
+               </item>
+               <item row="28" column="0">
+                <widget class="QCheckBox" name="df_gradient_checkpointing">
+                 <property name="text">
+                  <string>Gradient checkpointing</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QPushButton" name="df_select_class_images">
+                 <property name="text">
+                  <string>Class images dir</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0">
+                <widget class="QLabel" name="label_118">
+                 <property name="text">
+                  <string>Tokenizer name</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="21" column="1">
+                <widget class="QSpinBox" name="df_train_batch_size">
+                 <property name="maximum">
+                  <number>500</number>
+                 </property>
+                 <property name="value">
+                  <number>1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="27" column="2">
+                <widget class="QLabel" name="label_274">
+                 <property name="text">
+                  <string>Prior generation precision</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QPushButton" name="df_select_output_folder">
+                 <property name="text">
+                  <string>Output dir</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="18" column="1">
+                <widget class="QDoubleSpinBox" name="df_prior_loss_weight"/>
+               </item>
+               <item row="21" column="0">
+                <widget class="QLabel" name="label_257">
+                 <property name="text">
+                  <string>Batch size</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_254">
+                 <property name="text">
+                  <string>Class Images</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="26" column="3">
                 <widget class="QComboBox" name="df_mixed_precision">
                  <item>
                   <property name="text">
@@ -3593,7 +3406,107 @@ flag passed with the `accelerate.launch` command. Use this argument to override 
                  </item>
                 </widget>
                </item>
-               <item row="21" column="3">
+               <item row="1" column="1" colspan="3">
+                <widget class="QLineEdit" name="df_pretrained_model_name_or_path">
+                 <property name="text">
+                  <string>runwayml/stable-diffusion-v1-5</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="19" column="1">
+                <widget class="QSpinBox" name="df_resolution">
+                 <property name="maximum">
+                  <number>4068</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>64</number>
+                 </property>
+                 <property name="value">
+                  <number>512</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="32" column="0">
+                <widget class="QCheckBox" name="df_scale_lr">
+                 <property name="text">
+                  <string>Scale LR</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1" colspan="3">
+                <widget class="QLineEdit" name="df_class_data_dir"/>
+               </item>
+               <item row="27" column="0">
+                <widget class="QLabel" name="label_262">
+                 <property name="text">
+                  <string>Gradient accumulation steps</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0">
+                <widget class="QLabel" name="label_252">
+                 <property name="text">
+                  <string>Class prompt</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="36" column="0">
+                <widget class="QCheckBox" name="df_center_crop">
+                 <property name="text">
+                  <string>Center Crop</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="29" column="2">
+                <widget class="QLabel" name="label_265">
+                 <property name="text">
+                  <string>Warmup steps</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="26" column="0">
+                <widget class="QLabel" name="label_260">
+                 <property name="text">
+                  <string>Max train steps</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="19" column="0">
+                <widget class="QLabel" name="label_256">
+                 <property name="text">
+                  <string>Resolution</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="25" column="0">
+                <widget class="QLabel" name="label_259">
+                 <property name="text">
+                  <string>Num train epochs</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="18" column="2">
+                <widget class="QLabel" name="label_268">
+                 <property name="text">
+                  <string>Adam beta1</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="1" colspan="3">
+                <widget class="QLineEdit" name="df_output_dir">
+                 <property name="text">
+                  <string>G:\training_up_to_5000_steps_UNET_300_text_encoder\output</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="19" column="2">
+                <widget class="QLabel" name="label_269">
+                 <property name="text">
+                  <string>Adam beta2</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="27" column="3">
                 <widget class="QComboBox" name="df_prior_generation_precision">
                  <item>
                   <property name="text">
@@ -3617,34 +3530,38 @@ flag passed with the `accelerate.launch` command. Use this argument to override 
                  </item>
                 </widget>
                </item>
-               <item row="33" column="2">
-                <widget class="QCheckBox" name="df_enable_xformers_memory_efficient_attention">
+               <item row="26" column="2">
+                <widget class="QLabel" name="label_273">
                  <property name="text">
-                  <string>Enable xformers</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
+                  <string>Mixed precision</string>
                  </property>
                 </widget>
                </item>
-               <item row="23" column="2">
-                <widget class="QLabel" name="label_265">
+               <item row="2" column="0">
+                <widget class="QPushButton" name="df_select_images">
                  <property name="text">
-                  <string>Warmup steps</string>
+                  <string>Images dir</string>
                  </property>
                 </widget>
                </item>
-               <item row="23" column="3">
-                <widget class="QSpinBox" name="df_lr_warmup_steps">
-                 <property name="maximum">
-                  <number>10000000</number>
-                 </property>
-                 <property name="value">
-                  <number>1</number>
+               <item row="15" column="1" colspan="3">
+                <widget class="QLineEdit" name="df_instance_prompt">
+                 <property name="text">
+                  <string>test</string>
                  </property>
                 </widget>
                </item>
-               <item row="22" column="3">
+               <item row="17" column="1" colspan="3">
+                <widget class="QLineEdit" name="df_seed"/>
+               </item>
+               <item row="14" column="1" colspan="3">
+                <widget class="QLineEdit" name="df_tokenizer_name">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="28" column="3">
                 <widget class="QSpinBox" name="df_checkpointing_steps">
                  <property name="maximum">
                   <number>1000000</number>
@@ -3654,26 +3571,81 @@ flag passed with the `accelerate.launch` command. Use this argument to override 
                  </property>
                 </widget>
                </item>
-               <item row="22" column="2">
+               <item row="17" column="0">
+                <widget class="QLabel" name="label_255">
+                 <property name="text">
+                  <string>Seed</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="36" column="2">
+                <widget class="QCheckBox" name="df_allow_tf32">
+                 <property name="text">
+                  <string>Allow tf32</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="28" column="2">
                 <widget class="QLabel" name="label_261">
                  <property name="text">
                   <string>Checkpointing steps</string>
                  </property>
                 </widget>
                </item>
-               <item row="22" column="0">
-                <widget class="QCheckBox" name="df_gradient_checkpointing">
+               <item row="12" column="0">
+                <widget class="QCheckBox" name="expor_safetensors">
                  <property name="text">
-                  <string>Gradient checkpointing</string>
+                  <string>export safetensors</string>
                  </property>
                 </widget>
                </item>
-               <item row="34" column="0">
-                <widget class="QPushButton" name="start_diffuser_dreambooth">
+               <item row="37" column="0">
+                <widget class="QCheckBox" name="df_train_text_encoder">
                  <property name="text">
-                  <string>Run Diffuser Dreambooth</string>
+                  <string>Train text encoder</string>
                  </property>
                 </widget>
+               </item>
+               <item row="21" column="2">
+                <widget class="QLabel" name="label_270">
+                 <property name="text">
+                  <string>Adam weight decay</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1" colspan="3">
+                <widget class="QLineEdit" name="df_logging_dir">
+                 <property name="text">
+                  <string>G:\training_up_to_5000_steps_UNET_300_text_encoder\logs</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="25" column="2">
+                <widget class="QLabel" name="label_272">
+                 <property name="text">
+                  <string>Max grad norm</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0">
+                <widget class="QLabel" name="label_251">
+                 <property name="text">
+                  <string>Instance prompt</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="0">
+                <widget class="QCheckBox" name="export_checkpoint">
+                 <property name="text">
+                  <string>export checkpoint</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="1" colspan="3">
+                <widget class="QLineEdit" name="checkpoint_filename"/>
+               </item>
+               <item row="12" column="1" colspan="3">
+                <widget class="QLineEdit" name="safetensor_filename"/>
                </item>
               </layout>
              </widget>

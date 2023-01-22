@@ -115,7 +115,6 @@ open_clip_torch
 torchsde>=0.2.5
 fastapi>=0.88.0
 uvicorn>=0.20.0
-pydantic
 transformers>=4.25.1
 diffusers>=0.11.1
 safetensors>=0.2.6

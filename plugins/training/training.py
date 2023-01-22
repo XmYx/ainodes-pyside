@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from pytorch_lightning import seed_everything
 from PySide6 import QtCore, QtUiTools
 from PySide6.QtWidgets import QDockWidget, QFileDialog
-from PySide6.QtCore import Slot, Signal, QObject, QFile, QEasingCurve
+from PySide6.QtCore import Slot, Signal, QObject, QFile
 
 from backend.torch_gc import torch_gc
 from backend.singleton import singleton
@@ -14,7 +14,7 @@ gs = singleton
 from plugins.training.dreambooth_class import DreamBooth
 from plugins.training.sd_to_diffusers import run_translation
 from plugins.training.train_lora_dreambooth import run_lora_dreambooth
-from plugins.training.lora_diffusion.cli_lora_add import add as lom_merge_models
+from plugins.training.diffusers.cli_lora_add import add as lom_merge_models
 from plugins.training.diffuser_to_sd import diff2sd
 from plugins.training.txt_inv.textual_inversion import create_txt_inv
 from plugins.training.preprocess.preprocess import preprocess

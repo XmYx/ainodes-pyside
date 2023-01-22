@@ -44,7 +44,7 @@ from PIL import Image
 from torchvision import transforms
 from tqdm.auto import tqdm
 from transformers import AutoTokenizer, PretrainedConfig
-
+from backend.torch_gc import torch_gc
 
 # Will error if the minimal version of diffusers is not installed. Remove at your own risks.
 check_min_version("0.10.0.dev0")
@@ -855,6 +855,25 @@ def main(args):
             repo.push_to_hub(commit_message="End of training", blocking=False, auto_lfs_prune=True)
 
     accelerator.end_training()
+    del accelerator
+    del lr_scheduler
+    del optimizer
+    del train_dataloader
+    del train_dataset
+    del params_to_optimize
+    del tokenizer
+    del text_encoder_cls
+
+    vae.to('cpu', dtype=weight_dtype)
+    unet.to('cpu', dtype=weight_dtype)
+    text_encoder.to('cpu', dtype=weight_dtype)
+    if pipeline:
+        pipeline.to('cpu')
+    del noise_scheduler
+    del text_encoder
+    del vae
+    del unet
+    torch_gc
 
 def run_diff_dreambooth(
         pretrained_model_name_or_path='',       # Path to pretrained model or model identifier from huggingface.co/models.
@@ -923,3 +942,15 @@ def run_diff_dreambooth(
 if __name__ == "__main__":
     args = parse_args()
     main(args)
+
+#CompVis/stable-diffusion-v1-4
+#runwayml/stable-diffusion-v1-5
+#stabilityai/stable-diffusion-2
+
+#stabilityai/stable-diffusion-2-base
+#stabilityai/stable-diffusion-2-inpainting
+#stabilityai/stable-diffusion-x4-upscaler
+#stabilityai/stable-diffusion-2-1-base
+#stabilityai/stable-diffusion-2-1
+#stabilityai/stable-diffusion-2-1-inpainting
+

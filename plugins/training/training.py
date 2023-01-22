@@ -612,7 +612,7 @@ class aiNodesPlugin:
     def run_df_dreambooth_thread(self, progress_callback=False):
         run_diff_dreambooth(
             pretrained_model_name_or_path=self.training.w.df_pretrained_model_name_or_path.text(),       # Path to pretrained model or model identifier from huggingface.co/models.
-            revision=None if self.training.w.df_revision.text() == '' else self.training.w.df_revision.text(),                           # Revision of pretrained model identifier from huggingface.co/models. Trainable model components should be float32 precision.
+            revision=None,                           # Revision of pretrained model identifier from huggingface.co/models. Trainable model components should be float32 precision.
             tokenizer_name=None if self.training.w.df_tokenizer_name.text() == '' else self.training.w.df_tokenizer_name.text(),                    # Pretrained tokenizer name or path if not the same as model_name
             instance_data_dir=self.training.w.df_instance_data_dir.text(),        # A folder containing the training data of instance images.
             class_data_dir=None if self.training.w.df_class_data_dir.text() == '' else self.training.w.df_class_data_dir.text(),                    # A folder containing the training data of class images.

@@ -30,7 +30,7 @@ from huggingface_hub import HfFolder, Repository, whoami
 from tqdm.auto import tqdm
 from transformers import CLIPTextModel, CLIPTokenizer
 
-from plugins.training.lora_diffusion import (
+from plugins.training.diffusers.lora import (
     inject_trainable_lora,
     save_lora_weight,
     extract_lora_ups_down,

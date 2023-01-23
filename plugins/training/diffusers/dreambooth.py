@@ -652,7 +652,7 @@ def main(args):
         batch_size=args.train_batch_size,
         shuffle=True,
         collate_fn=lambda examples: collate_fn(examples, args.with_prior_preservation),
-        num_workers=1,
+        #num_workers=1,
     )
 
     # Scheduler and math around the number of training steps.

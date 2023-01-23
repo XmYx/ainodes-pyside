@@ -644,8 +644,8 @@ class aiNodesPlugin:
             lr_scheduler=self.training.w.df_lr_scheduler.currentText(),                # The scheduler type to use. Choose between ["linear", "cosine", "cosine_with_restarts", "polynomial",
             # "constant", "constant_with_warmup"]
             lr_warmup_steps=self.training.w.df_lr_warmup_steps.value(),                      # Number of steps for the warmup in the lr scheduler.
-            lr_num_cycles=self.training.w.df_lr_num_cycles.value(),                        # Number of hard resets of the lr in cosine_with_restarts scheduler.
-            lr_power=self.training.w.df_lr_power.value(),                           # Power factor of the polynomial scheduler.
+            lr_num_cycles=0,                        # Number of hard resets of the lr in cosine_with_restarts scheduler.
+            lr_power=0,                           # Power factor of the polynomial scheduler.
             use_8bit_adam=False,                    # Whether to use 8-bit Adam from bitsandbytes.
             adam_beta1=self.training.w.df_adam_beta1.value(),                         # The beta1 parameter for the Adam optimizer.
             adam_beta2=self.training.w.df_adam_beta2.value(),                       # The beta2 parameter for the Adam optimizer.

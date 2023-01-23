@@ -280,6 +280,7 @@ class MainWindow(QMainWindow):
         self.thumbs.w.thumbnails.itemClicked.connect(self.outpaint.select_outpaint_image)
         self.outpaint.signals.add_rect.connect(self.outpaint.add_rect)
         self.outpaint.signals.canvas_update.connect(self.outpaint.canvas_update)
+        self.outpaint.signals.txt2img_image_op.connect(self.image_preview_func_str_op)
         self.canvas.canvas.signals.update_selected.connect(self.outpaint.show_outpaint_details)
         self.canvas.canvas.signals.update_params.connect(self.outpaint.create_params)
 
@@ -425,7 +426,12 @@ class MainWindow(QMainWindow):
             self.canvas.canvas.reusable_outpaint(self.canvas.canvas.selected_item)
             self.deforum_ui.deforum_outpaint_thread()
         else:
-            self.deforum_ui.deforum_six_txt2img_thread()
+            if self.widgets[self.current_widget].w.toggle_outpaint.isChecked():
+                pass
+                self.deforum_ui.deforum_six_txt2img_outpaint_thread()
+            else:
+                self.deforum_ui.deforum_six_txt2img_thread()
+
 
     def still_mode(self):
         pass
@@ -561,46 +567,45 @@ class MainWindow(QMainWindow):
     def create_main_toolbar(self):
         self.toolbar = QToolBar('Outpaint Tools')
         self.addToolBar(QtCore.Qt.TopToolBarArea, self.toolbar)
-        still_mode = QAction(QIcon_from_svg('frontend/icons/instagram.svg'), 'Still', self)
-        #anim_mode = QAction(QIcon_from_svg('frontend/icons/film.svg'), 'Anim', self)
-        #node_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Nodes', self)
-        #gallery_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Gallery', self)
-        #settings_mode = QAction(QIcon_from_svg('frontend/icons/image.svg'), 'Settings', self)
-        help_mode = QAction(QIcon_from_svg('frontend/icons/help-circle.svg'), 'Help', self)
-        skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'Help', self)
-        skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'Help', self)
+        skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'back', self)
+        play = QAction(QIcon_from_svg('frontend/icons/play.svg'), 'Enable Playback / Play All', self)
+        stop = QAction(QIcon_from_svg('frontend/icons/square.svg'), 'Stop All', self)
+        skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'forward', self)
+        clear_canvas = QAction(QIcon_from_svg('frontend/icons/frown.svg'), 'Clear Canvas', self)
         #test_mode = QAction(QIcon_from_svg('frontend/icons/alert-octagon.svg'), 'Run Self Test - It will take a while', self)
+        #help_mode = QAction(QIcon_from_svg('frontend/icons/help-circle.svg'), 'Help', self)
+        #still_mode = QAction(QIcon_from_svg('frontend/icons/instagram.svg'), 'Still', self)
 
-        self.toolbar.addAction(still_mode)
-        # self.toolbar.addAction(anim_mode)
-        # self.toolbar.addAction(node_mode)
-        # self.toolbar.addAction(gallery_mode)
-        # self.toolbar.addAction(settings_mode)
-        #self.toolbar.addAction(help_mode)
         self.toolbar.addAction(skip_back)
         self.toolbar.addAction(skip_forward)
+        self.toolbar.addAction(play)
+        self.toolbar.addAction(stop)
+        self.toolbar.addAction(clear_canvas)
+        #self.toolbar.addAction(still_mode)
         #self.toolbar.addAction(test_mode)
 
         skip_back.triggered.connect(self.canvas.canvas.skip_back)
         skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
+        play.triggered.connect(self.canvas.canvas.start_main_clock)
+        stop.triggered.connect(self.canvas.canvas.stop_main_clock)
+        clear_canvas.triggered.connect(self.canvas.canvas.reset)
         #test_mode.triggered.connect(self.selftest)
 
     def create_secondary_toolbar(self):
         self.secondary_toolbar = QToolBar('Outpaint Tools')
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.secondary_toolbar)
-        select_mode = QAction(QIcon_from_svg('frontend/icons/mouse-pointer.svg'), 'Select', self)
-        drag_mode = QAction(QIcon_from_svg('frontend/icons/wind.svg'), 'Drag', self)
+        select_mode = QAction(QIcon_from_svg('frontend/icons/mouse-pointer.svg'), 'Select Rect', self)
+        drag_mode = QAction(QIcon_from_svg('frontend/icons/wind.svg'), 'Drag Canvas', self)
         add_mode = QAction(QIcon_from_svg('frontend/icons/plus.svg'), 'Outpaint', self)
         inpaint_mode = QAction(QIcon_from_svg('frontend/icons/edit.svg'), 'Inpaint', self)
         inpaint_current = QAction(QIcon_from_svg('frontend/icons/edit.svg'), 'Inpaint Current Frame', self)
         move_mode = QAction(QIcon_from_svg('frontend/icons/move.svg'), 'Move', self)
         save_canvas = QAction(QIcon_from_svg('frontend/icons/file-text.svg'), 'Save as Json', self)
         save_canvas_png = QAction(QIcon_from_svg('frontend/icons/save.svg'), 'Save as PNG', self)
-        clear_canvas = QAction(QIcon_from_svg('frontend/icons/frown.svg'), 'Clear Canvas', self)
+
         load_canvas = QAction(QIcon_from_svg('frontend/icons/folder.svg'), 'Load from Json', self)
         load_image = QAction(QIcon_from_svg('frontend/icons/folder.svg'), 'Load Image', self)
-        play = QAction(QIcon_from_svg('frontend/icons/play.svg'), 'Enable Playback / Play All', self)
-        stop = QAction(QIcon_from_svg('frontend/icons/square.svg'), 'Stop All', self)
+
 
         self.secondary_toolbar.addAction(select_mode)
         self.secondary_toolbar.addAction(drag_mode)
@@ -613,10 +618,9 @@ class MainWindow(QMainWindow):
         self.secondary_toolbar.addAction(save_canvas_png)
         self.secondary_toolbar.addAction(load_canvas)
         self.secondary_toolbar.addAction(load_image)
-        self.secondary_toolbar.addAction(clear_canvas)
+
         self.secondary_toolbar.addSeparator()
-        self.secondary_toolbar.addAction(play)
-        self.secondary_toolbar.addAction(stop)
+
 
         select_mode.triggered.connect(self.canvas.canvas.select_mode)
         drag_mode.triggered.connect(self.canvas.canvas.drag_mode)
@@ -627,10 +631,9 @@ class MainWindow(QMainWindow):
         save_canvas.triggered.connect(self.canvas.canvas.save_rects_as_json)
         load_canvas.triggered.connect(self.canvas.canvas.load_rects_from_json)
         load_image.triggered.connect(self.canvas.canvas.load_img_into_rect)
-        clear_canvas.triggered.connect(self.canvas.canvas.reset)
+
         save_canvas_png.triggered.connect(self.canvas.canvas.save_canvas)
-        play.triggered.connect(self.canvas.canvas.start_main_clock)
-        stop.triggered.connect(self.canvas.canvas.stop_main_clock)
+
 
     def hide_default(self):
         self.toolbar.setVisible(False)
@@ -678,7 +681,7 @@ class MainWindow(QMainWindow):
     def show_default(self):
         if self.default_hidden == True:
             self.toolbar.setVisible(True)
-            self.secondary_toolbar.setVisible(True)
+
             self.widgets[self.current_widget].w.base_setup.setVisible(True)
             self.widgets[self.current_widget].w.advanced_toppics.setVisible(True)
             self.widgets[self.current_widget].w.keyframes.setVisible(True)
@@ -736,7 +739,7 @@ class MainWindow(QMainWindow):
         mode = image.mode
         size = image.size
         enc_image = base64.b64encode(image.tobytes()).decode()
-        self.deforum_ui.signals.txt2img_image_cb.emit(enc_image, mode, size)
+        self.outpaint.signals.txt2img_image_op.emit(enc_image, mode, size)
         self.signals.image_ready.emit()
 
 
@@ -745,6 +748,10 @@ class MainWindow(QMainWindow):
         decoded_image = base64.b64decode(image.encode())
         self.image_preview_func(Image.frombytes(mode, size, decoded_image))
 
+    @Slot()
+    def image_preview_func_str_op(self, image, mode, size):
+        decoded_image = base64.b64decode(image.encode())
+        self.image_preview_func_op(Image.frombytes(mode, size, decoded_image))
 
     @Slot()
     def render_index_image_preview_func_str(self, image, mode, size, render_index):
@@ -829,6 +836,91 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def image_preview_func(self, image=None):
+
+        img = image #self.image
+
+        if self.params.advanced == True and (self.canvas.canvas.rectlist == [] or self.canvas.canvas.rectlist is None):
+            self.params.advanced = False
+            self.advanced_temp = True
+
+        if self.params.advanced == True:
+
+            if self.canvas.canvas.rectlist != []:
+                if img is not None:
+                    if self.canvas.canvas.rectlist[self.render_index].images is not None:
+                        templist = self.canvas.canvas.rectlist[self.render_index].images
+                    else:
+                        templist = []
+                    self.canvas.canvas.rectlist[self.render_index].PILImage = img
+                    qimage = ImageQt(img.convert("RGBA"))
+                    pixmap = QPixmap.fromImage(qimage)
+                    print(self.canvas.canvas.rectlist[self.render_index].render_index)
+                    self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap),
+                                                                     f"{self.canvas.canvas.rectlist[self.render_index].render_index}"))
+
+                    if self.canvas.canvas.anim_inpaint == True:
+                        templist[self.canvas.canvas.rectlist[self.render_index].render_index] = qimage
+                        self.canvas.canvas.anim_inpaint = False
+                    elif self.canvas.canvas.anim_inpaint == False:
+                        templist.append(qimage)
+                        if self.canvas.canvas.rectlist[self.render_index].render_index == None:
+                            self.canvas.canvas.rectlist[self.render_index].render_index = 0
+                        else:
+                            self.canvas.canvas.rectlist[self.render_index].render_index += 1
+                    self.canvas.canvas.rectlist[self.render_index].images = templist
+                    self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
+                    #self.canvas.canvas.rectlist[self.render_index].image = qimage
+                    self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
+                    self.canvas.canvas.rectlist[self.render_index].img_path = gs.temppath
+                self.canvas.canvas.newimage = True
+                self.canvas.canvas.update()
+                self.canvas.canvas.redraw()
+                del qimage
+                del pixmap
+        elif self.params.advanced == False:
+
+            if self.advanced_temp == True:
+                self.advanced_temp = False
+                self.params.advanced = True
+
+            if img is not None:
+                image = img
+                h, w = image.size
+                self.add_next_rect(h, w)
+                self.render_index = len(self.canvas.canvas.rectlist) - 1
+
+                # for items in self.canvas.canvas.rectlist:
+                #    if items.id == self.canvas.canvas.render_item:
+                if self.canvas.canvas.rectlist[self.render_index].images is not None:
+                    templist = self.canvas.canvas.rectlist[self.render_index].images
+                else:
+                    templist = []
+                self.canvas.canvas.rectlist[self.render_index].PILImage = image
+                qimage = ImageQt(image.convert("RGBA"))
+                templist.append(qimage)
+                self.canvas.canvas.rectlist[self.render_index].images = templist
+                if self.canvas.canvas.rectlist[self.render_index].render_index == None:
+                    self.canvas.canvas.rectlist[self.render_index].render_index = 0
+                else:
+                    self.canvas.canvas.rectlist[self.render_index].render_index += 1
+                self.canvas.canvas.rectlist[self.render_index].image = \
+                self.canvas.canvas.rectlist[self.render_index].images[
+                    self.canvas.canvas.rectlist[self.render_index].render_index]
+                self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
+                self.canvas.canvas.rectlist[self.render_index].params = self.params
+
+                self.canvas.canvas.newimage = True
+                self.canvas.canvas.redraw()
+                self.canvas.canvas.update()
+
+        if self.params.advanced == False and self.params.max_frames > 1:
+            self.params.advanced = True
+
+        if self.make_grid:
+            self.all_images.append(T.functional.pil_to_tensor(image))
+
+    @Slot()
+    def image_preview_func_op(self, image=None):
 
         img = image #self.image
         # store the last image for a part of the batch hires process
@@ -918,8 +1010,6 @@ class MainWindow(QMainWindow):
 
         if self.make_grid:
             self.all_images.append(T.functional.pil_to_tensor(image))
-
-
     def add_next_rect(self, h, w):
         #w = self.widgets[self.current_widget].w.W.value()
         #h = self.widgets[self.current_widget].w.H.value()
@@ -975,26 +1065,28 @@ class MainWindow(QMainWindow):
         self.deforum_ui.signals.deforum_step.emit()
 
     def tensor_preview_schedule(self):  # TODO: Rename this function to tensor_draw_function
-        if len(self.data) != 1:
-            print(
-                f'we got {len(self.data)} Tensors but Tensor Preview will show only one')
+        try:
+            if len(self.data) != 1:
+                print(
+                    f'we got {len(self.data)} Tensors but Tensor Preview will show only one')
 
-        # Applying RGB fix on incoming tensor found at: https://github.com/keturn/sd-progress-demo/
-        self.data = torch.einsum('...lhw,lr -> ...rhw', self.data[0], self.latent_rgb_factors)
-        self.data = (((self.data + 1) / 2)
-                     .clamp(0, 1)  # change scale from -1..1 to 0..1
-                     .mul(0xFF)  # to 0..255
-                     .byte())
-        # Copying to cpu as numpy array
-        self.data = rearrange(self.data, 'c h w -> h w c').cpu().numpy()
-        dPILimg = Image.fromarray(self.data)
-        dqimg = ImageQt(dPILimg)
-        # Setting Canvas's Tensor Preview item, then calling function to draw it.
-        self.canvas.canvas.tensor_preview_item = dqimg
-        self.canvas.canvas.tensor_preview()
-        dPILimg = None
-        dqimg = None
-        x_samples = None
+            # Applying RGB fix on incoming tensor found at: https://github.com/keturn/sd-progress-demo/
+            self.data = torch.einsum('...lhw,lr -> ...rhw', self.data[0], self.latent_rgb_factors)
+            self.data = (((self.data + 1) / 2)
+                         .clamp(0, 1)  # change scale from -1..1 to 0..1
+                         .mul(0xFF)  # to 0..255
+                         .byte())
+            # Copying to cpu as numpy array
+            self.data = rearrange(self.data, 'c h w -> h w c').cpu().numpy()
+            dPILimg = Image.fromarray(self.data)
+            dqimg = ImageQt(dPILimg)
+            # Setting Canvas's Tensor Preview item, then calling function to draw it.
+            self.canvas.canvas.tensor_preview_item = dqimg
+            self.canvas.canvas.tensor_preview()
+            del dPILimg
+            del dqimg
+        except:
+            pass
 
 
     def is_multiple_of_512(num):

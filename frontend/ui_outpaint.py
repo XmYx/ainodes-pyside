@@ -207,12 +207,6 @@ class Outpainting:
         self.parent.choice = "Outpaint"
         self.create_outpaint_batch()
 
-
-    def wait_canvas_busy(self):
-        while self.parent.canvas.canvas.busy == True:
-            time.sleep(0.25)
-            self.sleepytime += 0.25
-
     @Slot(object)
     def add_rect(self, data):
         print('addrect')
@@ -419,7 +413,7 @@ class Outpainting:
         image.save('output/temp/temp.png', "PNG")
         self.parent.canvas.canvas.selected_item = next_step.id
         print('self.parent.canvas.canvas.selected_item',self.parent.canvas.canvas.selected_item)
-        self.parent.deforum_ui.run_deforum_six_txt2img(hiresinit='output/temp/temp.png')
+        self.parent.deforum_ui.run_deforum_six_txt2img(hiresinit='output/temp/temp.png', image_callback=self.parent.image_preview_signal_op)
 
     def run_outpaint_step_x(self):
         next_step = self.rectlist_work[0]

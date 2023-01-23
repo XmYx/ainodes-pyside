@@ -62,9 +62,18 @@ class Deforum_UI(QObject):
         self.parent.params = self.parent.sessionparams.update_params()
         self.parent.sessionparams.add_state_to_history()
         # Prepare next rectangle, widen canvas:
-        self.parent.run_as_thread(self.run_deforum_six_txt2img)
+        self.parent.run_as_thread(self.run_deforum_six_txt2img_img)
 
-    def run(self):
+    def deforum_six_txt2img_outpaint_thread(self):
+        self.update = 0
+
+        self.parent.params = self.parent.sessionparams.update_params()
+        self.parent.sessionparams.add_state_to_history()
+        # Prepare next rectangle, widen canvas:
+        self.parent.run_as_thread(self.run_deforum_six_outpaint_txt2img)
+
+
+    def run_out_of_order(self):
         params = self.parent.sessionparams.update_params()
         ##print(f"updated parameters to: {params}")
         self.deforum_six.run_deforum_six(W=int(params.W),
@@ -129,7 +138,7 @@ class Deforum_UI(QObject):
                                          )
 
 
-    def run_it(self):
+    def run_it(self, image_callback):
         self.deforum_six.run_deforum_six(W=int(self.params.W),
                                          H=int(self.params.H),
                                          seed=int(self.params.seed) if self.params.seed != '' else self.params.seed,
@@ -184,7 +193,7 @@ class Deforum_UI(QObject):
                                          # if self.parent.widgets[self.parent.current_widget].w.grad_inject_timing.text() == '' else self.parent.widgets[self.parent.current_widget].w.grad_inject_timing.text(), #it is a float an int or a list of floats
                                          cond_uncond_sync=self.params.cond_uncond_sync,
                                          step_callback=self.parent.tensor_preview_signal if self.params.show_sample_per_step is not False else None,
-                                         image_callback=self.parent.image_preview_signal,
+                                         image_callback=image_callback,
                                          negative_prompts=self.params.negative_prompts if self.params.negative_prompts is not False else None,
                                          hires=self.params.hires,
                                          prompt_weighting=self.params.prompt_weighting,
@@ -306,7 +315,7 @@ class Deforum_UI(QObject):
 
 
 
-    def multi_dim_loop(self):
+    def multi_dim_loop(self, image_callback):
         ints_vals=['W','H','seed','steps', 'n_batch','n_samples','mean_scale','var_scale','exposure_scale','exposure_target','colormatch_n_colors', 'ignore_sat_weight','clip_scale','aesthetics_scale','cutn', 'init_mse_scale', 'blue_scale',]
         float_vals=['scale','ddim_eta','strength','colormatch_scale']
         bool_vals=['save_settings','save_samples','make_grid','use_init','strength_0_no_init','hires','prompt_weighting','normalize_prompt_weights']
@@ -348,20 +357,28 @@ class Deforum_UI(QObject):
                         if name in bool_vals:
                             value = bool(value)
                         if name == 'sd_model_file':
-                            if 'sd' in gs.models:
-                                gs.models['sd'].to('cpu')
-                                del gs.models['sd']
-                            gs.sd_model_file = os.path.join(gs.system.models_path, value)
+                            print('sd_model_file', value)
+                            if value not in gs.system.sd_model_file:
+                                if 'sd' in gs.models:
+                                    gs.models['sd'].to('cpu')
+                                    del gs.models['sd']
+                                gs.system.sd_model_file = os.path.join(gs.system.models_path, value)
                         self.params.__dict__[name] = value
                     self.params.prompts = work_prompt
                     self.set_multi_dim_seed()
-                    self.run_it()
+                    self.run_it(image_callback=image_callback)
             else:
                 self.params.prompts = prompt
                 self.set_multi_dim_seed()
-                self.run_it()
+                self.run_it(image_callback=image_callback)
 
-    def run_deforum_six_txt2img(self, hiresinit = None, progress_callback=None, plotting=True, params=None):
+
+    def run_deforum_six_outpaint_txt2img(self, progress_callback=None):
+        self.run_deforum_six_txt2img(image_callback = self.parent.image_preview_signal_op)
+    def run_deforum_six_txt2img_img(self, progress_callback=None):
+        self.run_deforum_six_txt2img(image_callback = self.parent.image_preview_signal)
+
+    def run_deforum_six_txt2img(self, hiresinit=None, progress_callback=None, plotting=True, params=None, image_callback=None):
 
 
         gs.stop_all = False
@@ -435,7 +452,7 @@ class Deforum_UI(QObject):
         self.parent.make_grid = False
 
         if self.params.multi_dim_prompt:
-            self.multi_dim_loop()
+            self.multi_dim_loop(image_callback=image_callback)
 
         else:
 
@@ -470,7 +487,7 @@ class Deforum_UI(QObject):
                         if os.path.isdir(self.params.init_image) and self.params.animation_mode == 'None':
                             print('Batch Directory found')
                             self.params.max_frames = 2
-                    self.run_it()
+                    self.run_it(image_callback=image_callback)
                     #if plotting:
                     #    all_images.append(T.functional.pil_to_tensor(self.parent.image))
             """if plotting:

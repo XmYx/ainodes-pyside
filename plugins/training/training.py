@@ -669,4 +669,12 @@ class aiNodesPlugin:
             # Choose prior generation precision between fp32, fp16 and bf16 (bfloat16). Bf16 requires PyTorch >=
             # 1.10.and an Nvidia Ampere GPU.  Default to  fp16 if a GPU is available else fp32.
             local_rank=-1,                          # For distributed training: local_rank
-            enable_xformers_memory_efficient_attention=self.training.w.df_enable_xformers_memory_efficient_attention.isChecked())
+            enable_xformers_memory_efficient_attention=self.training.w.df_enable_xformers_memory_efficient_attention.isChecked(),
+            as_checkpoint=self.training.w.export_checkpoint.isChecked(),
+            as_safetensors=self.training.w.export_safetensors.isChecked(),
+            as_half=self.training.w.as_half.isChecked(),
+            ckpt_filename=self.training.w.checkpoint_filename.text()
+
+
+
+        )

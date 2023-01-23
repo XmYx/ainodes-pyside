@@ -6,6 +6,7 @@
 import argparse
 import os.path as osp
 
+import safetensors
 import torch
 
 
@@ -195,7 +196,7 @@ def convert_text_enc_state_dict(text_enc_dict):
     return text_enc_dict
 
 
-def convert_to_ckpt(model_path, checkpoint_path, as_half):
+def convert_to_ckpt(model_path, checkpoint_path, as_half, as_safetensor=False):
 
     assert model_path is not None, "Must provide a model path!"
 
@@ -229,4 +230,9 @@ def convert_to_ckpt(model_path, checkpoint_path, as_half):
     if as_half:
         state_dict = {k: v.half() for k, v in state_dict.items()}
     state_dict = {"state_dict": state_dict}
-    torch.save(state_dict, checkpoint_path)
+    if as_safetensor:
+        checkpoint_path = checkpoint_path + '.safetensors'
+        safetensors.torch.save_file(state_dict, checkpoint_path, metadata={"format": "pt"})
+    else:
+        checkpoint_path = checkpoint_path + '.ckpt'
+        torch.save(state_dict, checkpoint_path)

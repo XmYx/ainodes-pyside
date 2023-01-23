@@ -45,6 +45,7 @@ from torchvision import transforms
 from tqdm.auto import tqdm
 from transformers import AutoTokenizer, PretrainedConfig
 from backend.torch_gc import torch_gc
+from plugins.training.diffusers.cli_lora_add import convert_to_ckpt
 
 # Will error if the minimal version of diffusers is not installed. Remove at your own risks.
 check_min_version("0.10.0.dev0")
@@ -855,6 +856,12 @@ def main(args):
             repo.push_to_hub(commit_message="End of training", blocking=False, auto_lfs_prune=True)
 
     accelerator.end_training()
+    vae.to('cpu', dtype=weight_dtype)
+    unet.to('cpu', dtype=weight_dtype)
+    text_encoder.to('cpu', dtype=weight_dtype)
+    if pipeline:
+        pipeline.to('cpu')
+        del pipeline
     del accelerator
     del lr_scheduler
     del optimizer
@@ -863,18 +870,14 @@ def main(args):
     del params_to_optimize
     del tokenizer
     del text_encoder_cls
-
-    vae.to('cpu', dtype=weight_dtype)
-    unet.to('cpu', dtype=weight_dtype)
-    text_encoder.to('cpu', dtype=weight_dtype)
-    if pipeline:
-        pipeline.to('cpu')
-        del pipeline
     del noise_scheduler
     del text_encoder
     del vae
     del unet
     torch_gc
+    if args.as_checkpoint or args.as_safetensors:
+        output_path = os.path.join(args.output_dir, args.ckpt_filename)
+        convert_to_ckpt(args.output_dir, output_path, as_half=args.as_half, as_safetensor=args.as_safetensors)
 
 def run_diff_dreambooth(
         pretrained_model_name_or_path='',       # Path to pretrained model or model identifier from huggingface.co/models.
@@ -935,7 +938,11 @@ def run_diff_dreambooth(
                                                 # Choose prior generation precision between fp32, fp16 and bf16 (bfloat16). Bf16 requires PyTorch >=
                                                 # 1.10.and an Nvidia Ampere GPU.  Default to  fp16 if a GPU is available else fp32.
         local_rank=-1,                          # For distributed training: local_rank
-        enable_xformers_memory_efficient_attention=False): # Whether to use xformers.
+        enable_xformers_memory_efficient_attention=False,
+        as_checkpoint=True,
+        as_safetensors=False,
+        as_half=True,
+        ckpt_filename='checkpoint'): # Whether to use xformers.
     args=SimpleNamespace(**locals())
     main(args)
 

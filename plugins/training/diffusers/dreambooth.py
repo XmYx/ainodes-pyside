@@ -869,6 +869,7 @@ def main(args):
     text_encoder.to('cpu', dtype=weight_dtype)
     if pipeline:
         pipeline.to('cpu')
+        del pipeline
     del noise_scheduler
     del text_encoder
     del vae

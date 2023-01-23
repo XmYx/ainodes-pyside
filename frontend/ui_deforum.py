@@ -347,6 +347,11 @@ class Deforum_UI(QObject):
                             value = float(value)
                         if name in bool_vals:
                             value = bool(value)
+                        if name == 'sd_model_file':
+                            if 'sd' in gs.models:
+                                gs.models['sd'].to('cpu')
+                                del gs.models['sd']
+                            gs.sd_model_file = os.path.join(gs.system.models_path, value)
                         self.params.__dict__[name] = value
                     self.params.prompts = work_prompt
                     self.set_multi_dim_seed()

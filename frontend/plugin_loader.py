@@ -16,6 +16,7 @@ class PluginLoader():
         path = 'plugins'
         # Full paths would load with f.path
         plugins = [f.name for f in os.scandir(path) if f.is_dir()]
+        plugins.remove('__pycache__')
         return plugins
 
     def load_plugin(self, plugin_name):

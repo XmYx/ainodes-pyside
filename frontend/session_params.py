@@ -119,11 +119,11 @@ class SessionParams():
         negative_prompts = negative_prompts
 
         outdir = gs.system.txt2img_out_dir
-
+        use_mask = self.parent.widgets[widget].w.use_mask.isChecked()
         if self.parent.widgets[widget].w.max_frames.value() < 2:
             animation_mode = 'None'
 
-            use_mask = self.parent.widgets[widget].w.use_mask.isChecked()
+
             use_alpha_as_mask = self.parent.widgets[widget].w.use_alpha_as_mask_2.isChecked()
             mask_file = self.parent.widgets[widget].w.mask_file.text()
             invert_mask = self.parent.widgets[widget].w.invert_mask_2.isChecked()
@@ -202,7 +202,7 @@ class SessionParams():
             'exposure_scale': self.parent.widgets[widget].w.exposure_scale.value(),
             'exposure_target': self.parent.widgets[widget].w.exposure_target.value(),
             'colormatch_scale': self.parent.widgets[widget].w.colormatch_scale.value(),
-            'colormatch_image': None,  # if self.parent.widgets[widget].w.colormatch_image.text() == '' else self.parent.widgets[widget].w.colormatch_image.text()
+            'colormatch_image': None if self.parent.widgets[widget].w.colormatch_image.text() == '' else self.parent.widgets[widget].w.colormatch_image.text(),  # if self.parent.widgets[widget].w.colormatch_image.text() == '' else self.parent.widgets[widget].w.colormatch_image.text()
             'colormatch_n_colors': self.parent.widgets[widget].w.colormatch_n_colors.value(),
             'ignore_sat_weight': self.parent.widgets[widget].w.ignore_sat_weight.value(),
             'clip_name': self.parent.widgets[widget].w.clip_name.currentText(),  # @param ['ViT-L/14', 'ViT-L/14@336px', 'ViT-B/16', 'ViT-B/32']
@@ -212,7 +212,7 @@ class SessionParams():
             'cutn': int(self.parent.widgets[widget].w.cutn.value()),
             'cut_pow': self.parent.widgets[widget].w.cut_pow.value(),
             'init_mse_scale': self.parent.widgets[widget].w.init_mse_scale.value(),
-            'init_mse_image': None,  #if self.parent.widgets[widget].w.init_mse_image.text() == '' else self.parent.widgets[widget].w.init_mse_image.text()
+            'init_mse_image': None if self.parent.widgets[widget].w.init_mse_image.text() == '' else self.parent.widgets[widget].w.init_mse_image.text(),
             'blue_scale': self.parent.widgets[widget].w.blue_scale.value(),
             'gradient_wrt': self.parent.widgets[widget].w.gradient_wrt.currentText(),  # ["x", "x0_pred"]
             'gradient_add_to': self.parent.widgets[widget].w.gradient_add_to.currentText(),  # ["cond", "uncond", "both"]

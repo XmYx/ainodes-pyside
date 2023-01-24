@@ -50,7 +50,11 @@ class UniControl(QObject):
         self.w.select_input_video.clicked.connect(self.select_input_video)
         self.w.select_mask_video.clicked.connect(self.select_mask_video)
         self.w.select_init_image.clicked.connect(self.select_init_image)
-        self.w.select_mask_image.clicked.connect(self.select_init_image)
+        self.w.select_mask_image.clicked.connect(self.select_mask_image)
+        self.w.select_color_match_image.clicked.connect(self.select_color_match_image)
+        self.w.select_mse_init.clicked.connect(self.select_mse_init)
+        self.w.select_colormatch_preview.clicked.connect(self.select_colormatch_preview)
+
         self.w.negative_prompts.setVisible(False)
         self.init_anims()
         self.initAnim.start()
@@ -61,6 +65,18 @@ class UniControl(QObject):
     def select_init_image(self):
         filename = QFileDialog.getOpenFileName(caption='Select Init image', filter='Image (*.png *.jpg)')
         self.w.init_image.setText(filename[0])
+
+    def select_mse_init(self):
+        filename = QFileDialog.getOpenFileName(caption='Select mse image', filter='Image (*.png *.jpg)')
+        self.w.init_mse_image.setText(filename[0])
+
+    def select_colormatch_preview(self):
+        filename = QFileDialog.getOpenFileName(caption='Select colormatch preview', filter='Image (*.png *.jpg)')
+        self.w.colormatch_preview.setText(filename[0])
+
+    def select_color_match_image(self):
+        filename = QFileDialog.getOpenFileName(caption='Select colormatch image', filter='Image (*.png *.jpg)')
+        self.w.colormatch_image.setText(filename[0])
 
     def select_mask_image(self):
         filename = QFileDialog.getOpenFileName(caption='Select Init image', filter='Image (*.png *.jpg)')

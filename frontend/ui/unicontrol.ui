@@ -199,7 +199,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-1285</y>
             <width>682</width>
             <height>2864</height>
            </rect>
@@ -726,7 +726,7 @@
                      </widget>
                     </item>
                     <item row="3" column="2" colspan="2">
-                     <widget class="QLineEdit" name="lineEdit_2"/>
+                     <widget class="QLineEdit" name="colormatch_preview"/>
                     </item>
                     <item row="4" column="2" colspan="2">
                      <widget class="QLineEdit" name="init_mse_image"/>
@@ -851,7 +851,7 @@
                      </widget>
                     </item>
                     <item row="3" column="4">
-                     <widget class="QPushButton" name="pushButton_2">
+                     <widget class="QPushButton" name="select_colormatch_preview">
                       <property name="text">
                        <string>Edit Path / Url</string>
                       </property>

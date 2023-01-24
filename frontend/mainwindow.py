@@ -108,8 +108,6 @@ class MainWindow(QMainWindow):
         self.sessionparams.create_system_params()
 
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
-        #self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.timeline)
-        #self.tabifyDockWidget(self.timeline, self.thumbs.w.dockWidget)
 
         self.create_main_toolbar()
         self.create_secondary_toolbar()
@@ -139,7 +137,6 @@ class MainWindow(QMainWindow):
         self.model_download = ModelDownload(self)
         self.model_download_ui = self.model_download.model_download
         self.model_download.maintain_custom_models()
-        # self.model_chooser = ModelChooser_UI(self)
         self.widgets[self.current_widget].w.dockWidget.setWindowTitle("Parameters")
         self.system_setup.w.dockWidget.setWindowTitle("System Settings")
         self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
@@ -147,24 +144,18 @@ class MainWindow(QMainWindow):
         self.krea.w.dockWidget.setWindowTitle("Krea")
         self.prompt_fetcher.w.dockWidget.setWindowTitle("Prompt Fetcher")
         self.model_download_ui.w.dockWidget.setWindowTitle("Model Download")
-        #self.timeline.setWindowTitle("Timeline")
         self.thumbs.w.dockWidget.setWindowTitle("Outpaint rectangle history")
-
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.model_download_ui.w.dockWidget)
         self.model_download_ui.w.dockWidget.setMaximumHeight(self.height())
-
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.image_lab_ui.w.dockWidget)
         self.image_lab_ui.w.dockWidget.setMaximumHeight(self.height())
         self.tabifyDockWidget(self.model_download_ui.w.dockWidget, self.image_lab_ui.w.dockWidget)
-
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.system_setup.w.dockWidget)
         self.system_setup.w.dockWidget.setMaximumHeight(self.height())
         self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.system_setup.w.dockWidget)
-
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.lexicart.w.dockWidget)
         self.lexicart.w.dockWidget.setMaximumHeight(self.height())
         self.tabifyDockWidget(self.system_setup.w.dockWidget, self.lexicart.w.dockWidget)
-
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.krea.w.dockWidget)
         self.krea.w.dockWidget.setMaximumHeight(self.height())
         self.tabifyDockWidget(self.lexicart.w.dockWidget, self.krea.w.dockWidget)
@@ -345,8 +336,6 @@ class MainWindow(QMainWindow):
         cuda_info = ''
         mem_info = ''
         if torch.cuda.is_available():
-
-            print(torch.cuda.get_arch_list())
             device_count = torch.cuda.device_count()
             for i in range(device_count):
                 props = torch.cuda.get_device_properties(i)
@@ -392,25 +381,6 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
                 self.widgets[self.current_widget].w.ddim_eta_label.setVisible(True)
                 self.widgets[self.current_widget].w.ddim_eta.setVisible(True)
 
-    def show_model_preview_images(self, model):
-        for image in model['images']:
-            self.show_image_from_url(image['url'])
-
-
-    def show_image_from_url(self, url):
-        self.web_images.get_image(url)
-
-    def show_web_image_on_canvas(self, image_string):
-        try:
-            image = Image.open(BytesIO(image_string)).resize((512,512))
-            mode = image.mode
-            size = image.size
-            enc_image = base64.b64encode(image.tobytes()).decode()
-            self.deforum_ui.signals.txt2img_image_cb.emit(enc_image, mode, size)
-
-        except:
-            pass
-
 
     def select_new_model(self):
         if self.widgets[self.current_widget].w.preview_on_canvas.isChecked():
@@ -436,8 +406,6 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
             self.widgets[self.current_widget].w.selected_model.setToolTip('')
             self.widgets[self.current_widget].w.prompts.setPlaceholderText('Enter your prompt here')
 
-
-
     @Slot()
     def civitai_start_model_update_thread(self):
         worker = Worker(self.model_download.civit_ai_api.civitai_start_model_update)
@@ -448,9 +416,11 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
         worker = Worker(self.model_download.civit_ai_api.all_civitai_model_data_loaded)
         self.threadpool.start(worker)
 
-
     def task_switcher(self):
         gs.stop_all = False
+        if not self.widgets[self.current_widget].w.toggle_animations.isChecked():
+            self.widgets[self.current_widget].w.max_frames.setValue(0)
+
         save_last_prompt(self.widgets[self.current_widget].w.prompts.toHtml(),
                          self.widgets[self.current_widget].w.prompts.toPlainText())
         if self.widgets[self.current_widget].w.with_inpaint.isChecked() == True:
@@ -464,7 +434,6 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
                 self.deforum_ui.deforum_six_txt2img_outpaint_thread()
             else:
                 self.deforum_ui.deforum_six_txt2img_thread()
-
 
     def still_mode(self):
         pass
@@ -667,7 +636,6 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
 
         save_canvas_png.triggered.connect(self.canvas.canvas.save_canvas)
 
-
     def hide_default(self):
         self.toolbar.setVisible(False)
         self.secondary_toolbar.setVisible(False)
@@ -760,113 +728,33 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
         gs.diffusion.prompt = data
         self.widgets[self.current_widget].w.prompts.setHtml(data)
 
+    def show_model_preview_images(self, model):
+        for image in model['images']:
+            self.show_image_from_url(image['url'])
+
+    def show_image_from_url(self, url):
+        self.web_images.get_image(url)
+
+    def show_web_image_on_canvas(self, image_string):
+        try:
+            gs.temppath = ''
+            self.params.max_frames = 0
+            image = Image.open(BytesIO(image_string)).resize((512,512))
+            mode = image.mode
+            size = image.size
+            enc_image = base64.b64encode(image.tobytes()).decode()
+            self.deforum_ui.signals.txt2img_image_cb.emit(enc_image, mode, size)
+
+        except:
+            pass
+
+
     def image_preview_signal(self, image, *args, **kwargs):
         mode = image.mode
         size = image.size
         enc_image = base64.b64encode(image.tobytes()).decode()
         self.deforum_ui.signals.txt2img_image_cb.emit(enc_image, mode, size)
         self.signals.image_ready.emit()
-
-
-    def image_preview_signal_op(self, image, *args, **kwargs):
-        mode = image.mode
-        size = image.size
-        enc_image = base64.b64encode(image.tobytes()).decode()
-        self.outpaint.signals.txt2img_image_op.emit(enc_image, mode, size)
-        self.signals.image_ready.emit()
-
-
-    @Slot()
-    def image_preview_func_str(self, image, mode, size):
-        decoded_image = base64.b64decode(image.encode())
-        self.image_preview_func(Image.frombytes(mode, size, decoded_image))
-
-    @Slot()
-    def image_preview_func_str_op(self, image, mode, size):
-        decoded_image = base64.b64decode(image.encode())
-        self.image_preview_func_op(Image.frombytes(mode, size, decoded_image))
-
-    @Slot()
-    def render_index_image_preview_func_str(self, image, mode, size, render_index):
-        decoded_image = base64.b64decode(image.encode())
-        self.render_index_image_preview_func(Image.frombytes(mode, size, decoded_image), render_index)
-
-    @Slot()
-    def render_index_image_preview_func(self, image=None, render_index=None):
-
-        img = image
-        if self.outpaint.batch_process == 'run_hires_batch':
-            self.outpaint.last_batch_image = img
-        if self.params.advanced == True:
-            if self.canvas.canvas.rectlist != []:
-                if img is not None:
-                    if self.canvas.canvas.rectlist[render_index].images is not None:
-                        templist = self.canvas.canvas.rectlist[render_index].images
-                    else:
-                        templist = []
-                    self.canvas.canvas.rectlist[render_index].PILImage = img
-                    qimage = ImageQt(img.convert("RGBA"))
-                    pixmap = QPixmap.fromImage(qimage)
-                    print(self.canvas.canvas.rectlist[render_index].render_index)
-                    self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap),
-                                                                     f"{self.canvas.canvas.rectlist[render_index].render_index}"))
-
-                    if self.canvas.canvas.anim_inpaint == True:
-                        templist[self.canvas.canvas.rectlist[render_index].render_index] = qimage
-                        self.canvas.canvas.anim_inpaint = False
-                    elif self.canvas.canvas.anim_inpaint == False:
-                        templist.append(qimage)
-                        if self.canvas.canvas.rectlist[render_index].render_index == None:
-                            self.canvas.canvas.rectlist[render_index].render_index = 0
-                        else:
-                            self.canvas.canvas.rectlist[render_index].render_index += 1
-                    self.canvas.canvas.rectlist[render_index].images = templist
-                    self.canvas.canvas.rectlist[render_index].image = \
-                        self.canvas.canvas.rectlist[render_index].images[
-                            self.canvas.canvas.rectlist[render_index].render_index]
-                    self.canvas.canvas.rectlist[render_index].timestring = time.time()
-                    self.canvas.canvas.rectlist[render_index].img_path = gs.temppath
-                self.canvas.canvas.newimage = True
-                self.canvas.canvas.update()
-                self.canvas.canvas.redraw()
-                del qimage
-                del pixmap
-        elif self.params.advanced == False:
-
-            if img is not None:
-                image = img
-                h, w = image.size
-                self.add_next_rect(h, w)
-                render_index = len(self.canvas.canvas.rectlist) - 1
-
-                # for items in self.canvas.canvas.rectlist:
-                #    if items.id == self.canvas.canvas.render_item:
-                if self.canvas.canvas.rectlist[render_index].images is not None:
-                    templist = self.canvas.canvas.rectlist[render_index].images
-                else:
-                    templist = []
-                self.canvas.canvas.rectlist[render_index].PILImage = image
-                qimage = ImageQt(image.convert("RGBA"))
-                templist.append(qimage)
-                self.canvas.canvas.rectlist[render_index].images = templist
-                if self.canvas.canvas.rectlist[render_index].render_index == None:
-                    self.canvas.canvas.rectlist[render_index].render_index = 0
-                else:
-                    self.canvas.canvas.rectlist[render_index].render_index += 1
-                self.canvas.canvas.rectlist[render_index].image = self.canvas.canvas.rectlist[render_index].images[self.canvas.canvas.rectlist[render_index].render_index]
-                self.canvas.canvas.rectlist[render_index].timestring = time.time()
-                self.canvas.canvas.rectlist[render_index].params = self.params
-        self.canvas.canvas.newimage = True
-        self.canvas.canvas.redraw()
-        self.canvas.canvas.update()
-
-        if self.params.advanced == False and self.params.max_frames > 1:
-            self.params.advanced = True
-
-        if self.make_grid:
-            self.all_images.append(T.functional.pil_to_tensor(image))
-
-
     @Slot()
     def image_preview_func(self, image=None):
 
@@ -951,6 +839,100 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
 
         if self.make_grid:
             self.all_images.append(T.functional.pil_to_tensor(image))
+
+    @Slot()
+    def image_preview_func_str(self, image, mode, size):
+        decoded_image = base64.b64decode(image.encode())
+        self.image_preview_func(Image.frombytes(mode, size, decoded_image))
+    @Slot()
+    def render_index_image_preview_func_str(self, image, mode, size, render_index):
+        decoded_image = base64.b64decode(image.encode())
+        self.render_index_image_preview_func(Image.frombytes(mode, size, decoded_image), render_index)
+    @Slot()
+    def render_index_image_preview_func(self, image=None, render_index=None):
+
+        img = image
+        if self.outpaint.batch_process == 'run_hires_batch':
+            self.outpaint.last_batch_image = img
+        if self.params.advanced == True:
+            if self.canvas.canvas.rectlist != []:
+                if img is not None:
+                    if self.canvas.canvas.rectlist[render_index].images is not None:
+                        templist = self.canvas.canvas.rectlist[render_index].images
+                    else:
+                        templist = []
+                    self.canvas.canvas.rectlist[render_index].PILImage = img
+                    qimage = ImageQt(img.convert("RGBA"))
+                    pixmap = QPixmap.fromImage(qimage)
+                    print(self.canvas.canvas.rectlist[render_index].render_index)
+                    self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap),
+                                                                     f"{self.canvas.canvas.rectlist[render_index].render_index}"))
+
+                    if self.canvas.canvas.anim_inpaint == True:
+                        templist[self.canvas.canvas.rectlist[render_index].render_index] = qimage
+                        self.canvas.canvas.anim_inpaint = False
+                    elif self.canvas.canvas.anim_inpaint == False:
+                        templist.append(qimage)
+                        if self.canvas.canvas.rectlist[render_index].render_index == None:
+                            self.canvas.canvas.rectlist[render_index].render_index = 0
+                        else:
+                            self.canvas.canvas.rectlist[render_index].render_index += 1
+                    self.canvas.canvas.rectlist[render_index].images = templist
+                    self.canvas.canvas.rectlist[render_index].image = \
+                        self.canvas.canvas.rectlist[render_index].images[
+                            self.canvas.canvas.rectlist[render_index].render_index]
+                    self.canvas.canvas.rectlist[render_index].timestring = time.time()
+                    self.canvas.canvas.rectlist[render_index].img_path = gs.temppath
+                self.canvas.canvas.newimage = True
+                self.canvas.canvas.update()
+                self.canvas.canvas.redraw()
+                del qimage
+                del pixmap
+        elif self.params.advanced == False:
+
+            if img is not None:
+                image = img
+                h, w = image.size
+                self.add_next_rect(h, w)
+                render_index = len(self.canvas.canvas.rectlist) - 1
+
+                # for items in self.canvas.canvas.rectlist:
+                #    if items.id == self.canvas.canvas.render_item:
+                if self.canvas.canvas.rectlist[render_index].images is not None:
+                    templist = self.canvas.canvas.rectlist[render_index].images
+                else:
+                    templist = []
+                self.canvas.canvas.rectlist[render_index].PILImage = image
+                qimage = ImageQt(image.convert("RGBA"))
+                templist.append(qimage)
+                self.canvas.canvas.rectlist[render_index].images = templist
+                if self.canvas.canvas.rectlist[render_index].render_index == None:
+                    self.canvas.canvas.rectlist[render_index].render_index = 0
+                else:
+                    self.canvas.canvas.rectlist[render_index].render_index += 1
+                self.canvas.canvas.rectlist[render_index].image = self.canvas.canvas.rectlist[render_index].images[self.canvas.canvas.rectlist[render_index].render_index]
+                self.canvas.canvas.rectlist[render_index].timestring = time.time()
+                self.canvas.canvas.rectlist[render_index].params = self.params
+        self.canvas.canvas.newimage = True
+        self.canvas.canvas.redraw()
+        self.canvas.canvas.update()
+
+        if self.params.advanced == False and self.params.max_frames > 1:
+            self.params.advanced = True
+
+        if self.make_grid:
+            self.all_images.append(T.functional.pil_to_tensor(image))
+
+    def image_preview_signal_op(self, image, *args, **kwargs):
+        mode = image.mode
+        size = image.size
+        enc_image = base64.b64encode(image.tobytes()).decode()
+        self.outpaint.signals.txt2img_image_op.emit(enc_image, mode, size)
+        self.signals.image_ready.emit()
+    @Slot()
+    def image_preview_func_str_op(self, image, mode, size):
+        decoded_image = base64.b64decode(image.encode())
+        self.image_preview_func_op(Image.frombytes(mode, size, decoded_image))
 
     @Slot()
     def image_preview_func_op(self, image=None):
@@ -1043,6 +1025,7 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
 
         if self.make_grid:
             self.all_images.append(T.functional.pil_to_tensor(image))
+
     def add_next_rect(self, h, w):
         #w = self.widgets[self.current_widget].w.W.value()
         #h = self.widgets[self.current_widget].w.H.value()
@@ -1121,7 +1104,6 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
         except:
             pass
 
-
     def is_multiple_of_512(num):
         if num % 512 == 0:
             return True
@@ -1136,8 +1118,6 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
             return lower_multiple
         else:
             return upper_multiple
-
-
 
     # not used ???
     def prep_rect_params_(self, prompt=None):

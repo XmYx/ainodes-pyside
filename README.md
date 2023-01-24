@@ -20,13 +20,15 @@ To install, please make sure you have python 3.10 on your system, then download 
 
 https://www.python.org/downloads/release/python-3101/
 
-https://github.com/XmYx/ainodes-installer
+For now we are back to a install batch file
 
-- run start.bat
-- press install all
-- restart launcher
-- download a vanilla SD models (optional)
-- press start aiNodes
+for a first or clean install please do:
+
+open a conda prompt
+run clean_install.bat   (this will delete an existing ai-nodes env and rebuild a new one for rtx3xxx cards xformers should just work, rtx2xxx might run into issues)
+clean_install will install everything and then start aiNodes
+
+any further start can be made by start.bat it will just fire up the app and do not do any updates.
 
 F.A.Q:
 

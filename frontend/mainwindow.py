@@ -203,7 +203,7 @@ class MainWindow(QMainWindow):
         self.make_grid = False
         self.all_images = []
         self.advanced_temp = False
-        print(torch.cuda.get_arch_list())
+        self.gpu_info()
 
 
 
@@ -339,6 +339,39 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.signals.draw_tempRects.connect(self.draw_tempRects_signal)
         self.signals.status_update.connect(self.set_status_bar)
         self.signals.image_loaded.connect(self.render_index_image_preview_func_str)
+        self.system_setup.w.update_gpu_stats.clicked.connect(self.gpu_info)
+
+    def gpu_info(self):
+        cuda_info = ''
+        mem_info = ''
+        if torch.cuda.is_available():
+
+            print(torch.cuda.get_arch_list())
+            device_count = torch.cuda.device_count()
+            for i in range(device_count):
+                props = torch.cuda.get_device_properties(i)
+                cuda_info = f"""{cuda_info}GPU number: {i}
+{props.name}
+total_memory: {props.total_memory/(1024*1024)}MB                
+multiprocessor count: {props.multi_processor_count}
+major: {props.major}
+minor: {props.minor}
+arch list: {torch.cuda.get_arch_list()}
+allocated_memory: {torch.cuda.memory_allocated()}
+max_allocated_memory: {torch.cuda.max_memory_allocated()}
+"""
+                mem_info = f"""{mem_info}GPU number: {i}\n"""
+                memory_stats = torch.cuda.memory_stats()
+                for key in gs.models:
+                    mem_info = mem_info + f"model {key}: {int(torch.cuda.memory_allocated(gs.models[key])/(1024*1024))}MB\n"
+                for key, value in memory_stats.items():
+                    mem_info = mem_info + f"{key}: {value}\n"
+            mem_info = mem_info + '\n'
+        else:
+            cuda_info = 'CUDA is not available.'
+        self.system_setup.w.gpu_info.setPlainText(cuda_info)
+        self.system_setup.w.gpu_stats.setPlainText(mem_info)
+
 
     def run_redraw(self):
         self.canvas.canvas.redraw_signal()

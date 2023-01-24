@@ -88,7 +88,7 @@ class aiNodesPlugin():
         #subprocess.Popen(cmd)
         cmd = ["pip", "install", "sk-video", "--upgrade"]
         subprocess.Popen(cmd)
-        sshFile = "frontend/style/QTDark.stylesheet"
+        sshFile = "frontend/style/elegantDark.stylesheet"
         self.widget = WebcamWidget()
         self.widget.setWindowTitle("Webcam Diffusion")
         with open(sshFile, "r") as fh:

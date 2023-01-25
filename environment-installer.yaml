@@ -5,10 +5,11 @@ channels:
 dependencies:
   - python=3.10
   - pip 22.2.2
-  - cudatoolkit=11.3
-  - pytorch=1.12.1
-  - torchvision=0.13.1
+  - cudatoolkit=11.7
+  - pytorch=1.13.1
+  - torchvision=0.14.1
   - numpy=1.23.1
+  - xformers=0.0.16rc425
   - pip:
         - PySide6
         - shiboken6

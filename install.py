@@ -5,7 +5,7 @@ import sys
 import importlib.util
 import shlex
 import platform
-
+import ctypes
 
 dir_repos = "src"
 python = sys.executable
@@ -107,7 +107,7 @@ def version_check(commit):
 
         
 def prepare_enviroment():
-    torch_command = os.environ.get('TORCH_COMMAND', "pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113")
+    torch_command = os.environ.get('TORCH_COMMAND', "pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117")
     requirements_file = os.environ.get('REQS_FILE', "requirements_versions.txt")
     commandline_args = os.environ.get('COMMANDLINE_ARGS', "")
 
@@ -115,7 +115,7 @@ def prepare_enviroment():
     clip_package = os.environ.get('CLIP_PACKAGE', "git+https://github.com/openai/CLIP.git@d50d76daa670286dd6cacf3bcd80b5e4823fc8e1")
     deepdanbooru_package = os.environ.get('DEEPDANBOORU_PACKAGE', "git+https://github.com/KichangKim/DeepDanbooru.git@d91a2963bf87c6a770d74894667e9ffa9f6de7ff")
 
-    xformers_windows_package = os.environ.get('XFORMERS_WINDOWS_PACKAGE', 'https://github.com/C43H66N12O12S2/stable-diffusion-webui/releases/download/f/xformers-0.0.14.dev0-cp310-cp310-win_amd64.whl')
+    xformers_windows_package = os.environ.get('XFORMERS_WINDOWS_PACKAGE', 'https://github.com/C43H66N12O12S2/stable-diffusion-webui/releases/download/torch13/xformers-0.0.14.dev0-cp310-cp310-win_amd64.whl')
 
     stable_diffusion_repo = os.environ.get('STABLE_DIFFUSION_REPO', "https://github.com/CompVis/stable-diffusion.git")
     taming_transformers_repo = os.environ.get('TAMING_REANSFORMERS_REPO', "https://github.com/CompVis/taming-transformers.git")
@@ -161,9 +161,16 @@ def prepare_enviroment():
 
     print(f"Python {sys.version}")
     print(f"Commit hash: {commit}")
-    
-    if not is_installed("torch") or not is_installed("torchvision"):
-        run(f'"{python}" -m {torch_command}', "Installing torch and torchvision", "Couldn't install torch")
+
+    #if not is_installed("torch") or not is_installed("torchvision") or not torch.cuda.is_available():
+    try:
+        cudart = ctypes.CDLL('cudart')
+        cudart.cudaGetDeviceCount.restype = int
+        cudart.cudaGetDeviceCount()
+    except:
+        print('your version of torch is not cuda enabled, therefore we now enforce a cuda enabled version of torch')
+        run(f'"{python}" -m {torch_command}', f"Installing torch and torchvision", "Couldn't install torch")
+
 
     if not skip_torch_cuda_test:
         run_python("import torch; assert torch.cuda.is_available(), 'Torch is not able to use GPU; add --skip-torch-cuda-test to COMMANDLINE_ARGS variable to disable this check'")
@@ -180,7 +187,6 @@ def prepare_enviroment():
                 run_pip(f"install -U -I --no-deps {xformers_windows_package}", "xformers")
             else:
                 print("Installation of xformers is not supported in this version of Python.")
-                print("You can also check this and build manually: https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Xformers#building-xformers-on-windows-by-duckness")
                 #if not is_installed("xformers"):
                 #    exit(0)
         elif platform.system() == "Linux":

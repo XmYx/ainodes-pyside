@@ -126,3 +126,4 @@ fire>=0.5.0
 test-tube
 datasets
 bitsandbytes
+xformers==0.0.16rc425

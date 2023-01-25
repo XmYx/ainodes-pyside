@@ -323,7 +323,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
     def model_merge_start(self, progress_callback=None):
 
         model_2 = None if self.imageLab.w.modelCpath.text() == '' else self.imageLab.w.modelCpath.text()
-        interp_method=self.imageLab.w.merge_mode.currentText()
+        #interp_method=self.imageLab.w.merge_mode.currentText()
         if self.imageLab.w.modelCpath.text() != '':
             interp_method = 'Add difference'
         else:

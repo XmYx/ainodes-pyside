@@ -35,3 +35,7 @@ F.A.Q:
 1. I have the following error: RuntimeError: failed to find interpreter for Builtin discover of python_spec='python3.10'
 Solution: Please make sure you have Python version 3.10 installed on your system and added to your PATH, or in your conda environment you are running the launcher from.
 https://realpython.com/add-python-to-path/
+2. I have an access denied error when downloading the files from huggingface to the user\.cache folder
+Solution can be to rename the existing folder to allow creating a new one, delete the existing one is kind the same but more agressive
+also you can use 
+

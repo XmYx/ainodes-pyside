@@ -1,29 +1,112 @@
+import codecs
 import os
 import re
 import shutil
-import codecs
-from types import SimpleNamespace
 
 from PIL import Image
-from PySide6 import QtUiTools, QtCore, QtWidgets, QtGui
-from PySide6.QtCore import QObject, QFile, Signal, Slot
-from PySide6.QtWidgets import QFileDialog
+from PIL.ImageQt import ImageQt
+from PySide6 import QtUiTools, QtCore, QtWidgets
+from PySide6.QtCore import QObject, QFile, Signal, Slot, Qt, QPointF, QRect
+from PySide6.QtGui import QPainter, QPixmap, QImage, QMouseEvent, QPen, QBrush
+from PySide6.QtWidgets import QFileDialog, QGraphicsView, QGraphicsRectItem, QGraphicsItem, QGraphicsScene
 
-from backend.modelloader import load_upscaler
-from backend.singleton import singleton
-from backend.upscale import Upscale
-from backend.img2ascii import to_ascii
-from backend.watermark import add_watermark
-from backend.modelmerge import merge_models, merge_ebl_model
-from backend.aestetics_score import get_aestetics_score
 import backend.interrogate
+from backend.aestetics_score import get_aestetics_score
 from backend.guess_prompt import get_prompt_guess_img
 from backend.hypernetworks.modules import images
+from backend.img2ascii import to_ascii
+from backend.modelloader import load_upscaler
+from backend.modelmerge import merge_models
 from backend.sdv2.superresolution import run_sr
+from backend.singleton import singleton
+from backend.upscale import Upscale
+from backend.watermark import add_watermark
+
 #from volta_accelerate import convert_to_onnx, convert_to_trt
 gs = singleton
 
 interrogator = backend.interrogate.InterrogateModels("interrogate")
+
+class MoveableRect(QGraphicsRectItem):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setFlag(QGraphicsItem.ItemIsMovable, True)
+        self.setAcceptedMouseButtons(Qt.RightButton)
+        self.setCursor(Qt.OpenHandCursor)
+        self.drag_start = QPointF()
+
+class CheckerBoardScene(QtWidgets.QGraphicsScene):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setBackgroundBrush(QBrush(self.create_checker_board()))
+
+    def create_checker_board(self):
+        checker_board = QImage(64, 64, QImage.Format_RGB32)
+        checker_board.fill(Qt.white)
+        painter = QPainter(checker_board)
+        painter.fillRect(0, 0, 32, 32, Qt.lightGray)
+        painter.fillRect(32, 32, 32, 32, Qt.lightGray)
+        return checker_board
+class CropImageView(QGraphicsView):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setUpdatesEnabled(True)
+        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.setRenderHint(QPainter.Antialiasing)
+        self.setRenderHint(QPainter.SmoothPixmapTransform)
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.setOptimizationFlag(QGraphicsView.DontAdjustForAntialiasing, True)
+        self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
+        self.setRenderHint(QPainter.TextAntialiasing)
+        self.setRenderHint(QPainter.SmoothPixmapTransform)
+        self._drag_start = None
+        self.is_rect_clicked = False
+        self.crop_rect = None
+
+    def update_rubber_band_(self):
+        if self.crop_rect:
+            rect = self.crop_rect.rect()
+            scale = self.viewportTransform().m11()
+            self.crop_rect.setGeometry(rect.x() / scale, rect.y() / scale, rect.width() / scale, rect.height() / scale)
+
+    def add_image(self, image):
+        self.scene.addItem(image)
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._drag_start = event.pos()
+        if event.button() == Qt.RightButton:
+            self._drag_rect_start = event.pos()
+        self.setCursor(Qt.ClosedHandCursor)
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() & Qt.LeftButton:
+            if self._drag_start:
+                offset = self._drag_start - event.pos()
+                self.setSceneRect(self.sceneRect().translated(offset.x(), offset.y()))
+                self._drag_start = event.pos()
+
+        if event.buttons() & Qt.RightButton:
+            d = event.pos() - self._drag_rect_start
+            self.crop_rect.moveBy(d.x(), d.y())
+            self._drag_rect_start = event.pos()
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._drag_start = None
+            self.is_rect_clicked = False
+            self.setCursor(Qt.OpenHandCursor)
+        if event.button() == Qt.RightButton:
+            self.setCursor(Qt.OpenHandCursor)
+
+    def wheelEvent(self, event):
+        zoom_in = event.angleDelta().y() > 0
+        factor = 1.2 if zoom_in else 1/1.2
+        self.scale(factor, factor)
+
+
 
 class ImageLab_ui(QObject):
 
@@ -81,6 +164,9 @@ class Callbacks(QObject):
     run_volta_accel = Signal()
     run_upscale_20 = Signal()
     image_text_ready = Signal(str)
+    crop_image = Signal()
+    show_crop_image = Signal()
+    set_crop_image_scale = Signal()
 
 class ImageLab():  # for signaling, could be a QWidget  too
 
@@ -107,7 +193,95 @@ class ImageLab():  # for signaling, could be a QWidget  too
         self.imageLab.w.run_interrogation.clicked.connect(self.signal_run_interrogation)
         self.imageLab.w.upscale_20.clicked.connect(self.run_upscale_20)
         self.imageLab.w.select_watermark_output_folder.clicked.connect(self.set_watermark_output_folder)
+        self.imageLab.w.set_crop_image_scale.clicked.connect(self.set_crop_image_scale_signal)
+        self.imageLab.w.crop.clicked.connect(self.crop)
+        self.imageLab.w.crop_size.currentIndexChanged.connect(self.set_crop_image_scale_signal)
+        self.imageLab.w.next_image.clicked.connect(self.show_next_crop_image)
+        self.prepare_cop_area()
 
+    def prepare_cop_area(self):
+        self.graphics_view = CropImageView()
+        self.imageLab.w.crop_layout.addWidget(self.graphics_view)
+        self.current_crop_index = 0
+    def crop(self):
+        self.signals.crop_image.emit()
+    def crop_image(self):
+        image = Image.open(self.fileList[self.current_crop_index])
+        width, height = image.size
+        scale_factor = self.imageLab.w.image_scale.value() / 100
+        image = image.resize((int(width * scale_factor), int(height * scale_factor)), resample=Image.LANCZOS)
+        rect = self.graphics_view.crop_rect.sceneBoundingRect()
+        rect = QRect(rect.x(), rect.y(), rect.width(), rect.height())
+        cropped_im = image.crop((rect.x(), rect.y(), rect.x() + rect.width(), rect.y() + rect.height()))
+        crop_size = self.get_crop_size()
+        cropped_im.resize((int(crop_size), int(crop_size)), resample=Image.LANCZOS)
+
+        root, _ = os.path.splitext(self.fileList[self.current_crop_index])
+
+        cropped_im.save(root + '_cropped.png')
+    def show_next_image(self):
+        # Open the next image in the list
+        image = QImage(self.images[self.current_index])
+
+        # Create a QPixmap from the QImage
+        pixmap = QPixmap.fromImage(image)
+
+        # Set the pixmap to be displayed in the QLabel
+        self.image_label.setPixmap(pixmap)
+
+    def show_next_crop_image(self):
+        if self.current_crop_index < len(self.fileList) - 1:
+            self.current_crop_index += 1
+            self.signals.show_crop_image.emit()
+        else:
+            self.parent.signals.status_update.emit('No more Images to crop')
+
+    def get_crop_size(self):
+        crop_size = 512
+        if self.imageLab.w.crop_size.currentText() == '768x768':
+            crop_size = 768
+        elif self.imageLab.w.crop_size.currentText() == '1024x1024':
+            crop_size = 1024
+        return crop_size
+
+    def create_crop_rect(self):
+        crop_size = self.get_crop_size()
+        self.graphics_view.crop_rect = MoveableRect(0, 0, crop_size, crop_size)
+        self.graphics_view.crop_rect.setPen(QPen(Qt.red, 2))
+        self.graphics_view.scene().addItem(self.graphics_view.crop_rect)
+
+
+    def show_crop_image(self):
+        image = QPixmap(self.fileList[self.current_crop_index])
+        self.graphics_view.crop_rect = None
+        self.graphics_view.setScene(QGraphicsScene())
+        self.graphics_view.scene().addPixmap(image)
+        self.graphics_view.setRenderHint(QPainter.Antialiasing)
+        self.graphics_view.setRenderHint(QPainter.SmoothPixmapTransform)
+        self.graphics_view.fitInView(self.graphics_view.sceneRect(), Qt.KeepAspectRatio)
+        self.graphics_view.update()
+        self.create_crop_rect()
+
+    def set_crop_image_scale_signal(self):
+        self.signals.set_crop_image_scale.emit()
+    def set_crop_image_scale(self):
+
+        im = Image.open(self.fileList[self.current_crop_index])
+        width, height = im.size
+        scale_factor = self.imageLab.w.image_scale.value() / 100
+
+        im = im.resize((int(width * scale_factor), int(height * scale_factor)), resample=Image.LANCZOS)
+        self.graphics_view.setScene(QGraphicsScene())
+        self.graphics_view.scene().addPixmap(QPixmap.fromImage(ImageQt(im)))
+        self.graphics_view.setRenderHint(QPainter.Antialiasing)
+        self.graphics_view.setRenderHint(QPainter.SmoothPixmapTransform)
+        self.graphics_view.fitInView(self.graphics_view.sceneRect(), Qt.KeepAspectRatio)
+        self.create_crop_rect()
+
+
+    def resize_image(self, image, new_size):
+        image = image.resize(new_size, Image.LANCZOS)
+        return image
 
     @Slot()
     def run_upscale_20_thread(self):
@@ -359,7 +533,10 @@ class ImageLab():  # for signaling, could be a QWidget  too
             elif os.path.isfile(path):
                 self.dropWidget.insertItem(0, path)
                 self.fileList.append(path)
-        self.imageLab.w.filesCount.display(str(len(self.fileList)))
+        if len(self.fileList) > 0:
+            self.imageLab.w.filesCount.display(str(len(self.fileList)))
+            self.current_crop_index = 0
+            self.signals.show_crop_image.emit()
 
     def upscale_count(self, num):
         pass

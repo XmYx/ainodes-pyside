@@ -301,6 +301,10 @@ class MainWindow(QMainWindow):
         self.image_lab.signals.run_interrogation.connect(self.image_lab.run_interrogation_thread)
         self.image_lab.signals.run_volta_accel.connect(self.image_lab.run_volta_accel_thread)
         self.image_lab.signals.run_upscale_20.connect(self.image_lab.run_upscale_20_thread)
+        self.image_lab.signals.crop_image.connect(self.image_lab.crop_image)
+        self.image_lab.signals.show_crop_image.connect(self.image_lab.show_crop_image)
+        self.image_lab.signals.set_crop_image_scale.connect(self.image_lab.set_crop_image_scale)
+
 
         self.prompt_fetcher_ui.signals.run_ai_prompt.connect(self.ai_prompt_thread)
         self.prompt_fetcher_ui.signals.run_img_to_prompt.connect(self.prompt_fetcher_ui.image_to_prompt_thread)

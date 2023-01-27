@@ -39,11 +39,31 @@
      </property>
      <widget class="QWidget" name="dockWidgetContents">
       <layout class="QGridLayout" name="gridLayout_8">
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Files</string>
+       <item row="0" column="0" colspan="2">
+        <widget class="QWidget" name="widget" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>100</height>
+          </size>
          </property>
+         <layout class="QVBoxLayout" name="dropZone">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+         </layout>
         </widget>
        </item>
        <item row="2" column="0" colspan="2">
@@ -82,10 +102,10 @@
              <bool>true</bool>
             </property>
             <property name="toolTip">
-             <string>Is taking a lot of memory, maybe not usefull right now. It does need more that 24GB VRam to upscale a 512x512 image. So you have to use much smaler source images to getz it working on a RTX3090 orRTX 4090</string>
+             <string/>
             </property>
             <property name="currentIndex">
-             <number>5</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="imgToTxt">
              <attribute name="title">
@@ -159,6 +179,159 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab">
+             <attribute name="title">
+              <string>Image Crop</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_9">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <property name="horizontalSpacing">
+               <number>2</number>
+              </property>
+              <property name="verticalSpacing">
+               <number>3</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QScrollArea" name="scrollArea">
+                <property name="widgetResizable">
+                 <bool>true</bool>
+                </property>
+                <widget class="QWidget" name="scrollAreaWidgetContents">
+                 <property name="geometry">
+                  <rect>
+                   <x>0</x>
+                   <y>0</y>
+                   <width>442</width>
+                   <height>328</height>
+                  </rect>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_10">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
+                  <item row="1" column="2">
+                   <widget class="QSpinBox" name="image_scale">
+                    <property name="maximum">
+                     <number>1000</number>
+                    </property>
+                    <property name="value">
+                     <number>100</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="2" colspan="2">
+                   <widget class="QLineEdit" name="image_size"/>
+                  </item>
+                  <item row="0" column="1" colspan="3">
+                   <widget class="QFrame" name="crop_area">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QGridLayout" name="crop_layout">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="3">
+                   <widget class="QPushButton" name="set_crop_image_scale">
+                    <property name="text">
+                     <string>Set scale</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QPushButton" name="next_image">
+                    <property name="text">
+                     <string>Next image</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="label_12">
+                    <property name="text">
+                     <string>Image Scale</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="3">
+                   <widget class="QComboBox" name="crop_size">
+                    <item>
+                     <property name="text">
+                      <string>512x512</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>768x768</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>1024x1024</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="2" column="2">
+                   <widget class="QLabel" name="label_28">
+                    <property name="text">
+                     <string>Crop size</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QPushButton" name="crop">
+                    <property name="text">
+                     <string>Crop</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -772,12 +945,12 @@
                <widget class="QComboBox" name="device">
                 <item>
                  <property name="text">
-                  <string>cuda</string>
+                  <string>cpu</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>cpu</string>
+                  <string>cuda</string>
                  </property>
                 </item>
                 <item>
@@ -829,6 +1002,9 @@
              </layout>
             </widget>
             <widget class="QWidget" name="upscale_2_0">
+             <property name="toolTip">
+              <string>Is taking a lot of memory, maybe not usefull right now. It does need more that 24GB VRam to upscale a 512x512 image. So you have to use much smaler source images to getz it working on a RTX3090 orRTX 4090</string>
+             </property>
              <attribute name="title">
               <string>Upscale 2.0</string>
              </attribute>
@@ -1022,35 +1198,15 @@ hr { height: 1px; border-width: 0; }
          </layout>
         </widget>
        </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QWidget" name="widget" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>100</height>
-          </size>
-         </property>
-         <layout class="QVBoxLayout" name="dropZone">
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-         </layout>
-        </widget>
-       </item>
        <item row="1" column="1">
         <widget class="QLCDNumber" name="filesCount"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Files</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

@@ -9,7 +9,8 @@ dependencies:
   - pytorch=1.13.1
   - torchvision=0.14.1
   - numpy=1.23.1
-  - xformers=0.0.16rc425
+
   - pip:
         - PySide6
         - shiboken6
+        - xformers==0.0.16rc425

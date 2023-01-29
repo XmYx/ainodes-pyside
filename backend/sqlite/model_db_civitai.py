@@ -81,7 +81,7 @@ class civit_ai_api:
                 cursor.close()
                 model_db_con.close()
         else:
-            print('error: ', er)
+            print('Error update the model Data, thats no big deal, next time you run the UI we try again: ', er)
         if self.next_models_link is not None:
             req = QtNetwork.QNetworkRequest(QtCore.QUrl(self.next_models_link))
             self.nam.get(req)

@@ -12,21 +12,31 @@ Colab API Server added with limited functionality
 
 Please join our Discord for further information: https://discord.gg/XDQm9pk5pd
 
-https://www.patreon.com/ainodes
-
 Welcome to aiNodes, a desktop GUI with Deforum Art, Outpaint, Upscalers, and many more.
 
-To install, please make sure you have python 3.10 on your system, then download or git clone the installer repository from:
+This product does not yet have a sophisticated installer mechanics.
+So you have to follow the few but very simple installation steps
 
-https://www.python.org/downloads/release/python-3101/
+1. Install Conda, download from here https://docs.conda.io/en/latest/miniconda.html
+2. Install [git](https://git-scm.com/download/win).
+3. Once Conda is installed start the conda prompt from start menue. Use the Conda prompt not the Conda powershell.
 
-For now we are back to a install batch file
+![img.png](installImages/img_c.png)
 
-for a first or clean install please do:
+![img.png](installImages/img.png)
 
-open a conda prompt
-run clean_install.bat   (this will delete an existing ai-nodes env and rebuild a new one for rtx3xxx cards xformers should just work, rtx2xxx might run into issues)
-clean_install will install everything and then start aiNodes
+4. from with in the conda prompt you follow thi steps:
+5. clone your copy of aiNodes with git clone https://github.com/XmYx/ainodes-pyside
+6. Cd to your copy of aiNondes
+
+![img.png](installImages/img2.png)
+7.	Run clean_install.bat as normal, non-administrator, user.
+
+![img.png](installImages/img3.png)
+8. This will run quite a while and do all the necessary steps to get the application installed and finally started for the first time.
+
+![img.png](installImages/img4.png)
+
 
 any further start can be made by start.bat it will just fire up the app and do not do any updates.
 

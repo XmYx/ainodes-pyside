@@ -38,7 +38,7 @@ def check_models_exist():
                         print(f'there was an error, we will try again {3-n} times')
                     finally:
                         if check == 1:
-                            print('the download was successfull')
+                            print('The download was successfull')
                         else:
                             print(f"Downloading {path} model from {url} was no success, aiNodes will work anyways for the most part but be aware that once you try to use that model you might have to download it first")
                             print('The internet is a non predictable place. we did try 3 times to download the file and failed this can have a multitude of reasons which we can not estimate here')

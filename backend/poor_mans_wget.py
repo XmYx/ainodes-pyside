@@ -1,10 +1,14 @@
 import os
 import requests
-
+from tqdm import tqdm
 
 def wget(url, filename):
-    ckpt_request = requests.get(url)
+    ckpt_request = requests.get(url, stream=True)
     request_status = ckpt_request.status_code
+
+    total_size = int(ckpt_request.headers.get("Content-Length", 0))
+    block_size = 1024
+    progress_bar = tqdm(total=total_size, unit="B", unit_scale=True)
 
     # inform user of errors
     if request_status == 403:
@@ -16,8 +20,11 @@ def wget(url, filename):
 
     # write to model path
     with open(filename, 'wb') as model_file:
-        model_file.write(ckpt_request.content)
+        for data in ckpt_request.iter_content(block_size):
+            model_file.write(data)
+            progress_bar.update(len(data))
 
+    progress_bar.close()
 
 def wget_headers(url):
     r = requests.get(url, stream=True, headers={'Connection':'close'})

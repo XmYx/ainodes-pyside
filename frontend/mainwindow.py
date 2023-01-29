@@ -23,7 +23,7 @@ from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QEasingCurve, Slot, QThreadPool, QDir, Signal, QObject
 from PySide6.QtWidgets import QMainWindow, QToolBar, QListWidgetItem, QFileDialog, \
     QLabel
-from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt
+from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt, QShortcut, QKeySequence
 from PySide6 import QtCore
 from backend.deforum.six.animation import check_is_number
 from einops import rearrange
@@ -107,6 +107,7 @@ class MainWindow(QMainWindow):
         self.sessionparams.create_diffusion_params()
         self.sessionparams.create_system_params()
 
+
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
 
         self.create_main_toolbar()
@@ -165,7 +166,6 @@ class MainWindow(QMainWindow):
         self.civitai_api = model_db_civitai.civit_ai_api()
         self.web_images = WebImages()
 
-        self.hide_default()
         self.mode = 'txt2img'
         self.stopwidth = False
 
@@ -188,13 +188,20 @@ class MainWindow(QMainWindow):
             [-0.184, -0.271, -0.473],  # L4
         ], dtype=torch.float, device='cuda')
 
-        self.params = self.sessionparams.update_params()
         db_base.check_db_status()
+        self.params = self.sessionparams.update_params(update_db=False)
+
+        self.sessionparams.update_system_params()
+        self.hide_default()
+        if gs.system.show_settings is True:
+            self.show_default()
         self.check_karras_enabled()
         self.make_grid = False
         self.all_images = []
         self.advanced_temp = False
         self.gpu_info()
+        self.shortcut = QShortcut(QKeySequence("Ctrl+D"), self)
+        self.shortcut.activated.connect(self.task_switcher)
 
 
 
@@ -641,6 +648,7 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
         save_canvas_png.triggered.connect(self.canvas.canvas.save_canvas)
 
     def hide_default(self):
+
         self.toolbar.setVisible(False)
         self.secondary_toolbar.setVisible(False)
 
@@ -685,11 +693,14 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
 
     def show_default(self):
         if self.default_hidden == True:
+            if gs.system.show_settings != True:
+                gs.system.show_settings = True
+                self.sessionparams.update_system_params()
             self.toolbar.setVisible(True)
 
             self.widgets[self.current_widget].w.base_setup.setVisible(True)
             self.widgets[self.current_widget].w.advanced_toppics.setVisible(True)
-            self.widgets[self.current_widget].w.keyframes.setVisible(True)
+
             self.system_setup.w.dockWidget.setVisible(True)
             self.image_lab_ui.w.dockWidget.setVisible(True)
             self.lexicart.w.dockWidget.setVisible(True)
@@ -709,6 +720,9 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
             self.set_hires_strength_visablity()
             self.default_hidden = False
         else:
+            if gs.system.show_settings != False:
+                gs.system.show_settings = False
+                self.sessionparams.update_system_params()
             self.hide_default()
 
     def thumbnails_Animation(self):

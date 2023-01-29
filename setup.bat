@@ -9,7 +9,7 @@ set PYTHON=
 set GIT=
 set VENV_DIR=
 set COMMANDLINE_ARGS=
-
+set PYSIDE_DESIGNER_PLUGINS = '.'
 
 if not defined PYTHON (set PYTHON=python)
 if not defined VENV_DIR (set VENV_DIR=venv)

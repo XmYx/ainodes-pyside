@@ -113,6 +113,9 @@ def prepare_enviroment():
 
     gfpgan_package = os.environ.get('GFPGAN_PACKAGE', "git+https://github.com/TencentARC/GFPGAN.git@8d2447a2d918f8eba5a4a01463fd48e45126a379")
     clip_package = os.environ.get('CLIP_PACKAGE', "git+https://github.com/openai/CLIP.git@d50d76daa670286dd6cacf3bcd80b5e4823fc8e1")
+    openclip_package = os.environ.get('OPENCLIP_PACKAGE',
+                                      "git+https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b")
+
     deepdanbooru_package = os.environ.get('DEEPDANBOORU_PACKAGE', "git+https://github.com/KichangKim/DeepDanbooru.git@d91a2963bf87c6a770d74894667e9ffa9f6de7ff")
 
     xformers_windows_package = os.environ.get('XFORMERS_WINDOWS_PACKAGE', 'https://github.com/C43H66N12O12S2/stable-diffusion-webui/releases/download/torch13/xformers-0.0.14.dev0-cp310-cp310-win_amd64.whl')
@@ -180,6 +183,9 @@ def prepare_enviroment():
 
     if not is_installed("clip"):
         run_pip(f"install {clip_package}", "clip")
+
+    if not is_installed("open_clip"):
+        run_pip(f"install {openclip_package}", "open_clip")
 
     if (not is_installed("xformers") or reinstall_xformers) and xformers:
         if platform.system() == "Windows":

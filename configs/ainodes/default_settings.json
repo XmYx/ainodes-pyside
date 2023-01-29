@@ -52,7 +52,8 @@
     "custom_cache_dir": false,
     "cache_dir": "data/transformers_cache",
     "db_dir": "data/db",
-    "update_model_data_on_startup": false
+    "update_model_data_on_startup": false,
+    "show_settings": false
   },
   "diffusion": {
     "angle": "0:(0)",

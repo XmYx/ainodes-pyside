@@ -292,9 +292,11 @@ class UniControl(QObject):
         if self.aniHidden is True:
             self.showAniAnim.start()
             #self.parent.timeline.show_anim_action()
+            self.parent.widgets[self.parent.current_widget].w.keyframes.setVisible(True)
         else:
             self.hideAniAnim.start()
             #self.parent.timeline.hide_anim_action()
+            self.parent.widgets[self.parent.current_widget].w.keyframes.setVisible(False)
         self.aniHidden = not self.aniHidden
 
 

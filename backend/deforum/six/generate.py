@@ -441,6 +441,8 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
                         uc, c = get_uc_and_c(prompts, gs.models["sd"], args, frame)
                     else:
                         # make negative prompt just a weighted prompt
+                        if args.negative_prompts == '':
+                            args.negative_prompts = args.steps * ' '
                         if args.negative_prompts is not None and args.negative_prompts != '':
                             work_prompt = prompts[0] + ':1 ' + args.negative_prompts + ':-1'
                             uc, c = get_uc_and_c([work_prompt], gs.models["sd"], args, frame)

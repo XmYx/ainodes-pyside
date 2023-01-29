@@ -84,7 +84,39 @@
           <property name="spacing">
            <number>0</number>
           </property>
-          <item row="1" column="0" rowspan="3">
+          <item row="1" column="3">
+           <widget class="QPushButton" name="stop_dream">
+            <property name="text">
+             <string>Stop</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="3">
+           <widget class="QTextEdit" name="prompts">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="placeholderText">
+             <string>Prompt comes here, start each in a new line</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" rowspan="3">
            <widget class="QTextEdit" name="keyframes">
             <property name="maximumSize">
              <size>
@@ -97,47 +129,7 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="3">
-           <widget class="QPushButton" name="stop_dream">
-            <property name="text">
-             <string>Stop</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="dream">
-            <property name="text">
-             <string>Dream</string>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>8</width>
-              <height>8</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="lowmem">
-            <property name="text">
-             <string>Low Memory</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QPushButton" name="lucky">
-            <property name="text">
-             <string>Show / hide options</string>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>8</width>
-              <height>8</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1" colspan="3">
+          <item row="3" column="1" colspan="3">
            <widget class="QTextEdit" name="negative_prompts">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -162,28 +154,42 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1" colspan="3">
-           <widget class="QTextEdit" name="prompts">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="lucky">
+            <property name="text">
+             <string>Show / hide options</string>
             </property>
+            <property name="iconSize">
+             <size>
+              <width>8</width>
+              <height>8</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" rowspan="2">
+           <widget class="QPushButton" name="dream">
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>0</height>
+              <height>50</height>
              </size>
             </property>
-            <property name="maximumSize">
+            <property name="text">
+             <string>Dream</string>
+            </property>
+            <property name="iconSize">
              <size>
-              <width>16777215</width>
-              <height>100</height>
+              <width>8</width>
+              <height>8</height>
              </size>
             </property>
-            <property name="placeholderText">
-             <string>Prompt comes here, start each in a new line</string>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QCheckBox" name="lowmem">
+            <property name="text">
+             <string>Low Memory</string>
             </property>
            </widget>
           </item>
@@ -3388,13 +3394,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="8" column="1">
-                  <widget class="QCheckBox" name="preview_on_canvas">
-                   <property name="text">
-                    <string>Model preview images</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="7" column="6" colspan="2">
                   <widget class="QPushButton" name="load_model">
                    <property name="text">
@@ -3433,6 +3432,13 @@
                   <widget class="QPushButton" name="reset_setup">
                    <property name="text">
                     <string>Reset setup</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="1" colspan="4">
+                  <widget class="QCheckBox" name="preview_on_canvas">
+                   <property name="text">
+                    <string>Model preview images on canvas</string>
                    </property>
                   </widget>
                  </item>

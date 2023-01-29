@@ -277,65 +277,70 @@ NSFW: {model_info['item']['nsfw']}
     def download_model(self, progress_callback=False):
 
         if self.model_download.w.config_yaml.currentIndex() == 0:
-            print('no yamle selected, please select config yaml before download')
+            print('no yaml selected, please select config yaml before download')
             return
 
         safetensors = False
         self.model_download.w.download_button.setEnabled(False)
-        model_info = self.actual_model_list[self.model_download.w.model_list.currentItem().text()]
-        config_name = ''
-        regex = re.compile(r'(.*?)\.')
-        headers = wget_headers(model_info['file']['downloadUrl'])
-        filename = headers['Content-Disposition'].replace('attachment; filename="','').replace('"','')
-        safetensors = True if 'safetensors' in filename else False
-        filename = regex.match(filename)[1]
-        length = headers['Content-Length']
-        model_name = 'noNameFound'
-        if len(filename) < 1:
-            model_Version_info = model_info['file']['name'].replace('learned embeds','')
-            filename = self.sanitize(model_info['item']['name'] + f"_{model_Version_info}")
-        if model_info['item']['type'] == 'Checkpoint':
-            config_name = filename + '.yaml'
-
-
-            if safetensors is False:
-                model_name = filename + '.ckpt'
-            else:
-                model_name = filename + '.safetensors'
-
-            model_outpath = os.path.join(gs.system.custom_models_dir, model_name)
-
-
-        if model_info['item']['type'] == 'TextualInversion':
-            model_name = filename + '.pt'
-            model_outpath = os.path.join(gs.system.textual_inversion_dir, model_name)
-
-        if model_info['item']['type'] == 'Hypernetwork':
-            model_name = filename + '.pt'
-            model_outpath = os.path.join(gs.system.hypernetwork_dir, model_name)
-
-        if model_info['item']['type'] == 'AestheticGradient':
-            model_name = filename + '.pt'
-            model_outpath = os.path.join(gs.system.aesthetic_gradients_dir, model_name)
-
-        print(f"download model {model_name} from url: {model_info['model']['downloadUrl']} ")
-
-        chunk_size = 1024
-        if int(length) > 102400:
-            chunk_size = 8192
-
         try:
-            wget_progress(url=model_info['model']['downloadUrl'], filename=model_outpath, length=length, chunk_size=chunk_size, callback=self.model_download_progress_callback)
-            self.model_download_progress_callback(100)
+            model_info = self.actual_model_list[self.model_download.w.model_list.currentItem().text()]
+            config_name = ''
+            regex = re.compile(r'(.*?)\.')
+            headers = wget_headers(model_info['file']['downloadUrl'])
+            filename = headers['Content-Disposition'].replace('attachment; filename="','').replace('"','')
+            safetensors = True if 'safetensors' in filename else False
+            filename = regex.match(filename)[1]
+            length = headers['Content-Length']
+            model_name = 'noNameFound'
+            if len(filename) < 1:
+                model_Version_info = model_info['file']['name'].replace('learned embeds','')
+                filename = self.sanitize(model_info['item']['name'] + f"_{model_Version_info}")
+            if model_info['item']['type'] == 'Checkpoint':
+                config_name = filename + '.yaml'
+
+
+                if safetensors is False:
+                    model_name = filename + '.ckpt'
+                else:
+                    model_name = filename + '.safetensors'
+
+                model_outpath = os.path.join(gs.system.custom_models_dir, model_name)
+
+
+            if model_info['item']['type'] == 'TextualInversion':
+                model_name = filename + '.pt'
+                model_outpath = os.path.join(gs.system.textual_inversion_dir, model_name)
+
+            if model_info['item']['type'] == 'Hypernetwork':
+                model_name = filename + '.pt'
+                model_outpath = os.path.join(gs.system.hypernetwork_dir, model_name)
+
+            if model_info['item']['type'] == 'AestheticGradient':
+                model_name = filename + '.pt'
+                model_outpath = os.path.join(gs.system.aesthetic_gradients_dir, model_name)
+
+            print(f"download model {model_name} from url: {model_info['model']['downloadUrl']} ")
+
+            chunk_size = 1024
+            if int(length) > 102400:
+                chunk_size = 8192
+
+            try:
+                wget_progress(url=model_info['model']['downloadUrl'], filename=model_outpath, length=length, chunk_size=chunk_size, callback=self.model_download_progress_callback)
+                self.model_download_progress_callback(100)
+            except Exception as e:
+                print('Download failed: ', e)
+                self.model_download_progress_callback(0)
+
+
+            #self.do_download(model_info['model']['downloadUrl'],model_outpath)
+            if config_name != '':
+                src = os.path.join(gs.system.default_config_yaml_dir, self.model_download.w.config_yaml.currentText())
+                dst = os.path.join(gs.system.custom_models_dir, config_name)
+                shutil.copyfile(src, dst)
+
+            self.parent.widgets[self.parent.current_widget].update_model_list()
         except Exception as e:
-            print('Download failed: ', e)
-            self.model_download_progress_callback(0)
-
-        self.model_download.w.download_button.setEnabled(True)
-        #self.do_download(model_info['model']['downloadUrl'],model_outpath)
-        if config_name != '':
-            src = os.path.join(gs.system.default_config_yaml_dir, self.model_download.w.config_yaml.currentText())
-            dst = os.path.join(gs.system.custom_models_dir, config_name)
-            shutil.copyfile(src, dst)
-
-        self.parent.widgets[self.parent.current_widget].update_model_list()
+            print(f'download failed with an error: {e}')
+        finally:
+            self.model_download.w.download_button.setEnabled(True)

@@ -48,7 +48,12 @@
     "blip_model_file": "data/models/support/upscale/model_base_caption_capfilt_large.pth",
     "default_config_yaml_dir": "data/default_configs",
     "aesthetic_gradient": "data/models/aesthetic_gradient",
-    "vae_dir": "data/models/vae"
+    "vae_dir": "data/models/vae",
+    "custom_cache_dir": false,
+    "cache_dir": "data/transformers_cache",
+    "db_dir": "data/db",
+    "update_model_data_on_startup": false,
+    "show_settings": false
   },
   "diffusion": {
     "angle": "0:(0)",

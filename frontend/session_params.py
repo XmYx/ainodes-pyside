@@ -13,6 +13,7 @@ class SessionParams():
         self.max_history = None
         self.history = None
         self.params = None
+        self.last_db_params = None
         self.history = []
         self.history_index = 0
         self.max_history = 100
@@ -74,15 +75,17 @@ class SessionParams():
                 pass
         setting_db.save_settings()
 
-    def update_diffusion_settings(self):
+    def update_diffusion_settings(self, update_db=True):
         for key in self.params.keys():
             if key in gs.diffusion.__dict__:
                 gs.diffusion.__dict__[key] = self.params[key]
         gs.diffusion.seed = self.store_seed
-        setting_db.save_settings()
+        if self.last_db_params != self.params and update_db:
+            setting_db.save_settings()
+            self.last_db_params = self.params
 
 
-    def update_params(self):
+    def update_params(self, update_db=True):
 
         widget = 'unicontrol'
 
@@ -321,7 +324,8 @@ class SessionParams():
             "pathmode": self.parent.widgets[widget].w.pathmode.currentText(),
             "discard_next_to_last_sigma": self.parent.widgets[widget].w.discard_next_to_last_sigma.isChecked(),
         }
-        self.update_diffusion_settings()
+
+        self.update_diffusion_settings(update_db=update_db)
         self.params = SimpleNamespace(**self.params)
         print(f'sampler: {self.params.sampler} steps {self.params.steps}\nscale: {self.params.scale}\nddim_eta: {self.params.ddim_eta}')
         return self.params

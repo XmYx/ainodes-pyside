@@ -25,7 +25,7 @@ def check_models_exist():
             if not os.path.isfile(model_path[key]['path']):
                 url = model_path[key]['url']
                 print(f"Downloading {path} model from {url}")
-                print('The download may take a while please be patient there is no progress update here')
+                print('The download may take a while please be patient.')
                 n = 0
                 check = 0
                 while n < 3:

@@ -20,7 +20,7 @@ from contextlib import nullcontext
 from einops import rearrange, repeat
 
 from optimizedSD.optimUtils import logger
-from .prompt import get_uc_and_c, split_weighted_subprompts
+from .prompt import get_uc_and_c, split_weighted_subprompts, get_uc_and_c_new
 from .k_samplers import sampler_fn, make_inject_timing_fn
 from scipy.ndimage import gaussian_filter
 
@@ -440,12 +440,14 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
                     if args.prompt_weighting:
                         uc, c = get_uc_and_c(prompts, gs.models["sd"], args, frame)
                     else:
+                        uc, c = get_uc_and_c_new(prompts,args.negative_prompts, gs.models["sd"], args, frame)
+
                         # make negative prompt just a weighted prompt
-                        if args.negative_prompts == '':
+                        """if args.negative_prompts == '':
                             args.negative_prompts = args.steps * ' '
                         if args.negative_prompts is not None and args.negative_prompts != '':
                             work_prompt = prompts[0] + ':1 ' + args.negative_prompts + ':-1'
-                            uc, c = get_uc_and_c([work_prompt], gs.models["sd"], args, frame)
+                            uc, c = get_uc_and_c([work_prompt], gs.models["sd"], args, frame)"""
                         """
                                                 if args.negative_prompts is not None:
                             print(f"using negative prompts: {args.negative_prompts}")

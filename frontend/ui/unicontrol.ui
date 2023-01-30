@@ -3544,140 +3544,10 @@
                  <property name="horizontalSpacing">
                   <number>3</number>
                  </property>
-                 <item row="15" column="2">
-                  <widget class="QLabel" name="hires_strength_label">
-                   <property name="text">
-                    <string>HiRes Strength</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="11" column="3">
-                  <widget class="QLabel" name="label_14">
-                   <property name="text">
-                    <string>Mode</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="8" column="3">
-                  <widget class="QLabel" name="label_19">
-                   <property name="text">
-                    <string>Samples</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="11" column="2">
-                  <widget class="QLineEdit" name="seed"/>
-                 </item>
-                 <item row="12" column="0">
-                  <widget class="QCheckBox" name="seamless">
-                   <property name="text">
-                    <string>Seamless</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="8" column="2">
-                  <widget class="QSpinBox" name="n_batch">
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>2000</number>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="8" column="0">
                   <widget class="QLabel" name="label_20">
                    <property name="text">
                     <string>Batch</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="15" column="3">
-                  <widget class="QDoubleSpinBox" name="hires_strength">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.010000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="2">
-                  <widget class="QDoubleSpinBox" name="strength">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.010000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QRadioButton" name="toggle_negative_prompt">
-                   <property name="text">
-                    <string>Negative prompt</string>
-                   </property>
-                   <attribute name="buttonGroup">
-                    <string notr="true">buttonGroup</string>
-                   </attribute>
-                  </widget>
-                 </item>
-                 <item row="10" column="2">
-                  <widget class="QComboBox" name="preview_mode">
-                   <item>
-                    <property name="text">
-                     <string>grid</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>single</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="11" column="4">
-                  <widget class="QComboBox" name="seed_behavior">
-                   <item>
-                    <property name="text">
-                     <string>iter</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>random</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>fixed</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="14" column="3">
-                  <widget class="QComboBox" name="multi_dim_seed_behavior">
-                   <item>
-                    <property name="text">
-                     <string>fixed</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>iter</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>random</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="11" column="0">
-                  <widget class="QLabel" name="label_13">
-                   <property name="text">
-                    <string>Seed</string>
                    </property>
                   </widget>
                  </item>
@@ -3688,40 +3558,14 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="10" column="4">
-                  <widget class="QPushButton" name="cleanup_memory">
-                   <property name="minimumSize">
-                    <size>
-                     <width>110</width>
-                     <height>0</height>
-                    </size>
-                   </property>
+                 <item row="12" column="0">
+                  <widget class="QCheckBox" name="seamless">
                    <property name="text">
-                    <string>Clean Memory</string>
+                    <string>Seamless</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="10" column="0">
-                  <widget class="QLabel" name="preview_mode_label">
-                   <property name="text">
-                    <string>Preview Mode</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="8" column="4">
-                  <widget class="QSpinBox" name="n_samples">
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>250</number>
-                   </property>
-                   <property name="value">
-                    <number>1</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="17" column="0" colspan="3">
+                 <item row="17" column="0" colspan="4">
                   <widget class="QCheckBox" name="toggle_sampler">
                    <property name="text">
                     <string>Sampling Settings</string>
@@ -3744,30 +3588,20 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="3">
-                  <widget class="QLabel" name="cfglabel">
-                   <property name="text">
-                    <string>CFG</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="2">
-                  <widget class="QSpinBox" name="steps">
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
+                 <item row="15" column="3">
+                  <widget class="QDoubleSpinBox" name="hires_strength">
                    <property name="maximum">
-                    <number>300</number>
+                    <double>1.000000000000000</double>
                    </property>
-                   <property name="value">
-                    <number>20</number>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
                    </property>
                   </widget>
                  </item>
                  <item row="0" column="0">
-                  <widget class="QRadioButton" name="prompt_weighting">
+                  <widget class="QRadioButton" name="toggle_negative_prompt">
                    <property name="text">
-                    <string>Weighted prompt</string>
+                    <string>Negative prompt</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -3775,6 +3609,67 @@
                    <attribute name="buttonGroup">
                     <string notr="true">buttonGroup</string>
                    </attribute>
+                  </widget>
+                 </item>
+                 <item row="10" column="2">
+                  <widget class="QComboBox" name="preview_mode">
+                   <item>
+                    <property name="text">
+                     <string>grid</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>single</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="8" column="4">
+                  <widget class="QSpinBox" name="n_samples">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>250</number>
+                   </property>
+                   <property name="value">
+                    <number>1</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="5">
+                  <spacer name="horizontalSpacer_3">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="10" column="0">
+                  <widget class="QLabel" name="preview_mode_label">
+                   <property name="text">
+                    <string>Preview Mode</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="widthlabel">
+                   <property name="text">
+                    <string>Width</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="3">
+                  <widget class="QCheckBox" name="strength_0_no_init">
+                   <property name="text">
+                    <string>Strength 0 No Init</string>
+                   </property>
                   </widget>
                  </item>
                  <item row="14" column="0">
@@ -3794,17 +3689,79 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="3">
-                  <widget class="QLabel" name="heightlabel">
+                 <item row="15" column="0">
+                  <widget class="QCheckBox" name="hires">
                    <property name="text">
-                    <string>Height</string>
+                    <string>HiRes Mode</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="widthlabel">
+                 <item row="10" column="4">
+                  <widget class="QPushButton" name="cleanup_memory">
+                   <property name="minimumSize">
+                    <size>
+                     <width>110</width>
+                     <height>0</height>
+                    </size>
+                   </property>
                    <property name="text">
-                    <string>Width</string>
+                    <string>Clean Memory</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="14" column="3">
+                  <widget class="QComboBox" name="multi_dim_seed_behavior">
+                   <item>
+                    <property name="text">
+                     <string>fixed</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>iter</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>random</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="5" column="3">
+                  <widget class="QLabel" name="cfglabel">
+                   <property name="text">
+                    <string>CFG</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="2">
+                  <widget class="QDoubleSpinBox" name="strength">
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QRadioButton" name="prompt_weighting">
+                   <property name="text">
+                    <string>Deforum style weighting</string>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                   <attribute name="buttonGroup">
+                    <string notr="true">buttonGroup</string>
+                   </attribute>
+                  </widget>
+                 </item>
+                 <item row="15" column="2">
+                  <widget class="QLabel" name="hires_strength_label">
+                   <property name="text">
+                    <string>HiRes Strength</string>
                    </property>
                   </widget>
                  </item>
@@ -3824,33 +3781,41 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="14" column="2">
-                  <widget class="QLabel" name="multi_dim_label">
+                 <item row="11" column="0">
+                  <widget class="QLabel" name="label_13">
                    <property name="text">
-                    <string>MD Seed Mode</string>
+                    <string>Seed</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="15" column="0">
-                  <widget class="QCheckBox" name="hires">
+                 <item row="8" column="3">
+                  <widget class="QLabel" name="label_19">
                    <property name="text">
-                    <string>HiRes Mode</string>
+                    <string>Samples</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="2">
-                  <widget class="QSpinBox" name="W">
+                 <item row="8" column="2">
+                  <widget class="QSpinBox" name="n_batch">
                    <property name="minimum">
-                    <number>256</number>
+                    <number>1</number>
                    </property>
                    <property name="maximum">
-                    <number>2048</number>
+                    <number>2000</number>
                    </property>
-                   <property name="singleStep">
-                    <number>64</number>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <widget class="QLabel" name="heightlabel">
+                   <property name="text">
+                    <string>Height</string>
                    </property>
-                   <property name="value">
-                    <number>512</number>
+                  </widget>
+                 </item>
+                 <item row="11" column="3">
+                  <widget class="QLabel" name="label_14">
+                   <property name="text">
+                    <string>Mode</string>
                    </property>
                   </widget>
                  </item>
@@ -3873,10 +3838,61 @@
                    </item>
                   </widget>
                  </item>
-                 <item row="7" column="3" colspan="2">
-                  <widget class="QCheckBox" name="strength_0_no_init">
+                 <item row="5" column="2">
+                  <widget class="QSpinBox" name="steps">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>300</number>
+                   </property>
+                   <property name="value">
+                    <number>20</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QSpinBox" name="W">
+                   <property name="minimum">
+                    <number>256</number>
+                   </property>
+                   <property name="maximum">
+                    <number>2048</number>
+                   </property>
+                   <property name="singleStep">
+                    <number>64</number>
+                   </property>
+                   <property name="value">
+                    <number>512</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="11" column="2">
+                  <widget class="QLineEdit" name="seed"/>
+                 </item>
+                 <item row="11" column="4">
+                  <widget class="QComboBox" name="seed_behavior">
+                   <item>
+                    <property name="text">
+                     <string>iter</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>random</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>fixed</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="14" column="2">
+                  <widget class="QLabel" name="multi_dim_label">
                    <property name="text">
-                    <string>Strength 0 No Init</string>
+                    <string>MD Seed Mode</string>
                    </property>
                   </widget>
                  </item>

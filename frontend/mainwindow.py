@@ -200,7 +200,7 @@ class MainWindow(QMainWindow):
         self.all_images = []
         self.advanced_temp = False
         self.gpu_info()
-        self.shortcut = QShortcut(QKeySequence("Ctrl+D"), self)
+        self.shortcut = QShortcut(QKeySequence("Ctrl+Enter"), self)
         self.shortcut.activated.connect(self.task_switcher)
 
 
@@ -700,7 +700,7 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
 
             self.widgets[self.current_widget].w.base_setup.setVisible(True)
             self.widgets[self.current_widget].w.advanced_toppics.setVisible(True)
-
+            self.widgets[self.current_widget].w.negative_prompts.setVisible(True)
             self.system_setup.w.dockWidget.setVisible(True)
             self.image_lab_ui.w.dockWidget.setVisible(True)
             self.lexicart.w.dockWidget.setVisible(True)

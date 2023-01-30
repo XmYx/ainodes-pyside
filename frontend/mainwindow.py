@@ -824,7 +824,7 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
 
             if img is not None:
                 image = img
-                h, w = image.size
+                w, h = image.size
                 self.add_next_rect(h, w)
                 self.render_index = len(self.canvas.canvas.rectlist) - 1
 

@@ -81,7 +81,8 @@ class civit_ai_api:
                 cursor.close()
                 model_db_con.close()
         else:
-            print('Error update the model Data, thats no big deal, next time you run the UI we try again: ', er)
+            print('Update the model Data from civitai failed, thats no big deal, next time you run the UI we try again: ', er)
+            print(reply.readAll())
         if self.next_models_link is not None:
             req = QtNetwork.QNetworkRequest(QtCore.QUrl(self.next_models_link))
             self.nam.get(req)
@@ -99,7 +100,7 @@ class civit_ai_api:
 
     def civitai_start_model_update(self, progress_callback=False):
         print('start model data update')
-        url = "https://civitai.com/api/v1/models?limit=200"
+        url = "https://civitai.com/api/v1/models?limit=100"
         self.executeRequest(url)
 
     def all_civitai_model_data_loaded(self, progress_callback=False):

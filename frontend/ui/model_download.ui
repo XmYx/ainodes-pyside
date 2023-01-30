@@ -368,7 +368,7 @@
                <item row="2" column="1" colspan="2">
                 <widget class="QSpinBox" name="limit">
                  <property name="maximum">
-                  <number>200</number>
+                  <number>100</number>
                  </property>
                  <property name="value">
                   <number>100</number>

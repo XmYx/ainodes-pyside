@@ -140,7 +140,7 @@ def prepare_enviroment():
     blip_commit_hash = os.environ.get('BLIP_COMMIT_HASH', "48211a1594f1321b00f14c9f7a5b4813144b2fb9")
     volta_ml_hash = os.environ.get('VOLTA_ML__HASH', "303d5f8df54f58987818722226a6398a9aed8aa6")
 
-    real_esrgan_commit_hash = os.environ.get('REAL_ESRGAN_COMMIT_HASH', "5ca1078535923d485892caee7d7804380bfc87fd")
+    real_esrgan_commit_hash = os.environ.get('REAL_ESRGAN_COMMIT_HASH', "64ad194ddaf9c4d8c4b0d1b98cac6d89d3ea0d11")
     adabins_commit_hash = os.environ.get('ADABINS_COMMIT_HASH', "4524615236f5f486381fac2f9c624f20dedf324f")
     midas_commit_hash = os.environ.get('MIDAS_COMMIT_HASH', "66882994a432727317267145dc3c2e47ec78c38a")
     pytorch_litet_hash = os.environ.get('PYTORCH_LITE_COMMIT_HASH', "4070975c1d6e4de7c87848a53b603f6b29711e55")

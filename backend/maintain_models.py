@@ -7,8 +7,8 @@ gs = singleton
 
 def check_models_exist():
     model_path = {
-        '1': {'url': 'https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth', 'path': gs.system.realesrgan_model_file},
-        '2': {'url': 'https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth', 'path': gs.system.realesrgan_anime_model_file},
+        '1': {'url': 'https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth', 'path': gs.system.realesrgan_model_file},
+        '2': {'url': 'https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.4/RealESRGAN_x4plus_anime_6B.pth', 'path': gs.system.realesrgan_anime_model_file},
         '3': {'url': 'https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth', 'path': gs.system.gfpgan_model_file},
         '4': {'url': 'https://drive.google.com/uc?export=download&id=1lvyZZbC9NLcS8a__YPcUP7rDiIpbRpoF&confirm=t&uuid=b3e3c90f-348b-4830-b07f-f9c877dcd8af&at=ACjLJWnZ3gyXiGBlOd89t2r7hKCK:1671495118640', 'path': gs.system.adabins_model_file},
         #'5': {'url': 'https://drive.google.com/file/d/1HMgff-FV6qw1L0ywQZJ7ECa9VPq1bIoj/view?usp=share_link', 'path': gs.system.adabins_kitty_model_file},

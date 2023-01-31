@@ -757,14 +757,15 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
         try:
             gs.temppath = ''
             self.params.max_frames = 0
-            image = Image.open(BytesIO(image_string)).resize((512,512))
+            image = Image.open(BytesIO(image_string))
+            image = image.convert("RGB")
             mode = image.mode
             size = image.size
             enc_image = base64.b64encode(image.tobytes()).decode()
             self.deforum_ui.signals.txt2img_image_cb.emit(enc_image, mode, size)
 
-        except:
-            pass
+        except Exception as e:
+            print('Error while fetching the images from web: ', e)
 
 
     def image_preview_signal(self, image, *args, **kwargs):
@@ -861,7 +862,9 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
     @Slot()
     def image_preview_func_str(self, image, mode, size):
         decoded_image = base64.b64decode(image.encode())
-        self.image_preview_func(Image.frombytes(mode, size, decoded_image))
+        image = Image.frombytes(mode, size, decoded_image)
+        image = image.convert('RGB')
+        self.image_preview_func(image)
     @Slot()
     def render_index_image_preview_func_str(self, image, mode, size, render_index):
         decoded_image = base64.b64decode(image.encode())

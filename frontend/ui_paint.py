@@ -1392,11 +1392,13 @@ class PaintUI(QDockWidget):
         sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
         self.dockWidgetContents = QWidget()
         self.dockWidgetContents.setObjectName(u"dockWidgetContents")
+        self.W_label = QLabel("Canvas Width")
         self.W_spinbox = QSpinBox()
         self.W_spinbox.setMinimum(256)
         self.W_spinbox.setMaximum(16000)
         self.W_spinbox.setValue(512)
         self.W_spinbox.setSingleStep(64)
+        self.H_label = QLabel("Canvas Height")
         self.H_spinbox = QSpinBox()
         self.H_spinbox.setMinimum(256)
         self.H_spinbox.setMaximum(16000)
@@ -1437,10 +1439,10 @@ class PaintUI(QDockWidget):
         self.horizontalLayout.setObjectName(u"horizontal")
         self.horizontalLayout.setContentsMargins(5, 0, 5, 0)
 
-
+        self.horizontalLayout.addWidget(self.W_label)
         self.horizontalLayout.addWidget(self.W)
         self.horizontalLayout.addWidget(self.W_spinbox)
-
+        self.horizontalLayout.addWidget(self.H_label)
         self.horizontalLayout.addWidget(self.H)
         self.horizontalLayout.addWidget(self.H_spinbox)
 

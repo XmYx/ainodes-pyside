@@ -84,15 +84,15 @@ def load_model_from_config(config, ckpt, verbose=False):
 
     model = instantiate_from_config(config.model)
     m, u = model.load_state_dict(sd, strict=False)
-    print(m[0])
-    print(u[0])
+    print('m[0]', m[0])
+    print('u[0]', u[0])
 
     if len(m) > 0 and verbose:
-        print("missing keys:")
-        print(m)
+        print("missing keys:", m)
+
     if len(u) > 0 and verbose:
-        print("unexpected keys:")
-        print(u)
+        print("unexpected keys:", u)
+
 
     model.cuda()
     model.eval()

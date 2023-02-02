@@ -34,8 +34,8 @@ gs = singleton
 
 
 def next_seed(args):
-    print(type(args.seed))
-    print(args.seed)
+    print('type(args.seed)', type(args.seed))
+    print('args.seed',args.seed)
     args.seed = int(args.seed)
     if args.seed_behavior == 'iter':
         args.seed += 1
@@ -61,6 +61,24 @@ def save_settings(args, outfolder, prompt, index):
         f.close()
         del output_data
 
+
+def shorten_path(path):
+    # Get the directory, filename, and extension
+    dir_name, filename = os.path.split(path)
+    name, ext = os.path.splitext(filename)
+
+    # Shorten the name if necessary
+    max_length = 250 - len(ext)
+    if len(name) > max_length:
+        name = name[:max_length]
+
+    # Join the shortened name and extension
+    shortened_filename = name + ext
+
+    # Join the shortened filename and directory to get the shortened path
+    shortened_path = os.path.join(dir_name, shortened_filename)
+
+    return shortened_path
 
 def render_image_batch(args, prompts, root, image_callback=None, step_callback=None):
     args.prompts = {k: f"{v:05d}" for v, k in enumerate(prompts)}
@@ -179,11 +197,16 @@ def render_image_batch(args, prompts, root, image_callback=None, step_callback=N
                                 filename = f"{args.timestring}_{index:05}_{args.seed}.png"
                             #added prompt to output folder name
                             if gs.diffusion.pathmode == "prompt-folders":
-                                outfolder = os.path.join(args.outdir, f'{args.timestring}_{sanitize(prompt)[:120]}')
+                                outfolder = os.path.join(args.outdir, f'{args.timestring}_{sanitize(prompt)[:80]}')
                             else:
                                 outfolder = os.path.join(args.outdir, datetime.now().strftime("%Y%m%d"))
                             os.makedirs(outfolder, exist_ok=True)
-                            gs.temppath = os.path.join(outfolder, filename)
+                            abs_path = os.path.join(outfolder, filename)
+                            if len(abs_path) > 250:
+                                print('path to long and gets shortened')
+                                abs_path = shorten_path(abs_path)
+
+                            gs.temppath = abs_path
                             if args.save_samples:
                                 paths.append(gs.temppath)
                                 image.save(gs.temppath)

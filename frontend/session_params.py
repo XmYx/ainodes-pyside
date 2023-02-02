@@ -123,9 +123,17 @@ class SessionParams():
 
         outdir = gs.system.txt2img_out_dir
         use_mask = self.parent.widgets[widget].w.use_mask.isChecked()
+        multi_model_batch = self.parent.widgets[widget].w.toggle_multi_model_batch.isChecked()
+        multi_model_list = []
+
+        selected_multi_model_batch = self.parent.widgets[widget].w.multi_model_batch_list.selectedItems()
+        if len(selected_multi_model_batch) > 0:
+            for item in selected_multi_model_batch:
+                multi_model_list.append(item.text())
+
+
         if self.parent.widgets[widget].w.max_frames.value() < 2:
             animation_mode = 'None'
-
 
             use_alpha_as_mask = self.parent.widgets[widget].w.use_alpha_as_mask_2.isChecked()
             mask_file = self.parent.widgets[widget].w.mask_file.text()
@@ -134,7 +142,6 @@ class SessionParams():
             mask_contrast_adjust = self.parent.widgets[widget].w.mask_contrast_adjust_2.value()
             mask_overlay_blur = self.parent.widgets[widget].w.mask_overlay_blur_2.value()
             overlay_mask = self.parent.widgets[widget].w.overlay_mask_2.isChecked()
-
 
         else:
 
@@ -145,6 +152,8 @@ class SessionParams():
             mask_contrast_adjust = self.parent.widgets[widget].w.mask_contrast_adjust.value()
             mask_overlay_blur = self.parent.widgets[widget].w.mask_overlay_blur.value()
             overlay_mask = self.parent.widgets[widget].w.overlay_mask.isChecked()
+            multi_model_batch = False
+            multi_model_list = []
 
             if self.parent.widgets[widget].w.anim2D.isChecked():
                 animation_mode = '2D'
@@ -323,6 +332,8 @@ class SessionParams():
             "karras_sigma_max": self.parent.widgets[widget].w.karras_sigma_max.value(),
             "pathmode": self.parent.widgets[widget].w.pathmode.currentText(),
             "discard_next_to_last_sigma": self.parent.widgets[widget].w.discard_next_to_last_sigma.isChecked(),
+            "multi_model_batch": multi_model_batch,
+            "multi_model_list": multi_model_list
         }
 
         self.update_diffusion_settings(update_db=update_db)

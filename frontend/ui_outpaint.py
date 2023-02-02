@@ -327,6 +327,7 @@ class Outpainting:
         self.next_rect_from_batch()
 
     def image_ready_in_ui(self):
+        print('image_ready_in_ui')
         if self.batch_process is not None:
             self.parent.canvas.canvas.redraw()
             self.parent.render_index += 1
@@ -334,6 +335,7 @@ class Outpainting:
 
 
     def next_image_from_batch(self, progress_callback=None):
+        print('next_image_from_batch', self.batch_process)
         if self.batch_process == 'run_prepared_outpaint_batch':
             if len(self.rectlist_work) > 0:
                 if gs.stop_all is False:
@@ -407,6 +409,7 @@ class Outpainting:
 
 
     def run_hires_step_x(self):
+        print('run_hires_step_x')
         next_step = self.parent.canvas.canvas.rectlist[self.parent.render_index]
         self.parent.choice = 'Outpaint'
         image = next_step.image

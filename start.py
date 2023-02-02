@@ -1,4 +1,4 @@
-print(f"Launching SD UI")
+print(f"Launching aiNodes UI")
 import frontend.startup
 import backend.paths
 import os

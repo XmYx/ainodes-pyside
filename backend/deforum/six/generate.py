@@ -80,7 +80,7 @@ def create_random_tensors(shape, seeds, subseeds=None, subseed_strength=0.0, see
         sampler_noises = [[] for _ in range(p.sampler.number_of_needed_noises(p))]
     else:
         sampler_noises = None
-    print(type(seeds))
+    print('type(seeds)', type(seeds))
     for i, seed in enumerate(seeds):
         noise_shape = shape if seed_resize_from_h <= 0 or seed_resize_from_w <= 0 else (
         shape[0], seed_resize_from_h // 8, seed_resize_from_w // 8)
@@ -250,7 +250,7 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
     sampler = PLMSSampler(gs.models["sd"]) if args.sampler == 'plms' else DDIMSampler(gs.models["sd"])
     if gs.model_version in gs.system.gen_one_models or gs.model_resolution == 512:
         model_wrap = CompVisDenoiser(gs.models["sd"])
-        print(gs.model_version, gs.model_resolution)
+        print('gs.model_version, gs.model_resolution', gs.model_version, gs.model_resolution)
     elif gs.model_version in gs.system.gen_two_models and gs.model_resolution == 768:
         gs.denoiser = 2
         model_wrap = CompVisVDenoiser(gs.models["sd"])

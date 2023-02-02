@@ -373,7 +373,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
             if len(self.fileList) > 0:
                 for filename in self.fileList:
                     out_folder = self.imageLab.w.interrogation_output_folder.text()
-                    print(filename)
+                    print('filename', filename)
                     if '.png' in filename:
                         try:
                             image = Image.open(filename).convert("RGB")
@@ -382,9 +382,9 @@ class ImageLab():  # for signaling, could be a QWidget  too
                         image = images.resize_image(1, image, 512, 512)
                         interrogate_caption = ''
                         if interrogate:
-                            print(type(image))
+                            print('type(image)', type(image))
                             interrogate_caption = interrogator.generate_caption(image)
-                            print(interrogate_caption)
+                            print('interrogate_caption', interrogate_caption)
                         prompt_guess = ''
                         if guess_prompt:
                             prompt_guess = get_prompt_guess_img(image)

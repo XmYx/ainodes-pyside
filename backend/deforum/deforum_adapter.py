@@ -292,7 +292,7 @@ class DeforumSix:
 
             # gs.model_version = config.model_version
             if verbose:
-                print(gs.model_version)
+                print('gs.model_version', gs.model_version)
 
             checkpoint_file = ckpt
             _, extension = os.path.splitext(checkpoint_file)

@@ -189,8 +189,8 @@ def load_model(root):
         m, u = model.load_state_dict(sd, strict=False)
         if print_flag:
             if len(m) > 0 and verbose:
-                print("missing keys:")
-                print(m)
+                print("missing keys:", m)
+                print('mmissing keys ', m)
             if len(u) > 0 and verbose:
                 print("unexpected keys:")
                 print(u)

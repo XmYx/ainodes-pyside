@@ -41,12 +41,15 @@ def wget_progress(url, filename, length=0, chunk_size=8192, callback=None):
         downloaded_bytes = 0
         callback(next_percent)
         with open(filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                # If you have chunk encoded response uncomment if
-                # and set chunk_size parameter to None.
-                #if chunk:
-                f.write(chunk)
-                downloaded_bytes += chunk_size
-                if downloaded_bytes > next_percent * one_percent:
-                    next_percent += 1
-                    callback(next_percent)
+            try:
+                for chunk in r.iter_content(chunk_size=8192):
+                    # If you have chunk encoded response uncomment if
+                    # and set chunk_size parameter to None.
+                    #if chunk:
+                    f.write(chunk)
+                    downloaded_bytes += chunk_size
+                    if downloaded_bytes > next_percent * one_percent:
+                        next_percent += 1
+                        callback(next_percent)
+            except Exception as e:
+                print('error while writing download file: ', e)

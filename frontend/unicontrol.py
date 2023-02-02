@@ -31,6 +31,7 @@ class UniControl(QObject):
         self.w.toggle_outpaint.stateChanged.connect(self.hideOutpaint_anim)
         self.w.toggle_animations.stateChanged.connect(self.hideAnimation_anim)
         self.w.toggle_plotting.stateChanged.connect(self.hidePlotting_anim)
+        self.w.toggle_multi_model_batch.stateChanged.connect(self.hideMml_anim)
         self.w.toggle_aesthetics.stateChanged.connect(self.hideAesthetic_anim)
         self.w.toggle_embeddings.stateChanged.connect(self.hideEmbedding_anim)
         self.w.toggle_plugins.stateChanged.connect(self.hidePlugins_anim)
@@ -119,7 +120,7 @@ class UniControl(QObject):
         model_items = []
         for i in range(0, item_count-1):
             model_items.append(self.w.selected_vae.itemText(i))
-        print(item_count)
+        print('item_count', item_count)
         current_vae = 'None' if current_vae == None else current_vae
         if current_vae != 'None':
             self.w.selected_vae.setCurrentIndex(model_items.index(current_vae))
@@ -214,12 +215,14 @@ class UniControl(QObject):
         for model in files:
             if '.ckpt' in model or 'safetensors' in model:
                 self.w.selected_model.addItem(model)
+                self.w.multi_model_batch_list.addItem(model)
         files = os.listdir(gs.system.custom_models_dir)
         files = [f for f in files if os.path.isfile(gs.system.custom_models_dir + '/' +f)] #Filtering only the files.
         model_items.append(files)
         for model in files:
             if '.ckpt' in model or 'safetensors' in model:
                 self.w.selected_model.addItem('custom/' + model)
+                self.w.multi_model_batch_list.addItem('custom/' + model)
         item_count = self.w.selected_model.count()
         model_items = []
         for i in range(0, item_count):
@@ -308,6 +311,13 @@ class UniControl(QObject):
             self.hidePloAnim.start()
         self.ploHidden = not self.ploHidden
 
+    def hideMml_anim(self):
+        self.init_anims()
+        if self.mmlHidden is True:
+            self.showMmlAnim.start()
+        else:
+            self.hideMmlAnim.start()
+        self.mmlHidden = not self.mmlHidden
 
     def hideOutput_anim(self):
         self.init_anims()
@@ -364,7 +374,7 @@ class UniControl(QObject):
 
 
     def show_hide_all_anim(self):
-        print(self.showAll)
+        print('self.showAll', self.showAll)
         if self.showAll == False:
             self.hideSamAnim.start()
             self.samHidden = True
@@ -391,6 +401,8 @@ class UniControl(QObject):
             self.opuHidden = True
             self.hidePinAnim.start()
             self.pinHidden = True
+            self.hideMmlAnim.start()
+            self.mmlHidden = True
             self.showAll = True
         elif self.showAll == True:
             self.showSamAnim.start()
@@ -418,6 +430,8 @@ class UniControl(QObject):
             self.opuHidden = False
             self.showPinAnim.start()
             self.pinHidden = False
+            self.hideMmlAnim.start()
+            self.mmlHidden = False
             self.showAll = False
 
     def init_anims(self):
@@ -565,7 +579,17 @@ class UniControl(QObject):
         self.hidePinAnim.setEndValue(0)
         self.hidePinAnim.setEasingCurve(QEasingCurve.Linear)
 
+        self.showMmlAnim = QtCore.QPropertyAnimation(self.w.multi_model_batch, b"maximumHeight")
+        self.showMmlAnim.setDuration(1500)
+        self.showMmlAnim.setStartValue(self.w.multi_model_batch.height())
+        self.showMmlAnim.setEndValue(self.w.height())
+        self.showMmlAnim.setEasingCurve(QEasingCurve.Linear)
 
+        self.hideMmlAnim = QtCore.QPropertyAnimation(self.w.multi_model_batch, b"maximumHeight")
+        self.hideMmlAnim.setDuration(500)
+        self.hideMmlAnim.setStartValue(self.w.multi_model_batch.height())
+        self.hideMmlAnim.setEndValue(0)
+        self.hideMmlAnim.setEasingCurve(QEasingCurve.Linear)
     def initAnimation(self):
         self.initAnim = QtCore.QPropertyAnimation(self.w.dockWidget, b"maximumWidth")
         self.initAnim.setDuration(1500)

@@ -10,6 +10,7 @@ from PySide6.QtGui import QMouseEvent
 
 import backend.aesthetics.aesthetic_clip
 from backend.deforum.deforum_adapter import DeforumSix
+from backend.devices import torch_gc
 from backend.hypernetworks.modules.images import GridAnnotation
 from backend.singleton import singleton
 import torchvision.transforms as T
@@ -335,7 +336,7 @@ class Deforum_UI(QObject):
                         arg_name, args_list = arg.split('=')
                         args_list=args_list.split(',')
                         args_dict[arg_name] = args_list
-                print(args_dict)
+                print('args_dict', args_dict)
                 pairs = [[(k, v) for v in args_dict[k]] for k in args_dict]
                 arg_combinations = list(itertools.product(*pairs))
                 for set in arg_combinations:
@@ -451,65 +452,67 @@ class Deforum_UI(QObject):
 
         self.parent.make_grid = False
 
-        if self.params.multi_dim_prompt:
-            self.multi_dim_loop(image_callback=image_callback)
+        # enable a list of models to be used for any possible prompt situation
+        model_work_list = []
+        actual_selected_model = gs.system.sd_model_file
+        if self.params.multi_model_batch:
+            if len(self.params.multi_model_list) > 0:
+                for model in self.params.multi_model_list:
+                    model_work_list.append(os.path.join(gs.system.models_path,model))
+            else:
+                model_work_list = [gs.system.sd_model_file]
+        work_prompt = self.params.prompts
+        for model in model_work_list:
+            print('model = ', model)
+            self.params.prompts = work_prompt
+            gs.system.sd_model_file = model
+            if gs.system.sd_model_file != actual_selected_model:
+                if 'sd' in gs.models:
+                    del gs.models['sd']
+                    torch_gc()
 
-        else:
-
-            if plotting:
-                self.parent.make_grid = True
-                self.parent.all_images = []
-
-                attrib2 = self.params.plotX
-                attrib1 = self.params.plotY
-
-                ploty_list_string = self.params.plotXLine
-                plotx_list_string = self.params.plotYLine
-                plotY = plotx_list_string.split(', ')
-                plotX = ploty_list_string.split(', ')
-                self.onePercent = 100 / (len(plotX) * len(plotY) * self.params.n_batch * self.params.n_samples * self.params.steps)
+            if self.params.multi_dim_prompt:
+                self.multi_dim_loop(image_callback=image_callback)
 
             else:
-                plotX = [1]
-                plotY = [1]
-                self.onePercent = 100 / (self.params.n_batch * self.params.n_samples * self.params.steps)
-            all_images = []
-            for i in plotY:
-                for j in plotX:
-                    if plotting:
-                        self.params.__dict__[attrib1] = i
-                        self.params.__dict__[attrib2] = j
-                        if attrib1 == 'T': gs.T = int(i)
-                        if attrib1 == 'lr': gs.lr = float(i)
-                        if attrib2 == 'T': gs.T = int(j)
-                        if attrib2 == 'lr': gs.lr = float(j)
-                    if self.params.init_image is not None:
-                        if os.path.isdir(self.params.init_image) and self.params.animation_mode == 'None':
-                            print('Batch Directory found')
-                            self.params.max_frames = 2
-                    self.run_it(image_callback=image_callback)
-                    #if plotting:
-                    #    all_images.append(T.functional.pil_to_tensor(self.parent.image))
-            """if plotting:
-                ver_texts = []
-                hor_texts = []
-                for i in plotY:
-                    ver_texts.append([GridAnnotation(f"{attrib1}: {i}")])
-                for j in plotX:
-                    hor_texts.append([GridAnnotation(f"{attrib2}: {j}")])
-                ##print(hor_texts)
-                grid = make_grid(all_images, nrow=len(plotX))
-                grid = rearrange(grid, 'c h w -> h w c').cpu().numpy()
-                filename = f"{time.strftime('%Y%m%d%H%M%S')}_{attrib1}_{attrib2}_grid_{self.params.seed}.png"
-                grid_image = Image.fromarray(grid.astype(np.uint8))
 
-                grid_image = draw_grid_annotations(grid_image, grid_image.size[0], grid_image.size[1], hor_texts, ver_texts, self.params.W,
-                                                   self.params.H, self.params)
-                self.parent.image = grid_image
-                self.parent.image_preview_signal(grid_image)
-                grid_image.save(os.path.join(self.params.outdir, filename))"""
+                if plotting:
+                    self.parent.make_grid = True
+                    self.parent.all_images = []
+
+                    attrib2 = self.params.plotX
+                    attrib1 = self.params.plotY
+
+                    ploty_list_string = self.params.plotXLine
+                    plotx_list_string = self.params.plotYLine
+                    plotY = plotx_list_string.split(', ')
+                    plotX = ploty_list_string.split(', ')
+                    self.onePercent = 100 / (len(plotX) * len(plotY) * self.params.n_batch * self.params.n_samples * self.params.steps)
+
+                else:
+                    plotX = [1]
+                    plotY = [1]
+                    self.onePercent = 100 / (self.params.n_batch * self.params.n_samples * self.params.steps)
+                all_images = []
+                for i in plotY:
+                    for j in plotX:
+                        if plotting:
+                            self.params.__dict__[attrib1] = i
+                            self.params.__dict__[attrib2] = j
+                            if attrib1 == 'T': gs.T = int(i)
+                            if attrib1 == 'lr': gs.lr = float(i)
+                            if attrib2 == 'T': gs.T = int(j)
+                            if attrib2 == 'lr': gs.lr = float(j)
+                        if self.params.init_image is not None:
+                            if os.path.isdir(self.params.init_image) and self.params.animation_mode == 'None':
+                                print('Batch Directory found')
+                                self.params.max_frames = 2
+                        # here we finally run the image generation
+                        self.run_it(image_callback=image_callback)
+
         if plotting:
             self.signals.plot_ready.emit()
+        gs.system.sd_model_file = actual_selected_model
 
     def plot_ready(self):
         if self.parent.make_grid:

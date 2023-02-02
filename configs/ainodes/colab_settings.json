@@ -164,6 +164,8 @@
     "selected_aesthetic_embedding": "None",
     "multi_dim_prompt": false,
     "multi_dim_seed_behavior": 0,
-    "hires_strength": 0.0
+    "hires_strength": 0.0,
+    "multi_model_batch": false,
+    "multi_model_list": []
   }
 }

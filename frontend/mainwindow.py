@@ -1068,9 +1068,7 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
                     if i.id == self.canvas.canvas.render_item:
                         w = self.canvas.canvas.rectlist[self.canvas.canvas.rectlist.index(i)].w
                         x = self.canvas.canvas.rectlist[self.canvas.canvas.rectlist.index(i)].x + w + 20
-                        print(f"w, x: {w}, {x}")
                         y = i.y
-                        # print(i.x + w, i.y, self.cheight, self.w, self.stopwidth)
                         if x > 3000:
                             x = 0
                             y = self.cheight + 25
@@ -1125,42 +1123,6 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
         except:
             pass
 
-    def is_multiple_of_512(num):
-        if num % 512 == 0:
-            return True
-        else:
-            return False
-
-    def nearest_multiple_of_512(num):
-        quotient = num // 512
-        lower_multiple = quotient * 512
-        upper_multiple = (quotient + 1) * 512
-        if abs(num - lower_multiple) < abs(num - upper_multiple):
-            return lower_multiple
-        else:
-            return upper_multiple
-
-    # not used ???
-    def prep_rect_params_(self, prompt=None):
-        # prompt = str(prompt)
-        # steps = self.widgets[self.current_widget].w.stepsSlider.value()
-        params = {"prompts": self.widgets[self.current_widget].w.prompts.toPlainText(),
-                  "seed": random.randint(0, 2 ** 32 - 1) if self.widgets[
-                                                                self.current_widget].w.seed.text() == '' else int(
-                      self.widgets[self.current_widget].w.seed.text()),
-                  "strength": self.widgets[self.current_widget].w.strength.value(),
-                  "scale": self.widgets[self.current_widget].w.scale.value(),
-                  "mask_blur": int(self.widgets[self.current_widget].w.mask_blur.value()),
-                  "reconstruction_blur": int(self.widgets[self.current_widget].w.recons_blur.value()),
-                  "with_inpaint": self.widgets[self.current_widget].w.with_inpaint.isChecked(),
-                  "mask_offset": self.widgets[self.current_widget].w.mask_offset.value(),
-                  "steps": self.widgets[self.current_widget].w.steps.value(),
-                  "H": self.widgets[self.current_widget].w.H.value(),
-                  "W": self.widgets[self.current_widget].w.W.value(),
-                  "ddim_eta": self.widgets[self.current_widget].w.ddim_eta.value()
-                  }
-
-        return params
 
     @Slot(object)
     def draw_tempRects_signal(self, values):

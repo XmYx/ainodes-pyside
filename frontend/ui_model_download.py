@@ -75,6 +75,7 @@ class ModelDownload():
 
         model_info = self.actual_model_list[self.model_download.w.model_list.currentItem().text()]
         info = f"""Model Name: {model_info['item']['name']}
+Size: {int(int(model_info['file']['sizeKB']) / 1024)}MB  {round(int(int(model_info['file']['sizeKB']) / 1024)/ 1024, 2)}GB
 Base Model: {model_info['model']['baseModel']}
 Version: {model_info['model']['name']}
 Tags: {model_info['item']['tags']}            

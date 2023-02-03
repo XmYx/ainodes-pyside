@@ -427,7 +427,11 @@
                 <widget class="QLineEdit" name="tag"/>
                </item>
                <item row="10" column="0" colspan="3">
-                <widget class="QListWidget" name="model_list"/>
+                <widget class="QListWidget" name="model_list">
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::ExtendedSelection</enum>
+                 </property>
+                </widget>
                </item>
                <item row="8" column="2">
                 <widget class="QPushButton" name="more_results">

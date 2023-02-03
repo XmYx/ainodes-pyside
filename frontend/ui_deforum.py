@@ -375,10 +375,15 @@ class Deforum_UI(QObject):
 
 
     def run_deforum_six_outpaint_txt2img(self, progress_callback=None):
-        self.run_deforum_six_txt2img(image_callback = self.parent.image_preview_signal_op)
+        try:
+            self.run_deforum_six_txt2img(image_callback = self.parent.image_preview_signal_op)
+        except Exception as e:
+            print('run_deforum_six_outpaint_txt2img failed', e)
     def run_deforum_six_txt2img_img(self, progress_callback=None):
-        self.run_deforum_six_txt2img(image_callback = self.parent.image_preview_signal)
-
+        try:
+            self.run_deforum_six_txt2img(image_callback = self.parent.image_preview_signal)
+        except Exception as e:
+            print('run_deforum_six_txt2img_img failed', e)
     def run_deforum_six_txt2img(self, hiresinit=None, progress_callback=None, plotting=True, params=None, image_callback=None):
 
 
@@ -453,21 +458,25 @@ class Deforum_UI(QObject):
         self.parent.make_grid = False
 
         # enable a list of models to be used for any possible prompt situation
-        model_work_list = []
+        # create a minimum array with the one selected model from the model drop down
+        model_work_list = [gs.system.sd_model_file]
+        # store the selected model to be able to restore it again later,
+        # this is for UI functions not to be confused by a changed model in that system variable.
         actual_selected_model = gs.system.sd_model_file
+        # here we store the prompt to be able to restore it during a multi model run
+        work_prompt = self.params.prompts
         if self.params.multi_model_batch:
             if len(self.params.multi_model_list) > 0:
                 for model in self.params.multi_model_list:
                     model_work_list.append(os.path.join(gs.system.models_path,model))
-            else:
-                model_work_list = [gs.system.sd_model_file]
-        work_prompt = self.params.prompts
+
         for model in model_work_list:
-            print('model = ', model)
+
             self.params.prompts = work_prompt
             gs.system.sd_model_file = model
             if gs.system.sd_model_file != actual_selected_model:
                 if 'sd' in gs.models:
+                    gs.models['sd'].to('cpu')
                     del gs.models['sd']
                     torch_gc()
 
@@ -508,7 +517,11 @@ class Deforum_UI(QObject):
                                 print('Batch Directory found')
                                 self.params.max_frames = 2
                         # here we finally run the image generation
-                        self.run_it(image_callback=image_callback)
+                        try:
+                            self.run_it(image_callback=image_callback)
+                        except Exception as e:
+                            print('run int failed: ', e)
+
 
         if plotting:
             self.signals.plot_ready.emit()

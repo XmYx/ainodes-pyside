@@ -348,68 +348,75 @@ class Canvas(QGraphicsView):
 
     def addrect(self, dummy=False):
         #print('addrect')
-        rect = {}
-        uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
-        prompt = ""
-        if dummy == False:
-            rect[uid] = Rectangle(prompt, self.scene.scenePos.x() - self.w / 2, self.scene.scenePos.y() - self.h / 2, self.w, self.h, uid, params=self.parent.parent.sessionparams.update_params())
-        else:
-            rect[uid] = Rectangle(prompt, 0, 0, 1, 1, 1)
-        #rect[uid].signals.set_new_signal.connect(self.set_new)
-        self.selected_item = uid
-        self.rectlist.append(rect[uid])
-        if dummy == True:
-            self.rectlist.remove(rect[uid])
-        self.parent.parent.render_index = len(self.rectlist) - 1
+        try:
+            rect = {}
+            uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
+            prompt = ""
+            if dummy == False:
+                rect[uid] = Rectangle(prompt, self.scene.scenePos.x() - self.w / 2, self.scene.scenePos.y() - self.h / 2, self.w, self.h, uid, params=self.parent.parent.sessionparams.update_params())
+            else:
+                rect[uid] = Rectangle(prompt, 0, 0, 1, 1, 1)
+            #rect[uid].signals.set_new_signal.connect(self.set_new)
+            self.selected_item = uid
+            self.rectlist.append(rect[uid])
+            if dummy == True:
+                self.rectlist.remove(rect[uid])
+            self.parent.parent.render_index = len(self.rectlist) - 1
+        except Exception as e:
+            print('addrect',e)
 
     def tensor_preview(self):
         #print('tensor_preview')
-        if self.tensor_preview_item is not None:
-            w = self.tensor_preview_item.size().width() * 8
-            h = self.tensor_preview_item.size().height() * 8
-            try:
-                x = self.rectlist[self.parent.parent.render_index].x
-                y = self.rectlist[self.parent.parent.render_index].y
-            except:
-                x = 0
-                y = 0
+        try:
+            if self.tensor_preview_item is not None:
+                w = self.tensor_preview_item.size().width() * 8
+                h = self.tensor_preview_item.size().height() * 8
+                try:
+                    x = self.rectlist[self.parent.parent.render_index].x
+                    y = self.rectlist[self.parent.parent.render_index].y
+                except:
+                    x = 0
+                    y = 0
 
-            self.painter.begin(self.pixmap)
-            pixmap = QPixmap(w, h).fromImage(self.tensor_preview_item)
+                self.painter.begin(self.pixmap)
+                pixmap = QPixmap(w, h).fromImage(self.tensor_preview_item)
 
-            self.painter.drawPixmap(x, y, w, h, pixmap)
-            self.painter.end()
-            self.bgitem.setPixmap(self.pixmap)
-            #self.update()
-
+                self.painter.drawPixmap(x, y, w, h, pixmap)
+                self.painter.end()
+                self.bgitem.setPixmap(self.pixmap)
+                #self.update()
+        except Exception as e:
+            print('tensor_preview',e)
 
     def drawRect(self, x=None, y=None, width=256, height=256):
         #print('drawRect')
-        if x != None:
-            Xscale = self.getXScale()
-            Yscale = self.getYScale()
-            scaledWidth = (self.w / 2) / Xscale
-            scaledHeight = (self.h / 2) / Yscale
-            x = (x - scaledWidth) * Xscale
-            y = (y - scaledHeight) * Yscale
-            if x < 0: x = 0
-            if y < 0: y = 0
-        if self.mode == "generic" or self.mode == "outpaint" or self.mode == "inpaint" or self.mode == "move":
-            pen = QPen(Qt.GlobalColor.blue, 3, Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
-            self.rectItem.setPen(pen)
-            self.rectItem.setRect(x, y, self.w, self.h)
-        elif self.mode == "select":
-            if self.selected_item is not None:
-                for i in self.rectlist:
-                    if i.id == self.selected_item:
-                        ###print(i)
-                        pen = QPen(Qt.green, 3, Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
-                        self.rectItem.setPen(pen)
-                        self.rectItem.setRect(i.x, i.y, self.w, self.h)
-        if self.selected_item is None:
-            self.rectItem.setRect(0, 0, 5, 5)
-        self.bgitem.setPixmap(self.pixmap)
-        #self.update()
+        try:
+            if x != None:
+                Xscale = self.getXScale()
+                Yscale = self.getYScale()
+                scaledWidth = (self.w / 2) / Xscale
+                scaledHeight = (self.h / 2) / Yscale
+                x = (x - scaledWidth) * Xscale
+                y = (y - scaledHeight) * Yscale
+                if x < 0: x = 0
+                if y < 0: y = 0
+            if self.mode == "generic" or self.mode == "outpaint" or self.mode == "inpaint" or self.mode == "move":
+                pen = QPen(Qt.GlobalColor.blue, 3, Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
+                self.rectItem.setPen(pen)
+                self.rectItem.setRect(x, y, self.w, self.h)
+            elif self.mode == "select":
+                if self.selected_item is not None:
+                    for i in self.rectlist:
+                        if i.id == self.selected_item:
+                            ###print(i)
+                            pen = QPen(Qt.green, 3, Qt.DashDotLine, Qt.RoundCap, Qt.RoundJoin)
+                            self.rectItem.setPen(pen)
+                            self.rectItem.setRect(i.x, i.y, self.w, self.h)
+            if self.selected_item is None:
+                self.rectItem.setRect(0, 0, 5, 5)
+            self.bgitem.setPixmap(self.pixmap)
+        except Exception as e:
+            print('drawRect',e)
 
     def hoverCheck(self):
         #print('hoverCheck')

@@ -53,6 +53,7 @@ def save_settings(args, outfolder, prompt, index):
         filename = os.path.join(outfolder, f"{args.timestring}_{index:05}_{sanitize(prompt)[:160]}_settings.txt")
         output_data = copy.deepcopy(args.__dict__)
         output_data['actual_prompt'] = prompt
+        output_data['actual_model'] = gs.system.sd_model_file
         del output_data['axis']
         del output_data['prompts'] # we dont need to have the full list of prompts here, we just need the actual prompt used to create that image
         json_data = json.dumps(output_data, default=lambda o: o.__dict__,  ensure_ascii=False, indent=4)

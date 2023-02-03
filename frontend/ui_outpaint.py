@@ -225,50 +225,55 @@ class Outpainting:
         self.next_rect_from_batch()
 
     def next_rect_from_batch(self):
-        if self.batch_process == 'create_outpaint_batch':
-            if self.batch_process_items is not None and len(self.batch_process_items) > 0:
-                item = self.batch_process_items[0]
-                del self.batch_process_items[0]
-                self.next_rect_from_batch_list(item)
-            else:
-                if self.parent.canvas.canvas.tempbatch_work is not None and len(self.parent.canvas.canvas.tempbatch_work) > 0:
-                    self.batch_process_items = self.parent.canvas.canvas.tempbatch_work[0]
-                    del self.parent.canvas.canvas.tempbatch_work[0]
-                    if type(self.batch_process_items) == dict:
-                        self.batch_process_items = [self.batch_process_items]
-                    self.next_rect_from_batch()
+        try:
+            if self.batch_process == 'create_outpaint_batch':
+                if self.batch_process_items is not None and len(self.batch_process_items) > 0:
+                    item = self.batch_process_items[0]
+                    del self.batch_process_items[0]
+                    self.next_rect_from_batch_list(item)
                 else:
-                    self.batch_process = None
-                    self.parent.canvas.canvas.draw_rects()
-                    self.parent.canvas.canvas.redraw()
-
+                    if self.parent.canvas.canvas.tempbatch_work is not None and len(self.parent.canvas.canvas.tempbatch_work) > 0:
+                        self.batch_process_items = self.parent.canvas.canvas.tempbatch_work[0]
+                        del self.parent.canvas.canvas.tempbatch_work[0]
+                        if type(self.batch_process_items) == dict:
+                            self.batch_process_items = [self.batch_process_items]
+                        self.next_rect_from_batch()
+                    else:
+                        self.batch_process = None
+                        self.parent.canvas.canvas.draw_rects()
+                        self.parent.canvas.canvas.redraw()
+        except Exception as e:
+            print('next_rect_from_batch failed: ', e)
 
     def next_rect_from_batch_list(self, item):
-        tilesize = self.tile_size
-        if self.gobig_img_path is not None:
-            rect = QRect(item['x'], item['y'], self.parent.canvas.canvas.w, self.parent.canvas.canvas.h)
-            image = self.gobig_qimage.copy(rect)
-            index = None
-            self.hires_source = self.gobig_pil_image
+        try:
+            tilesize = self.tile_size
+            if self.gobig_img_path is not None:
+                rect = QRect(item['x'], item['y'], self.parent.canvas.canvas.w, self.parent.canvas.canvas.h)
+                image = self.gobig_qimage.copy(rect)
+                index = None
+                self.hires_source = self.gobig_pil_image
 
-        else:
-            image = None
-            index = None
-            self.hires_source = None
+            else:
+                image = None
+                index = None
+                self.hires_source = None
 
-        offset = self.parent.widgets[self.current_widget].w.mask_offset.value() + tilesize
-        self.rparams.prompts = self.animation_prompts[self.batch_step_number]
-        if self.rparams.seed_behavior == 'random':
-            self.rparams.seed = random.randint(0, 2 ** 32 - 1)
+            offset = self.parent.widgets[self.current_widget].w.mask_offset.value() + tilesize
+            self.rparams.prompts = self.animation_prompts[self.batch_step_number]
+            if self.rparams.seed_behavior == 'random':
+                self.rparams.seed = random.randint(0, 2 ** 32 - 1)
 
-        self.parent.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image,
-                                                render_index=index, order=item["order"],
-                                                params=copy.deepcopy(self.rparams), color=Qt.red)
+            self.parent.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image,
+                                                    render_index=index, order=item["order"],
+                                                    params=copy.deepcopy(self.rparams), color=Qt.red)
 
-        if self.rparams.seed_behavior == 'iter':
-            self.rparams.seed += 1
+            if self.rparams.seed_behavior == 'iter':
+                self.rparams.seed += 1
 
-        self.signals.rect_ready_in_ui.emit()
+            self.signals.rect_ready_in_ui.emit()
+        except Exception as e:
+            print('next_rect_from_batch_list failed: ', e)
 
     def create_outpaint_batch(self, gobig_img_path=None, progress_callback=False):
         self.batch_process = 'create_outpaint_batch'
@@ -336,57 +341,64 @@ class Outpainting:
 
     def next_image_from_batch(self, progress_callback=None):
         print('next_image_from_batch', self.batch_process)
-        if self.batch_process == 'run_prepared_outpaint_batch':
-            if len(self.rectlist_work) > 0:
-                if gs.stop_all is False:
-                    print(f"running step {self.batch_step_number}")
-                    self.run_outpaint_step_x()
+        try:
+            if self.batch_process == 'run_prepared_outpaint_batch':
+                if len(self.rectlist_work) > 0:
+                    if gs.stop_all is False:
+                        print(f"running step {self.batch_step_number}")
+                        self.run_outpaint_step_x()
 
-            else:
-                print('stopped by user action')
-                self.batch_process = None
+                else:
+                    print('stopped by user action')
+                    self.batch_process = None
+        except Exception as e:
+            print('next_image_from_batch failed: ', e)
 
         if self.batch_process == 'run_hires_batch':
             print('run next hires image batch')
-            if gs.stop_all is False:
-                if len(self.parent.canvas.canvas.rectlist) > 0 and len(self.parent.canvas.canvas.rectlist) > self.parent.render_index:
-                    self.run_hires_step_x()
+            try:
+                if gs.stop_all is False:
+                    if len(self.parent.canvas.canvas.rectlist) > 0 and len(self.parent.canvas.canvas.rectlist) > self.parent.render_index:
+                        self.run_hires_step_x()
+                    else:
+                        og_size = (512, 512)
+                        source_image = self.hires_source
+                        alpha = Image.new("L", og_size, color=0xFF)
+                        alpha_gradient = ImageDraw.Draw(alpha)
+                        a = 0
+                        i = 0
+                        overlap = self.parent.widgets[self.current_widget].w.rect_overlap.value()
+                        shape = (og_size, (0, 0))
+                        while i < overlap:
+                            alpha_gradient.rectangle(shape, fill=a)
+                            a += 4
+                            i += 1
+                            shape = ((og_size[0] - i, og_size[1] - i), (i, i))
+                        mask = Image.new("RGBA", og_size, color=0)
+                        mask.putalpha(alpha)
+                        finished_slices = []
+                        for betterslice, x, y in self.betterslices:
+                            #betterslice.save(f'output/betterslice_{x}_{y}.png')
+                            finished_slice = self.addalpha(betterslice, mask)
+                            finished_slices.append((finished_slice, x, y))
+                        # # Once we have all our images, use grid_merge back onto the source, then save
+                        final_output = self.grid_merge(
+                            source_image.convert("RGBA"), finished_slices
+                        ).convert("RGBA")
+
+                        # todo make this filename a dynamic name
+                        final_output.save('output/test_hires.png')
+                        # base_filename = f"{base_filename}d"
+
+                        self.hires_source = final_output
+                        self.parent.params.advanced = False
+                        self.finish_batch()
+                        self.parent.image_preview_signal(final_output.convert("RGB"))
                 else:
-                    og_size = (512, 512)
-                    source_image = self.hires_source
-                    alpha = Image.new("L", og_size, color=0xFF)
-                    alpha_gradient = ImageDraw.Draw(alpha)
-                    a = 0
-                    i = 0
-                    overlap = self.parent.widgets[self.current_widget].w.rect_overlap.value()
-                    shape = (og_size, (0, 0))
-                    while i < overlap:
-                        alpha_gradient.rectangle(shape, fill=a)
-                        a += 4
-                        i += 1
-                        shape = ((og_size[0] - i, og_size[1] - i), (i, i))
-                    mask = Image.new("RGBA", og_size, color=0)
-                    mask.putalpha(alpha)
-                    finished_slices = []
-                    for betterslice, x, y in self.betterslices:
-                        #betterslice.save(f'output/betterslice_{x}_{y}.png')
-                        finished_slice = self.addalpha(betterslice, mask)
-                        finished_slices.append((finished_slice, x, y))
-                    # # Once we have all our images, use grid_merge back onto the source, then save
-                    final_output = self.grid_merge(
-                        source_image.convert("RGBA"), finished_slices
-                    ).convert("RGBA")
+                    print('stopped by user action')
+            except Exception as e:
+                print('run next hires image batch failed: ', e)
 
-                    # todo make this filename a dynamic name
-                    final_output.save('output/test_hires.png')
-                    # base_filename = f"{base_filename}d"
-
-                    self.hires_source = final_output
-                    self.parent.params.advanced = False
-                    self.finish_batch()
-                    self.parent.image_preview_signal(final_output.convert("RGB"))
-            else:
-                print('stopped by user action')
 
     def finish_batch(self):
         self.parent.canvas.canvas.rectlist = []
@@ -394,107 +406,123 @@ class Outpainting:
         self.last_batch_image = None
 
     def run_hires_batch(self, progress_callback=None):
-        self.batch_process = 'run_hires_batch'
-        self.parent.sessionparams.update_params()
-        self.parent.sessionparams.params.advanced = True
+        try:
+            self.batch_process = 'run_hires_batch'
+            self.parent.sessionparams.update_params()
+            self.parent.sessionparams.params.advanced = True
 
-        gs.stop_all = False
+            gs.stop_all = False
 
-        self.parent.choice = "Outpaint"
+            self.parent.choice = "Outpaint"
 
-        self.betterslices = []
+            self.betterslices = []
 
-        self.parent.render_index = 0
-        self.next_image_from_batch()
+            self.parent.render_index = 0
+            self.next_image_from_batch()
 
+        except Exception as e:
+            print('run_hires_batch failed: ', e)
 
     def run_hires_step_x(self):
         print('run_hires_step_x')
-        next_step = self.parent.canvas.canvas.rectlist[self.parent.render_index]
-        self.parent.choice = 'Outpaint'
-        image = next_step.image
-        image.save('output/temp/temp.png', "PNG")
-        self.parent.canvas.canvas.selected_item = next_step.id
-        print('self.parent.canvas.canvas.selected_item',self.parent.canvas.canvas.selected_item)
-        self.parent.deforum_ui.run_deforum_six_txt2img(hiresinit='output/temp/temp.png', image_callback=self.parent.image_preview_signal_op)
-
+        try:
+            next_step = self.parent.canvas.canvas.rectlist[self.parent.render_index]
+            self.parent.choice = 'Outpaint'
+            image = next_step.image
+            image.save('output/temp/temp.png', "PNG")
+            self.parent.canvas.canvas.selected_item = next_step.id
+            print('self.parent.canvas.canvas.selected_item',self.parent.canvas.canvas.selected_item)
+            self.parent.deforum_ui.run_deforum_six_txt2img(hiresinit='output/temp/temp.png', image_callback=self.parent.image_preview_signal_op)
+        except Exception as e:
+            print('run_hires_step_x failed: ', e)
     def run_outpaint_step_x(self):
-        next_step = self.rectlist_work[0]
-        del self.rectlist_work[0]
-        self.parent.canvas.canvas.reusable_outpaint(next_step.id)
-        #self.wait_canvas_busy()
-        self.parent.deforum_ui.run_deforum_outpaint(next_step.params)
-
+        try:
+            next_step = self.rectlist_work[0]
+            del self.rectlist_work[0]
+            self.parent.canvas.canvas.reusable_outpaint(next_step.id)
+            #self.wait_canvas_busy()
+            self.parent.deforum_ui.run_deforum_outpaint(next_step.params)
+        except Exception as e:
+            print('run_outpaint_step_x failed: ', e)
     def run_prepared_outpaint_batch(self, progress_callback=None):
-        self.batch_process = 'run_prepared_outpaint_batch'
-        gs.stop_all = False
+        try:
+            self.batch_process = 'run_prepared_outpaint_batch'
+            gs.stop_all = False
 
-        self.parent.choice = "Outpaint"
-        self.parent.params.advanced = True
+            self.parent.choice = "Outpaint"
+            self.parent.params.advanced = True
 
-        self.batch_step_number = 0
-        tiles = len(self.parent.canvas.canvas.rectlist)
-        self.rectlist_work = copy.deepcopy(self.parent.canvas.canvas.rectlist)
-        print(f"Tiles to Outpaint:{tiles}")
-        self.next_image_from_batch()
+            self.batch_step_number = 0
+            tiles = len(self.parent.canvas.canvas.rectlist)
+            self.rectlist_work = copy.deepcopy(self.parent.canvas.canvas.rectlist)
+            print(f"Tiles to Outpaint:{tiles}")
+            self.next_image_from_batch()
+        except Exception as e:
+            print('run_prepared_outpaint_batch failed: ', e)
 
     def resize_canvas(self):
-        tilesize = 512
-        overlap = (self.parent.widgets[self.current_widget].w.rect_overlap.value())
-        overlap = overlap - (overlap / 3)
+        try:
+            tilesize = 512
+            overlap = (self.parent.widgets[self.current_widget].w.rect_overlap.value())
+            overlap = overlap - (overlap / 3)
 
-        target_h = (self.parent.widgets[self.current_widget].w.batch_rows.value() * (tilesize - overlap)) + (2 * self.parent.widgets[self.current_widget].w.start_offset_x.value()) + overlap
-        target_w = (self.parent.widgets[self.current_widget].w.batch_columns.value() * (tilesize - overlap)) + (2 * self.parent.widgets[self.current_widget].w.start_offset_y.value()) + overlap
-        print('targetsize = ', target_w, target_h)
-        self.parent.canvas.H.setValue(int(target_h))
-        self.parent.canvas.W.setValue(int(target_w))
-        self.parent.canvas.canvas.change_resolution()
-
+            target_h = (self.parent.widgets[self.current_widget].w.batch_rows.value() * (tilesize - overlap)) + (2 * self.parent.widgets[self.current_widget].w.start_offset_x.value()) + overlap
+            target_w = (self.parent.widgets[self.current_widget].w.batch_columns.value() * (tilesize - overlap)) + (2 * self.parent.widgets[self.current_widget].w.start_offset_y.value()) + overlap
+            print('targetsize = ', target_w, target_h)
+            self.parent.canvas.H.setValue(int(target_h))
+            self.parent.canvas.W.setValue(int(target_w))
+            self.parent.canvas.canvas.change_resolution()
+        except Exception as e:
+            print('resize_canvas failed: ', e)
     def preview_batch_outpaint(self, chops_x=None, chops_y=None, progress_callback=None):
-        # we resize canvas if preview batch
-        # no resize for img2img
-        if chops_x is None:
-            self.resize_canvas()
-            self.parent.canvas.canvas.scene.update()
+        try:
+            # we resize canvas if preview batch
+            # no resize for img2img
+            if chops_x is None:
+                self.resize_canvas()
+                self.parent.canvas.canvas.scene.update()
 
-        if chops_x is None:
-            self.parent.canvas.canvas.cols = self.parent.widgets[self.current_widget].w.batch_columns.value()
-            self.parent.canvas.canvas.rows = self.parent.widgets[self.current_widget].w.batch_rows.value() -1
-        else:
-            self.parent.canvas.canvas.cols = chops_x
-            self.parent.canvas.canvas.rows = chops_y
+            if chops_x is None:
+                self.parent.canvas.canvas.cols = self.parent.widgets[self.current_widget].w.batch_columns.value()
+                self.parent.canvas.canvas.rows = self.parent.widgets[self.current_widget].w.batch_rows.value() -1
+            else:
+                self.parent.canvas.canvas.cols = chops_x
+                self.parent.canvas.canvas.rows = chops_y
 
-        self.parent.canvas.canvas.offset = self.parent.widgets[self.current_widget].w.rect_overlap.value()
-        self.parent.canvas.canvas.maskoffset = self.parent.widgets[self.current_widget].w.mask_offset.value()
+            self.parent.canvas.canvas.offset = self.parent.widgets[self.current_widget].w.rect_overlap.value()
+            self.parent.canvas.canvas.maskoffset = self.parent.widgets[self.current_widget].w.mask_offset.value()
 
-        randomize = self.parent.widgets[self.current_widget].w.randomize.isChecked()
-        spiral = self.parent.widgets[self.current_widget].w.spiral.isChecked()
-        reverse = self.parent.widgets[self.current_widget].w.reverse.isChecked()
-        startOffsetX = self.parent.widgets[self.current_widget].w.start_offset_x.value()
-        startOffsetY = self.parent.widgets[self.current_widget].w.start_offset_y.value()
-        prompts = self.parent.widgets[self.current_widget].w.prompts.toPlainText()
-        # keyframes = self.prompt.w.keyFrames.toPlainText()
-        keyframes = ""
+            randomize = self.parent.widgets[self.current_widget].w.randomize.isChecked()
+            spiral = self.parent.widgets[self.current_widget].w.spiral.isChecked()
+            reverse = self.parent.widgets[self.current_widget].w.reverse.isChecked()
+            startOffsetX = self.parent.widgets[self.current_widget].w.start_offset_x.value()
+            startOffsetY = self.parent.widgets[self.current_widget].w.start_offset_y.value()
+            prompts = self.parent.widgets[self.current_widget].w.prompts.toPlainText()
+            # keyframes = self.prompt.w.keyFrames.toPlainText()
+            keyframes = ""
 
-        self.parent.canvas.canvas.tempbatch = self.parent.canvas.canvas.create_tempBatch(prompts, keyframes, startOffsetX, startOffsetY, randomize)
-        templist = []
-        if spiral:
-            print(self.parent.canvas.canvas.tempbatch)
-            self.parent.canvas.canvas.tempbatch = spiralOrder(self.parent.canvas.canvas.tempbatch)
-        if reverse:
-            self.parent.canvas.canvas.tempbatch.reverse()
-        # print(len(self.parent.canvas.canvas.tempbatch))
-        self.tempsize_int = self.parent.canvas.canvas.cols * self.parent.canvas.canvas.rows
-        self.parent.canvas.canvas.draw_tempBatch(self.parent.canvas.canvas.tempbatch)
-
+            self.parent.canvas.canvas.tempbatch = self.parent.canvas.canvas.create_tempBatch(prompts, keyframes, startOffsetX, startOffsetY, randomize)
+            templist = []
+            if spiral:
+                print(self.parent.canvas.canvas.tempbatch)
+                self.parent.canvas.canvas.tempbatch = spiralOrder(self.parent.canvas.canvas.tempbatch)
+            if reverse:
+                self.parent.canvas.canvas.tempbatch.reverse()
+            # print(len(self.parent.canvas.canvas.tempbatch))
+            self.tempsize_int = self.parent.canvas.canvas.cols * self.parent.canvas.canvas.rows
+            self.parent.canvas.canvas.draw_tempBatch(self.parent.canvas.canvas.tempbatch)
+        except Exception as e:
+            print('preview_batch_outpaint failed: ', e)
     def outpaint_rect_overlap(self):
-        self.parent.canvas.canvas.rectPreview = self.parent.widgets[self.current_widget].w.enable_overlap.isChecked()
-        if self.parent.canvas.canvas.rectPreview == False:
-            self.parent.canvas.canvas.newimage = True
-            self.parent.canvas.canvas.redraw()
-        elif self.parent.canvas.canvas.rectPreview == True:
-            self.parent.canvas.canvas.visualize_rects()
-
+        try:
+            self.parent.canvas.canvas.rectPreview = self.parent.widgets[self.current_widget].w.enable_overlap.isChecked()
+            if self.parent.canvas.canvas.rectPreview == False:
+                self.parent.canvas.canvas.newimage = True
+                self.parent.canvas.canvas.redraw()
+            elif self.parent.canvas.canvas.rectPreview == True:
+                self.parent.canvas.canvas.visualize_rects()
+        except Exception as e:
+            print('outpaint_rect_overlap failed: ', e)
     def addalpha(self, im, mask):
         imr, img, imb, ima = im.split()
         mmr, mmg, mmb, mma = mask.split()

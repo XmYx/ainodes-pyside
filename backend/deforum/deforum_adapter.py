@@ -646,7 +646,7 @@ class DeforumSix:
         device = self.device
 
         if lowmem == True:
-            print(f'-                 Low Memory Mode                             ')
+            print(f'-                 Low Memory Mode')
             if "sd" in gs.models:
                 del gs.models["sd"]
             if "inpaint" in gs.models:
@@ -769,7 +769,10 @@ class DeforumSix:
             render_interpolation(args, anim_args, animation_prompts, root, image_callback=image_callback)
         else:
             # print(prompts)
-            paths = render_image_batch(args, prompts, root, image_callback=image_callback, step_callback=step_callback)
+            try:
+                paths = render_image_batch(args, prompts, root, image_callback=image_callback, step_callback=step_callback)
+            except Exception as e:
+                print('render_image_batch failed :', e)
 
         # skip_video_for_run_all = True  # @param {type: 'boolean'}
         fps = 12  # @param {type:"number"}

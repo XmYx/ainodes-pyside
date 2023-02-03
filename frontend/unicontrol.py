@@ -244,6 +244,7 @@ class UniControl(QObject):
         new_model = os.path.join(gs.system.models_path,self.w.selected_model.currentText())
         gs.system.sd_model_file = new_model
         if 'sd' in gs.models:
+            gs.models['sd'].to('cpu')
             del gs.models['sd']
         torch_gc()
 

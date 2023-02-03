@@ -479,52 +479,53 @@ class Deforum_UI(QObject):
                     gs.models['sd'].to('cpu')
                     del gs.models['sd']
                     torch_gc()
-
-            if self.params.multi_dim_prompt:
-                self.multi_dim_loop(image_callback=image_callback)
-
-            else:
-
-                if plotting:
-                    self.parent.make_grid = True
-                    self.parent.all_images = []
-
-                    attrib2 = self.params.plotX
-                    attrib1 = self.params.plotY
-
-                    ploty_list_string = self.params.plotXLine
-                    plotx_list_string = self.params.plotYLine
-                    plotY = plotx_list_string.split(', ')
-                    plotX = ploty_list_string.split(', ')
-                    self.onePercent = 100 / (len(plotX) * len(plotY) * self.params.n_batch * self.params.n_samples * self.params.steps)
+            if not gs.stop_all:
+                if self.params.multi_dim_prompt:
+                    self.multi_dim_loop(image_callback=image_callback)
 
                 else:
-                    plotX = [1]
-                    plotY = [1]
-                    self.onePercent = 100 / (self.params.n_batch * self.params.n_samples * self.params.steps)
-                all_images = []
-                for i in plotY:
-                    for j in plotX:
-                        if plotting:
-                            self.params.__dict__[attrib1] = i
-                            self.params.__dict__[attrib2] = j
-                            if attrib1 == 'T': gs.T = int(i)
-                            if attrib1 == 'lr': gs.lr = float(i)
-                            if attrib2 == 'T': gs.T = int(j)
-                            if attrib2 == 'lr': gs.lr = float(j)
-                        if self.params.init_image is not None:
-                            if os.path.isdir(self.params.init_image) and self.params.animation_mode == 'None':
-                                print('Batch Directory found')
-                                self.params.max_frames = 2
-                        # here we finally run the image generation
-                        try:
-                            self.run_it(image_callback=image_callback)
-                        except Exception as e:
-                            print('run int failed: ', e)
 
+                    if plotting:
+                        self.parent.make_grid = True
+                        self.parent.all_images = []
 
-        if plotting:
-            self.signals.plot_ready.emit()
+                        attrib2 = self.params.plotX
+                        attrib1 = self.params.plotY
+
+                        ploty_list_string = self.params.plotXLine
+                        plotx_list_string = self.params.plotYLine
+                        plotY = plotx_list_string.split(', ')
+                        plotX = ploty_list_string.split(', ')
+                        self.onePercent = 100 / (len(plotX) * len(plotY) * self.params.n_batch * self.params.n_samples * self.params.steps)
+
+                    else:
+                        plotX = [1]
+                        plotY = [1]
+                        self.onePercent = 100 / (self.params.n_batch * self.params.n_samples * self.params.steps)
+                    all_images = []
+                    for i in plotY:
+                        for j in plotX:
+                            if plotting:
+                                self.params.__dict__[attrib1] = i
+                                self.params.__dict__[attrib2] = j
+                                if attrib1 == 'T': gs.T = int(i)
+                                if attrib1 == 'lr': gs.lr = float(i)
+                                if attrib2 == 'T': gs.T = int(j)
+                                if attrib2 == 'lr': gs.lr = float(j)
+                            if self.params.init_image is not None:
+                                if os.path.isdir(self.params.init_image) and self.params.animation_mode == 'None':
+                                    print('Batch Directory found')
+                                    self.params.max_frames = 2
+                            # here we finally run the image generation
+                            try:
+                                self.run_it(image_callback=image_callback)
+                            except Exception as e:
+                                print('run int failed: ', e)
+
+            else:
+                break
+            if plotting:
+                self.signals.plot_ready.emit()
         gs.system.sd_model_file = actual_selected_model
 
     def plot_ready(self):

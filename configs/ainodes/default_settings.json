@@ -121,6 +121,7 @@
     "anim3D": false,
     "animVid": false,
     "prompts" : "Portrait of Grace Kelly, detailed, concept art, Trending on Artstation",
+    "negative_prompts" : "",
     "max_frames" : 1,
     "out_dir" : "output/",
     "mean_scale" : 0,

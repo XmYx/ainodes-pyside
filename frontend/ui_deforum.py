@@ -469,6 +469,10 @@ class Deforum_UI(QObject):
             if len(self.params.multi_model_list) > 0:
                 for model in self.params.multi_model_list:
                     model_work_list.append(os.path.join(gs.system.models_path,model))
+                if 'sd' in gs.models:
+                    gs.models['sd'].to('cpu')
+                    del gs.models['sd']
+                    torch_gc()
 
         for model in model_work_list:
 

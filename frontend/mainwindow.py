@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import shutil
 from io import BytesIO
 
 import backend.settings as settings
@@ -26,37 +27,38 @@ from PySide6.QtWidgets import QMainWindow, QToolBar, QListWidgetItem, QFileDialo
 from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt, QShortcut, QKeySequence
 from PySide6 import QtCore
 from backend.deforum.six.animation import check_is_number
-from einops import rearrange
+
 import copy
-import torchvision.transforms as T
+
 
 from backend.worker import Worker
-from frontend import plugin_loader
-# from frontend.ui_model_chooser import ModelChooser_UI
-
 from backend.prompt_ai.prompt_gen import AiPrompt
+
+
+from frontend import plugin_loader
 from frontend.ui_paint import PaintUI
 from frontend.ui_classes import SystemSetup, ThumbsUI, AnimKeyEditor
 from frontend.unicontrol import UniControl
-
 from frontend.ui_krea import Krea
 from frontend.ui_lexica import LexicArt
 from frontend.ui_model_download import ModelDownload
 from backend.shared import model_killer
-
 from frontend.ui_timeline import Timeline, KeyFrame
 
 # we had to load settings first before we can do this import
-from frontend.ui_prompt_fetcher import PromptFetcher_UI, FetchPrompts
-from frontend.ui_image_lab import ImageLab
-from frontend.ui_deforum import Deforum_UI, draw_grid_annotations
-from frontend.session_params import SessionParams
 from backend.shared import save_last_prompt
 from backend.maintain_models import check_models_exist
 from backend.sqlite import db_base
 from backend.sqlite import model_db_civitai
-from backend.web_requests.web_images import WebImages
+
+
+from frontend.ui_prompt_fetcher import PromptFetcher_UI, FetchPrompts
+from frontend.ui_image_lab import ImageLab
+from frontend.ui_deforum import Deforum_UI, draw_grid_annotations
+from frontend.session_params import SessionParams
 from frontend.ui_outpaint import Outpainting
+from frontend.ui_image import UiImage
+
 
 # please don't remove it totally, just remove what we know is not used
 class Callbacks(QObject):
@@ -85,6 +87,9 @@ class MainWindow(QMainWindow):
         self.signals = Callbacks()
 
         self.thumbs = ThumbsUI()
+        self.w = 512
+        self.cheight = 512
+        self.ui_image = UiImage(self)
         self.canvas = PaintUI(self)
         self.setCentralWidget(self.canvas)
 
@@ -121,8 +126,7 @@ class MainWindow(QMainWindow):
 
         self.threadpool = QThreadPool()
         self.deforum_ui = Deforum_UI(self)
-        self.w = 512
-        self.cheight = 512
+
         self.setAcceptDrops(True)
         self.y = 0
         self.lastheight = None
@@ -164,10 +168,10 @@ class MainWindow(QMainWindow):
         self.tabifyDockWidget(self.krea.w.dockWidget, self.prompt_fetcher.w.dockWidget)
         self.tabifyDockWidget(self.prompt_fetcher.w.dockWidget, self.widgets[self.current_widget].w.dockWidget)
         self.civitai_api = model_db_civitai.civit_ai_api()
-        self.web_images = WebImages()
+
 
         self.mode = 'txt2img'
-        self.stopwidth = False
+
 
         self.init_plugin_loader()
         self.connections()
@@ -180,13 +184,7 @@ class MainWindow(QMainWindow):
         self.widgets[self.current_widget].update_aesthetics_list()
 
         check_models_exist()
-        self.latent_rgb_factors = torch.tensor([
-            #   R        G        B
-            [0.298, 0.207, 0.208],  # L1
-            [0.187, 0.286, 0.173],  # L2
-            [-0.158, 0.189, 0.264],  # L3
-            [-0.184, -0.271, -0.473],  # L4
-        ], dtype=torch.float, device='cuda')
+
 
         db_base.check_db_status()
         self.params = self.sessionparams.update_params(update_db=False)
@@ -196,15 +194,13 @@ class MainWindow(QMainWindow):
         if gs.system.show_settings is True:
             self.show_default()
         self.check_karras_enabled()
-        self.make_grid = False
-        self.all_images = []
-        self.advanced_temp = False
+
+
         self.gpu_info()
         self.shortcut = QShortcut(QKeySequence("Ctrl+Enter"), self)
         self.shortcut.activated.connect(self.task_switcher)
 
-    def signal_handler(signal, frame):
-        print("Signal received:", signal)
+
     def selftest(self):  # TODO Lets extend this function with everything we have and has to work
 
         self.canvas.canvas.reset()
@@ -244,8 +240,8 @@ class MainWindow(QMainWindow):
 
         self.signals.set_prompt.connect(self.widgets[self.current_widget].set_prompt)
 
-        self.deforum_ui.signals.txt2img_image_cb.connect(self.image_preview_func_str)
-        self.deforum_ui.signals.deforum_step.connect(self.tensor_preview_schedule)
+        self.deforum_ui.signals.txt2img_image_cb.connect(self.ui_image.image_preview_func_str)
+        self.deforum_ui.signals.deforum_step.connect(self.ui_image.tensor_preview_schedule)
         self.deforum_ui.signals.plot_ready.connect(self.deforum_ui.plot_ready)
         self.widgets[self.current_widget].w.dream.clicked.connect(self.task_switcher)
         self.widgets[self.current_widget].w.lucky.clicked.connect(self.show_default)
@@ -278,7 +274,7 @@ class MainWindow(QMainWindow):
         self.thumbs.w.thumbnails.itemClicked.connect(self.outpaint.select_outpaint_image)
         self.outpaint.signals.add_rect.connect(self.outpaint.add_rect)
         self.outpaint.signals.canvas_update.connect(self.outpaint.canvas_update)
-        self.outpaint.signals.txt2img_image_op.connect(self.image_preview_func_str_op)
+        self.outpaint.signals.txt2img_image_op.connect(self.ui_image.image_preview_func_str_op)
         self.canvas.canvas.signals.update_selected.connect(self.outpaint.show_outpaint_details)
         self.canvas.canvas.signals.update_params.connect(self.outpaint.create_params)
 
@@ -326,21 +322,21 @@ class MainWindow(QMainWindow):
 
         self.model_download.civit_ai_api.signals.civitai_no_more_models.connect(self.all_civitai_model_data_loaded_thread)
         self.model_download.civit_ai_api.signals.civitai_start_model_update.connect(self.civitai_start_model_update_thread)
-        self.model_download.signals.show_model_preview_images.connect(self.show_model_preview_images)
+        self.model_download.signals.show_model_preview_images.connect(self.ui_image.show_model_preview_images)
         self.model_download.signals.add_model_search_item.connect(self.model_download.add_model_search_item)
         self.model_download.signals.set_download_info_text.connect(self.model_download.set_download_info_text)
 
         self.system_setup.w.ok.clicked.connect(self.sessionparams.update_system_params)
         self.system_setup.w.cancel.clicked.connect(self.update_ui_from_system_params)
-        self.web_images.signals.web_image_retrived.connect(self.show_web_image_on_canvas)
+        self.web_images.signals.web_image_retrived.connect(self.ui_image.show_web_image_on_canvas)
 
         self.widgets[self.current_widget].w.sampler.currentIndexChanged.connect(self.check_karras_enabled)
         self.widgets[self.current_widget].w.hires.toggled.connect(self.set_hires_strength_visablity)
 
         self.canvas.canvas.signals.run_redraw.connect(self.run_redraw)
-        self.canvas.canvas.signals.draw_tempRects.connect(self.draw_tempRects_signal)
+        self.canvas.canvas.signals.draw_tempRects.connect(self.ui_image.draw_tempRects_signal)
         self.signals.status_update.connect(self.set_status_bar)
-        self.signals.image_loaded.connect(self.render_index_image_preview_func_str)
+        self.signals.image_loaded.connect(self.ui_image.render_index_image_preview_func_str)
         self.system_setup.w.update_gpu_stats.clicked.connect(self.gpu_info)
 
     def gpu_info(self):
@@ -746,401 +742,13 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
         gs.diffusion.prompt = data
         self.widgets[self.current_widget].w.prompts.setHtml(data)
 
-    def show_model_preview_images(self, model):
-        for image in model['images']:
-            self.show_image_from_url(image['url'])
-
-    def show_image_from_url(self, url):
-        self.web_images.get_image(url)
-
-    def show_web_image_on_canvas(self, image_string):
-        try:
-            gs.temppath = ''
-            self.params.max_frames = 0
-            image = Image.open(BytesIO(image_string))
-            image = image.convert("RGB")
-            mode = image.mode
-            size = image.size
-            enc_image = base64.b64encode(image.tobytes()).decode()
-            self.deforum_ui.signals.txt2img_image_cb.emit(enc_image, mode, size)
-
-        except Exception as e:
-            print('Error while fetching the images from web: ', e)
 
 
-    def image_preview_signal(self, image, *args, **kwargs):
-        try:
-            mode = image.mode
-            size = image.size
-            enc_image = base64.b64encode(image.tobytes()).decode()
-            self.deforum_ui.signals.txt2img_image_cb.emit(enc_image, mode, size)
-            self.signals.image_ready.emit()
-        except Exception as e:
-            print('image_preview_signal', e)
-    @Slot()
-    def image_preview_func(self, image=None):
-        try:
-            img = image #self.image
-
-            if self.params.advanced == True and (self.canvas.canvas.rectlist == [] or self.canvas.canvas.rectlist is None):
-                self.params.advanced = False
-                self.advanced_temp = True
-
-            if self.params.advanced == True:
-
-                if self.canvas.canvas.rectlist != []:
-                    if img is not None:
-                        if self.canvas.canvas.rectlist[self.render_index].images is not None:
-                            templist = self.canvas.canvas.rectlist[self.render_index].images
-                        else:
-                            templist = []
-                        self.canvas.canvas.rectlist[self.render_index].PILImage = img
-                        qimage = ImageQt(img.convert("RGBA"))
-                        pixmap = QPixmap.fromImage(qimage)
-                        print(self.canvas.canvas.rectlist[self.render_index].render_index)
-                        self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap),
-                                                                         f"{self.canvas.canvas.rectlist[self.render_index].render_index}"))
-
-                        if self.canvas.canvas.anim_inpaint == True:
-                            templist[self.canvas.canvas.rectlist[self.render_index].render_index] = qimage
-                            self.canvas.canvas.anim_inpaint = False
-                        elif self.canvas.canvas.anim_inpaint == False:
-                            templist.append(qimage)
-                            if self.canvas.canvas.rectlist[self.render_index].render_index == None:
-                                self.canvas.canvas.rectlist[self.render_index].render_index = 0
-                            else:
-                                self.canvas.canvas.rectlist[self.render_index].render_index += 1
-                        self.canvas.canvas.rectlist[self.render_index].images = templist
-                        self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
-                        #self.canvas.canvas.rectlist[self.render_index].image = qimage
-                        self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
-                        self.canvas.canvas.rectlist[self.render_index].img_path = gs.temppath
-                    self.canvas.canvas.newimage = True
-                    self.canvas.canvas.update()
-                    self.canvas.canvas.redraw()
-                    del qimage
-                    del pixmap
-            elif self.params.advanced == False:
-
-                if self.advanced_temp == True:
-                    self.advanced_temp = False
-                    self.params.advanced = True
-
-                if img is not None:
-                    image = img
-                    w, h = image.size
-                    self.add_next_rect(h, w)
-                    self.render_index = len(self.canvas.canvas.rectlist) - 1
-
-                    # for items in self.canvas.canvas.rectlist:
-                    #    if items.id == self.canvas.canvas.render_item:
-                    if self.canvas.canvas.rectlist[self.render_index].images is not None:
-                        templist = self.canvas.canvas.rectlist[self.render_index].images
-                    else:
-                        templist = []
-                    self.canvas.canvas.rectlist[self.render_index].PILImage = image
-                    qimage = ImageQt(image.convert("RGBA"))
-                    templist.append(qimage)
-                    self.canvas.canvas.rectlist[self.render_index].images = templist
-                    if self.canvas.canvas.rectlist[self.render_index].render_index == None:
-                        self.canvas.canvas.rectlist[self.render_index].render_index = 0
-                    else:
-                        self.canvas.canvas.rectlist[self.render_index].render_index += 1
-                    self.canvas.canvas.rectlist[self.render_index].image = \
-                    self.canvas.canvas.rectlist[self.render_index].images[
-                        self.canvas.canvas.rectlist[self.render_index].render_index]
-                    self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
-                    self.canvas.canvas.rectlist[self.render_index].params = self.params
-
-                    self.canvas.canvas.newimage = True
-                    self.canvas.canvas.redraw()
-                    self.canvas.canvas.update()
-
-            if self.params.advanced == False and self.params.max_frames > 1:
-                self.params.advanced = True
-
-            if self.make_grid:
-                self.all_images.append(T.functional.pil_to_tensor(image))
-        except Exception as e:
-            print('image_preview_func', e)
-
-    @Slot()
-    def image_preview_func_str(self, image, mode, size):
-        try:
-            decoded_image = base64.b64decode(image.encode())
-            image = Image.frombytes(mode, size, decoded_image)
-            image = image.convert('RGB')
-            self.image_preview_func(image)
-        except Exception as e:
-            print('image_preview_func_str', e)
-    @Slot()
-    def render_index_image_preview_func_str(self, image, mode, size, render_index):
-        decoded_image = base64.b64decode(image.encode())
-        self.render_index_image_preview_func(Image.frombytes(mode, size, decoded_image), render_index)
-    @Slot()
-    def render_index_image_preview_func(self, image=None, render_index=None):
-        try:
-            img = image
-            if self.outpaint.batch_process == 'run_hires_batch':
-                self.outpaint.last_batch_image = img
-            if self.params.advanced == True:
-                if self.canvas.canvas.rectlist != []:
-                    if img is not None:
-                        if self.canvas.canvas.rectlist[render_index].images is not None:
-                            templist = self.canvas.canvas.rectlist[render_index].images
-                        else:
-                            templist = []
-                        self.canvas.canvas.rectlist[render_index].PILImage = img
-                        qimage = ImageQt(img.convert("RGBA"))
-                        pixmap = QPixmap.fromImage(qimage)
-                        print(self.canvas.canvas.rectlist[render_index].render_index)
-                        self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap),
-                                                                         f"{self.canvas.canvas.rectlist[render_index].render_index}"))
-
-                        if self.canvas.canvas.anim_inpaint == True:
-                            templist[self.canvas.canvas.rectlist[render_index].render_index] = qimage
-                            self.canvas.canvas.anim_inpaint = False
-                        elif self.canvas.canvas.anim_inpaint == False:
-                            templist.append(qimage)
-                            if self.canvas.canvas.rectlist[render_index].render_index == None:
-                                self.canvas.canvas.rectlist[render_index].render_index = 0
-                            else:
-                                self.canvas.canvas.rectlist[render_index].render_index += 1
-                        self.canvas.canvas.rectlist[render_index].images = templist
-                        self.canvas.canvas.rectlist[render_index].image = \
-                            self.canvas.canvas.rectlist[render_index].images[
-                                self.canvas.canvas.rectlist[render_index].render_index]
-                        self.canvas.canvas.rectlist[render_index].timestring = time.time()
-                        self.canvas.canvas.rectlist[render_index].img_path = gs.temppath
-                    self.canvas.canvas.newimage = True
-                    self.canvas.canvas.update()
-                    self.canvas.canvas.redraw()
-                    del qimage
-                    del pixmap
-            elif self.params.advanced == False:
-
-                if img is not None:
-                    image = img
-                    h, w = image.size
-                    self.add_next_rect(h, w)
-                    render_index = len(self.canvas.canvas.rectlist) - 1
-
-                    # for items in self.canvas.canvas.rectlist:
-                    #    if items.id == self.canvas.canvas.render_item:
-                    if self.canvas.canvas.rectlist[render_index].images is not None:
-                        templist = self.canvas.canvas.rectlist[render_index].images
-                    else:
-                        templist = []
-                    self.canvas.canvas.rectlist[render_index].PILImage = image
-                    qimage = ImageQt(image.convert("RGBA"))
-                    templist.append(qimage)
-                    self.canvas.canvas.rectlist[render_index].images = templist
-                    if self.canvas.canvas.rectlist[render_index].render_index == None:
-                        self.canvas.canvas.rectlist[render_index].render_index = 0
-                    else:
-                        self.canvas.canvas.rectlist[render_index].render_index += 1
-                    self.canvas.canvas.rectlist[render_index].image = self.canvas.canvas.rectlist[render_index].images[self.canvas.canvas.rectlist[render_index].render_index]
-                    self.canvas.canvas.rectlist[render_index].timestring = time.time()
-                    self.canvas.canvas.rectlist[render_index].params = self.params
-            self.canvas.canvas.newimage = True
-            self.canvas.canvas.redraw()
-            self.canvas.canvas.update()
-
-            if self.params.advanced == False and self.params.max_frames > 1:
-                self.params.advanced = True
-
-            if self.make_grid:
-                self.all_images.append(T.functional.pil_to_tensor(image))
-
-        except Exception as e:
-            print('render_index_image_preview_func', e)
-    def image_preview_signal_op(self, image, *args, **kwargs):
-        mode = image.mode
-        size = image.size
-        enc_image = base64.b64encode(image.tobytes()).decode()
-        self.outpaint.signals.txt2img_image_op.emit(enc_image, mode, size)
-        self.signals.image_ready.emit()
-    @Slot()
-    def image_preview_func_str_op(self, image, mode, size):
-        decoded_image = base64.b64decode(image.encode())
-        self.image_preview_func_op(Image.frombytes(mode, size, decoded_image))
-
-    @Slot()
-    def image_preview_func_op(self, image=None):
-        try:
-            img = image #self.image
-            # store the last image for a part of the batch hires process
-            if self.outpaint.batch_process == 'run_hires_batch':
-                index = self.render_index
-                if index < 0:
-                    index = 0
-                self.outpaint.betterslices.append((img.convert('RGBA'),
-                                          self.canvas.canvas.rectlist[index].x,
-                                          self.canvas.canvas.rectlist[index].y))
-            if self.params.advanced == True and (self.canvas.canvas.rectlist == [] or self.canvas.canvas.rectlist is None):
-                self.params.advanced = False
-                self.advanced_temp = True
-
-            if self.params.advanced == True:
-
-                if self.canvas.canvas.rectlist != []:
-                    if img is not None:
-                        if self.canvas.canvas.rectlist[self.render_index].images is not None:
-                            templist = self.canvas.canvas.rectlist[self.render_index].images
-                        else:
-                            templist = []
-                        self.canvas.canvas.rectlist[self.render_index].PILImage = img
-                        qimage = ImageQt(img.convert("RGBA"))
-                        pixmap = QPixmap.fromImage(qimage)
-                        print(self.canvas.canvas.rectlist[self.render_index].render_index)
-                        self.thumbs.w.thumbnails.addItem(QListWidgetItem(QIcon(pixmap),
-                                                                         f"{self.canvas.canvas.rectlist[self.render_index].render_index}"))
-
-                        if self.canvas.canvas.anim_inpaint == True:
-                            templist[self.canvas.canvas.rectlist[self.render_index].render_index] = qimage
-                            self.canvas.canvas.anim_inpaint = False
-                        elif self.canvas.canvas.anim_inpaint == False:
-                            templist.append(qimage)
-                            if self.canvas.canvas.rectlist[self.render_index].render_index == None:
-                                self.canvas.canvas.rectlist[self.render_index].render_index = 0
-                            else:
-                                self.canvas.canvas.rectlist[self.render_index].render_index += 1
-                        self.canvas.canvas.rectlist[self.render_index].images = templist
-                        self.canvas.canvas.rectlist[self.render_index].image = self.canvas.canvas.rectlist[self.render_index].images[self.canvas.canvas.rectlist[self.render_index].render_index]
-                        #self.canvas.canvas.rectlist[self.render_index].image = qimage
-                        self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
-                        self.canvas.canvas.rectlist[self.render_index].img_path = gs.temppath
-                    self.canvas.canvas.newimage = True
-                    self.canvas.canvas.update()
-                    self.canvas.canvas.redraw()
-                    del qimage
-                    del pixmap
-            elif self.params.advanced == False:
-
-                if self.advanced_temp == True:
-                    self.advanced_temp = False
-                    self.params.advanced = True
-
-                if img is not None:
-                    image = img
-                    h, w = image.size
-                    self.add_next_rect(h, w)
-                    self.render_index = len(self.canvas.canvas.rectlist) - 1
-
-                    # for items in self.canvas.canvas.rectlist:
-                    #    if items.id == self.canvas.canvas.render_item:
-                    if self.canvas.canvas.rectlist[self.render_index].images is not None:
-                        templist = self.canvas.canvas.rectlist[self.render_index].images
-                    else:
-                        templist = []
-                    self.canvas.canvas.rectlist[self.render_index].PILImage = image
-                    qimage = ImageQt(image.convert("RGBA"))
-                    templist.append(qimage)
-                    self.canvas.canvas.rectlist[self.render_index].images = templist
-                    if self.canvas.canvas.rectlist[self.render_index].render_index == None:
-                        self.canvas.canvas.rectlist[self.render_index].render_index = 0
-                    else:
-                        self.canvas.canvas.rectlist[self.render_index].render_index += 1
-                    self.canvas.canvas.rectlist[self.render_index].image = \
-                    self.canvas.canvas.rectlist[self.render_index].images[
-                        self.canvas.canvas.rectlist[self.render_index].render_index]
-                    self.canvas.canvas.rectlist[self.render_index].timestring = time.time()
-                    self.canvas.canvas.rectlist[self.render_index].params = self.params
-
-                    self.canvas.canvas.newimage = True
-                    self.canvas.canvas.redraw()
-                    self.canvas.canvas.update()
-
-            if self.params.advanced == False and self.params.max_frames > 1:
-                self.params.advanced = True
-
-            if self.make_grid:
-                self.all_images.append(T.functional.pil_to_tensor(image))
-        except Exception as e:
-            print('image_preview_func_op', e)
-
-    def add_next_rect(self, h, w):
-        #w = self.widgets[self.current_widget].w.W.value()
-        #h = self.widgets[self.current_widget].w.H.value()
-        resize = False
-        try:
-            params = copy.deepcopy(self.params)
-            if self.canvas.canvas.rectlist == []:
-                self.canvas.canvas.w = w
-                self.canvas.canvas.h = h
-                self.canvas.canvas.addrect_atpos(x=0, y=0, params=params)
-                self.cheight = h
-                self.w = w
-                self.canvas.canvas.render_item = self.canvas.canvas.selected_item
-                # print(f"this should only haappen once {self.cheight}")
-                # self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
-            elif self.canvas.canvas.rectlist != []:
-                for i in self.canvas.canvas.rectlist:
-                    if i.id == self.canvas.canvas.render_item:
-                        if i.id == self.canvas.canvas.render_item:
-                            w = self.canvas.canvas.rectlist[self.canvas.canvas.rectlist.index(i)].w
-                            x = self.canvas.canvas.rectlist[self.canvas.canvas.rectlist.index(i)].x + w + 20
-                            y = i.y
-                            if x > 3000:
-                                x = 0
-                                y = self.cheight + 25
-                                if self.stopwidth == False:
-                                    self.stopwidth = True
-                            if self.stopwidth == False:
-                                self.w = x + w
-                                resize = True
-                            if self.cheight < y + i.h:
-                                self.cheight = y + i.h
-                                resize = True
-                            # self.canvas.canvas.selected_item = None
-                self.canvas.canvas.addrect_atpos(x=x, y=y, params=params)
-                self.canvas.canvas.render_item = self.canvas.canvas.selected_item
-            # if resize == True:
-            # pass
-            # print(self.w, self.cheight)
-            self.canvas.canvas.resize_canvas(w=self.w, h=self.cheight)
-            # self.canvas.canvas.update()
-            # self.canvas.canvas.redraw()
-        except Exception as e:
-            print('add_next_rect', e)
-
-    def tensor_preview_signal(self, data, data2):
-        self.data = data
-
-        if data2 is not None:
-            self.data2 = data2
-        else:
-            self.data2 = None
-        self.deforum_ui.signals.deforum_step.emit()
-
-    def tensor_preview_schedule(self):  # TODO: Rename this function to tensor_draw_function
-        try:
-            if len(self.data) != 1:
-                print(
-                    f'we got {len(self.data)} Tensors but Tensor Preview will show only one')
-
-            # Applying RGB fix on incoming tensor found at: https://github.com/keturn/sd-progress-demo/
-            self.data = torch.einsum('...lhw,lr -> ...rhw', self.data[0], self.latent_rgb_factors)
-            self.data = (((self.data + 1) / 2)
-                         .clamp(0, 1)  # change scale from -1..1 to 0..1
-                         .mul(0xFF)  # to 0..255
-                         .byte())
-            # Copying to cpu as numpy array
-            self.data = rearrange(self.data, 'c h w -> h w c').cpu().numpy()
-            dPILimg = Image.fromarray(self.data)
-            dqimg = ImageQt(dPILimg)
-            # Setting Canvas's Tensor Preview item, then calling function to draw it.
-            self.canvas.canvas.tensor_preview_item = dqimg
-            self.canvas.canvas.tensor_preview()
-            del dPILimg
-            del dqimg
-        except Exception as e:
-            print('tensor_preview_schedule', e)
 
 
-    @Slot(object)
-    def draw_tempRects_signal(self, values):
-        self.canvas.canvas.draw_tempRects_signal(values)
+
+
+
 
 
     @Slot()

@@ -393,7 +393,7 @@ class Outpainting:
                         self.hires_source = final_output
                         self.parent.params.advanced = False
                         self.finish_batch()
-                        self.parent.image_preview_signal(final_output.convert("RGB"))
+                        self.parent.ui_image.image_preview_signal(final_output.convert("RGB"))
                 else:
                     print('stopped by user action')
                     self.batch_process = None
@@ -434,7 +434,7 @@ class Outpainting:
             image.save('output/temp/temp.png', "PNG")
             self.parent.canvas.canvas.selected_item = next_step.id
             print('self.parent.canvas.canvas.selected_item',self.parent.canvas.canvas.selected_item)
-            self.parent.deforum_ui.run_deforum_six_txt2img(hiresinit='output/temp/temp.png', image_callback=self.parent.image_preview_signal_op)
+            self.parent.deforum_ui.run_deforum_six_txt2img(hiresinit='output/temp/temp.png', image_callback=self.parent.ui_image.image_preview_signal_op)
         except Exception as e:
             print('run_hires_step_x failed: ', e)
     def run_outpaint_step_x(self):

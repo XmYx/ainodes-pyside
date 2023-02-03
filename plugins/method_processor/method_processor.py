@@ -438,7 +438,7 @@ class MethodProcessorWidget():
                 params.grad_inject_timing = float(params.grad_inject_timing)
             else:
                 params.grad_inject_timing = params.grad_inject_timing
-        self.parent.deforum_ui.run_deforum_six_txt2img(params=params, image_callback=self.parent.image_preview_signal_op)
+        self.parent.deforum_ui.run_deforum_six_txt2img(params=params, image_callback=self.parent.ui_image.image_preview_signal_op)
     def switch_model(self, params):
         from backend.shared import model_killer
         model_killer()

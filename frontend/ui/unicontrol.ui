@@ -205,7 +205,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-300</y>
             <width>878</width>
             <height>3014</height>
            </rect>
@@ -3908,6 +3908,9 @@
                         <width>0</width>
                         <height>100</height>
                        </size>
+                      </property>
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;With this you can select multiple Models.&lt;/p&gt;&lt;p&gt;when you press the dream button it will start a loop for your prompt(s) and run each prompt with each model.&lt;/p&gt;&lt;p&gt;if you use batch or samples it will also get multiplied by those. so be aware that it will multiply the resulting images by the number of models choosen.&lt;/p&gt;&lt;p&gt;You can still also use multi dim prompt with this. Again the miber gets multiplied. --sd_model_file as multi dim setting might be obsolete for the run.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="selectionMode">
                        <enum>QAbstractItemView::ExtendedSelection</enum>

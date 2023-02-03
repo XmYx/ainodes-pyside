@@ -1,3 +1,4 @@
+import shutil
 import sys
 
 from PySide6 import QtCore, QtQuick
@@ -9,7 +10,20 @@ import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 
+# for safety as in some very seldom cases the pycache seems to harm the application
+def clean_pycache():
+    for root, dirs, files in os.walk(os.getcwd()):
+        for dir in dirs:
+            if dir == '__pycache__':
+                shutil.rmtree(os.path.join(root, dir))
+        for file in files:
+            if file.endswith('.pyc'):
+                os.remove(os.path.join(root, file))
+
 def run_app():
+
+    clean_pycache()
+
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
     QtQuick.QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
     app = QApplication(sys.argv)
@@ -36,15 +50,3 @@ def run_app():
 
     sys.exit(app.exec())
 
-
-    mainWindow.w.setWindowTitle("aiNodes")
-    mainWindow.w.setWindowIcon(QIcon('frontend/main/splash_2.png'))
-    with open(sshFile,"r") as fh:
-        mainWindow.w.setStyleSheet(fh.read())
-
-    mainWindow.w.show()
-
-    mainWindow.w.resize(1280, 720)
-    splash.finish(mainWindow.w)
-
-    sys.exit(app.exec())

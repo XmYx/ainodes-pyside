@@ -129,8 +129,8 @@ class Deforum_UI(QObject):
                                          grad_inject_timing=1,
                                          # if self.parent.widgets[self.parent.current_widget].w.grad_inject_timing.text() == '' else self.parent.widgets[self.parent.current_widget].w.grad_inject_timing.text(), #it is a float an int or a list of floats
                                          cond_uncond_sync=params.cond_uncond_sync,
-                                         step_callback=self.parent.tensor_preview_signal if params.show_sample_per_step else None,
-                                         image_callback=self.parent.image_preview_signal,
+                                         step_callback=self.parent.ui_image.tensor_preview_signal if params.show_sample_per_step else None,
+                                         image_callback=self.parent.ui_image.image_preview_signal,
                                          negative_prompts=params.negative_prompts if params.negative_prompts != False else None,
                                          hires=params.hires,
                                          prompt_weighting=params.prompt_weighting,
@@ -193,7 +193,7 @@ class Deforum_UI(QObject):
                                          grad_inject_timing=1,
                                          # if self.parent.widgets[self.parent.current_widget].w.grad_inject_timing.text() == '' else self.parent.widgets[self.parent.current_widget].w.grad_inject_timing.text(), #it is a float an int or a list of floats
                                          cond_uncond_sync=self.params.cond_uncond_sync,
-                                         step_callback=self.parent.tensor_preview_signal if self.params.show_sample_per_step is not False else None,
+                                         step_callback=self.parent.ui_image.tensor_preview_signal if self.params.show_sample_per_step is not False else None,
                                          image_callback=image_callback,
                                          negative_prompts=self.params.negative_prompts if self.params.negative_prompts is not False else None,
                                          hires=self.params.hires,
@@ -376,12 +376,12 @@ class Deforum_UI(QObject):
 
     def run_deforum_six_outpaint_txt2img(self, progress_callback=None):
         try:
-            self.run_deforum_six_txt2img(image_callback = self.parent.image_preview_signal_op)
+            self.run_deforum_six_txt2img(image_callback = self.parent.ui_image.image_preview_signal_op)
         except Exception as e:
             print('run_deforum_six_outpaint_txt2img failed', e)
     def run_deforum_six_txt2img_img(self, progress_callback=None):
         try:
-            self.run_deforum_six_txt2img(image_callback = self.parent.image_preview_signal)
+            self.run_deforum_six_txt2img(image_callback = self.parent.ui_image.image_preview_signal)
         except Exception as e:
             print('run_deforum_six_txt2img_img failed', e)
     def run_deforum_six_txt2img(self, hiresinit=None, progress_callback=None, plotting=True, params=None, image_callback=None):
@@ -550,7 +550,7 @@ class Deforum_UI(QObject):
 
             grid_image = draw_grid_annotations(grid_image, grid_image.size[0], grid_image.size[1], hor_texts, ver_texts, self.params.W,
                                                self.params.H, self.params)
-            self.parent.image_preview_signal(grid_image)
+            self.parent.ui_image.image_preview_signal(grid_image)
             grid_image.save(os.path.join(self.params.outdir, filename))
         self.parent.make_grid = False
 
@@ -617,8 +617,8 @@ class Deforum_UI(QObject):
                                           recons_blur=reconstruction_blur,
                                           scale=scale,
                                           ddim_eta=ddim_eta,
-                                          image_callback=self.parent.image_preview_signal_op,
-                                          step_callback=self.parent.tensor_preview_signal,
+                                          image_callback=self.parent.ui_image.image_preview_signal_op,
+                                          step_callback=self.parent.ui_image.tensor_preview_signal,
                                           with_inpaint=with_inpaint)
 
         # self.run_txt2img_lm(init_img=init_image, init_mask='outpaint_mask.png')

@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from PySide6.QtCore import Qt, QMutex, QMutexLocker, QObject, QWriteLocker
 from backend.torch_gc import torch_gc
 
-
+temppath = ''
 db_settings_present = False
 system = {}
 diffusion = {}

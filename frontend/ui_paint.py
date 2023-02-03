@@ -270,7 +270,7 @@ class Canvas(QGraphicsView):
         self.parent.parent.w = w
         self.parent.parent.cheight = h
         if w < 3000:
-            self.parent.parent.stopwidth = False
+            self.parent.parent.ui_image.stopwidth = False
         #self.debugtext = QGraphicsTextItem("0, 0\n")
         #self.helpText = QGraphicsTextItem("C - Hand Drag\nV - Place Rectangles")
         self.bgitem.setPixmap(self.pixmap)
@@ -297,9 +297,9 @@ class Canvas(QGraphicsView):
         self.rectlist = []
         self.rectlist.clear()
         self.scene = Scene()
-        self.parent.w = 512
-        self.parent.cheight = 512
-        self.parent.stopwidth = False
+        self.parent.parent.w = 512
+        self.parent.parent.cheight = 512
+        self.parent.parent.ui_image.stopwidth = False
 
         self.last_x, self.last_y = None, None
         self.pen_color = QColor('#000000')

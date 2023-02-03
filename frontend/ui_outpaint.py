@@ -396,6 +396,7 @@ class Outpainting:
                         self.parent.image_preview_signal(final_output.convert("RGB"))
                 else:
                     print('stopped by user action')
+                    self.batch_process = None
             except Exception as e:
                 print('run next hires image batch failed: ', e)
 
@@ -407,6 +408,7 @@ class Outpainting:
 
     def run_hires_batch(self, progress_callback=None):
         try:
+            self.parent.widgets['unicontrol'].w.discard_next_to_last_sigma.setChecked(False),
             self.batch_process = 'run_hires_batch'
             self.parent.sessionparams.update_params()
             self.parent.sessionparams.params.advanced = True

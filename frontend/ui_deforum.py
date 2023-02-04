@@ -404,6 +404,7 @@ class Deforum_UI(QObject):
         work_prompt = self.params.prompts
         if self.params.multi_model_batch:
             if len(self.params.multi_model_list) > 0:
+                model_work_list = []
                 for model in self.params.multi_model_list:
                     model_work_list.append(os.path.join(gs.system.models_path,model))
                 if 'sd' in gs.models:

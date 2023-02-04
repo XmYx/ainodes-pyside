@@ -1,4 +1,5 @@
 import pickle
+import secrets
 import time
 from datetime import datetime
 import os
@@ -42,7 +43,7 @@ def next_seed(args):
     elif args.seed_behavior == 'fixed':
         pass  # always keep seed the same
     else:
-        args.seed = random.randint(0, 2**32 - 1)
+        args.seed = secrets.randbelow(4294967295)
     return args.seed
 
 

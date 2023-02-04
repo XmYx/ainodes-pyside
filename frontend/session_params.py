@@ -1,4 +1,5 @@
 import random
+import secrets
 from types import SimpleNamespace
 from backend.sqlite import setting_db
 from backend.singleton import singleton
@@ -175,7 +176,7 @@ class SessionParams():
         elif self.parent.widgets[widget].w.axis.currentText() == 'Both':
             axis = {'x', 'y'}
         self.store_seed = self.parent.widgets[widget].w.seed.text()
-        seed =  random.randint(0, 2 ** 32 - 1) if self.parent.widgets[widget].w.seed.text() == '' else int(
+        seed =  secrets.randbelow(4294967295) if self.parent.widgets[widget].w.seed.text() == '' else int(
             self.parent.widgets[widget].w.seed.text())
 
         self.params = {             # todo make this a one step thing not two steps

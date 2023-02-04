@@ -1,5 +1,6 @@
 import itertools
 import os
+import secrets
 import time
 import random
 import re
@@ -312,7 +313,7 @@ class Deforum_UI(QObject):
         elif self.params.multi_dim_seed_mode == 'fixed':
             pass  # always keep seed the same
         else:
-            self.params.seed = random.randint(0, 2**32 - 1)
+            self.params.seed = secrets.randbelow(4294967295)
 
 
 
@@ -598,7 +599,7 @@ class Deforum_UI(QObject):
         steps = int(params.steps)
         H = int(params.H)
         W = int(params.W)
-        seed = int(params.seed) if params.seed != "" else random.randint(0, 44444444)
+        seed = int(params.seed) if params.seed != "" else secrets.randbelow(44444444)
         prompt = str(params.prompts)
         #print(prompt)
         strength = float(params.strength)

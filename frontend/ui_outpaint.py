@@ -1,5 +1,6 @@
 import copy
 import random
+import secrets
 import time
 
 import numpy as np
@@ -262,7 +263,7 @@ class Outpainting:
             offset = self.parent.widgets[self.current_widget].w.mask_offset.value() + tilesize
             self.rparams.prompts = self.animation_prompts[self.batch_step_number]
             if self.rparams.seed_behavior == 'random':
-                self.rparams.seed = random.randint(0, 2 ** 32 - 1)
+                self.rparams.seed = secrets.randbelow(4294967295)
 
             self.parent.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image,
                                                     render_index=index, order=item["order"],

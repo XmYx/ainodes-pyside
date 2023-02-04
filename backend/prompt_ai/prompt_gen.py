@@ -1,4 +1,5 @@
 import random
+import secrets
 
 from PySide6.QtCore import QObject, Signal
 from transformers import pipeline, set_seed
@@ -32,7 +33,7 @@ class AiPrompt:
         num_prompts = 0
         try:
             for count in range(2):
-                seed = random.randint(100, 1000000)
+                seed = secrets.randbelow(1000000)
                 set_seed(seed)
                 if starting_text == "":
                     nsp = parser()

@@ -209,6 +209,7 @@ class UniControl(QObject):
                 target_model = os.path.basename(gs.system.sd_model_file)
 
         self.w.selected_model.clear()
+        self.w.multi_model_batch_list.clear()
         files = os.listdir(gs.system.models_path)
         files = [f for f in files if os.path.isfile(gs.system.models_path+'/'+f)] #Filtering only the files.
         model_items = files

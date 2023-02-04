@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import secrets
 import shutil
 from io import BytesIO
 
@@ -424,6 +425,7 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
         self.threadpool.start(worker)
 
     def task_switcher(self):
+        random.seed(secrets.randbelow(4294967295))
         gs.stop_all = False
         if not self.widgets[self.current_widget].w.toggle_animations.isChecked():
             self.widgets[self.current_widget].w.max_frames.setValue(0)

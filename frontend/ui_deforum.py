@@ -74,73 +74,8 @@ class Deforum_UI(QObject):
         # Prepare next rectangle, widen canvas:
         self.parent.run_as_thread(self.run_deforum_six_outpaint_txt2img)
 
-
-    def run_out_of_order(self):
-        params = self.parent.sessionparams.update_params()
-        ##print(f"updated parameters to: {params}")
-        self.deforum_six.run_deforum_six(W=int(params.W),
-                                         H=int(params.H),
-                                         seed=int(params.seed) if params.seed != '' else -1,
-                                         sampler=str(params.sampler),
-                                         steps=int(params.steps),
-                                         scale=float(params.scale),
-                                         ddim_eta=float(params.ddim_eta),
-                                         save_settings=bool(params.save_settings),
-                                         save_samples=bool(params.save_samples),
-                                         show_sample_per_step=bool(params.show_sample_per_step),
-                                         n_batch=int(params.n_batch),
-                                         seed_behavior=params.seed_behavior,
-                                         make_grid=params.makegrid,
-                                         grid_rows=params.grid_rows,
-                                         use_init=params.use_init,
-                                         init_image=params.init_image,
-                                         strength=float(params.strength),
-                                         strength_0_no_init=params.strength_0_no_init,
-                                         device=params.device,
-                                         animation_mode=params.animation_mode,
-                                         prompts=params.prompts,
-                                         max_frames=params.max_frames,
-                                         outdir=params.outdir,
-                                         n_samples=params.n_samples,
-                                         mean_scale=params.mean_scale,
-                                         var_scale=params.var_scale,
-                                         exposure_scale=params.exposure_scale,
-                                         exposure_target=params.exposure_target,
-                                         colormatch_scale=float(params.colormatch_scale),
-                                         colormatch_image=params.colormatch_image,
-                                         colormatch_n_colors=params.colormatch_n_colors,
-                                         ignore_sat_weight=params.ignore_sat_weight,
-                                         clip_name=params.clip_name,
-                                         # @param ['ViT-L/14', 'ViT-L/14@336px', 'ViT-B/16', 'ViT-B/32']
-                                         clip_scale=params.clip_scale,
-                                         aesthetics_scale=params.aesthetics_scale,
-                                         cutn=params.cutn,
-                                         cut_pow=params.cut_pow,
-                                         init_mse_scale=params.init_mse_scale,
-                                         init_mse_image=params.init_mse_image,
-                                         blue_scale=params.blue_scale,
-                                         gradient_wrt=params.gradient_wrt,  # ["x", "x0_pred"]
-                                         gradient_add_to=params.gradient_add_to,  # ["cond", "uncond", "both"]
-                                         decode_method=params.decode_method,  # ["autoencoder","linear"]
-                                         grad_threshold_type=params.grad_threshold_type,
-                                         # ["dynamic", "static", "mean", "schedule"]
-                                         clamp_grad_threshold=params.clamp_grad_threshold,
-                                         clamp_start=params.clamp_start,
-                                         clamp_stop=params.clamp_stop,
-                                         grad_inject_timing=1,
-                                         # if self.parent.widgets[self.parent.current_widget].w.grad_inject_timing.text() == '' else self.parent.widgets[self.parent.current_widget].w.grad_inject_timing.text(), #it is a float an int or a list of floats
-                                         cond_uncond_sync=params.cond_uncond_sync,
-                                         step_callback=self.parent.ui_image.tensor_preview_signal if params.show_sample_per_step else None,
-                                         image_callback=self.parent.ui_image.image_preview_signal,
-                                         negative_prompts=params.negative_prompts if params.negative_prompts != False else None,
-                                         hires=params.hires,
-                                         prompt_weighting=params.prompt_weighting,
-                                         normalize_prompt_weights=params.normalize_prompt_weights,
-                                         lowmem=params.lowmem,
-                                         )
-
-
     def run_it(self, image_callback):
+        random.seed(secrets.randbelow(4294967295))
         self.deforum_six.run_deforum_six(W=int(self.params.W),
                                          H=int(self.params.H),
                                          seed=int(self.params.seed) if self.params.seed != '' else self.params.seed,
@@ -376,6 +311,7 @@ class Deforum_UI(QObject):
 
 
     def run_deforum_six_outpaint_txt2img(self, progress_callback=None):
+        random.seed(secrets.randbelow(4294967295))
         try:
             self.run_deforum_six_txt2img(image_callback = self.parent.ui_image.image_preview_signal_op)
         except Exception as e:

@@ -27,6 +27,7 @@ from .colors import maintain_colors
 from .display_emu import display
 
 from backend.singleton import singleton
+from ... import seeder
 from ...devices import choose_torch_device
 import yaml
 import copy
@@ -35,15 +36,13 @@ gs = singleton
 
 
 def next_seed(args):
-    print('type(args.seed)', type(args.seed))
-    print('args.seed',args.seed)
     args.seed = int(args.seed)
     if args.seed_behavior == 'iter':
         args.seed += 1
     elif args.seed_behavior == 'fixed':
         pass  # always keep seed the same
     else:
-        args.seed = secrets.randbelow(4294967295)
+        args.seed = seeder.get_strong_seed(4294967295)
     return args.seed
 
 

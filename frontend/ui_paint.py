@@ -283,7 +283,7 @@ class Canvas(QGraphicsView):
         self.selected_item = None
         self.render_item = None
         self.signals.update_selected.emit()
-        self.parent.parent.render_index = 0
+        self.parent.parent.ui_image.render_index = 0
         self.parent.parent.thumbs.w.thumbnails.clear()
 
     def reset(self):
@@ -361,7 +361,7 @@ class Canvas(QGraphicsView):
             self.rectlist.append(rect[uid])
             if dummy == True:
                 self.rectlist.remove(rect[uid])
-            self.parent.parent.render_index = len(self.rectlist) - 1
+            self.parent.parent.ui_image.render_index = len(self.rectlist) - 1
         except Exception as e:
             print('addrect',e)
 
@@ -372,8 +372,8 @@ class Canvas(QGraphicsView):
                 w = self.tensor_preview_item.size().width() * 8
                 h = self.tensor_preview_item.size().height() * 8
                 try:
-                    x = self.rectlist[self.parent.parent.render_index].x
-                    y = self.rectlist[self.parent.parent.render_index].y
+                    x = self.rectlist[self.parent.parent.ui_image.render_index].x
+                    y = self.rectlist[self.parent.parent.ui_image.render_index].y
                 except:
                     x = 0
                     y = 0
@@ -789,7 +789,7 @@ class Canvas(QGraphicsView):
                         i.render_index = 0
                     uid = i.id
                     self.selected_item = i.id
-                    self.parent.parent.render_index = self.rectlist.index(i)
+                    self.parent.parent.ui_image.render_index = self.rectlist.index(i)
                 matchfound = True
 
         if matchfound == False:
@@ -801,7 +801,7 @@ class Canvas(QGraphicsView):
             if self.rectlist == []:
                 self.txt2img = True
             self.rectlist.append(rect[uid])
-            self.parent.parent.render_index = len(self.rectlist) - 1
+            self.parent.parent.ui_image.render_index = len(self.rectlist) - 1
             self.counter += 1
 
         self.newimage = True
@@ -835,7 +835,7 @@ class Canvas(QGraphicsView):
                         i.render_index = 0
                     uid = i.id
                     self.selected_item = i.id
-                    self.parent.parent.render_index = self.rectlist.index(i)
+                    self.parent.parent.ui_image.render_index = self.rectlist.index(i)
                 matchfound = True
 
         if matchfound == False:
@@ -847,7 +847,7 @@ class Canvas(QGraphicsView):
             if self.rectlist == []:
                 self.txt2img = True
             self.rectlist.append(rect[uid])
-            self.parent.parent.render_index = len(self.rectlist) - 1
+            self.parent.parent.ui_image.render_index = len(self.rectlist) - 1
             self.counter += 1
 
         self.newimage = True
@@ -873,7 +873,7 @@ class Canvas(QGraphicsView):
         self.selected_item = id
         for items in self.rectlist:
             if items.id == id:
-                self.parent.parent.render_index = self.rectlist.index(items)
+                self.parent.parent.ui_image.render_index = self.rectlist.index(items)
                 #print(items.render_index)
                 rect = QRect(items.x, items.y, self.w, self.h)
                 image = self.pixmap.toImage()
@@ -934,7 +934,7 @@ class Canvas(QGraphicsView):
                     if i.id == x.id:
                         #print(f"setting render index to:{self.rectlist.index(i)}")
 
-                        self.parent.parent.render_index = self.rectlist.index(i)
+                        self.parent.parent.ui_image.render_index = self.rectlist.index(i)
         filename = "outpaint.png"
         outpaintimage.save(filename)
         while not os.path.exists(filename):
@@ -992,7 +992,7 @@ class Canvas(QGraphicsView):
                                     outpainter.end()
                     if i.id == x.id:
                         #print("Found an image to outpaint")
-                        self.parent.parent.render_index = self.rectlist.index(i)
+                        self.parent.parent.ui_image.render_index = self.rectlist.index(i)
         outpaintimage.save("outpaint.png")
 
         outpaintmaskimage.save("outpaint_mask.png")
@@ -1040,7 +1040,7 @@ class Canvas(QGraphicsView):
                         outpainter.end()
 
         self.addrect()
-        self.parent.render_index = len(self.rectlist) - 1
+        self.parent.ui_image.render_index = len(self.rectlist) - 1
         self.render_item = self.selected_item
         self.draw_rects()
         self.newimage = True
@@ -1240,7 +1240,7 @@ class Canvas(QGraphicsView):
             self.selected_item = self.hover_item
             for i in self.rectlist:
                 if i.id == self.selected_item:
-                    self.parent.parent.render_index = self.rectlist.index(i)
+                    self.parent.parent.ui_image.render_index = self.rectlist.index(i)
             self.signals.update_selected.emit()
 
             self.drawRect()

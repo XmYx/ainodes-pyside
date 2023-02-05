@@ -3,6 +3,7 @@ import copy
 import time
 from io import BytesIO
 
+import numpy as np
 from PIL import Image
 from PIL.ImageQt import ImageQt
 from PySide6.QtCore import Slot
@@ -266,6 +267,7 @@ class UiImage:
                 self.parent.outpaint.betterslices.append((img.convert('RGBA'),
                                           self.parent.canvas.canvas.rectlist[index].x,
                                           self.parent.canvas.canvas.rectlist[index].y))
+
             if self.parent.params.advanced == True and (self.parent.canvas.canvas.rectlist == [] or self.parent.canvas.canvas.rectlist is None):
                 self.parent.params.advanced = False
                 self.advanced_temp = True
@@ -396,6 +398,9 @@ class UiImage:
 
     def tensor_preview_signal(self, data, data2):
         self.data = data
+        if isinstance(self.data, np.ndarray):
+            print('is ndarray')
+            self.data = torch.from_numpy(self.data)
 
         if data2 is not None:
             self.data2 = data2

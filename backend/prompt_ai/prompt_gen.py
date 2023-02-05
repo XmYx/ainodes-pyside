@@ -4,6 +4,7 @@ import secrets
 from PySide6.QtCore import QObject, Signal
 from transformers import pipeline, set_seed
 
+from backend import seeder
 from backend.prompt_ai.nsp.nsp_pantry import parser
 
 gpt2_pipe = pipeline('text-generation', model='Gustavosta/MagicPrompt-Stable-Diffusion', tokenizer='gpt2')
@@ -33,7 +34,7 @@ class AiPrompt:
         num_prompts = 0
         try:
             for count in range(2):
-                seed = secrets.randbelow(1000000)
+                seed = seeder.get_strong_seed(1000000)
                 set_seed(seed)
                 if starting_text == "":
                     nsp = parser()

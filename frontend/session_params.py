@@ -1,6 +1,8 @@
 import random
 import secrets
 from types import SimpleNamespace
+
+from backend import seeder
 from backend.sqlite import setting_db
 from backend.singleton import singleton
 
@@ -132,9 +134,8 @@ class SessionParams():
             for item in selected_multi_model_batch:
                 multi_model_list.append(item.text())
 
-
+        animation_mode = 'None'
         if self.parent.widgets[widget].w.max_frames.value() < 2:
-            animation_mode = 'None'
 
             use_alpha_as_mask = self.parent.widgets[widget].w.use_alpha_as_mask_2.isChecked()
             mask_file = self.parent.widgets[widget].w.mask_file.text()
@@ -176,7 +177,7 @@ class SessionParams():
         elif self.parent.widgets[widget].w.axis.currentText() == 'Both':
             axis = {'x', 'y'}
         self.store_seed = self.parent.widgets[widget].w.seed.text()
-        seed =  secrets.randbelow(4294967295) if self.parent.widgets[widget].w.seed.text() == '' else int(
+        seed =  seeder.get_strong_seed(4294967295) if self.parent.widgets[widget].w.seed.text() == '' else int(
             self.parent.widgets[widget].w.seed.text())
 
         self.params = {             # todo make this a one step thing not two steps

@@ -12,6 +12,7 @@ import safetensors.torch
 from PIL import ImageFilter
 from PySide6.QtCore import QObject, Signal, Slot
 
+from backend import seeder
 from backend.devices import choose_torch_device
 from omegaconf import OmegaConf
 from pytorch_lightning import seed_everything
@@ -738,7 +739,7 @@ class DeforumSix:
             if (args.aesthetics_scale > 0):
                 root.aesthetics_model = load_aesthetics_model(args, root)
         if args.seed == -1:
-            args.seed = secrets.randbelow(4294967295)
+            args.seed = seeder.get_strong_seed(4294967295)
         if not args.use_init:
             args.init_image = None
         if args.sampler == 'plms' and (args.use_init or anim_args.animation_mode != 'None'):
@@ -957,7 +958,7 @@ class DeforumSix:
         sample_path = os.path.join(outpath, "samples")
         os.makedirs(sample_path, exist_ok=True)
         base_count = len(os.listdir(sample_path))
-        base_name = f"{secrets.randbelow(99999999)}_{seed}_"
+        base_name = f"{seeder.get_strong_seed(99999999)}_{seed}_"
 
         print(F"WITH INPAINT : {with_inpaint}")
 

@@ -12,6 +12,7 @@ from PySide6.QtCore import Slot, QRect, Signal, QObject
 from PySide6.QtGui import QPixmap, QIcon, QImage, QPainter, Qt, QPen
 from PySide6.QtWidgets import QListWidgetItem
 
+from backend import seeder
 from backend.singleton import singleton
 from frontend.ui_paint import spiralOrder
 
@@ -263,7 +264,7 @@ class Outpainting:
             offset = self.parent.widgets[self.current_widget].w.mask_offset.value() + tilesize
             self.rparams.prompts = self.animation_prompts[self.batch_step_number]
             if self.rparams.seed_behavior == 'random':
-                self.rparams.seed = secrets.randbelow(4294967295)
+                self.rparams.seed = seeder.get_strong_seed(4294967295)
 
             self.parent.canvas.canvas.addrect_atpos(prompt=item["prompt"], x=item['x'], y=item['y'], image=image,
                                                     render_index=index, order=item["order"],
@@ -336,7 +337,7 @@ class Outpainting:
         print('image_ready_in_ui')
         if self.batch_process is not None:
             self.parent.canvas.canvas.redraw()
-            self.parent.render_index += 1
+            self.parent.ui_image.render_index += 1
             self.parent.run_as_thread(self.next_image_from_batch)
 
 

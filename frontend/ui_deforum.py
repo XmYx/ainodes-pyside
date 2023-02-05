@@ -10,6 +10,7 @@ from PySide6.QtCore import QObject, Signal, QPoint
 from PySide6.QtGui import QMouseEvent
 
 import backend.aesthetics.aesthetic_clip
+from backend import seeder
 from backend.deforum.deforum_adapter import DeforumSix
 from backend.devices import torch_gc
 from backend.hypernetworks.modules.images import GridAnnotation
@@ -248,7 +249,7 @@ class Deforum_UI(QObject):
         elif self.params.multi_dim_seed_mode == 'fixed':
             pass  # always keep seed the same
         else:
-            self.params.seed = secrets.randbelow(4294967295)
+            self.params.seed = seeder.get_strong_seed(4294967295)
 
 
 
@@ -536,7 +537,7 @@ class Deforum_UI(QObject):
         steps = int(params.steps)
         H = int(params.H)
         W = int(params.W)
-        seed = int(params.seed) if params.seed != "" else secrets.randbelow(44444444)
+        seed = int(params.seed) if params.seed != "" else seeder.get_strong_seed(44444444)
         prompt = str(params.prompts)
         #print(prompt)
         strength = float(params.strength)

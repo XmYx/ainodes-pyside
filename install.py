@@ -19,7 +19,7 @@ def extract_arg(args, name):
 
 def run(command, desc=None, errdesc=None):
     if desc is not None:
-        print(desc)
+        print('desc', desc)
 
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 

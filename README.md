@@ -37,6 +37,7 @@ So you have to follow the few but very simple installation steps
 
 ![img.png](installImages/img4.png)
 
+![img.png](installImages/img_running.png)
 
 any further start can be made by start.bat it will just fire up the app and do not do any updates.
 

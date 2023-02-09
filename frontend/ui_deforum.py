@@ -570,7 +570,7 @@ class Deforum_UI(QObject):
         self.signals.reenable_runbutton.emit()
 
     def deforum_outpaint_thread(self):
-
+        print('running outpaint')
         self.parent.sessionparams.params = self.parent.sessionparams.update_params()
         self.choice = "Outpaint"
         worker = Worker(self.run_deforum_outpaint)

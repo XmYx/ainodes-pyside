@@ -49,7 +49,7 @@
     "blip_model_file": "data/models/support/model_base_caption_capfilt_large.pth",
     "default_config_yaml_dir": "data/default_configs",
     "vae_dir": "data/models/vae",
-    "custom_cache_dir": false,
+    "custom_cache_dir_enabled": false,
     "cache_dir": "data/transformers_cache",
     "db_dir": "data/db",
     "update_model_data_on_startup": false,

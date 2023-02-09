@@ -60,6 +60,7 @@ checkpoint_info = None
 
 class mySignals(QObject):
     status_update = Signal(str)
+    try_again_render = Signal()
 
 
 class DeforumSix:
@@ -919,7 +920,7 @@ class DeforumSix:
                          step_callback=None,
                          with_inpaint=False,
                          ):
-        print("Using 1.5 InPaint model") if with_inpaint else None
+        print("Should be using InPaint model") if with_inpaint else None
         W=512
         H=512
         mask_img = Image.open("outpaint_mask.png")
@@ -1160,7 +1161,15 @@ class DeforumSix:
                 gs.temppath = fpath
                 image_callback(result[0])
             else:
-                print('inpaint failed maybe due to model not an inpaint model')
+                print('inpaint failed maybe due to model not an inpaint model, model has been set to selected inpaint model')
+                if gs.selected_inpaint_model is not None:
+                    gs.system.sd_model_file = os.path.join(gs.system.models_path, gs.selected_inpaint_model)
+                    print(gs.system.sd_model_file)
+                    del gs.models['sd']
+                    torch_gc()
+                    self.signals.try_again_render.emit()
+                else:
+                    print('Select inpaint model first')
 
         # global plms_sampler
         # global ddim_sampler

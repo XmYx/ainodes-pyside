@@ -3,31 +3,30 @@ import copy
 import json
 import os
 from datetime import datetime
-from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
 from PIL import Image
 from PIL.ImageQt import ImageQt
-from PySide6.QtCore import Signal, QLine, QPoint, QRectF, QSize, QRect, QLineF, QPointF, QObject, QFile, Slot, QDir, Qt, \
-    QPropertyAnimation, QEasingCurve, QEvent
-from PySide6.QtGui import Qt, QColor, QFont, QPalette, QPainter, QPen, QPolygon, QBrush, QPainterPath, QAction, QCursor, \
-    QPixmap, QTransform, QDragEnterEvent, QDragMoveEvent, QImage, QMouseEvent
-from PySide6.QtOpenGLWidgets import QOpenGLWidget
-from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockWidget, QMenu, QGraphicsScene, \
-    QGraphicsView, QGraphicsItem, QGraphicsWidget, QLabel, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsRectItem, \
-    QGraphicsTextItem, QScrollArea, QHBoxLayout, QLayout, QAbstractScrollArea, QFileDialog, QSpinBox, \
-    QGraphicsProxyWidget
+from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6.QtCore import Signal, QSize, QRect, QPointF, QObject, QFile, Slot, QDir, Qt
+from PySide6.QtGui import Qt, QColor, QFont, QPainter, QPen, QPixmap, QTransform, QCursor, QAction
+from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockWidget, QGraphicsScene, \
+    QGraphicsView, QLabel, QGraphicsPixmapItem, QGraphicsRectItem, \
+    QHBoxLayout, QFileDialog, QSpinBox, \
+    QGraphicsProxyWidget, QMenu
 
-from PySide6 import QtCore, QtGui
 from backend.singleton import singleton
-from frontend.ui_classes import AnimKeyEditor
 
-gs = singleton
-from time import gmtime, strftime
+from frontend import ui_context_menue
+
+
+
 import time
 from uuid import uuid4
 import random
+gs = singleton
+
 
 __textColor__ = QColor(187, 187, 187)
 __backgroudColor__ = QColor(60, 63, 65)
@@ -110,12 +109,54 @@ class RectangleCallbacks(QObject):
     start_main = Signal()
 
 
+
+class SceneSignals(QObject):
+    sceneBrushChanged = Signal(int)
+    doInpaintTriggered = Signal()
+    reset_canvas = Signal()
+
 class Scene(QGraphicsScene):
     def __init__ (self, parent=None):
         QGraphicsScene.__init__ (self, parent)
         self.pos = None
         self.scenePos = None
         self.parent = parent
+        self.signals = SceneSignals()
+        self.create_menue()
+
+    def create_menue(self):
+        self.inpaint_menu = QtWidgets.QMenu()
+        self.inpaint_reset_canvas = ui_context_menue.ResetCanvas(self, self.inpaint_menu)
+        self.inpaint_brush_menu = ui_context_menue.BrushMenu(self, self.inpaint_menu)
+        self.inpaint_model_menu = ui_context_menue.ModelMenu(self, self.inpaint_menu)
+        self.inpaint_do_inpaint = ui_context_menue.DoInpaint(self, self.inpaint_menu)
+        self.inpaint_select_rect = ui_context_menue.SelectRect(self, self.inpaint_menu)
+
+        self.inpaint_drag_canvas = ui_context_menue.DragCanvas(self, self.inpaint_menu)
+        self.inpaint_outpaint = ui_context_menue.Outpaint(self, self.inpaint_menu)
+        self.inpaint_inpaint_current_frame = ui_context_menue.InpaintCurrentFrame(self, self.inpaint_menu)
+        self.inpaint_move_rect = ui_context_menue.MoveRect(self, self.inpaint_menu)
+        self.inpaint_safe_as_json = ui_context_menue.SaveAsJson(self, self.inpaint_menu)
+        self.inpaint_save_as_png = ui_context_menue.SaveAsPng(self, self.inpaint_menu)
+        self.inpaint_load_from_json = ui_context_menue.LoadFromJson(self, self.inpaint_menu)
+        self.inpaint_load_image = ui_context_menue.LoadImage(self, self.inpaint_menu)
+        self.inpaint_delete_rext = ui_context_menue.DeleteRect(self, self.inpaint_menu)
+
+        self.act_menu = self.inpaint_menu
+
+    def signal_reset_canvas(self):
+        print('signal reset')
+
+    def contextMenuEvent(self, event):
+        self.act_menu.exec_(event.screenPos())
+
+    def set_brush_size(self, size):
+        print(f"Brush size changed to {size}px")
+        self.brush_size = size# update brush size
+        self.signals.sceneBrushChanged.emit(size)
+
+
+
 
     def mouseMoveEvent(self, event):
         super(Scene, self).mouseMoveEvent(event)
@@ -123,23 +164,6 @@ class Scene(QGraphicsScene):
         self.scenePos = event.scenePos()
         self.gridenabled = False
 
-class MyProxyWidget(QGraphicsProxyWidget):
-    def __init__(self, widget):
-        super(MyProxyWidget, self).__init__()
-        self.setWidget(widget)
-
-    def mousePressEvent(self, event):
-        self.setCursor(QtCore.Qt.ClosedHandCursor)
-        self.last_pos = event.pos()
-
-    def mouseMoveEvent(self, event):
-        dx = event.pos().x() - self.last_pos.x()
-        dy = event.pos().y() - self.last_pos.y()
-        self.setPos(self.x() + dx, self.y() + dy)
-        self.last_pos = event.pos()
-
-    def mouseReleaseEvent(self, event):
-        self.setCursor(QtCore.Qt.ArrowCursor)
 
 class Canvas(QGraphicsView):
 
@@ -175,6 +199,36 @@ class Canvas(QGraphicsView):
         #self.setRenderHint(QPainter.HighQualityAntialiasing)
         self.setRenderHint(QPainter.TextAntialiasing)
         self.setRenderHint(QPainter.SmoothPixmapTransform)
+        self.selected_inpaint_model = None
+
+    @Slot()
+    def update_cursor(self,size):
+        try:
+            self.inpaint_brush_size = size
+            pixmap = QPixmap(size, size)
+            pixmap.fill(QtCore.Qt.transparent)
+            painter = QPainter(pixmap)
+            painter.setBrush(QtGui.QBrush(QtCore.Qt.black))
+            painter.drawEllipse(0, 0, size, size)
+            painter.end()
+            cursor = QCursor(pixmap)
+            print('cursor valid', cursor.shape())
+            self.setCursor(cursor)
+            self.update()
+        except Exception as e:
+            print('update_cursor failed', e)
+
+
+
+
+    def render_inpaint(self):
+        print('do inpaint')
+        self.mode = "inpaint"
+        self.setDragMode(QGraphicsView.DragMode.NoDrag)
+        id = self.addrect_atpos(x=self.scene.scenePos.x() - self.w / 2, y=self.scene.scenePos.y() - self.h / 2,
+                                params=copy.deepcopy(self.parent.parent.params))
+        self.reusable_inpaint(id)
+
 
     @Slot()
     def start_main_clock(self):
@@ -296,7 +350,8 @@ class Canvas(QGraphicsView):
 
         self.rectlist = []
         self.rectlist.clear()
-        self.scene = Scene()
+        self.scene = Scene(self)
+        self.scene.signals.reset_canvas.connect(self.reset)
         self.parent.parent.w = 512
         self.parent.parent.cheight = 512
         self.parent.parent.ui_image.stopwidth = False
@@ -886,7 +941,7 @@ class Canvas(QGraphicsView):
         self.render_item = self.selected_item
         self.outpaintsource = "outpaint.png"
         self.busy = False
-        self.parent.parent.widgets[self.parent.parent.current_widget].w.recons_blur.setValue(0)
+        #self.parent.parent.widgets[self.parent.parent.current_widget].w.recons_blur.setValue(0)
         self.signals.outpaint_signal.emit()
 
     def reusable_outpaint(self, id):
@@ -1051,6 +1106,28 @@ class Canvas(QGraphicsView):
         self.outpaintsource = "outpaint.png"
         self.signals.outpaint_signal.emit()
 
+    def delete_rect(self):
+        # self.parent.canvas.canvas.undoitems = []
+        self.hoverCheck()
+        if self.hover_item is not None:
+            self.selected_item = self.hover_item
+        if self.selected_item is not None:
+            x = 0
+            for i in self.rectlist:
+                if i.id == self.selected_item:
+                    self.undoitems.append(i)
+                    self.rectlist.pop(x)
+                    pass
+                x += 1
+        self.pixmap.fill(Qt.transparent)
+        self.newimage = True
+        self.selected_item = None
+        self.update()
+        #self.parent.canvas.canvas.draw_rects()
+        self.parent.parent.thumbs.w.thumbnails.clear()
+        self.redraw()
+
+
     def mousePressEvent(self, e):
         #print('mousePressEvent')
         fn = getattr(self, "%s_mousePressEvent" % self.mode, None)
@@ -1120,14 +1197,6 @@ class Canvas(QGraphicsView):
         self.bgitem.setPixmap(self.pixmap)
         self.newimage = False
         self.scene.update()
-
-    def old_paintEvent(self):
-        #print('old_paintEvent')
-        help2 = "None"
-        if self.hover_item is not None:
-            for items in self.rectlist:
-                if items.id == self.hover_item:
-                    help2 = f"hover item details:{items.x}, {items.y}"
 
 
     def generic_mouseMoveEvent(self, e):
@@ -1308,12 +1377,13 @@ class Canvas(QGraphicsView):
         if e.button() == Qt.LeftButton:
             self.eraser_color = QColor(QColor(Qt.white))
             self.eraser_color.setAlpha(255)
-            self.pen = QPen(self.eraser_color, 30, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+            self.pen = QPen(self.eraser_color, self.inpaint_brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
             self.last_pos = self.scene.scenePos
             eraser_color = QColor(Qt.white)
             eraser_color.setAlpha(255)
-            self.pen = QPen(eraser_color, 30, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+            self.pen = QPen(eraser_color, self.inpaint_brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
         elif e.button() == Qt.RightButton:
+            return
             self.mode = "inpaint"
             self.setDragMode(QGraphicsView.DragMode.NoDrag)
             id = self.addrect_atpos(x=self.scene.scenePos.x() - self.w / 2, y=self.scene.scenePos.y() - self.h / 2, params=copy.deepcopy(self.parent.parent.params))

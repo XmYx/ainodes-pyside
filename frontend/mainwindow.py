@@ -10,7 +10,7 @@ from backend.singleton import singleton
 
 gs = singleton
 settings.load_settings_json()
-if gs.system.custom_cache_dir == True:
+if gs.system.custom_cache_dir_enabled == True:
     os.makedirs(gs.system.cache_dir, exist_ok=True)
     os.environ['TRANSFORMERS_CACHE'] = gs.system.cache_dir
 import time
@@ -117,7 +117,7 @@ class MainWindow(QMainWindow):
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
 
         self.create_main_toolbar()
-        self.create_secondary_toolbar()
+
         self.system_setup = SystemSetup()
         self.sessionparams.add_state_to_history()
         self.update_ui_from_params()
@@ -127,6 +127,7 @@ class MainWindow(QMainWindow):
 
         self.threadpool = QThreadPool()
         self.deforum_ui = Deforum_UI(self)
+        self.deforum_ui.deforum_six.signals.try_again_render.connect(self.task_switcher)
 
         self.setAcceptDrops(True)
         self.y = 0
@@ -202,6 +203,7 @@ class MainWindow(QMainWindow):
         self.shortcut.activated.connect(self.task_switcher)
 
 
+
     def selftest(self):  # TODO Lets extend this function with everything we have and has to work
 
         self.canvas.canvas.reset()
@@ -221,21 +223,14 @@ class MainWindow(QMainWindow):
         self.task_switcher()
 
     def create_sys_folders(self):
-        os.makedirs(gs.system.out_dir, exist_ok=True)
-        os.makedirs(gs.system.txt2img_out_dir, exist_ok=True)
-        os.makedirs(gs.system.img2img_tmp_dir, exist_ok=True)
-        os.makedirs(gs.system.img2img_out_dir, exist_ok=True)
-        os.makedirs(gs.system.txt2vid_single_frame_dir, exist_ok=True)
-        os.makedirs(gs.system.txt2vid_out_dir, exist_ok=True)
-        os.makedirs(gs.system.vid2vid_tmp_dir, exist_ok=True)
-        os.makedirs(gs.system.vid2vid_single_frame_dir, exist_ok=True)
-        os.makedirs(gs.system.vid2vid_out_dir, exist_ok=True)
-        os.makedirs(gs.system.custom_models_dir, exist_ok=True)
-        os.makedirs(gs.system.default_config_yaml_dir, exist_ok=True)
-        os.makedirs(gs.system.vae_dir, exist_ok=True)
-        os.makedirs(gs.system.textual_inversion_dir, exist_ok=True)
-        os.makedirs(gs.system.hypernetwork_dir, exist_ok=True)
-        os.makedirs(gs.system.aesthetic_gradients_dir, exist_ok=True)
+        # system folder names have to and with _dir in name,
+        # any name ending with _dir will be created as folder.
+        # this way there is no need to further maintain this code here.
+        # it just creates any folder thats needed and follows the right naming.
+        for entry in gs.system.__dict__:
+            if entry.endswith('_dir'):
+                os.makedirs(gs.system.__dict__[entry], exist_ok=True)
+
 
     def connections(self):
 
@@ -252,6 +247,8 @@ class MainWindow(QMainWindow):
         self.canvas.H.valueChanged.connect(self.canvas.canvas.change_resolution)
         self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
         self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_ui.deforum_six_txt2img_thread)
+        self.canvas.canvas.scene.signals.sceneBrushChanged.connect(self.canvas.canvas.update_cursor)
+        self.canvas.canvas.scene.signals.doInpaintTriggered.connect(self.canvas.canvas.render_inpaint)
         self.widgets[self.current_widget].w.H.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
         self.widgets[self.current_widget].w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
 
@@ -602,53 +599,9 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
         clear_canvas.triggered.connect(self.canvas.canvas.reset)
         #test_mode.triggered.connect(self.selftest)
 
-    def create_secondary_toolbar(self):
-        self.secondary_toolbar = QToolBar('Outpaint Tools')
-        self.addToolBar(QtCore.Qt.LeftToolBarArea, self.secondary_toolbar)
-        select_mode = QAction(QIcon_from_svg('frontend/icons/mouse-pointer.svg'), 'Select Rect', self)
-        drag_mode = QAction(QIcon_from_svg('frontend/icons/wind.svg'), 'Drag Canvas', self)
-        add_mode = QAction(QIcon_from_svg('frontend/icons/plus.svg'), 'Outpaint', self)
-        inpaint_mode = QAction(QIcon_from_svg('frontend/icons/edit.svg'), 'Inpaint', self)
-        inpaint_current = QAction(QIcon_from_svg('frontend/icons/edit.svg'), 'Inpaint Current Frame', self)
-        move_mode = QAction(QIcon_from_svg('frontend/icons/move.svg'), 'Move', self)
-        save_canvas = QAction(QIcon_from_svg('frontend/icons/file-text.svg'), 'Save as Json', self)
-        save_canvas_png = QAction(QIcon_from_svg('frontend/icons/save.svg'), 'Save as PNG', self)
-
-        load_canvas = QAction(QIcon_from_svg('frontend/icons/folder.svg'), 'Load from Json', self)
-        load_image = QAction(QIcon_from_svg('frontend/icons/folder.svg'), 'Load Image', self)
-
-
-        self.secondary_toolbar.addAction(select_mode)
-        self.secondary_toolbar.addAction(drag_mode)
-        self.secondary_toolbar.addAction(add_mode)
-        self.secondary_toolbar.addAction(inpaint_mode)
-        self.secondary_toolbar.addAction(inpaint_current)
-        self.secondary_toolbar.addAction(move_mode)
-        self.secondary_toolbar.addSeparator()
-        self.secondary_toolbar.addAction(save_canvas)
-        self.secondary_toolbar.addAction(save_canvas_png)
-        self.secondary_toolbar.addAction(load_canvas)
-        self.secondary_toolbar.addAction(load_image)
-
-        self.secondary_toolbar.addSeparator()
-
-
-        select_mode.triggered.connect(self.canvas.canvas.select_mode)
-        drag_mode.triggered.connect(self.canvas.canvas.drag_mode)
-        add_mode.triggered.connect(self.canvas.canvas.add_mode)
-        inpaint_mode.triggered.connect(self.canvas.canvas.inpaint_mode)
-        inpaint_current.triggered.connect(self.canvas.canvas.inpaint_current_frame)
-        move_mode.triggered.connect(self.canvas.canvas.move_mode)
-        save_canvas.triggered.connect(self.canvas.canvas.save_rects_as_json)
-        load_canvas.triggered.connect(self.canvas.canvas.load_rects_from_json)
-        load_image.triggered.connect(self.canvas.canvas.load_img_into_rect)
-
-        save_canvas_png.triggered.connect(self.canvas.canvas.save_canvas)
-
     def hide_default(self):
 
         self.toolbar.setVisible(False)
-        self.secondary_toolbar.setVisible(False)
 
         self.widgets[self.current_widget].w.base_setup.setVisible(False)
         self.widgets[self.current_widget].w.advanced_toppics.setVisible(False)
@@ -743,15 +696,6 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
             pass
         gs.diffusion.prompt = data
         self.widgets[self.current_widget].w.prompts.setHtml(data)
-
-
-
-
-
-
-
-
-
 
     @Slot()
     def stop_processing(self):

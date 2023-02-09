@@ -59,7 +59,7 @@ also you can use HF_DATASETS_CACHE="/path/to/another/directory" as environment v
 
 - seamless for render textures and stuff
 - HiRes Render two phase Hires Rendering
-- multi dimensional Prompting allows to prompt settings with lists of values which then get looped, produses massive amounts of images with different settings
+- multidimensional Prompting allows to prompt settings with lists of values which then get looped, produses massive amounts of images with different settings
 - multi Model Batch allows your prompt(s) to be rendered with different models in one single run. Just prepare run and go get coffee
 - textual inversion 
 - VAE
@@ -69,18 +69,19 @@ also you can use HF_DATASETS_CACHE="/path/to/another/directory" as environment v
 - plugins A list of plugins exists like training and webcam fun list will grow over time and youre welcome to add your own plugins or a Colab API Server with limited functionality
 - canvas for manual, batched in and outpaint as well as a Batch Hires image to image process
 - model downloads in UI, just search civit AI for a new model, download it and directly start using it, no need to copy files or anything just stay in the tool
-- image lab with many different features most of them are bulk centered like
-- image to text which generates a ascii image of your image (its there mainly for fun)
-- image crop helps you to crop your images for training
-- upscale use realesrgan and gfpgan to upscale and make nicer faces
-- watermark add visible watermarks to your image to prevent theft
-- interrogation make images to prompts with interrogation or clip interrogation
-- aesthetic prediction help to sort your lare amounts of images based on aaesthetic guess from an AI
-- merge models 1.x or 2.x
-- upscale 2.0 its a SD 2.0 feature which is so hungry for VRam that it nearly makes no sense but we added it anyways
+- image lab with many features most of them are bulk centered like
+  - image to text which generates a ascii image of your image (its there mainly for fun)
+  - image crop helps you to crop your images for training
+  - upscale use realesrgan and gfpgan to upscale and make nicer faces
+  - watermark add visible watermarks to your image to prevent theft
+  - interrogation make images to prompts with interrogation or clip interrogation
+  - aesthetic prediction help to sort your lare amounts of images based on aesthetic guess from an AI
+  - merge models 1.x or 2.x
+  - upscale 2.0 it's a SD 2.0 feature which is so hungry for VRam that it nearly makes no sense but we added it anyways
 - search for prompts at lexica or kreas getting not only prompts but also sample images
-- as well as search for prompts only text, also use interrogation to get prompts from your holiday photos
-- use an AI to help make better prompts
+- as well as search for prompts only text
+  - use interrogation to get prompts from your holiday photos
+  - use an AI to help make better prompts
 
 All this is hiding behind that very harmless looking UI once you installed it and run it for the first time.
 Click on show / hide options to enable the full power of this UI to help you make more art in less time

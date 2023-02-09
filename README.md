@@ -44,7 +44,7 @@ any further start can be made by start.bat it will just fire up the app and do n
 1. I have the following error: RuntimeError: failed to find interpreter for Builtin discover of python_spec='python3.10'
 Solution: Please make sure you have Python version 3.10 installed on your system and added to your PATH, or in your conda environment you are running the launcher from.
 https://realpython.com/add-python-to-path/
-2. I have an access denied error when downloading the files from huggingface to the user\.cache folder
+2. I have access denied error when downloading the files from huggingface to the user\.cache folder
 Solution can be to rename the existing folder to allow creating a new one, delete the existing one is kind the same but more agressive
 also you can use HF_DATASETS_CACHE="/path/to/another/directory" as environment variable to point to a different folder
 
@@ -59,23 +59,23 @@ also you can use HF_DATASETS_CACHE="/path/to/another/directory" as environment v
 
 - seamless for render textures and stuff
 - HiRes Render two phase Hires Rendering
-- multidimensional Prompting allows to prompt settings with lists of values which then get looped, produses massive amounts of images with different settings
+- multidimensional Prompting allows to prompt settings with lists of values which then get looped, produces massive amounts of images with different settings
 - multi Model Batch allows your prompt(s) to be rendered with different models in one single run. Just prepare run and go get coffee
 - textual inversion 
 - VAE
 - hypernetworks
 - karras
 - plotting with XY axis enter a list of values to be used for different settings on X and Y axis to in the end get a grid image showing the results for easy compare
-- plugins A list of plugins exists like training and webcam fun list will grow over time and youre welcome to add your own plugins or a Colab API Server with limited functionality
+- plugins A list of plugins exists like training and webcam fun list will grow over time, and you're welcome to add your own plugins or a Colab API Server with limited functionality
 - canvas for manual, batched in and outpaint as well as a Batch Hires image to image process
 - model downloads in UI, just search civit AI for a new model, download it and directly start using it, no need to copy files or anything just stay in the tool
 - image lab with many features most of them are bulk centered like
-  - image to text which generates a ascii image of your image (its there mainly for fun)
+  - image to text which generates a ascii image of your image (It's there mainly for fun)
   - image crop helps you to crop your images for training
   - upscale use realesrgan and gfpgan to upscale and make nicer faces
   - watermark add visible watermarks to your image to prevent theft
   - interrogation make images to prompts with interrogation or clip interrogation
-  - aesthetic prediction help to sort your lare amounts of images based on aesthetic guess from an AI
+  - aesthetic prediction help to sort your large amounts of images based on aesthetic guess from an AI
   - merge models 1.x or 2.x
   - upscale 2.0 it's a SD 2.0 feature which is so hungry for VRam that it nearly makes no sense but we added it anyways
 - search for prompts at lexica or kreas getting not only prompts but also sample images

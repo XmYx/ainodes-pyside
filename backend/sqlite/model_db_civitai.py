@@ -107,7 +107,6 @@ class civit_ai_api:
         print('done')
 
     def civitai_get_model_data(self, name):
-        print('get model data for:', name)
         model_db_con = sqlite3.connect(self.db_file)
         model_db_con.row_factory = sqlite3.Row
         sqlite_select_with_param = """select * from model_data where model_name = ?"""

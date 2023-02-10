@@ -90,9 +90,10 @@ class ModelMenu:
         files = [f for f in os.listdir(self.folder_path) if "inpaint" in f and not '.yaml' in f]
 
         second_folder_path = os.path.join(self.folder_path, 'custom')
-        files.extend([f for f in os.listdir(second_folder_path) if "inpaint" in f and not '.yaml' in f])
+        files.extend([os.path.join('custom',f) for f in os.listdir(second_folder_path) if "inpaint" in f and not '.yaml' in f])
 
         for n, file in enumerate(files):
+            file = file.replace('\\', '/')
             action = QAction(file, self.submenu)
             action.setCheckable(True)
             action.triggered.connect(functools.partial(self.handleFileSelected, action))
@@ -106,7 +107,6 @@ class ModelMenu:
 
 
     def handleFileSelected(self, action):
-        print('handle model change')
         filename = action.text()
         if action != self.current_action and self.current_action is not None:
             self.current_action.setChecked(False)

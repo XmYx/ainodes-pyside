@@ -82,7 +82,7 @@ also you can use HF_DATASETS_CACHE="/path/to/another/directory" as environment v
 - as well as search for prompts only text
   - use interrogation to get prompts from your holiday photos
   - use an AI to help make better prompts
-
+- GPU infos about memory usage
 All this is hiding behind that very harmless looking UI once you installed it and run it for the first time.
 Click on show / hide options to enable the full power of this UI to help you make more art in less time
 

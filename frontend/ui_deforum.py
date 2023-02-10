@@ -575,6 +575,7 @@ class Deforum_UI(QObject):
         self.choice = "Outpaint"
         worker = Worker(self.run_deforum_outpaint)
         self.parent.threadpool.start(worker)
+
 class GridAnnotation:
     def __init__(self, text='', is_active=True):
         self.text = text

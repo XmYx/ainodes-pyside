@@ -21,7 +21,7 @@ gs = singleton
 class UiImage:
     def __init__(self, parent):
         self.parent = parent
-        self.parent.web_images = WebImages()
+        self.web_images = WebImages()
         self.stopwidth = False
         self.advanced_temp = False
         self.render_index = 0
@@ -39,7 +39,7 @@ class UiImage:
             self.show_image_from_url(image['url'])
 
     def show_image_from_url(self, url):
-        self.parent.web_images.get_image(url)
+        self.web_images.get_image(url)
 
     def show_web_image_on_canvas(self, image_string):
         try:

@@ -1,7 +1,7 @@
 import datetime
 import threading
 from types import SimpleNamespace
-from PySide6.QtCore import Qt, QMutex, QMutexLocker, QObject, QWriteLocker
+from PySide6.QtCore import Qt, QMutex, QMutexLocker, QObject, QWriteLocker, Signal
 from backend.torch_gc import torch_gc
 
 selected_inpaint_model = None
@@ -134,24 +134,11 @@ state = State()
 # interrogate
 deepdanbooru = False
 interrogate_deepbooru_score_threshold = 0.0
-"""
-class Singleton:
-	_instance = None
-	_lock = threading.Lock()
-
-	def __new__(cls, *args, **kwargs):
-		if not cls._instance:
-			with cls._lock:
-				# another thread could have created the instance
-				# before we acquired the lock. So check that the
-				# instance is still nonexistent.
-				if not cls._instance:
-					cls._instance = super(Singleton, cls).__new__(cls)
-		return cls._instance
-"""
 
 
 
+class Callbacks(QObject):
+	selected_model_changed = Signal(str)
 
 class Singleton(QObject):
 	_instance = None
@@ -159,19 +146,10 @@ class Singleton(QObject):
 
 	def __new__(cls, *args, **kwargs):
 		with QMutexLocker(cls._mutex):
-			from PySide6.QtCore import Qt, QMutex, QMutexLocker, QObject
-
-class Singleton(QObject):
-	_instance = None
-	_mutex = QMutex()
-
-	def __new__(cls, *args, **kwargs):
-		with QMutexLocker(cls._mutex):
-		# Check if the instance is already created
 			if not cls._instance:
-				with QWriteLocker(cls._rwlock):
-					# Double-checking if the instance is still nonexistent
-					if not cls._instance:
-						cls._instance = super(Singleton, cls).__new__(cls)
-						QObject.__init__(cls._instance)
+				cls._instance = super(Singleton, cls).__new__(cls)
+				QObject.__init__(cls._instance)
 		return cls._instance
+
+	def __init__(self):
+		self.signals = Callbacks()

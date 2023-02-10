@@ -125,25 +125,9 @@ class Outpainting:
                 if items.id == self.parent.canvas.canvas.selected_item:
                     try:
                         self.parent.sessionparams.params = items.params.__dict__
-                        self.parent.update_ui_from_params()
+                        #self.parent.update_ui_from_params()
                     except Exception as e:
                         print(f"Error, could not update  because of: {e}")
-
-                    # todo still needed?
-                    #if items.params != {}:
-                    #    pass
-                        # print(f"showing strength of {items.params['strength'] * 100}")
-                        # self.parent.widgets[self.current_widget].w.steps.setValue(items.params.steps)
-                        # self.parent.widgets[self.current_widget].w.steps_slider.setValue(items.params.steps)
-                        # self.parent.widgets[self.current_widget].w.scale.setValue(items.params['scale'] * 10)
-                        # self.parent.widgets[self.current_widget].w.scale_slider.setValue(items.params['scale'] * 10)
-                        # self.parent.widgets[self.current_widget].w.strength.setValue(int(items.params['strength'] * 100))
-                        # self.parent.widgets[self.current_widget].w.strength_slider.setValue(int(items.params['strength'] * 100))
-                        # self.parent.widgets[self.current_widget].w.reconstruction_blur.setValue(items.params['reconstruction_blur'])
-                        # self.parent.widgets[self.current_widget].w.mask_blur.setValue(items.params['mask_blur'])
-                        # self.parent.widgets[self.current_widget].w.prompts.setText(items.params['prompts'])
-                        # self.parent.widgets[self.current_widget].w.seed.setText(str(items.params['seed']))
-                        # self.parent.widgets[self.current_widget].w.mask_offset.setValue(items.params['mask_offset'])
 
                     if items.images is not []:
                         for i in items.images:

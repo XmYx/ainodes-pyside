@@ -4,6 +4,7 @@ import os
 from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtCore import QObject, Signal, Slot
 from PySide6.QtGui import QAction
+from PySide6.QtTest import QSignalSpy
 from PySide6.QtWidgets import QMenu
 
 from backend.singleton import singleton
@@ -69,14 +70,12 @@ class BrushMenu(QtWidgets.QMenu):
         brush_size_action = self.menu.addAction("Brush Size")
         brush_size_action.setMenu(self)
 
-class ModelMenuSignals(QObject):
-    fileSelected = Signal(str)
 
 class ModelMenu:
 
     def __init__(self, parent=None, menu=None):
         self.folder_path = gs.system.models_path
-        self.signals = ModelMenuSignals()
+        self.deep_signals = gs.Singleton()
         self.parent = parent
         self.parent_menu = menu
         self.submenu = QMenu("Inpaint Model")
@@ -85,9 +84,13 @@ class ModelMenu:
         self.file_actions = []
         self.add_actions()
 
+
     def add_actions(self):
         self.file_actions = []
         files = [f for f in os.listdir(self.folder_path) if "inpaint" in f and not '.yaml' in f]
+
+        second_folder_path = os.path.join(self.folder_path, 'custom')
+        files.extend([f for f in os.listdir(second_folder_path) if "inpaint" in f and not '.yaml' in f])
 
         for n, file in enumerate(files):
             action = QAction(file, self.submenu)
@@ -103,6 +106,7 @@ class ModelMenu:
 
 
     def handleFileSelected(self, action):
+        print('handle model change')
         filename = action.text()
         if action != self.current_action and self.current_action is not None:
             self.current_action.setChecked(False)
@@ -112,8 +116,7 @@ class ModelMenu:
                 self.current_action = action
                 gs.selected_inpaint_model = action.text()
                 break
-
-        self.signals.fileSelected.emit(filename)
+        self.deep_signals.signals.selected_model_changed.emit(filename)
 
 
 class DoInpaint:
@@ -123,10 +126,19 @@ class DoInpaint:
         action = self.parent_menu.addAction('Do inpaint')
         action.triggered.connect(self.send_do_inpaint_signal)
 
-
     def send_do_inpaint_signal(self):
         self.parent.signals.doInpaintTriggered.emit()
 
+
+class InpaintMask:
+    def __init__(self, parent=None, menu=None):
+        self.parent = parent
+        self.parent_menu = menu
+        action = self.parent_menu.addAction('Paint inpaint mask')
+        action.triggered.connect(self.send_do_inpaint_signal)
+
+    def send_do_inpaint_signal(self):
+        self.parent.signals.paintInpaintMaskTriggered.emit()
 
 
 class SelectRect:

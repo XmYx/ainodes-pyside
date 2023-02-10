@@ -6,6 +6,7 @@ import shutil
 from io import BytesIO
 
 import backend.settings as settings
+from backend.devices import torch_gc
 from backend.singleton import singleton
 
 gs = singleton
@@ -86,6 +87,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.signals = Callbacks()
+        self.deep_signals = gs.Singleton()
 
         self.thumbs = ThumbsUI()
         self.w = 512
@@ -326,7 +328,7 @@ class MainWindow(QMainWindow):
 
         self.system_setup.w.ok.clicked.connect(self.sessionparams.update_system_params)
         self.system_setup.w.cancel.clicked.connect(self.update_ui_from_system_params)
-        self.web_images.signals.web_image_retrived.connect(self.ui_image.show_web_image_on_canvas)
+        self.ui_image.web_images.signals.web_image_retrived.connect(self.ui_image.show_web_image_on_canvas)
 
         self.widgets[self.current_widget].w.sampler.currentIndexChanged.connect(self.check_karras_enabled)
         self.widgets[self.current_widget].w.hires.toggled.connect(self.set_hires_strength_visablity)
@@ -336,6 +338,36 @@ class MainWindow(QMainWindow):
         self.signals.status_update.connect(self.set_status_bar)
         self.signals.image_loaded.connect(self.ui_image.render_index_image_preview_func_str)
         self.system_setup.w.update_gpu_stats.clicked.connect(self.gpu_info)
+
+        self.deep_signals.signals.selected_model_changed.connect(self.set_selected_model)
+        self.widgets[self.current_widget].w.with_inpaint.toggled.connect(self.set_with_inpaint)
+
+
+    @Slot()
+    def set_with_inpaint(self):
+        if self.widgets[self.current_widget].w.with_inpaint.isChecked():
+            self.stored_model_for_inpaint = self.widgets[self.current_widget].w.selected_model.currentText()
+            self.set_selected_model(gs.selected_inpaint_model)
+        else:
+            self.set_selected_model(self.stored_model_for_inpaint)
+
+
+    @Slot()
+    def set_selected_model(self, model_name):
+        self.stored_model_for_inpaint = self.widgets[self.current_widget].w.selected_model.currentText()
+        current_widget = self.widgets[self.current_widget].w.selected_model
+        item_count = current_widget.count()
+        items = []
+        for i in range(0, item_count):
+            items.append(current_widget.itemText(i))
+        if item_count > 0:
+            current_widget.setCurrentIndex(items.index(model_name))
+        else:
+            current_widget.setCurrentIndex(0)
+        if "sd" in gs.models:
+            del gs.models["sd"]
+        torch_gc()
+
 
     def gpu_info(self):
         cuda_info = ''
@@ -523,6 +555,8 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
             except Exception as e:
                 #print(f'setting still to be fixed {key} {value}', e)
                 continue
+
+
 
     def update_ui_from_system_params(self):
         for key, value in self.sessionparams.system_params.items():

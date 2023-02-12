@@ -110,7 +110,6 @@ class SessionParams():
 
         if self.parent.widgets[widget].w.toggle_negative_prompt.isChecked():
             negative_prompts = self.parent.widgets[widget].w.negative_prompts.toPlainText()
-            print(f"Using negative prompts {negative_prompts}")
         else:
             negative_prompts = None
 

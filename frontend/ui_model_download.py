@@ -37,6 +37,7 @@ class Callbacks(QObject):
     set_download_percent = Signal(int)
     add_model_search_item = Signal(str)
     set_download_info_text = Signal(str)
+    update_model_list = Signal()
 
 class ModelDownload():
     def __init__(self, parent):
@@ -320,7 +321,7 @@ NSFW: {model_info['item']['nsfw']}
                 model_name = filename + '.pt'
                 model_outpath = os.path.join(gs.system.aesthetic_gradients_dir, model_name)
 
-            print(f"download model {model_name} from url: {model_info['model']['downloadUrl']} ")
+            self.parent.signals.status_update.emit(f"download model {model_name} from url: {model_info['model']['downloadUrl']} ")
 
             chunk_size = 1024
             if int(length) > 102400:
@@ -330,7 +331,7 @@ NSFW: {model_info['item']['nsfw']}
                 wget_progress(url=model_info['model']['downloadUrl'], filename=model_outpath, length=length, chunk_size=chunk_size, callback=self.model_download_progress_callback)
                 self.model_download_progress_callback(100)
             except Exception as e:
-                print('Download failed: ', e)
+                self.parent.signals.status_update.emit('Download failed: ', e)
                 self.model_download_progress_callback(0)
 
 
@@ -339,9 +340,8 @@ NSFW: {model_info['item']['nsfw']}
                 src = os.path.join(gs.system.default_config_yaml_dir, self.model_download.w.config_yaml.currentText())
                 dst = os.path.join(gs.system.custom_models_dir, config_name)
                 shutil.copyfile(src, dst)
-
-            self.parent.widgets[self.parent.current_widget].update_model_list()
         except Exception as e:
-            print(f'download failed with an error: {e}')
+            self.parent.signals.status_update.emit(f'download failed with an error: {e}')
         finally:
+            self.signals.update_model_list.emit()
             self.model_download.w.download_button.setEnabled(True)

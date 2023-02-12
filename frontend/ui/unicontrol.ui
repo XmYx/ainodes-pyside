@@ -106,7 +106,7 @@
           <item row="0" column="2">
            <widget class="QLabel" name="preview_mode_label">
             <property name="text">
-             <string>Preview Mode</string>
+             <string>Canvas Mode</string>
             </property>
            </widget>
           </item>
@@ -3472,7 +3472,7 @@
                  <item row="8" column="1" colspan="4">
                   <widget class="QCheckBox" name="preview_on_canvas">
                    <property name="text">
-                    <string>Model preview images on canvas</string>
+                    <string>Preview model sample images on canvas</string>
                    </property>
                   </widget>
                  </item>

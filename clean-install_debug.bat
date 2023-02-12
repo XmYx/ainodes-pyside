@@ -1,14 +1,14 @@
 @echo off
 
 rem Check for Anaconda in the system profile
-if exist "%ProgramData%\Anaconda3\Scripts\conda.bat" (
-  call "%ProgramData%\Anaconda3\Scripts\conda.bat" activate base
+if exist "%ProgramData%\Anaconda3\Scripts\activate.bat" (
+  call "%ProgramData%\Anaconda3\Scripts\activate.bat" activate base
   goto end
 )
 
 rem Check for Anaconda in the user profile
-if exist "%userprofile%\Anaconda3\Scripts\conda.bat" (
-  call "%userprofile%\Anaconda3\Scripts\conda.bat" activate base
+if exist "%userprofile%\Anaconda3\Scripts\activate.bat" (
+  call "%userprofile%\Anaconda3\Scripts\activate.bat" activate base
   goto end
 )
 

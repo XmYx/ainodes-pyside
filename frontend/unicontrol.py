@@ -2,6 +2,7 @@ import os
 
 from PySide6 import QtUiTools, QtCore
 from PySide6.QtCore import QFile, QObject, QEasingCurve, QRect, Signal
+from PySide6.QtGui import QCursor, Qt
 from PySide6.QtWidgets import QFileDialog
 
 from backend.singleton import singleton
@@ -62,6 +63,17 @@ class UniControl(QObject):
         self.hide_all()
         self.ui_unicontrol = UniControl_UI(self)
         self.civitai_api = model_db_civitai.civit_ai_api()
+
+
+    def set_inactive(self):
+        check = self.w.dream.setEnabled(False)
+        cursor = QCursor(Qt.WaitCursor)
+        check = self.w.setCursor(cursor)
+
+    def set_active(self):
+        check = self.w.dream.setEnabled(True)
+        cursor = QCursor(Qt.PointingHandCursor)
+        check = self.w.setCursor(cursor)
 
     def select_init_image(self):
         filename = QFileDialog.getOpenFileName(caption='Select Init image', filter='Image (*.png *.jpg)')

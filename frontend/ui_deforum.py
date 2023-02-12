@@ -26,7 +26,7 @@ gs = singleton
 
 class Callbacks(QObject):
     txt2img_step = Signal()
-    reenable_runbutton = Signal()
+    reenable_dreambutton = Signal()
     txt2img_image_cb = Signal(str, str, tuple)
     deforum_step = Signal()
     deforum_image_cb = Signal()
@@ -36,6 +36,7 @@ class Callbacks(QObject):
     vid2vid_one_percent = Signal(int)
     image_ready_in_ui = Signal()
     plot_ready = Signal()
+    all_done = Signal()
 
 class Deforum_UI(QObject):
     def __init__(self, parent):
@@ -324,152 +325,156 @@ class Deforum_UI(QObject):
             print('run_deforum_six_txt2img_img failed', e)
     def run_deforum_six_txt2img(self, hiresinit=None, progress_callback=None, plotting=True, params=None, image_callback=None):
 
+        try:
+            gs.stop_all = False
+            id = None
+            if params == None:
+                self.params = self.parent.sessionparams.update_params()
+                self.parent.params = self.params
+            else:
+                self.params = params
+                self.parent.params = params
+                new_model = os.path.join(gs.system.models_path, params.selected_model)
+                gs.system.sd_model_file = new_model
 
-        gs.stop_all = False
-        id = None
-        if params == None:
-            self.params = self.parent.sessionparams.update_params()
-            self.parent.params = self.params
-        else:
-            self.params = params
-            self.parent.params = params
-            new_model = os.path.join(gs.system.models_path, params.selected_model)
-            gs.system.sd_model_file = new_model
-
-        index = 0
-
-        if self.parent.canvas.canvas.rectlist != []:
-            for i in self.parent.canvas.canvas.rectlist:
-                try:
-                    i.stop()
-                except:
-                    pass
-                id = i.id
-                index = self.parent.canvas.canvas.rectlist.index(i)
-        else:
             index = 0
-            self.parent.params.advanced = False
-        self.parent.canvas.canvas.stop_main_clock()
 
-        if id is not None:
-            self.parent.canvas.canvas.render_item = id
+            if self.parent.canvas.canvas.rectlist != []:
+                for i in self.parent.canvas.canvas.rectlist:
+                    try:
+                        i.stop()
+                    except:
+                        pass
+                    id = i.id
+                    index = self.parent.canvas.canvas.rectlist.index(i)
+            else:
+                index = 0
+                self.parent.params.advanced = False
+            self.parent.canvas.canvas.stop_main_clock()
 
-        gs.karras = self.parent.widgets[self.parent.current_widget].w.karras.isChecked()
-        gs.karras_sigma_min = self.parent.widgets[self.parent.current_widget].w.karras_sigma_min.value()
-        gs.karras_sigma_max = self.parent.widgets[self.parent.current_widget].w.karras_sigma_max.value()
+            if id is not None:
+                self.parent.canvas.canvas.render_item = id
 
-        ##print(self.params.translation_x)
-        ##print(f"updated parameters to: {params}")
-        model_killer(keep='sd')
-        #print(gs.models)
-        #if "inpaint" in gs.models:
-        #    del gs.models["inpaint"]
-        mode = self.parent.widgets[self.parent.current_widget].w.preview_mode.currentText()
+            gs.karras = self.parent.widgets[self.parent.current_widget].w.karras.isChecked()
+            gs.karras_sigma_min = self.parent.widgets[self.parent.current_widget].w.karras_sigma_min.value()
+            gs.karras_sigma_max = self.parent.widgets[self.parent.current_widget].w.karras_sigma_max.value()
 
-        #if mode == 'single' and self.selected_rect == None
+            ##print(self.params.translation_x)
+            ##print(f"updated parameters to: {params}")
+            model_killer(keep='sd')
+            #print(gs.models)
+            #if "inpaint" in gs.models:
+            #    del gs.models["inpaint"]
+            mode = self.parent.widgets[self.parent.current_widget].w.preview_mode.currentText()
 
-        if self.params.with_inpaint == True: # todo what is this for?
-            self.parent.sessionparams.params.advanced = True
-        else:
-            if mode == 'grid':
-                self.parent.sessionparams.params.advanced = False
-            elif mode == 'single':
+            #if mode == 'single' and self.selected_rect == None
+
+            if self.params.with_inpaint == True: # todo what is this for?
                 self.parent.sessionparams.params.advanced = True
-                #todo add a first rectangle if not present addrect_atpos
-                #self.parent.render_index = index
+            else:
+                if mode == 'grid':
+                    self.parent.sessionparams.params.advanced = False
+                elif mode == 'single':
+                    self.parent.sessionparams.params.advanced = True
+                    #todo add a first rectangle if not present addrect_atpos
+                    #self.parent.render_index = index
 
-        gs.diffusion.selected_aesthetic_embedding = self.parent.widgets[self.parent.current_widget].w.selected_aesthetic_embedding.currentText()
-        gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
-        gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value()
-        gs.aesthetic_weight = self.parent.widgets[self.parent.current_widget].w.aesthetic_weight.value()
-        gs.slerp = self.parent.widgets[self.parent.current_widget].w.slerp.isChecked()
-        gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.toPlainText()
-        gs.slerp_angle = self.parent.widgets[self.parent.current_widget].w.slerp_angle.value()
-        gs.aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.toPlainText()
-        if hiresinit is not None:
-            self.parent.sessionparams.params.advanced = True
-            self.params.use_init = True
-            self.params.init_image = hiresinit
+            gs.diffusion.selected_aesthetic_embedding = self.parent.widgets[self.parent.current_widget].w.selected_aesthetic_embedding.currentText()
+            gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
+            gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value()
+            gs.aesthetic_weight = self.parent.widgets[self.parent.current_widget].w.aesthetic_weight.value()
+            gs.slerp = self.parent.widgets[self.parent.current_widget].w.slerp.isChecked()
+            gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.toPlainText()
+            gs.slerp_angle = self.parent.widgets[self.parent.current_widget].w.slerp_angle.value()
+            gs.aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.toPlainText()
+            if hiresinit is not None:
+                self.parent.sessionparams.params.advanced = True
+                self.params.use_init = True
+                self.params.init_image = hiresinit
 
-        plotting = self.params.plotting
+            plotting = self.params.plotting
 
-        self.parent.make_grid = False
+            self.parent.make_grid = False
 
-        # enable a list of models to be used for any possible prompt situation
-        # create a minimum array with the one selected model from the model drop down
-        model_work_list = [gs.system.sd_model_file]
-        # store the selected model to be able to restore it again later,
-        # this is for UI functions not to be confused by a changed model in that system variable.
-        actual_selected_model = gs.system.sd_model_file
-        # here we store the prompt to be able to restore it during a multi model run
-        work_prompt = self.params.prompts
-        if self.params.multi_model_batch:
-            if len(self.params.multi_model_list) > 0:
-                model_work_list = []
-                for model in self.params.multi_model_list:
-                    model_work_list.append(os.path.join(gs.system.models_path,model))
-                if 'sd' in gs.models:
-                    gs.models['sd'].to('cpu')
-                    del gs.models['sd']
-                    torch_gc()
+            # enable a list of models to be used for any possible prompt situation
+            # create a minimum array with the one selected model from the model drop down
+            model_work_list = [gs.system.sd_model_file]
+            # store the selected model to be able to restore it again later,
+            # this is for UI functions not to be confused by a changed model in that system variable.
+            actual_selected_model = gs.system.sd_model_file
+            # here we store the prompt to be able to restore it during a multi model run
+            work_prompt = self.params.prompts
+            if self.params.multi_model_batch:
+                if len(self.params.multi_model_list) > 0:
+                    model_work_list = []
+                    for model in self.params.multi_model_list:
+                        model_work_list.append(os.path.join(gs.system.models_path,model))
+                    if 'sd' in gs.models:
+                        gs.models['sd'].to('cpu')
+                        del gs.models['sd']
+                        torch_gc()
 
-        for model in model_work_list:
+            for model in model_work_list:
 
-            self.params.prompts = work_prompt
-            gs.system.sd_model_file = model
-            if gs.system.sd_model_file != actual_selected_model:
-                if 'sd' in gs.models:
-                    gs.models['sd'].to('cpu')
-                    del gs.models['sd']
-                    torch_gc()
-            if not gs.stop_all:
-                if self.params.multi_dim_prompt:
-                    self.multi_dim_loop(image_callback=image_callback)
-
-                else:
-
-                    if plotting:
-                        self.parent.make_grid = True
-                        self.parent.all_images = []
-
-                        attrib2 = self.params.plotX
-                        attrib1 = self.params.plotY
-
-                        ploty_list_string = self.params.plotXLine
-                        plotx_list_string = self.params.plotYLine
-                        plotY = plotx_list_string.split(', ')
-                        plotX = ploty_list_string.split(', ')
-                        self.onePercent = 100 / (len(plotX) * len(plotY) * self.params.n_batch * self.params.n_samples * self.params.steps)
+                self.params.prompts = work_prompt
+                gs.system.sd_model_file = model
+                if gs.system.sd_model_file != actual_selected_model:
+                    if 'sd' in gs.models:
+                        gs.models['sd'].to('cpu')
+                        del gs.models['sd']
+                        torch_gc()
+                if not gs.stop_all:
+                    if self.params.multi_dim_prompt:
+                        self.multi_dim_loop(image_callback=image_callback)
 
                     else:
-                        plotX = [1]
-                        plotY = [1]
-                        self.onePercent = 100 / (self.params.n_batch * self.params.n_samples * self.params.steps)
-                    all_images = []
-                    for i in plotY:
-                        for j in plotX:
-                            if plotting:
-                                self.params.__dict__[attrib1] = i
-                                self.params.__dict__[attrib2] = j
-                                if attrib1 == 'T': gs.T = int(i)
-                                if attrib1 == 'lr': gs.lr = float(i)
-                                if attrib2 == 'T': gs.T = int(j)
-                                if attrib2 == 'lr': gs.lr = float(j)
-                            if self.params.init_image is not None:
-                                if os.path.isdir(self.params.init_image) and self.params.animation_mode == 'None':
-                                    print('Batch Directory found')
-                                    self.params.max_frames = 2
-                            # here we finally run the image generation
-                            try:
-                                self.run_it(image_callback=image_callback)
-                            except Exception as e:
-                                print('run int failed: ', e)
 
-            else:
-                break
-            if plotting:
-                self.signals.plot_ready.emit()
-        gs.system.sd_model_file = actual_selected_model
+                        if plotting:
+                            self.parent.make_grid = True
+                            self.parent.all_images = []
+
+                            attrib2 = self.params.plotX
+                            attrib1 = self.params.plotY
+
+                            ploty_list_string = self.params.plotXLine
+                            plotx_list_string = self.params.plotYLine
+                            plotY = plotx_list_string.split(', ')
+                            plotX = ploty_list_string.split(', ')
+                            self.onePercent = 100 / (len(plotX) * len(plotY) * self.params.n_batch * self.params.n_samples * self.params.steps)
+
+                        else:
+                            plotX = [1]
+                            plotY = [1]
+                            self.onePercent = 100 / (self.params.n_batch * self.params.n_samples * self.params.steps)
+                        all_images = []
+                        for i in plotY:
+                            for j in plotX:
+                                if plotting:
+                                    self.params.__dict__[attrib1] = i
+                                    self.params.__dict__[attrib2] = j
+                                    if attrib1 == 'T': gs.T = int(i)
+                                    if attrib1 == 'lr': gs.lr = float(i)
+                                    if attrib2 == 'T': gs.T = int(j)
+                                    if attrib2 == 'lr': gs.lr = float(j)
+                                if self.params.init_image is not None:
+                                    if os.path.isdir(self.params.init_image) and self.params.animation_mode == 'None':
+                                        print('Batch Directory found')
+                                        self.params.max_frames = 2
+                                # here we finally run the image generation
+                                try:
+                                    self.run_it(image_callback=image_callback)
+                                except Exception as e:
+                                    print('run int failed: ', e)
+
+                else:
+                    break
+                if plotting:
+                    self.signals.plot_ready.emit()
+        except:
+            pass
+        finally:
+            self.signals.all_done.emit()
+            gs.system.sd_model_file = actual_selected_model
 
     def plot_ready(self):
         if self.parent.make_grid:
@@ -503,71 +508,74 @@ class Deforum_UI(QObject):
         # self.deforum = DeforumGenerator()
         # self.deforum.signals = Callbacks()
 
+        self.parent.widgets[self.parent.current_widget].set_inactive()
+        try:
+            if params == None:
+                params = self.parent.sessionparams.update_params()
+                self.parent.params = self.parent.sessionparams.update_params()
+            if 'inpaint' in gs.system.sd_model_file:
+                params.with_inpaint = True
+                self.parent.with_inpaint = True
+            self.progress = 0.0
+            self.parent.update = 0
+            self.onePercent = 100 / params.steps
+            #self.updateRate = self.parent.sizer_count.w.previewSlider.value()
+            self.updateRate = 1
+            self.parent.currentFrames = []
+            self.parent.renderedFrames = 0
+            self.parent.sample_number = 1
+            if params.n_samples == 1:
+                make_grid = False
+            else:
+                make_grid = self.parent.widgets[self.parent.current_widget].w.make_grid.isChecked()
+            #sampler_name = translate_sampler(self.parent.sampler.w.sampler.currentText())
+            sampler_name = "ddim"
+            init_image = "outpaint.png"
+            gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
+            gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value()
+            gs.slerp = self.parent.widgets[self.parent.current_widget].w.slerp.isChecked()
+            gs.slerp_angle = self.parent.widgets[self.parent.current_widget].w.slerp_angle.value()
+            gs.aesthetic_weight = self.parent.widgets[self.parent.current_widget].w.aesthetic_weight.value()
+            gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.toPlainText()
+            aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.toPlainText()
+            gs.aesthetic_text_negative = False if aesthetic_text_negative == '' else aesthetic_text_negative
 
-        if params == None:
-            params = self.parent.sessionparams.update_params()
-            self.parent.params = self.parent.sessionparams.update_params()
-        if 'inpaint' in gs.system.sd_model_file:
-            params.with_inpaint = True
-            self.parent.with_inpaint = True
-        self.progress = 0.0
-        self.parent.update = 0
-        self.onePercent = 100 / params.steps
-        #self.updateRate = self.parent.sizer_count.w.previewSlider.value()
-        self.updateRate = 1
-        self.parent.currentFrames = []
-        self.parent.renderedFrames = 0
-        self.parent.sample_number = 1
-        if params.n_samples == 1:
-            make_grid = False
-        else:
-            make_grid = self.parent.widgets[self.parent.current_widget].w.make_grid.isChecked()
-        #sampler_name = translate_sampler(self.parent.sampler.w.sampler.currentText())
-        sampler_name = "ddim"
-        init_image = "outpaint.png"
-        gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
-        gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value()
-        gs.slerp = self.parent.widgets[self.parent.current_widget].w.slerp.isChecked()
-        gs.slerp_angle = self.parent.widgets[self.parent.current_widget].w.slerp_angle.value()
-        gs.aesthetic_weight = self.parent.widgets[self.parent.current_widget].w.aesthetic_weight.value()
-        gs.aesthetic_imgs_text = self.parent.widgets[self.parent.current_widget].w.aesthetic_imgs_text.toPlainText()
-        aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.toPlainText()
-        gs.aesthetic_text_negative = False if aesthetic_text_negative == '' else aesthetic_text_negative
+            steps = int(params.steps)
+            H = int(params.H)
+            W = int(params.W)
+            seed = int(params.seed) if params.seed != "" else seeder.get_strong_seed(44444444)
+            prompt = str(params.prompts)
+            #print(prompt)
+            strength = float(params.strength)
+            mask_blur = float(params.mask_blur)
+            reconstruction_blur = float(params.recons_blur)
+            scale = float(params.scale)
+            ddim_eta = float(params.ddim_eta)
+            with_inpaint = bool(params.with_inpaint)
 
-        steps = int(params.steps)
-        H = int(params.H)
-        W = int(params.W)
-        seed = int(params.seed) if params.seed != "" else seeder.get_strong_seed(44444444)
-        prompt = str(params.prompts)
-        #print(prompt)
-        strength = float(params.strength)
-        mask_blur = float(params.mask_blur)
-        reconstruction_blur = float(params.recons_blur)
-        scale = float(params.scale)
-        ddim_eta = float(params.ddim_eta)
-        with_inpaint = bool(params.with_inpaint)
+            #self.parent.sessionparams.params.advanced = True
+            self.parent.params.advanced = True
+            #print(prompt)
+            self.deforum_six.outpaint_txt2img(init_image=init_image,
+                                              steps=steps,
+                                              H=H,
+                                              W=W,
+                                              seed=seed,
+                                              prompt=prompt,
+                                              strength=strength,
+                                              mask_blur=mask_blur,
+                                              recons_blur=reconstruction_blur,
+                                              scale=scale,
+                                              ddim_eta=ddim_eta,
+                                              image_callback=self.parent.ui_image.image_preview_signal_op,
+                                              step_callback=self.parent.ui_image.tensor_preview_signal,
+                                              with_inpaint=with_inpaint)
 
-        #self.parent.sessionparams.params.advanced = True
-        self.parent.params.advanced = True
-        #print(prompt)
-        self.deforum_six.outpaint_txt2img(init_image=init_image,
-                                          steps=steps,
-                                          H=H,
-                                          W=W,
-                                          seed=seed,
-                                          prompt=prompt,
-                                          strength=strength,
-                                          mask_blur=mask_blur,
-                                          recons_blur=reconstruction_blur,
-                                          scale=scale,
-                                          ddim_eta=ddim_eta,
-                                          image_callback=self.parent.ui_image.image_preview_signal_op,
-                                          step_callback=self.parent.ui_image.tensor_preview_signal,
-                                          with_inpaint=with_inpaint)
-
-        # self.run_txt2img_lm(init_img=init_image, init_mask='outpaint_mask.png')
-
-        self.signals.reenable_runbutton.emit()
+            # self.run_txt2img_lm(init_img=init_image, init_mask='outpaint_mask.png')
+        except:
+            pass
+        finally:
+            self.signals.all_done.emit()
 
     def deforum_outpaint_thread(self):
         print('running outpaint')

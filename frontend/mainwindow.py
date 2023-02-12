@@ -26,7 +26,7 @@ from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QEasingCurve, Slot, QThreadPool, QDir, Signal, QObject
 from PySide6.QtWidgets import QMainWindow, QToolBar, QListWidgetItem, QFileDialog, \
     QLabel
-from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt, QShortcut, QKeySequence
+from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt, QShortcut, QKeySequence, QCursor
 from PySide6 import QtCore, QtWidgets
 from backend.deforum.six.animation import check_is_number
 
@@ -284,6 +284,8 @@ sometimes it makes the APP feel frozen.<br /><br /></div>
         #outpaint connections
         self.outpaint.signals.rect_ready_in_ui.connect(self.outpaint.rect_ready_in_ui)
         self.deforum_ui.signals.image_ready_in_ui.connect(self.outpaint.image_ready_in_ui)
+        self.deforum_ui.signals.all_done.connect(self.reenable_unicontrol)
+
         self.widgets[self.current_widget].w.redo.clicked.connect(self.outpaint.redo_current_outpaint)
         self.widgets[self.current_widget].w.delete_2.clicked.connect(self.outpaint.delete_outpaint_frame)
         self.widgets[self.current_widget].w.preview_batch.clicked.connect(self.outpaint.preview_batch_outpaint_thread)
@@ -372,6 +374,12 @@ sometimes it makes the APP feel frozen.<br /><br /></div>
         # we use this as a shortcut to do signaling across long range imports
         self.deep_signals.signals.selected_model_changed.connect(self.set_selected_model)
         self.deep_signals.signals.doInpaintTriggered.connect(self.canvas.canvas.render_inpaint)
+
+
+    @Slot()
+    def reenable_unicontrol(self):
+        self.widgets[self.current_widget].set_active()
+
 
     @Slot()
     def set_with_inpaint(self):
@@ -485,6 +493,9 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
 
     def task_switcher(self):
         random.seed(secrets.randbelow(4294967295))
+        self.widgets[self.current_widget].set_inactive()
+
+        print('self.widgets[self.current_widget].w.styleSheet()',self.widgets[self.current_widget].w.styleSheet())
         gs.stop_all = False
         if not self.widgets[self.current_widget].w.toggle_animations.isChecked():
             self.widgets[self.current_widget].w.max_frames.setValue(0)

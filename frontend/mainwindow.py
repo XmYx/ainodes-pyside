@@ -27,7 +27,7 @@ from PySide6.QtCore import QEasingCurve, Slot, QThreadPool, QDir, Signal, QObjec
 from PySide6.QtWidgets import QMainWindow, QToolBar, QListWidgetItem, QFileDialog, \
     QLabel
 from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt, QShortcut, QKeySequence
-from PySide6 import QtCore
+from PySide6 import QtCore, QtWidgets
 from backend.deforum.six.animation import check_is_number
 
 import copy
@@ -154,14 +154,16 @@ class MainWindow(QMainWindow):
         self.prompt_fetcher.w.dockWidget.setWindowTitle("Prompt Fetcher")
         self.model_download_ui.w.dockWidget.setWindowTitle("Model Download")
         self.thumbs.w.dockWidget.setWindowTitle("Outpaint rectangle history")
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.system_setup.w.dockWidget)
+        self.system_setup.w.dockWidget.setMaximumHeight(self.height())
+
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.model_download_ui.w.dockWidget)
         self.model_download_ui.w.dockWidget.setMaximumHeight(self.height())
+        self.tabifyDockWidget(self.model_download_ui.w.dockWidget, self.system_setup.w.dockWidget)
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.image_lab_ui.w.dockWidget)
         self.image_lab_ui.w.dockWidget.setMaximumHeight(self.height())
         self.tabifyDockWidget(self.model_download_ui.w.dockWidget, self.image_lab_ui.w.dockWidget)
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.system_setup.w.dockWidget)
-        self.system_setup.w.dockWidget.setMaximumHeight(self.height())
-        self.tabifyDockWidget(self.image_lab_ui.w.dockWidget, self.system_setup.w.dockWidget)
+
         self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.lexicart.w.dockWidget)
         self.lexicart.w.dockWidget.setMaximumHeight(self.height())
         self.tabifyDockWidget(self.system_setup.w.dockWidget, self.lexicart.w.dockWidget)
@@ -203,6 +205,33 @@ class MainWindow(QMainWindow):
         self.gpu_info()
         self.shortcut = QShortcut(QKeySequence("Ctrl+Enter"), self)
         self.shortcut.activated.connect(self.task_switcher)
+
+        self.check_first_run()
+
+
+    def check_first_run(self):
+        filename = "configs/ainodes/first_start.txt"
+
+        if not os.path.exists(filename):
+            message_box = QtWidgets.QMessageBox()
+            message_box.setTextFormat(Qt.RichText)
+            message_box.setText(f"""<div>
+<h2><strong>Hello and welcome to the world of AI generated images</strong></h2>
+<br />With this tool we like to help you creating amazing results.<br />To do so we had to make use of plenty 3rd party modules.</div>
+<div>And cause of those 3rd partie modules we have to offer our appologies as this raises some issues.</div>
+<div>We did try very hard but we fail to get that fixed into a state of no issues.<br /><strong>So please be adviced not everytime 
+the APP feels frozen it is already broken.</strong> <br />Maybe backgound things have to happen.<br />You can however check the CMD 
+Prompt if there might be some additional information showing that something is done.<br />Some of those modules will download additional 
+data.<br />This happens when some of those modules are used for the first time, or when they find updates for their data.<br />We do not 
+have control about this process nor can we measure if a download has to happen or not.<br />Neither can we show any progress bar. even worst 
+sometimes it makes the APP feel frozen.<br /><br /></div>
+""")
+            message_box.setWindowTitle('Information')
+            message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
+
+            message_box.exec()
+            #with open(filename, "w"):
+            #    pass
 
 
 

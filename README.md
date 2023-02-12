@@ -47,6 +47,12 @@ https://realpython.com/add-python-to-path/
 2. I have access denied error when downloading the files from huggingface to the user\.cache folder
 Solution can be to rename the existing folder to allow creating a new one, delete the existing one is kind the same but more agressive
 also you can use HF_DATASETS_CACHE="/path/to/another/directory" as environment variable to point to a different folder
+3. I get an SSL Error when starting the App: AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'
+Solution is to downgrade the SSL version of the installed conda to a working one, 
+We did not find how this happens to be installed wrong in the first place. Its a pure conda issue we can not fix.
+with this you can downgrade the lib in question, just run this in the conda prompt python -m pip install cryptography==38.0.4
+
+
 
 # Feature List
 - Deforum as render Backend

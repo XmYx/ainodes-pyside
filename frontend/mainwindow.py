@@ -706,7 +706,17 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
 
         self.default_hidden = True
 
+    def set_all_unchecked(self):
+        self.widgets[self.current_widget].w.toggle_sampler.setChecked(False)
+        self.widgets[self.current_widget].w.toggle_plugins.setChecked(False)
+        self.widgets[self.current_widget].w.toggle_outpaint.setChecked(False)
+        self.widgets[self.current_widget].w.toggle_animations.setChecked(False)
+        self.widgets[self.current_widget].w.toggle_plotting.setChecked(False)
+        self.widgets[self.current_widget].w.toggle_aesthetics.setChecked(False)
+        self.widgets[self.current_widget].w.toggle_embeddings.setChecked(False)
+
     def show_default(self):
+        self.set_all_unchecked()
         if self.default_hidden == True:
             if gs.system.show_settings != True:
                 gs.system.show_settings = True

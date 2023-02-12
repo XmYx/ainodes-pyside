@@ -227,7 +227,6 @@ class Canvas(QGraphicsView):
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
 
     def render_inpaint(self):
-        print('do inpaint')
         self.mode = "inpaint"
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
         id = self.addrect_atpos(x=self.scene.scenePos.x() - self.w / 2, y=self.scene.scenePos.y() - self.h / 2,
@@ -636,21 +635,7 @@ class Canvas(QGraphicsView):
                 for w, x in key.items():
                     # print(w, x)
                     rect[w] = x
-                    ###print(x['x'])
-                    # rect = {}
-                    # uid = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
-                    ###print(f"adding rectangles at:{x} {y}")
-                    # try:
-                    #    prompt = x['prompt']
-                    # except:
-                    #    prompt = ''
-                    # try:
-                    #    #params = SimpleNamespace(**x['params'])
-                    #    params = x['params']
-                    # except Exception as e:
-                    #    print(e)
-                    #    params = {}
-                    # print(x)
+
                 rect[rect['id']] = Rectangle(rect['x'], rect['x'], rect['y'], rect['w'], rect['h'], rect['id'],
                                              rect['order'], rect['img_path'], params=None)
                 self.rectlist.append(rect[rect['id']])
@@ -1389,13 +1374,7 @@ class Canvas(QGraphicsView):
             eraser_color = QColor(Qt.white)
             eraser_color.setAlpha(255)
             self.pen = QPen(eraser_color, self.inpaint_brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
-        elif e.button() == Qt.RightButton:
-            return
-            self.mode = "inpaint"
-            self.setDragMode(QGraphicsView.DragMode.NoDrag)
-            id = self.addrect_atpos(x=self.scene.scenePos.x() - self.w / 2, y=self.scene.scenePos.y() - self.h / 2,
-                                    params=copy.deepcopy(self.parent.parent.params))
-            self.reusable_inpaint(id)
+
 
     def inpaint_mouseMoveEvent(self, e):
         # print('inpaint_mouseMoveEvent')

@@ -6,6 +6,9 @@ import importlib.util
 import shlex
 import platform
 import ctypes
+import colorama
+from termcolor import colored
+
 
 dir_repos = "src"
 python = sys.executable
@@ -240,9 +243,14 @@ def prepare_enviroment():
 def start_sdui():
     print(f"Launching SD UI")
     import frontend.startup
+    print(colored("Installation part is done now we run the application, please stay patient.", "green"))
+    print(colored("You might see a few warnings about No instance of QPyDesignerCustomWidgetCollection was found.", "green"))
+    print(colored("Just ignore those.", "green"))
     frontend.startup.run_app()
 
 if __name__ == "__main__":
+    colorama.init()
+    print(colored("The main Packages will get installed now, please be patient.\n", "red"))
     prepare_enviroment()
     import backend.paths
     start_sdui()

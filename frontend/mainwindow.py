@@ -250,7 +250,7 @@ class MainWindow(QMainWindow):
         self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
         self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_ui.deforum_six_txt2img_thread)
         self.canvas.canvas.scene.signals.sceneBrushChanged.connect(self.canvas.canvas.update_cursor)
-        self.canvas.canvas.scene.signals.doInpaintTriggered.connect(self.canvas.canvas.render_inpaint)
+
         self.widgets[self.current_widget].w.H.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
         self.widgets[self.current_widget].w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
 
@@ -338,10 +338,12 @@ class MainWindow(QMainWindow):
         self.signals.status_update.connect(self.set_status_bar)
         self.signals.image_loaded.connect(self.ui_image.render_index_image_preview_func_str)
         self.system_setup.w.update_gpu_stats.clicked.connect(self.gpu_info)
-
-        self.deep_signals.signals.selected_model_changed.connect(self.set_selected_model)
         self.widgets[self.current_widget].w.with_inpaint.toggled.connect(self.set_with_inpaint)
 
+        # deep signales come from the singleton class,
+        # we use this as a shortcut to do signaling across long range imports
+        self.deep_signals.signals.selected_model_changed.connect(self.set_selected_model)
+        self.deep_signals.signals.doInpaintTriggered.connect(self.canvas.canvas.render_inpaint)
 
     @Slot()
     def set_with_inpaint(self):
@@ -660,7 +662,8 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
         self.widgets[self.current_widget].w.hires_strength.setVisible(False)
         self.widgets[self.current_widget].w.seamless.setVisible(False)
 
-
+        self.widgets[self.current_widget].w.preview_mode_label.setVisible(False)
+        self.widgets[self.current_widget].w.preview_mode.setVisible(False)
 
         if self.widgets[self.current_widget].samHidden == False:
             self.widgets[self.current_widget].hideSampler_anim()
@@ -701,6 +704,9 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
             self.widgets[self.current_widget].w.preview_mode.setVisible(True)
             self.widgets[self.current_widget].w.hires.setVisible(True)
             self.widgets[self.current_widget].w.seamless.setVisible(True)
+
+            self.widgets[self.current_widget].w.preview_mode_label.setVisible(True)
+            self.widgets[self.current_widget].w.preview_mode.setVisible(True)
 
             self.set_hires_strength_visablity()
             self.default_hidden = False

@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QMenu
 from backend.singleton import singleton
 
 gs = singleton
+deep_signals = gs.Singleton()
 
 class BrushSizeAction(QtWidgets.QWidgetAction):
     def __init__(self, size, parent=None):
@@ -123,11 +124,13 @@ class DoInpaint:
     def __init__(self, parent=None, menu=None):
         self.parent = parent
         self.parent_menu = menu
+        self.deep_signals = gs.Singleton()
         action = self.parent_menu.addAction('Do inpaint')
         action.triggered.connect(self.send_do_inpaint_signal)
 
     def send_do_inpaint_signal(self):
         self.parent.signals.doInpaintTriggered.emit()
+        self.deep_signals.signals.doInpaintTriggered.emit()
 
 
 class InpaintMask:

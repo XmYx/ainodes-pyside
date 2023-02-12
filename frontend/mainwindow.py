@@ -147,7 +147,7 @@ class MainWindow(QMainWindow):
         self.model_download_ui = self.model_download.model_download
         self.model_download.maintain_custom_models()
         self.widgets[self.current_widget].w.dockWidget.setWindowTitle("Parameters")
-        self.system_setup.w.dockWidget.setWindowTitle("System Settings")
+        self.system_setup.w.dockWidget.setWindowTitle("⚙")
         self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
         self.lexicart.w.dockWidget.setWindowTitle("Lexica Art")
         self.krea.w.dockWidget.setWindowTitle("Krea")

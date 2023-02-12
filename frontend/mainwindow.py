@@ -228,8 +228,8 @@ sometimes it makes the APP feel frozen.<br /><br /></div>
             message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
 
             message_box.exec()
-            #with open(filename, "w"):
-            #    pass
+            with open(filename, "w"):
+                pass
 
 
 
@@ -345,6 +345,7 @@ sometimes it makes the APP feel frozen.<br /><br /></div>
         self.prompt_fetcher_ui.signals.got_krea_prompts.connect(self.prompt_fetcher_ui.set_krea_prompts)
 
         self.model_download.signals.startDownload.connect(self.model_download.download_model_thread)
+        self.model_download.signals.update_model_list.connect(self.widgets[self.current_widget].update_model_list)
         self.model_download.signals.set_download_percent.connect(self.model_download.model_download_progress_callback_signal)
 
         self.model_download.civit_ai_api.signals.civitai_no_more_models.connect(self.all_civitai_model_data_loaded_thread)

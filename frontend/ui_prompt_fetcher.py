@@ -109,7 +109,7 @@ class PromptFetcher_UI:
 
     def set_ai_prompt(self, txt):
         self.prompt_fetcher.w.output.setPlainText(txt)
-        self.parent.signals.setStatusBar.emit("Ai Prompt finished...")
+        self.parent.signals.status_update.emit("Ai Prompt finished...")
 
     def get_lexica_prompts(self, progress_callback=False):
         out_text = ''

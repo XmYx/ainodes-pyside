@@ -15,6 +15,8 @@ Welcome to aiNodes, a desktop GUI with Deforum Art, Outpaint, Upscalers, and man
 This product does not yet have a sophisticated installer mechanics.
 So you have to follow the few but very simple installation steps
 
+Do not use admin right for the installation, run every step with your normal user
+
 1. Install Conda, download from here https://docs.conda.io/en/latest/miniconda.html
 2. Install GIT https://git-scm.com/download/win.
 3. Once Conda is installed start the conda prompt from start menue. Use the Conda prompt not the Conda powershell.

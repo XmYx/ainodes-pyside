@@ -178,3 +178,4 @@ frontend/session_params.py.bak
 /data/db/*
 /data/output/*
 /cache/*
+/configs/ainodes/first_start.txt

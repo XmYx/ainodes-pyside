@@ -140,6 +140,8 @@ interrogate_deepbooru_score_threshold = 0.0
 class Callbacks(QObject):
 	selected_model_changed = Signal(str)
 	doInpaintTriggered = Signal()
+	paintInpaintMaskTriggered = Signal()
+	sceneBrushChanged = Signal(int)
 
 class Singleton(QObject):
 	_instance = None

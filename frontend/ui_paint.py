@@ -111,10 +111,11 @@ class RectangleCallbacks(QObject):
 
 
 class SceneSignals(QObject):
-    sceneBrushChanged = Signal(int)
     doInpaintTriggered = Signal()
     reset_canvas = Signal()
     paintInpaintMaskTriggered = Signal()
+    sceneBrushChanged = Signal(int)
+    selected_model_changed = Signal(str)
 
 
 class Scene(QGraphicsScene):
@@ -124,6 +125,7 @@ class Scene(QGraphicsScene):
         self.scenePos = None
         self.parent = parent
         self.signals = SceneSignals()
+        self.deep_signals = gs.Singleton()
         self.create_menue()
 
     def create_menue(self):
@@ -158,7 +160,7 @@ class Scene(QGraphicsScene):
 
     def set_brush_size(self, size):
         print(f"Brush size changed to {size}px")
-        self.brush_size = size  # update brush size
+        self.inpaint_brush_size = size  # update brush size
         self.signals.sceneBrushChanged.emit(size)
 
     def mouseMoveEvent(self, event):
@@ -207,6 +209,7 @@ class Canvas(QGraphicsView):
 
     @Slot()
     def update_cursor(self, size):
+        print('update cursor')
         try:
             self.inpaint_brush_size = size
             pixmap = QPixmap(size, size)
@@ -216,7 +219,6 @@ class Canvas(QGraphicsView):
             painter.drawEllipse(0, 0, size, size)
             painter.end()
             cursor = QCursor(pixmap)
-            print('cursor valid', cursor.shape())
             self.setCursor(cursor)
             self.update()
         except Exception as e:
@@ -225,6 +227,7 @@ class Canvas(QGraphicsView):
     def set_inpaint_mode(self):
         self.mode = "inpaint"
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
+        self.update_cursor(self.inpaint_brush_size)
 
     def render_inpaint(self):
         self.mode = "inpaint"
@@ -355,6 +358,9 @@ class Canvas(QGraphicsView):
         self.scene = Scene(self)
         self.scene.signals.reset_canvas.connect(self.reset)
         self.scene.signals.paintInpaintMaskTriggered.connect(self.set_inpaint_mode)
+        self.scene.signals.sceneBrushChanged.connect(self.update_cursor)
+        self.scene.signals.doInpaintTriggered.connect(self.render_inpaint)
+        self.scene.signals.selected_model_changed.connect(self.parent.parent.set_selected_model)
         self.parent.parent.w = 512
         self.parent.parent.cheight = 512
         self.parent.parent.ui_image.stopwidth = False
@@ -392,6 +398,8 @@ class Canvas(QGraphicsView):
         self.txt2img = False
         self.lastpos = False
         self.ctrlmodifier = False
+
+
 
     def getXScale(self):
         # print('getXScale')
@@ -1369,6 +1377,7 @@ class Canvas(QGraphicsView):
         if e.button() == Qt.LeftButton:
             self.eraser_color = QColor(QColor(Qt.white))
             self.eraser_color.setAlpha(255)
+            print('self.inpaint_brush_size', self.inpaint_brush_size)
             self.pen = QPen(self.eraser_color, self.inpaint_brush_size, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
             self.last_pos = self.scene.scenePos
             eraser_color = QColor(Qt.white)

@@ -1,9 +1,7 @@
-import base64
+import json
 import json
 import os
 import secrets
-import shutil
-from io import BytesIO
 
 import backend.settings as settings
 from backend.devices import torch_gc
@@ -14,21 +12,15 @@ settings.load_settings_json()
 if gs.system.custom_cache_dir_enabled == True:
     os.makedirs(gs.system.cache_dir, exist_ok=True)
     os.environ['TRANSFORMERS_CACHE'] = gs.system.cache_dir
-import time
 import random
 from datetime import datetime
 from uuid import uuid4
-import numpy as np
-import pandas as pd
 import torch
-from PIL import Image
-from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QEasingCurve, Slot, QThreadPool, QDir, Signal, QObject
-from PySide6.QtWidgets import QMainWindow, QToolBar, QListWidgetItem, QFileDialog, \
+from PySide6.QtWidgets import QMainWindow, QFileDialog, \
     QLabel
-from PySide6.QtGui import QAction, QIcon, QColor, QPixmap, QPainter, Qt, QShortcut, QKeySequence, QCursor
+from PySide6.QtGui import QIcon, QColor, QPixmap, QPainter, Qt, QShortcut, QKeySequence
 from PySide6 import QtCore, QtWidgets
-from backend.deforum.six.animation import check_is_number
 
 import copy
 
@@ -45,7 +37,7 @@ from frontend.ui_krea import Krea
 from frontend.ui_lexica import LexicArt
 from frontend.ui_model_download import ModelDownload
 from backend.shared import model_killer
-from frontend.ui_timeline import Timeline, KeyFrame
+from frontend.ui_timeline import KeyFrame
 
 # we had to load settings first before we can do this import
 from backend.shared import save_last_prompt
@@ -56,7 +48,7 @@ from backend.sqlite import model_db_civitai
 
 from frontend.ui_prompt_fetcher import PromptFetcher_UI, FetchPrompts
 from frontend.ui_image_lab import ImageLab
-from frontend.ui_deforum import Deforum_UI, draw_grid_annotations
+from frontend.ui_deforum import Deforum_UI
 from frontend.session_params import SessionParams
 from frontend.ui_outpaint import Outpainting
 from frontend.ui_image import UiImage
@@ -118,7 +110,7 @@ class MainWindow(QMainWindow):
 
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, self.thumbs.w.dockWidget)
 
-        self.create_main_toolbar()
+
 
         self.system_setup = SystemSetup()
         self.sessionparams.add_state_to_history()
@@ -276,7 +268,7 @@ sometimes it makes the APP feel frozen.<br /><br /></div>
         self.canvas.H.valueChanged.connect(self.canvas.canvas.change_resolution)
         self.canvas.canvas.signals.outpaint_signal.connect(self.deforum_ui.deforum_outpaint_thread)
         self.canvas.canvas.signals.txt2img_signal.connect(self.deforum_ui.deforum_six_txt2img_thread)
-        self.canvas.canvas.scene.signals.sceneBrushChanged.connect(self.canvas.canvas.update_cursor)
+
 
         self.widgets[self.current_widget].w.H.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
         self.widgets[self.current_widget].w.W.valueChanged.connect(self.canvas.canvas.change_rect_resolutions)
@@ -372,8 +364,8 @@ sometimes it makes the APP feel frozen.<br /><br /></div>
 
         # deep signales come from the singleton class,
         # we use this as a shortcut to do signaling across long range imports
-        self.deep_signals.signals.selected_model_changed.connect(self.set_selected_model)
-        self.deep_signals.signals.doInpaintTriggered.connect(self.canvas.canvas.render_inpaint)
+
+
 
 
     @Slot()
@@ -647,36 +639,8 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
         plugin_name = self.widgets[self.current_widget].w.plugins.currentText()
         self.plugins.unload_plugin(plugin_name)
 
-    def create_main_toolbar(self):
-        self.toolbar = QToolBar('Outpaint Tools')
-        self.addToolBar(QtCore.Qt.TopToolBarArea, self.toolbar)
-        skip_back = QAction(QIcon_from_svg('frontend/icons/skip-back.svg'), 'back', self)
-        play = QAction(QIcon_from_svg('frontend/icons/play.svg'), 'Enable Playback / Play All', self)
-        stop = QAction(QIcon_from_svg('frontend/icons/square.svg'), 'Stop All', self)
-        skip_forward = QAction(QIcon_from_svg('frontend/icons/skip-forward.svg'), 'forward', self)
-        clear_canvas = QAction(QIcon_from_svg('frontend/icons/frown.svg'), 'Clear Canvas', self)
-        #test_mode = QAction(QIcon_from_svg('frontend/icons/alert-octagon.svg'), 'Run Self Test - It will take a while', self)
-        #help_mode = QAction(QIcon_from_svg('frontend/icons/help-circle.svg'), 'Help', self)
-        #still_mode = QAction(QIcon_from_svg('frontend/icons/instagram.svg'), 'Still', self)
-
-        self.toolbar.addAction(skip_back)
-        self.toolbar.addAction(skip_forward)
-        self.toolbar.addAction(play)
-        self.toolbar.addAction(stop)
-        self.toolbar.addAction(clear_canvas)
-        #self.toolbar.addAction(still_mode)
-        #self.toolbar.addAction(test_mode)
-
-        skip_back.triggered.connect(self.canvas.canvas.skip_back)
-        skip_forward.triggered.connect(self.canvas.canvas.skip_forward)
-        play.triggered.connect(self.canvas.canvas.start_main_clock)
-        stop.triggered.connect(self.canvas.canvas.stop_main_clock)
-        clear_canvas.triggered.connect(self.canvas.canvas.reset)
-        #test_mode.triggered.connect(self.selftest)
-
     def hide_default(self):
 
-        self.toolbar.setVisible(False)
 
         self.widgets[self.current_widget].w.base_setup.setVisible(False)
         self.widgets[self.current_widget].w.advanced_toppics.setVisible(False)
@@ -733,7 +697,6 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
             if gs.system.show_settings != True:
                 gs.system.show_settings = True
                 self.sessionparams.update_system_params()
-            self.toolbar.setVisible(True)
 
             self.widgets[self.current_widget].w.base_setup.setVisible(True)
             self.widgets[self.current_widget].w.advanced_toppics.setVisible(True)

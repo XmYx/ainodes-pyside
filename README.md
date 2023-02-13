@@ -33,6 +33,9 @@ and then run clean-install.bat again by double-clicking it just to be sure any n
 
 So welcome to the one (double click) install of aiNodes
 
+![img.png](installImages/img2.png)
+
+
 # F.A.Q:
 
 1. I have the following error: RuntimeError: failed to find interpreter for Builtin discover of python_spec='python3.10'

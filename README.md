@@ -9,7 +9,7 @@
 </p>
 
 Please join our Discord for further information: https://discord.gg/XDQm9pk5pd
-
+Support us on Patreon: https://www.patreon.com/ainodes
 Welcome to aiNodes, a desktop GUI with Deforum Art, Outpaint, Upscalers, and many more.
 
 

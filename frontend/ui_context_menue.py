@@ -117,7 +117,7 @@ class ModelMenu:
                 self.current_action = action
                 gs.selected_inpaint_model = action.text()
                 break
-        self.deep_signals.signals.selected_model_changed.emit(filename)
+        self.parent.signals.selected_model_changed.emit(filename)
 
 
 class DoInpaint:
@@ -130,7 +130,6 @@ class DoInpaint:
 
     def send_do_inpaint_signal(self):
         self.parent.signals.doInpaintTriggered.emit()
-        self.deep_signals.signals.doInpaintTriggered.emit()
 
 
 class InpaintMask:

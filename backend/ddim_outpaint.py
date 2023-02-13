@@ -1,15 +1,15 @@
 """SAMPLING ONLY."""
 
-import torch
 import numpy as np
-#from tqdm.notebook import tqdm
+import torch
+# from tqdm.notebook import tqdm
 from tqdm import tqdm
-from functools import partial
-from einops import rearrange
 
-from ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, make_ddim_timesteps, noise_like, extract_into_tensor
-from backend.sampling_util import renorm_thresholding, norm_thresholding, spatial_norm_thresholding
+from backend.sampling_util import norm_thresholding
 from backend.singleton import singleton
+from ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, make_ddim_timesteps, noise_like, \
+    extract_into_tensor
+
 gs = singleton
 
 

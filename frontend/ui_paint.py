@@ -2,7 +2,10 @@ import base64
 import copy
 import json
 import os
+import random
+import time
 from datetime import datetime
+from uuid import uuid4
 
 import numpy as np
 import pandas as pd
@@ -10,19 +13,13 @@ from PIL import Image
 from PIL.ImageQt import ImageQt
 from PySide6 import QtCore, QtGui, QtWidgets
 from PySide6.QtCore import Signal, QSize, QRect, QPointF, QObject, QFile, Slot, QDir, Qt
-from PySide6.QtGui import Qt, QColor, QFont, QPainter, QPen, QPixmap, QTransform, QCursor, QAction
+from PySide6.QtGui import Qt, QColor, QFont, QPainter, QPen, QPixmap, QTransform, QCursor
 from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockWidget, QGraphicsScene, \
     QGraphicsView, QLabel, QGraphicsPixmapItem, QGraphicsRectItem, \
-    QHBoxLayout, QFileDialog, QSpinBox, \
-    QGraphicsProxyWidget, QMenu
+    QHBoxLayout, QFileDialog, QSpinBox
 
 from backend.singleton import singleton
-
 from frontend import ui_context_menue
-
-import time
-from uuid import uuid4
-import random
 
 gs = singleton
 

@@ -1,21 +1,18 @@
 import contextlib
 import os
+import re
 import sys
 import traceback
 from collections import namedtuple
-import re
 
 import torch
-
 from torchvision import transforms
 from torchvision.transforms.functional import InterpolationMode
 
-
 from backend import artists, devices, paths, lowvram
-import urllib3
 from backend.shared import check_support_model_exists
-
 from backend.singleton import singleton
+
 gs = singleton
 
 artist_db = artists.ArtistsDatabase(os.path.join(gs.system.content_db_dir, 'artists.csv'))

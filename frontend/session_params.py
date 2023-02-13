@@ -1,10 +1,8 @@
-import random
-import secrets
 from types import SimpleNamespace
 
 from backend import seeder
-from backend.sqlite import setting_db
 from backend.singleton import singleton
+from backend.sqlite import setting_db
 
 gs = singleton
 

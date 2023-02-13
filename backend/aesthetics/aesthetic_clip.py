@@ -1,19 +1,18 @@
 import copy
+import gc
+import html
 import itertools
 import os
-from pathlib import Path
-import html
-import gc
 from collections import OrderedDict
-
+from pathlib import Path
 
 import torch
 from PIL import Image
 from torch import optim
+from tqdm.auto import tqdm, trange
+from transformers import CLIPModel, CLIPProcessor
 
 from backend.devices import choose_torch_device
-from transformers import CLIPModel, CLIPProcessor, CLIPTokenizer
-from tqdm.auto import tqdm, trange
 from backend.singleton import singleton
 from backend.torch_gc import torch_gc
 

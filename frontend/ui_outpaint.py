@@ -1,6 +1,4 @@
 import copy
-import random
-import secrets
 import time
 
 import numpy as np
@@ -9,7 +7,7 @@ from PIL import Image, ImageDraw
 from PIL.ImageQt import ImageQt
 from PySide6 import QtCore
 from PySide6.QtCore import Slot, QRect, Signal, QObject
-from PySide6.QtGui import QPixmap, QIcon, QImage, QPainter, Qt, QPen
+from PySide6.QtGui import QPixmap, QIcon, QImage, QPainter, Qt
 from PySide6.QtWidgets import QListWidgetItem
 
 from backend import seeder

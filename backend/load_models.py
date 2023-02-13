@@ -1,5 +1,4 @@
 import gc
-import time
 
 import torch
 from omegaconf import OmegaConf
@@ -7,7 +6,6 @@ from torch import nn
 
 from backend.deforum.six.model_load import make_linear_decode
 from backend.singleton import singleton
-from backend.devices import choose_torch_device
 from ldm.util import instantiate_from_config
 
 gs = singleton

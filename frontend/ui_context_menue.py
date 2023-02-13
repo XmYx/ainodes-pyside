@@ -2,9 +2,8 @@ import functools
 import os
 
 from PySide6 import QtWidgets, QtGui, QtCore
-from PySide6.QtCore import QObject, Signal, Slot
+from PySide6.QtCore import Slot
 from PySide6.QtGui import QAction
-from PySide6.QtTest import QSignalSpy
 from PySide6.QtWidgets import QMenu
 
 from backend.singleton import singleton

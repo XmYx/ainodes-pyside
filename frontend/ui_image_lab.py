@@ -7,7 +7,7 @@ from PIL import Image
 from PIL.ImageQt import ImageQt
 from PySide6 import QtUiTools, QtCore, QtWidgets
 from PySide6.QtCore import QObject, QFile, Signal, Slot, Qt, QPointF, QRect
-from PySide6.QtGui import QPainter, QPixmap, QImage, QMouseEvent, QPen, QBrush
+from PySide6.QtGui import QPainter, QPixmap, QImage, QPen, QBrush
 from PySide6.QtWidgets import QFileDialog, QGraphicsView, QGraphicsRectItem, QGraphicsItem, QGraphicsScene
 
 import backend.interrogate

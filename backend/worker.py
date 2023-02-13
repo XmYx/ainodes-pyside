@@ -1,8 +1,9 @@
-import traceback, sys, os
+import sys
+import traceback
 
 from PySide6.QtCore import QRunnable, Signal, QObject, Slot, QMutex
+
 from backend.singleton import singleton
-from time import sleep
 
 gs = singleton
 

@@ -1,45 +1,47 @@
-import gc, os, random, sys, time, traceback
 import hashlib
-import secrets
+import os
+import random
+import sys
+import time
+import traceback
 from contextlib import nullcontext
 from datetime import datetime
 
 import clip
 import numpy as np
 import pandas as pd
-import torch
 import safetensors.torch
+import torch
+from PIL import Image
 from PIL import ImageFilter
 from PySide6.QtCore import QObject, Signal, Slot
-
-from backend import seeder
-from backend.devices import choose_torch_device
+from einops import rearrange, repeat
 from omegaconf import OmegaConf
 from pytorch_lightning import seed_everything
 from torch import nn, autocast
 from torchvision.utils import save_image, make_grid
 from tqdm import tqdm, trange
-from einops import rearrange, repeat
-from PIL import Image
+
+import backend.hypernetworks.modules.sd_hijack
+from backend import seeder
+from backend.aesthetics.aesthetic_clip import AestheticCLIP
+from backend.ddim_outpaint import DDIMSampler
+from backend.ddim_simplified import DDIMSampler_simple
 from backend.deforum.deforum_args import prepare_args
 from backend.deforum.six.aesthetics import load_aesthetics_model
+from backend.deforum.six.hijack import hijack_deforum
 from backend.deforum.six.model_load import make_linear_decode
 from backend.deforum.six.render import render_animation, render_input_video, render_image_batch, render_interpolation
-from backend.ddim_outpaint import DDIMSampler
+from backend.deforum.six.seamless import configure_model_padding
+from backend.devices import choose_torch_device
+from backend.hypernetworks import hypernetwork
+from backend.singleton import singleton
+from backend.sqlite import model_sha_db
+from backend.torch_gc import torch_gc
 from backend.toxicode_utils import metadata, get_mask_for_latent_blending
 from backend.utils import sampleToImage, encoded_to_torch_image, image_path_to_torch, \
     get_conditionings, torch_image_to_latent, get_prompts_data
-from backend.ddim_simplified import DDIMSampler_simple
-from backend.torch_gc import torch_gc
 from ldm_v2.util import instantiate_from_config
-from backend.hypernetworks import hypernetwork
-import backend.hypernetworks.modules.sd_hijack
-from backend.deforum.six.hijack import hijack_deforum
-from backend.singleton import singleton
-from backend.shared import model_killer
-from backend.deforum.six.seamless import configure_model_padding
-from backend.aesthetics.aesthetic_clip import AestheticCLIP
-from backend.sqlite import model_sha_db
 
 gs = singleton
 
@@ -350,7 +352,6 @@ class DeforumSix:
             # todo make this 'cuda' a parameter
             gs.models["sd"].to(self.device)
             # todo why we do this here?
-            from backend.aesthetics import modules
             if gs.diffusion.selected_vae != 'None':
                 self.load_vae(gs.diffusion.selected_vae)
 

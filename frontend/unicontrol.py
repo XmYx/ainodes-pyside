@@ -1,13 +1,14 @@
 import os
 
 from PySide6 import QtUiTools, QtCore
-from PySide6.QtCore import QFile, QObject, QEasingCurve, QRect, Signal
+from PySide6.QtCore import QFile, QObject, QEasingCurve, Signal
 from PySide6.QtGui import QCursor, Qt
 from PySide6.QtWidgets import QFileDialog
 
 from backend.singleton import singleton
-from backend.torch_gc import torch_gc
 from backend.sqlite import model_db_civitai
+from backend.torch_gc import torch_gc
+
 gs = singleton
 
 class Callbacks(QObject):

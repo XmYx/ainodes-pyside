@@ -1,11 +1,11 @@
+import os
 import sys
 
 from PySide6 import QtCore, QtQuick
-from PySide6.QtGui import QIcon, QAction, QPixmap
-
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtQuick import QSGRendererInterface
-from PySide6.QtWidgets import QApplication, QSplashScreen
-import os
+from PySide6.QtWidgets import QSplashScreen
+
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 sys.path.append('src/AdaBins')

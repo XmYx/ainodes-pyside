@@ -1,26 +1,15 @@
 import json
-import shutil
-from io import StringIO
-
-from PySide6 import QtUiTools, QtNetwork
-from PySide6 import QtWidgets
-from PySide6 import QtCore
-from PySide6.QtWidgets import (QDockWidget, QGraphicsScene, QGraphicsPixmapItem,
-                               QGraphicsView, QWidget, QSizePolicy, QSlider, QPushButton,
-                               QAbstractItemView, QListView, QListWidget, QVBoxLayout,
-                               QMenu, QListWidgetItem)
-from PySide6.QtGui import QAction, QPainter, QPainterPath, QPolygon, QPen
-from PySide6.QtCore import (QMetaObject, QFile, QRectF,
-                            QCoreApplication, QSize, Qt,
-                            QEvent, QObject, QTimeLine, QPoint, QLine, Signal, QRect, QByteArray)
-
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-                           QFont, QFontDatabase, QGradient, QIcon,
-                           QImage, QKeySequence, QLinearGradient, QPainter,
-                           QPalette, QPixmap, QRadialGradient, QTransform)
 
 import requests
-
+from PySide6 import QtCore
+from PySide6 import QtUiTools, QtNetwork
+from PySide6.QtCore import (QMetaObject, QFile, QSize, Qt,
+                            QObject)
+from PySide6.QtGui import (QIcon,
+                           QImage, QPixmap)
+from PySide6.QtWidgets import (QDockWidget, QWidget, QSizePolicy, QSlider, QPushButton,
+                               QAbstractItemView, QListView, QListWidget, QVBoxLayout,
+                               QListWidgetItem)
 
 
 class LexicArt(QObject):

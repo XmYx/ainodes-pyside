@@ -5,12 +5,12 @@ import traceback
 import numpy as np
 import torch
 from PIL import Image
+from PySide6.QtCore import QObject, Signal
 from pytorch_lightning import seed_everything
 
 from backend.modelloader import load_upscaler
-
-from PySide6.QtCore import QObject, QFile, Signal
 from backend.singleton import singleton
+
 gs = singleton
 
 

@@ -23,7 +23,7 @@ class UiImage:
         self.parent = parent
         self.web_images = WebImages()
         self.stopwidth = False
-        self.advanced_temp = False
+        self.canvas_single_temp = False
         self.render_index = 0
         self.make_grid = False
         self.all_images = []
@@ -72,11 +72,11 @@ class UiImage:
         try:
             img = image #self.image
 
-            if self.parent.params.advanced == True and (self.parent.canvas.canvas.rectlist == [] or self.parent.canvas.canvas.rectlist is None):
-                self.parent.params.advanced = False
-                self.advanced_temp = True
+            if self.parent.params.canvas_single == True and (self.parent.canvas.canvas.rectlist == [] or self.parent.canvas.canvas.rectlist is None):
+                self.parent.params.canvas_single = False
+                self.canvas_single_temp = True
 
-            if self.parent.params.advanced == True:
+            if self.parent.params.canvas_single == True:
 
                 if self.parent.canvas.canvas.rectlist != []:
                     if img is not None:
@@ -110,11 +110,11 @@ class UiImage:
                     self.parent.canvas.canvas.redraw()
                     del qimage
                     del pixmap
-            elif self.parent.params.advanced == False:
+            elif self.parent.params.canvas_single == False:
 
-                if self.advanced_temp == True:
-                    self.advanced_temp = False
-                    self.parent.params.advanced = True
+                if self.canvas_single_temp == True:
+                    self.canvas_single_temp = False
+                    self.parent.params.canvas_single = True
 
                 if img is not None:
                     image = img
@@ -146,8 +146,8 @@ class UiImage:
                     self.parent.canvas.canvas.redraw()
                     self.parent.canvas.canvas.update()
 
-            if self.parent.params.advanced == False and self.parent.params.max_frames > 1:
-                self.parent.params.advanced = True
+            if self.parent.params.canvas_single == False and self.parent.params.max_frames > 1:
+                self.parent.params.canvas_single = True
 
             if self.make_grid:
                 self.all_images.append(T.functional.pil_to_tensor(image))
@@ -173,7 +173,7 @@ class UiImage:
             img = image
             if self.parent.outpaint.batch_process == 'run_hires_batch':
                 self.parent.outpaint.last_batch_image = img
-            if self.parent.params.advanced == True:
+            if self.parent.params.canvas_single == True:
                 if self.parent.canvas.canvas.rectlist != []:
                     if img is not None:
                         if self.parent.canvas.canvas.rectlist[render_index].images is not None:
@@ -207,7 +207,7 @@ class UiImage:
                     self.parent.canvas.canvas.redraw()
                     del qimage
                     del pixmap
-            elif self.parent.params.advanced == False:
+            elif self.parent.params.canvas_single == False:
 
                 if img is not None:
                     image = img
@@ -236,8 +236,8 @@ class UiImage:
             self.parent.canvas.canvas.redraw()
             self.parent.canvas.canvas.update()
 
-            if self.parent.params.advanced == False and self.parent.params.max_frames > 1:
-                self.parent.params.advanced = True
+            if self.parent.params.canvas_single == False and self.parent.params.max_frames > 1:
+                self.parent.params.canvas_single = True
 
             if self.make_grid:
                 self.all_images.append(T.functional.pil_to_tensor(image))
@@ -268,11 +268,11 @@ class UiImage:
                                           self.parent.canvas.canvas.rectlist[index].x,
                                           self.parent.canvas.canvas.rectlist[index].y))
 
-            if self.parent.params.advanced == True and (self.parent.canvas.canvas.rectlist == [] or self.parent.canvas.canvas.rectlist is None):
-                self.parent.params.advanced = False
-                self.advanced_temp = True
+            if self.parent.params.canvas_single == True and (self.parent.canvas.canvas.rectlist == [] or self.parent.canvas.canvas.rectlist is None):
+                self.parent.params.canvas_single = False
+                self.canvas_single_temp = True
 
-            if self.parent.params.advanced == True:
+            if self.parent.params.canvas_single == True:
 
                 if self.parent.canvas.canvas.rectlist != []:
                     if img is not None:
@@ -308,9 +308,9 @@ class UiImage:
                     del pixmap
             elif self.parent.params.advanced == False:
 
-                if self.advanced_temp == True:
-                    self.advanced_temp = False
-                    self.parent.params.advanced = True
+                if self.canvas_single_temp == True:
+                    self.canvas_single_temp = False
+                    self.parent.params.canvas_single = True
 
                 if img is not None:
                     image = img
@@ -342,8 +342,8 @@ class UiImage:
                     self.parent.canvas.canvas.redraw()
                     self.parent.canvas.canvas.update()
 
-            if self.parent.params.advanced == False and self.parent.params.max_frames > 1:
-                self.parent.params.advanced = True
+            if self.parent.params.canvas_single == False and self.parent.params.max_frames > 1:
+                self.parent.params.canvas_single = True
 
             if self.make_grid:
                 self.all_images.append(T.functional.pil_to_tensor(image))

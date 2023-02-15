@@ -614,7 +614,7 @@ class Canvas(QGraphicsView):
                         i.w = image.size[0]
                         i.h = image.size[1]
                         render_index = self.rectlist.index(i)
-                        self.parent.parent.params.advanced = True
+                        self.parent.parent.params.canvas_single = True
 
                         mode = image.mode
                         size = image.size

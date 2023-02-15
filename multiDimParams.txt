@@ -12,7 +12,7 @@ For now see this as a very advanced feature as you would need to know valid valu
 --scale=
 --prompts=
 --seed=seed,
---advanced=
+--canvas_single=
 --seamless=
 --axis=
 --animation_mode=

@@ -146,7 +146,7 @@
     "clamp_start" : 0,
     "clamp_stop" : 0,
     "grad_inject_timing" : "None",
-    "cond_uncond_sync" : false,
+    "cond_uncond_sync" : true,
     "toggle_negative_prompt" : false,
     "hires" : false,
     "recons_blur" : 10,

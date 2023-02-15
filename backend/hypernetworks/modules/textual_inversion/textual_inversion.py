@@ -2,6 +2,7 @@ import os
 import sys
 import traceback
 
+import safetensors
 import torch
 import tqdm
 import html
@@ -56,7 +57,155 @@ class Embedding:
         return self.cached_checksum
 
 
+
 class EmbeddingDatabase:
+    def __init__(self, embeddings_dir):
+        self.ids_lookup = {}
+        self.word_embeddings = {}
+        self.skipped_embeddings = {}
+        self.expected_shape = -1
+        self.embedding_dirs = {}
+        self.previously_displayed_embeddings = ()
+        self.embeddings_dir = embeddings_dir
+
+    def add_embedding_dir(self, path):
+        self.embedding_dirs[path] = self.embeddings_dir
+
+    def clear_embedding_dirs(self):
+        self.embedding_dirs.clear()
+
+    def register_embedding(self, embedding, model):
+        self.word_embeddings[embedding.name] = embedding
+
+        ids = model.cond_stage_model.tokenize([embedding.name])[0]
+
+        first_id = ids[0]
+        if first_id not in self.ids_lookup:
+            self.ids_lookup[first_id] = []
+
+        self.ids_lookup[first_id] = sorted(self.ids_lookup[first_id] + [(ids, embedding)], key=lambda x: len(x[0]), reverse=True)
+
+        return embedding
+
+    def get_expected_shape(self):
+        vec = gs.models["sd"].cond_stage_model.encode_embedding_init_text(",", 1)
+        return vec.shape[1]
+
+    def load_from_file(self, path, filename):
+        name, ext = os.path.splitext(filename)
+        ext = ext.upper()
+
+        if ext in ['.PNG', '.WEBP', '.JXL', '.AVIF']:
+            _, second_ext = os.path.splitext(name)
+            if second_ext.upper() == '.PREVIEW':
+                return
+
+            embed_image = Image.open(path)
+            if hasattr(embed_image, 'text') and 'sd-ti-embedding' in embed_image.text:
+                data = embedding_from_b64(embed_image.text['sd-ti-embedding'])
+                name = data.get('name', name)
+            else:
+                data = extract_image_data_embed(embed_image)
+                name = data.get('name', name)
+        elif ext in ['.BIN', '.PT']:
+            data = torch.load(path, map_location="cpu")
+        elif ext in ['.SAFETENSORS']:
+            data = safetensors.torch.load_file(path, device="cpu")
+        else:
+            return
+
+        # textual inversion embeddings
+        if 'string_to_param' in data:
+            param_dict = data['string_to_param']
+            if hasattr(param_dict, '_parameters'):
+                param_dict = getattr(param_dict, '_parameters')  # fix for torch 1.12.1 loading saved file from torch 1.11
+            assert len(param_dict) == 1, 'embedding file has multiple terms in it'
+            emb = next(iter(param_dict.items()))[1]
+        # diffuser concepts
+        elif type(data) == dict and type(next(iter(data.values()))) == torch.Tensor:
+            assert len(data.keys()) == 1, 'embedding file has multiple terms in it'
+
+            emb = next(iter(data.values()))
+            if len(emb.shape) == 1:
+                emb = emb.unsqueeze(0)
+        else:
+            raise Exception(f"Couldn't identify {filename} as neither textual inversion embedding nor diffuser concept.")
+
+        vec = emb.detach().to(choose_torch_device(), dtype=torch.float32)
+        embedding = Embedding(vec, name)
+        embedding.step = data.get('step', None)
+        embedding.sd_checkpoint = data.get('sd_checkpoint', None)
+        embedding.sd_checkpoint_name = data.get('sd_checkpoint_name', None)
+        embedding.vectors = vec.shape[0]
+        embedding.shape = vec.shape[-1]
+        embedding.filename = path
+
+        if self.expected_shape == -1 or self.expected_shape == embedding.shape:
+            self.register_embedding(embedding, gs.models["sd"])
+        else:
+            self.skipped_embeddings[name] = embedding
+
+    def load_from_dir(self, embdir):
+        if not os.path.isdir(embdir.path):
+            return
+
+        for root, dirs, fns in os.walk(embdir.path, followlinks=True):
+            for fn in fns:
+                try:
+                    fullfn = os.path.join(root, fn)
+
+                    if os.stat(fullfn).st_size == 0:
+                        continue
+
+                    self.load_from_file(fullfn, fn)
+                except Exception:
+                    print(f"Error loading embedding {fn}:", file=sys.stderr)
+                    print(traceback.format_exc(), file=sys.stderr)
+                    continue
+
+    def load_textual_inversion_embeddings(self, force_reload=False):
+        if not force_reload:
+            need_reload = False
+            for path, embdir in self.embedding_dirs.items():
+                if embdir.has_changed():
+                    need_reload = True
+                    break
+
+            if not need_reload:
+                return
+
+        self.ids_lookup.clear()
+        self.word_embeddings.clear()
+        self.skipped_embeddings.clear()
+        self.expected_shape = self.get_expected_shape()
+
+        for path, embdir in self.embedding_dirs.items():
+            self.load_from_dir(embdir)
+            embdir.update()
+
+        displayed_embeddings = (tuple(self.word_embeddings.keys()), tuple(self.skipped_embeddings.keys()))
+        if self.previously_displayed_embeddings != displayed_embeddings:
+            self.previously_displayed_embeddings = displayed_embeddings
+            print(f"Textual inversion embeddings loaded({len(self.word_embeddings)}): {', '.join(self.word_embeddings.keys())}")
+            if len(self.skipped_embeddings) > 0:
+                print(f"Textual inversion embeddings skipped({len(self.skipped_embeddings)}): {', '.join(self.skipped_embeddings.keys())}")
+
+    def find_embedding_at_position(self, tokens, offset):
+        token = tokens[offset]
+        possible_matches = self.ids_lookup.get(token, None)
+
+        if possible_matches is None:
+            return None, None
+
+        for ids, embedding in possible_matches:
+            if tokens[offset:offset + len(ids)] == ids:
+                return embedding, len(ids)
+
+        return None, None
+
+
+
+class EmbeddingDatabase_old_to_be_removed:
     def __init__(self, embeddings_dir):
         self.ids_lookup = {}
         self.word_embeddings = {}
@@ -168,8 +317,8 @@ def create_embedding(name, num_vectors_per_token, overwrite_old, init_text='*'):
         cond_model([""])  # will send cond model to GPU if lowvram/medvram is active
 
     ids = cond_model.tokenizer(init_text, max_length=num_vectors_per_token, return_tensors="pt", add_special_tokens=False)["input_ids"]
-    embedded = embedding_layer.token_embedding.wrapped(ids.to(devices.device)).squeeze(0)
-    vec = torch.zeros((num_vectors_per_token, embedded.shape[1]), device=devices.device)
+    embedded = embedding_layer.token_embedding.wrapped(ids.to(choose_torch_device())).squeeze(0)
+    vec = torch.zeros((num_vectors_per_token, embedded.shape[1]), device=choose_torch_device())
 
     for i in range(num_vectors_per_token):
         vec[i] = embedded[i * int(embedded.shape[0]) // num_vectors_per_token]

@@ -19,6 +19,7 @@ from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget, QSlider, QDockW
     QHBoxLayout, QFileDialog, QSpinBox
 
 from backend.singleton import singleton
+from backend.colored_print import print_red
 from frontend import ui_context_menue
 
 gs = singleton
@@ -113,6 +114,7 @@ class SceneSignals(QObject):
     paintInpaintMaskTriggered = Signal()
     sceneBrushChanged = Signal(int)
     selected_model_changed = Signal(str)
+    save_image_triggered = Signal()
 
 
 class Scene(QGraphicsScene):
@@ -146,6 +148,7 @@ class Scene(QGraphicsScene):
         self.inpaint_menu.addSeparator()
         self.inpaint_load_from_json = ui_context_menue.LoadFromJson(self, self.inpaint_menu)
         self.inpaint_load_image = ui_context_menue.LoadImage(self, self.inpaint_menu)
+        self.inpaint_save_image = ui_context_menue.SaveImage(self, self.inpaint_menu)
 
         self.act_menu = self.inpaint_menu
 
@@ -358,6 +361,7 @@ class Canvas(QGraphicsView):
         self.scene.signals.sceneBrushChanged.connect(self.update_cursor)
         self.scene.signals.doInpaintTriggered.connect(self.render_inpaint)
         self.scene.signals.selected_model_changed.connect(self.parent.parent.set_selected_model)
+        self.scene.signals.save_image_triggered.connect(self.save_image_as)
         self.parent.parent.w = 512
         self.parent.parent.cheight = 512
         self.parent.parent.ui_image.stopwidth = False
@@ -396,6 +400,20 @@ class Canvas(QGraphicsView):
         self.lastpos = False
         self.ctrlmodifier = False
 
+    def save_image_as(self):
+        self.hover_check()
+        img = None
+        for i in self.rectlist:
+            if i.id == self.hover_item:
+                img = i.image
+                break
+        if img is not None:
+            options = QFileDialog.Options()
+            file_name, _ = QFileDialog.getSaveFileName(None, "Save File", "", "Image Files (*.png)",
+                                                       options=options)
+            img.save(file_name)
+        else:
+            print_red('No image to be saved under the cursor on the convas')
 
 
     def getXScale(self):
@@ -484,7 +502,7 @@ class Canvas(QGraphicsView):
         except Exception as e:
             print('drawRect', e)
 
-    def hoverCheck(self):
+    def hover_check(self):
         # print('hoverCheck')
         self.hover_item = None
         self.sub_hover_item = None
@@ -520,7 +538,7 @@ class Canvas(QGraphicsView):
 
     def first_rectangle(self):
         # print('first_rectangle')
-        self.hoverCheck()
+        self.hover_check()
         if self.hover_item is None:
             self.addrect()
             self.signals.txt2img_signal.emit()
@@ -1109,7 +1127,7 @@ class Canvas(QGraphicsView):
 
     def delete_rect(self):
         # self.parent.canvas.canvas.undoitems = []
-        self.hoverCheck()
+        self.hover_check()
         if self.hover_item is not None:
             self.selected_item = self.hover_item
         if self.selected_item is not None:
@@ -1319,7 +1337,7 @@ class Canvas(QGraphicsView):
 
     def select_mouseMoveEvent(self, e):
         # print('select_mouseMoveEvent')
-        self.hoverCheck()
+        self.hover_check()
 
     def select_mouseReleaseEvent(self, event):
         pass

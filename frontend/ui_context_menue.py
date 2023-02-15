@@ -118,6 +118,17 @@ class ModelMenu:
                 break
         self.parent.signals.selected_model_changed.emit(filename)
 
+class SaveImage:
+    def __init__(self, parent=None, menu=None):
+        self.parent = parent
+        self.parent_menu = menu
+        self.deep_signals = gs.Singleton()
+        action = self.parent_menu.addAction('Save Image as')
+        action.triggered.connect(self.send_save_image_signal)
+
+    def send_save_image_signal(self):
+        self.parent.signals.save_image_triggered.emit()
+
 
 class DoInpaint:
     def __init__(self, parent=None, menu=None):

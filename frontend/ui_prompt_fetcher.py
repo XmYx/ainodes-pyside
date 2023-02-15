@@ -4,8 +4,8 @@ import urllib
 import requests
 from PySide6 import QtUiTools
 from PySide6.QtCore import Signal, QObject, Slot, QFile
-from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QFileDialog
+
 from backend.guess_prompt import get_prompt_guess
 
 

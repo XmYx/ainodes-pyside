@@ -1,10 +1,10 @@
 import json
 import os
-from os import path
 from types import SimpleNamespace
+
+from backend.singleton import singleton
 from backend.sqlite import db_base
 from backend.sqlite import setting_db
-from backend.singleton import singleton
 
 gs = singleton
 

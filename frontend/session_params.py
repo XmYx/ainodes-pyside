@@ -1,10 +1,8 @@
-import random
-import secrets
 from types import SimpleNamespace
 
 from backend import seeder
-from backend.sqlite import setting_db
 from backend.singleton import singleton
+from backend.sqlite import setting_db
 
 gs = singleton
 
@@ -181,7 +179,8 @@ class SessionParams():
 
         self.params = {             # todo make this a one step thing not two steps
             # Basic Params
-            'mode': self.parent.widgets[widget].w.preview_mode.currentText(),
+            'mode': self.parent.widgets[widget].w.preview_mode.currentText(), # todo we have to refactor mode to preview_mode
+            'preview_mode': self.parent.widgets[widget].w.preview_mode.currentText(),
             'sampler': translate_sampler(self.parent.widgets[widget].w.sampler.currentText()),
             'W': self.parent.widgets[widget].w.W.value(),
             'H': self.parent.widgets[widget].w.H.value(),
@@ -189,7 +188,7 @@ class SessionParams():
             'scale': self.parent.widgets[widget].w.scale.value(),
             'prompts': self.parent.widgets[widget].w.prompts.toPlainText(),
             'seed': seed,
-            'advanced': False, # todo make variable
+            'canvas_single': False, # todo make variable
             'seamless': self.parent.widgets[widget].w.seamless.isChecked(),
             'axis': axis,
             # Advanced Params

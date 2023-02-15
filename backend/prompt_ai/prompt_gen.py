@@ -1,5 +1,4 @@
 import random
-import secrets
 
 from PySide6.QtCore import QObject, Signal
 from transformers import pipeline, set_seed

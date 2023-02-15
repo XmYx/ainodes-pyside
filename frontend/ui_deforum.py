@@ -1,26 +1,25 @@
 import itertools
 import os
-import secrets
-import time
 import random
 import re
+import secrets
+import time
+
 import numpy as np
 from PIL import Image, ImageFont, ImageDraw
-from PySide6.QtCore import QObject, Signal, QPoint
-from PySide6.QtGui import QMouseEvent
+from PySide6.QtCore import QObject, Signal
+from einops import rearrange
+from fonts.ttf import Roboto
+from torchvision.utils import make_grid
 
-import backend.aesthetics.aesthetic_clip
 from backend import seeder
 from backend.deforum.deforum_adapter import DeforumSix
 from backend.devices import torch_gc
 from backend.hypernetworks.modules.images import GridAnnotation
-from backend.singleton import singleton
-import torchvision.transforms as T
-from torchvision.utils import make_grid
-from einops import rearrange
-from fonts.ttf import Roboto
-from backend.worker import Worker
 from backend.shared import model_killer
+from backend.singleton import singleton
+from backend.worker import Worker
+
 gs = singleton
 
 
@@ -349,7 +348,7 @@ class Deforum_UI(QObject):
                     index = self.parent.canvas.canvas.rectlist.index(i)
             else:
                 index = 0
-                self.parent.params.advanced = False
+                self.parent.params.canvas_single = False
             self.parent.canvas.canvas.stop_main_clock()
 
             if id is not None:
@@ -365,17 +364,17 @@ class Deforum_UI(QObject):
             #print(gs.models)
             #if "inpaint" in gs.models:
             #    del gs.models["inpaint"]
-            mode = self.parent.widgets[self.parent.current_widget].w.preview_mode.currentText()
+            mode = self.parent.sessionparams.params.preview_mode
 
             #if mode == 'single' and self.selected_rect == None
 
             if self.params.with_inpaint == True: # todo what is this for?
-                self.parent.sessionparams.params.advanced = True
+                self.parent.sessionparams.params.canvas_single = True
             else:
                 if mode == 'grid':
-                    self.parent.sessionparams.params.advanced = False
+                    self.parent.sessionparams.params.canvas_single = False
                 elif mode == 'single':
-                    self.parent.sessionparams.params.advanced = True
+                    self.parent.sessionparams.params.canvas_single = True
                     #todo add a first rectangle if not present addrect_atpos
                     #self.parent.render_index = index
 
@@ -388,7 +387,7 @@ class Deforum_UI(QObject):
             gs.slerp_angle = self.parent.widgets[self.parent.current_widget].w.slerp_angle.value()
             gs.aesthetic_text_negative = self.parent.widgets[self.parent.current_widget].w.aesthetic_text_negative.toPlainText()
             if hiresinit is not None:
-                self.parent.sessionparams.params.advanced = True
+                self.parent.sessionparams.params.canvas_single = True
                 self.params.use_init = True
                 self.params.init_image = hiresinit
 
@@ -554,7 +553,7 @@ class Deforum_UI(QObject):
             with_inpaint = bool(params.with_inpaint)
 
             #self.parent.sessionparams.params.advanced = True
-            self.parent.params.advanced = True
+            self.parent.params.canvas_single = True
             #print(prompt)
             self.deforum_six.outpaint_txt2img(init_image=init_image,
                                               steps=steps,

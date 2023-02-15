@@ -1,6 +1,4 @@
 import copy
-import random
-import secrets
 import time
 
 import numpy as np
@@ -9,7 +7,7 @@ from PIL import Image, ImageDraw
 from PIL.ImageQt import ImageQt
 from PySide6 import QtCore
 from PySide6.QtCore import Slot, QRect, Signal, QObject
-from PySide6.QtGui import QPixmap, QIcon, QImage, QPainter, Qt, QPen
+from PySide6.QtGui import QPixmap, QIcon, QImage, QPainter, Qt
 from PySide6.QtWidgets import QListWidgetItem
 
 from backend import seeder
@@ -267,7 +265,7 @@ class Outpainting:
         tilesize = self.tile_size
 
         self.parent.params = self.parent.sessionparams.update_params()
-        self.parent.sessionparams.params.advanced = True
+        self.parent.sessionparams.params.canvas_single = True
 
         offset = self.parent.widgets[self.current_widget].w.mask_offset.value()
         overlap = self.parent.widgets[self.current_widget].w.rect_overlap.value()
@@ -377,7 +375,7 @@ class Outpainting:
                         # base_filename = f"{base_filename}d"
 
                         self.hires_source = final_output
-                        self.parent.params.advanced = False
+                        self.parent.params.canvas_single = False
                         self.finish_batch()
                         self.parent.ui_image.image_preview_signal(final_output.convert("RGB"))
                 else:
@@ -397,7 +395,7 @@ class Outpainting:
             self.parent.widgets['unicontrol'].w.discard_next_to_last_sigma.setChecked(False),
             self.batch_process = 'run_hires_batch'
             self.parent.sessionparams.update_params()
-            self.parent.sessionparams.params.advanced = True
+            self.parent.sessionparams.params.canvas_single = True
 
             gs.stop_all = False
 
@@ -438,7 +436,7 @@ class Outpainting:
             gs.stop_all = False
 
             self.parent.choice = "Outpaint"
-            self.parent.params.advanced = True
+            self.parent.params.canvas_single = True
 
             self.batch_step_number = 0
             tiles = len(self.parent.canvas.canvas.rectlist)

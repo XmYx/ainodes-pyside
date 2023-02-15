@@ -1,18 +1,17 @@
-import os
+from functools import partial
 
+import clip
+import kornia
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from functools import partial
-import clip
-from einops import rearrange, repeat
+from einops import repeat
 from transformers import CLIPTokenizer, CLIPTextModel, CLIPProcessor, CLIPModel
-import kornia
 
-from backend.torch_gc import torch_gc
 from backend.singleton import singleton
+from backend.torch_gc import torch_gc
+
 gs = singleton
-from backend.devices import choose_torch_device
 
 from ldm.modules.x_transformer import (
     Encoder,

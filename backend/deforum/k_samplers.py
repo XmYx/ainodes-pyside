@@ -1,10 +1,12 @@
 from typing import Any, Callable, Optional
+
 import torch
-from k_diffusion.external import CompVisDenoiser, CompVisVDenoiser
 from k_diffusion import sampling
+from k_diffusion.external import CompVisVDenoiser
 from torch import nn
 
 from backend.singleton import singleton
+
 gs = singleton
 
 class CFGDenoiser(nn.Module):

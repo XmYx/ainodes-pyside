@@ -1,16 +1,16 @@
-import io
+import json
 import json
 import os
 import re
 import shutil
-import urllib.request
-import urllib.parse
 
 from PySide6 import QtUiTools, QtNetwork, QtCore
 from PySide6.QtCore import QObject, QFile, Signal, Slot, Qt
+
 from backend.poor_mans_wget import wget_progress, wget_headers
-from backend.sqlite import model_db_civitai
 from backend.singleton import singleton
+from backend.sqlite import model_db_civitai
+
 gs = singleton
 
 class ModelDownload_UI(QObject):

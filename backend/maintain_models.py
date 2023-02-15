@@ -1,8 +1,8 @@
 import os
-import subprocess
 
 from backend.poor_mans_wget import wget
 from backend.singleton import singleton
+
 gs = singleton
 
 def check_models_exist():

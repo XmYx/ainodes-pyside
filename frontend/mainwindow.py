@@ -1,5 +1,4 @@
 import json
-import json
 import os
 import secrets
 
@@ -235,9 +234,9 @@ sometimes it makes the APP feel frozen.<br /><br /></div>
         self.task_switcher()
         self.params.max_frames = 1
         self.add_next_rect()
-        self.params.advanced = True
+        self.params.canvas_single = True
         self.task_switcher()
-        self.params.advanced = False
+        self.params.canvas_single = False
         self.task_switcher()
         self.widgets[self.current_widget].w.with_inpaint.setCheckState(Qt.Checked)
         self.canvas.canvas.addrect_atpos(prompt="", x=1750, y=0, w=512, h=512, params=copy.deepcopy(self.params))
@@ -496,7 +495,7 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
                          self.widgets[self.current_widget].w.prompts.toPlainText())
         if self.widgets[self.current_widget].w.with_inpaint.isChecked() == True:
             self.params = self.sessionparams.update_params()
-            self.params.advanced = True
+            self.params.canvas_single = True
             self.canvas.canvas.reusable_outpaint(self.canvas.canvas.selected_item)
             self.deforum_ui.deforum_outpaint_thread()
         else:

@@ -195,6 +195,9 @@
           </item>
           <item row="1" column="2">
            <widget class="QCheckBox" name="lowmem">
+            <property name="toolTip">
+             <string>Does not work on 2.x Models and also has some other restrictions. Dont use it if you dont need to.</string>
+            </property>
             <property name="text">
              <string>Low Memory</string>
             </property>
@@ -3471,6 +3474,9 @@
                  </item>
                  <item row="8" column="1" colspan="4">
                   <widget class="QCheckBox" name="preview_on_canvas">
+                   <property name="toolTip">
+                    <string>Adds preview images of a model if downloaded from civitai.</string>
+                   </property>
                    <property name="text">
                     <string>Preview model sample images on canvas</string>
                    </property>

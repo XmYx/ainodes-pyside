@@ -1,7 +1,7 @@
 import datetime
-import threading
-from types import SimpleNamespace
-from PySide6.QtCore import Qt, QMutex, QMutexLocker, QObject, QWriteLocker, Signal
+
+from PySide6.QtCore import QMutex, QMutexLocker, QObject, Signal
+
 from backend.torch_gc import torch_gc
 
 selected_inpaint_model = None

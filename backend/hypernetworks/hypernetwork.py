@@ -1,35 +1,29 @@
-import csv
+import datetime
 import datetime
 import glob
 import html
-import os
-import sys
-import traceback
 import inspect
-
-from omegaconf import OmegaConf
-
-from backend.hypernetworks.modules.textual_inversion import dataset
-import torch
-import tqdm
-#import tqdm
-from einops import rearrange, repeat
-
-from backend.hypernetworks.modules.textual_inversion.learn_schedule import LearnRateScheduler
-from ldm.util import default, instantiate_from_config
-from backend.hypernetworks.modules import devices  # , processing, sd_models #,shared
-from backend.hypernetworks.modules.textual_inversion import textual_inversion
-#from backend.hypernetworks.modules.textual_inversion.learn_schedule import LearnRateScheduler
-from torch import einsum
-from torch.nn.init import normal_, xavier_normal_, xavier_uniform_, kaiming_normal_, kaiming_uniform_, zeros_
-
+import os
 from collections import defaultdict, deque
 from statistics import stdev, mean
 
+import torch
+import tqdm
+# import tqdm
+from einops import rearrange, repeat
+from omegaconf import OmegaConf
+# from backend.hypernetworks.modules.textual_inversion.learn_schedule import LearnRateScheduler
+from torch import einsum
+from torch.nn.init import normal_, xavier_normal_, xavier_uniform_, kaiming_normal_, kaiming_uniform_, zeros_
 
-from backend.hypernetworks.modules import sd_hijack #sd_hijack_optimizations, sd_hijack
 from backend.hypernetworks import hyper_share
+from backend.hypernetworks.modules import devices  # , processing, sd_models #,shared
+from backend.hypernetworks.modules import sd_hijack  # sd_hijack_optimizations, sd_hijack
+from backend.hypernetworks.modules.textual_inversion import dataset
+from backend.hypernetworks.modules.textual_inversion.learn_schedule import LearnRateScheduler
 from backend.singleton import singleton
+from ldm.util import default, instantiate_from_config
+
 gs = singleton
 
 

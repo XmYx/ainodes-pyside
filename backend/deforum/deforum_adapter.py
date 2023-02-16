@@ -904,7 +904,7 @@ class DeforumSix:
                          steps=10,
                          W=512,
                          H=512,
-                         outdir='output/outpaint',
+                         outdir=gs.system.outpaint_out_dir,
                          n_samples=1,
                          n_rows=1,
                          ddim_eta=0.0,
@@ -924,7 +924,7 @@ class DeforumSix:
         print("Should be using InPaint model") if with_inpaint else None
         W=512
         H=512
-        mask_img = Image.open("outpaint_mask.png")
+        mask_img = Image.open(os.path.join(gs.system.outpaint_tmp_dir,"outpaint_mask.png"))
         img = Image.open(init_image)
 
         # mask_img = img.split()[-1]
@@ -952,9 +952,10 @@ class DeforumSix:
 
         # mask_img = mask_img.filter(ImageFilter.GaussianBlur(mask_blur))
         # mask_img = mask_img.convert('L')
-        os.makedirs('output/temp', exist_ok=True)
-        mask_img.save('output/temp/mask.png')
-        blend_mask = 'output/temp/mask.png'
+        os.makedirs(gs.system.outpaint_tmp_dir, exist_ok=True)
+        mask_file_name = os.path.join(gs.system.outpaint_tmp_dir,'mask.png')
+        mask_img.save(mask_file_name)
+        blend_mask = mask_file_name
         os.makedirs(outdir, exist_ok=True)
         outpath = outdir
         sample_path = os.path.join(outpath, "samples")

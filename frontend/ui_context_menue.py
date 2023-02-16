@@ -215,14 +215,14 @@ class SaveAsJson:
     def __init__(self, parent=None, menu=None):
         self.parent = parent
         self.parent_menu = menu
-        action = self.parent_menu.addAction('Save as json')
+        action = self.parent_menu.addAction('Save canvas as json')
         action.triggered.connect(self.parent.parent.save_rects_as_json)
 
 class SaveAsPng:
     def __init__(self, parent=None, menu=None):
         self.parent = parent
         self.parent_menu = menu
-        action = self.parent_menu.addAction('Save as PNG')
+        action = self.parent_menu.addAction('Save canvas as PNG')
         action.triggered.connect(self.parent.parent.save_canvas)
 
 class LoadFromJson:

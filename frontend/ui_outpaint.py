@@ -1,4 +1,5 @@
 import copy
+import os
 import time
 
 import numpy as np
@@ -342,7 +343,7 @@ class Outpainting:
             print('run next hires image batch')
             try:
                 if gs.stop_all is False:
-                    if len(self.parent.canvas.canvas.rectlist) > 0 and len(self.parent.canvas.canvas.rectlist) > self.parent.render_index:
+                    if len(self.parent.canvas.canvas.rectlist) > 0 and len(self.parent.canvas.canvas.rectlist) > self.parent.ui_image.render_index:
                         self.run_hires_step_x()
                     else:
                         og_size = (512, 512)
@@ -369,9 +370,9 @@ class Outpainting:
                         final_output = self.grid_merge(
                             source_image.convert("RGBA"), finished_slices
                         ).convert("RGBA")
-
+                        file_name = os.path.join(gs.system.outpaint_out_dir,f"{time.time()}_{self.parent.params.seed}_hires_batch.png")
                         # todo make this filename a dynamic name
-                        final_output.save('output/test_hires.png')
+                        final_output.save(file_name)
                         # base_filename = f"{base_filename}d"
 
                         self.hires_source = final_output
@@ -403,7 +404,7 @@ class Outpainting:
 
             self.betterslices = []
 
-            self.parent.render_index = 0
+            self.parent.ui_image.render_index = 0
             self.next_image_from_batch()
 
         except Exception as e:
@@ -412,13 +413,14 @@ class Outpainting:
     def run_hires_step_x(self):
         print('run_hires_step_x')
         try:
-            next_step = self.parent.canvas.canvas.rectlist[self.parent.render_index]
+            next_step = self.parent.canvas.canvas.rectlist[self.parent.ui_image.render_index]
             self.parent.choice = 'Outpaint'
             image = next_step.image
-            image.save('output/temp/temp.png', "PNG")
+            file_name = os.path.join(gs.system.outpaint_tmp_dir,'temp.png')
+            image.save(file_name, "PNG")
             self.parent.canvas.canvas.selected_item = next_step.id
             print('self.parent.canvas.canvas.selected_item',self.parent.canvas.canvas.selected_item)
-            self.parent.deforum_ui.run_deforum_six_txt2img(hiresinit='output/temp/temp.png', image_callback=self.parent.ui_image.image_preview_signal_op)
+            self.parent.deforum_ui.run_deforum_six_txt2img(hiresinit=file_name, image_callback=self.parent.ui_image.image_preview_signal_op)
         except Exception as e:
             print('run_hires_step_x failed: ', e)
     def run_outpaint_step_x(self):

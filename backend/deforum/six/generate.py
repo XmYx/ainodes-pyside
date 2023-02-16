@@ -600,6 +600,7 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
                         mask_fullres = torch.Tensor(mask_fullres).to("cuda")
 
                         x_samples = img_original * mask_fullres + x_samples * ((mask_fullres * -1.0) + 1)
+                        del mask_fullres
 
                     if return_sample:
                         results.append(x_samples.clone())
@@ -617,7 +618,7 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
     cfg_model.to('cpu')
     model_wrap.to('cpu')
     del k_sigmas
-    del mask_fullres
+
     del cfg_model
     del model_wrap
     del x_samples

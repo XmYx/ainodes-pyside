@@ -408,12 +408,19 @@ class Canvas(QGraphicsView):
                 img = i.image
                 break
         if img is not None:
-            options = QFileDialog.Options()
-            file_name, _ = QFileDialog.getSaveFileName(None, "Save File", "", "Image Files (*.png)",
-                                                       options=options)
+
+            file_name, _ = QFileDialog.getSaveFileName(None, "Save Image", "", "Image Files (*.png)")
             img.save(file_name)
         else:
-            print_red('No image to be saved under the cursor on the convas')
+            print_red('No image to be saved under the cursor on the canvas')
+
+    def save_canvas(self):
+        # print('save_canvas')
+        self.redraw(transparent=True)
+        file_name, _ = QFileDialog.getSaveFileName(None, "Save Canvas", "", "Image Files (*.png)")
+        file = QFile(file_name)
+        self.pixmap.save(file, "PNG")
+        self.redraw()
 
 
     def getXScale(self):
@@ -526,16 +533,6 @@ class Canvas(QGraphicsView):
         # print(self.hover_item)
         # self.update()
 
-    def save_canvas(self):
-        # print('save_canvas')
-        self.redraw(transparent=True)
-        timestring = time.strftime('%Y-%m-%d-%H-%S')
-        filename = f"output/canvas/canvas_{timestring}.png"
-        os.makedirs('output/canvas', exist_ok=True)
-        file = QFile(filename)
-        self.pixmap.save(file, "PNG")
-        self.redraw()
-
     def first_rectangle(self):
         # print('first_rectangle')
         self.hover_check()
@@ -625,19 +622,23 @@ class Canvas(QGraphicsView):
         data = self.getfile()
         if data is not None:
             gs.temppath = data
+            image = Image.open(data)
+            mode = image.mode
+            size = image.size
             if self.selected_item is not None:
                 for i in self.rectlist:
                     if i.id == self.selected_item:
-                        image = Image.open(data)
-                        i.w = image.size[0]
-                        i.h = image.size[1]
+                        i.w = size[0]
+                        i.h = size[1]
                         render_index = self.rectlist.index(i)
                         self.parent.parent.params.canvas_single = True
-
-                        mode = image.mode
-                        size = image.size
                         enc_image = base64.b64encode(image.tobytes()).decode()
                         self.parent.parent.signals.image_loaded.emit(enc_image, mode, size, render_index)
+            else:
+                render_index = len(self.rectlist) - 1
+                enc_image = base64.b64encode(image.tobytes()).decode()
+                self.parent.parent.signals.image_loaded.emit(enc_image, mode, size, render_index)
+
 
     def load_rects_from_json(self):
         # print('load_rects_from_json')

@@ -11,7 +11,6 @@ import torchvision.transforms.functional as TF
 from pytorch_lightning import seed_everything
 import os
 
-from torchvision.utils import make_grid
 from tqdm import tqdm, trange
 
 from k_diffusion.external import CompVisDenoiser, CompVisVDenoiser
@@ -19,14 +18,14 @@ from torch import autocast
 from contextlib import nullcontext
 from einops import rearrange, repeat
 
-from optimizedSD.optimUtils import logger
+from backend.optimizedSD.optimUtils import logger
 from .prompt import get_uc_and_c, split_weighted_subprompts, get_uc_and_c_new
 from .k_samplers import sampler_fn, make_inject_timing_fn
 from scipy.ndimage import gaussian_filter
 
 from .callback import SamplerCallback
 
-from .conditioning import exposure_loss, make_mse_loss, get_color_palette, make_clip_loss_fn
+from .conditioning import make_mse_loss, get_color_palette, make_clip_loss_fn
 from .conditioning import make_rgb_color_match_loss, blue_loss_fn, threshold_by, make_aesthetics_loss_fn, mean_loss_fn, \
     var_loss_fn, exposure_loss
 from .model_wrap import CFGDenoiserWithGrad
@@ -34,7 +33,6 @@ from backend.torch_gc import torch_gc
 
 from backend.singleton import singleton
 from backend.resizeRight import resizeright, interp_methods
-import k_diffusion
 
 from ...devices import choose_torch_device
 

@@ -6,23 +6,20 @@ https://github.com/CompVis/taming-transformers
 -- merci
 """
 
-import time, math
 from tqdm.auto import trange, tqdm
 import torch
 from einops import rearrange
 from tqdm import tqdm
 from optim.ldm.modules.distributions.distributions import DiagonalGaussianDistribution
 from optim.ldm.models.autoencoder import VQModelInterface
-import torch.nn as nn
 import numpy as np
 import pytorch_lightning as pl
 from functools import partial
 from pytorch_lightning.utilities.distributed import rank_zero_only
 from optim.ldm.util import exists, default, instantiate_from_config
-from optim.ldm.modules.diffusionmodules.util import make_beta_schedule
-from optim.ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, make_ddim_timesteps, noise_like
+from optim.ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, make_ddim_timesteps
 from optim.ldm.modules.diffusionmodules.util import make_beta_schedule, extract_into_tensor, noise_like
-from optimizedSD.samplers import CompVisDenoiser, get_ancestral_step, to_d, append_dims,linear_multistep_coeff
+from backend.optimizedSD.samplers import CompVisDenoiser, get_ancestral_step, to_d, append_dims,linear_multistep_coeff
 
 def disabled_train(self):
     """Overwrite model.train with this function to make sure train/eval mode

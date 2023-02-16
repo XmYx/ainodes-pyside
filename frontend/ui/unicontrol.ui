@@ -3596,6 +3596,9 @@
                  </item>
                  <item row="6" column="2">
                   <widget class="QSpinBox" name="steps">
+                   <property name="toolTip">
+                    <string>How many steps a image generation takes. Steps might get influenced by strength and karras settings.</string>
+                   </property>
                    <property name="minimum">
                     <number>1</number>
                    </property>
@@ -3639,6 +3642,9 @@
                  </item>
                  <item row="13" column="0">
                   <widget class="QCheckBox" name="seamless">
+                   <property name="toolTip">
+                    <string>With seamless you create texture tiles which have seemless edges so you can add them to larger surfaces.</string>
+                   </property>
                    <property name="text">
                     <string>Seamless</string>
                    </property>
@@ -3673,6 +3679,9 @@
                  </item>
                  <item row="16" column="0">
                   <widget class="QCheckBox" name="hires">
+                   <property name="toolTip">
+                    <string>Will generate a larger image from a sorce image, gets rendered in two phases to the selected image size.</string>
+                   </property>
                    <property name="text">
                     <string>HiRes Mode</string>
                    </property>
@@ -3786,6 +3795,9 @@
                  </item>
                  <item row="8" column="2">
                   <widget class="QDoubleSpinBox" name="strength">
+                   <property name="toolTip">
+                    <string>Strength gets used for image 2 image and mask processes.</string>
+                   </property>
                    <property name="maximum">
                     <double>1.000000000000000</double>
                    </property>
@@ -3796,6 +3808,9 @@
                  </item>
                  <item row="1" column="4">
                   <widget class="QComboBox" name="multi_dim_seed_behavior">
+                   <property name="toolTip">
+                    <string>Multi Dim Prompt has its own seed mode, set here how seed should behave.</string>
+                   </property>
                    <item>
                     <property name="text">
                      <string>fixed</string>
@@ -3832,6 +3847,9 @@
                  </item>
                  <item row="9" column="4" colspan="2">
                   <widget class="QSpinBox" name="n_samples">
+                   <property name="toolTip">
+                    <string>How many images per loop you generate, this will increase vram usage</string>
+                   </property>
                    <property name="minimum">
                     <number>1</number>
                    </property>
@@ -3851,7 +3869,11 @@
                   </widget>
                  </item>
                  <item row="12" column="2">
-                  <widget class="QLineEdit" name="seed"/>
+                  <widget class="QLineEdit" name="seed">
+                   <property name="toolTip">
+                    <string>The seed to be used, if you enter a value here seed is static.</string>
+                   </property>
+                  </widget>
                  </item>
                  <item row="12" column="4">
                   <widget class="QComboBox" name="seed_behavior">
@@ -3874,6 +3896,9 @@
                  </item>
                  <item row="6" column="4" colspan="2">
                   <widget class="QDoubleSpinBox" name="scale">
+                   <property name="toolTip">
+                    <string>The classifier-free guidance scale controls how hard the AI will follow the prompt.</string>
+                   </property>
                    <property name="decimals">
                     <number>1</number>
                    </property>
@@ -3890,6 +3915,9 @@
                  </item>
                  <item row="9" column="2">
                   <widget class="QSpinBox" name="n_batch">
+                   <property name="toolTip">
+                    <string>How many generation loop you like to run. Each prompt will run so many loops</string>
+                   </property>
                    <property name="minimum">
                     <number>1</number>
                    </property>
@@ -3942,6 +3970,9 @@
                  </item>
                  <item row="17" column="0" colspan="3">
                   <widget class="QCheckBox" name="toggle_sampler">
+                   <property name="toolTip">
+                    <string>Open the sampling settings</string>
+                   </property>
                    <property name="text">
                     <string>Sampling Settings</string>
                    </property>

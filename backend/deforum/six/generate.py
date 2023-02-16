@@ -614,20 +614,14 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
                                 results.append(image)
                                 del image
 
-    k_sigmas = None
-    mask_fullres = None
     cfg_model.to('cpu')
     model_wrap.to('cpu')
-    x_sample = None
-    x_samples = None
-    c = None
-    uc = None
-    model_wrap = None
-    cfg_model.inner_model = None
-    cfg_model = None
+    del k_sigmas
+    del mask_fullres
     del cfg_model
     del model_wrap
     del x_samples
+    del x_sample
     del c
     del uc
     del sampler

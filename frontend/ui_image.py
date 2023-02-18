@@ -306,7 +306,7 @@ class UiImage:
                     self.parent.canvas.canvas.redraw()
                     del qimage
                     del pixmap
-            elif self.parent.params.advanced == False:
+            elif self.parent.params.canvas_single == False:
 
                 if self.canvas_single_temp == True:
                     self.canvas_single_temp = False

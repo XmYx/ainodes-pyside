@@ -221,7 +221,7 @@ def prepare_enviroment():
     git_clone(midas_repo, repo_dir('MiDaS'), "MiDaS", midas_commit_hash)
     git_clone(pytorch_lite_repo, repo_dir('pytorch3d-lite'), "pytorch3d-lite", pytorch_litet_hash)
     git_clone(impro_aesthetic_repo, repo_dir('improved-aesthetic-predictor'), "improved-aesthetic-predictor", impro_aesthetic_hash)
-    git_clone(volta_ml_repo, repo_dir('volta-ml'), "volta-ml", volta_ml_hash)
+    #git_clone(volta_ml_repo, repo_dir('volta-ml'), "volta-ml", volta_ml_hash)
 
     if not is_installed("lpips"):
         run_pip(f"install -r {os.path.join(repo_dir('CodeFormer'), 'requirements.txt')}", "requirements for CodeFormer")

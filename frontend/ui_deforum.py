@@ -529,7 +529,7 @@ class Deforum_UI(QObject):
                 make_grid = self.parent.widgets[self.parent.current_widget].w.make_grid.isChecked()
             #sampler_name = translate_sampler(self.parent.sampler.w.sampler.currentText())
             sampler_name = "ddim"
-            init_image = os.path.join(gs.system.outpaint_tmp.dir,"outpaint.png")
+            init_image = os.path.join(gs.system.outpaint_tmp_dir,"outpaint.png")
             gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
             gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value()
             gs.slerp = self.parent.widgets[self.parent.current_widget].w.slerp.isChecked()
@@ -571,8 +571,8 @@ class Deforum_UI(QObject):
                                               with_inpaint=with_inpaint)
 
             # self.run_txt2img_lm(init_img=init_image, init_mask='outpaint_mask.png')
-        except:
-            pass
+        except Exception as e:
+            print('run_deforum_outpaint failed: ', e)
         finally:
             self.signals.all_done.emit()
 

@@ -317,11 +317,13 @@ class Deforum_UI(QObject):
             self.run_deforum_six_txt2img(image_callback = self.parent.ui_image.image_preview_signal_op)
         except Exception as e:
             print('run_deforum_six_outpaint_txt2img failed', e)
+
     def run_deforum_six_txt2img_img(self, progress_callback=None):
         try:
             self.run_deforum_six_txt2img(image_callback = self.parent.ui_image.image_preview_signal)
         except Exception as e:
             print('run_deforum_six_txt2img_img failed', e)
+
     def run_deforum_six_txt2img(self, hiresinit=None, progress_callback=None, plotting=True, params=None, image_callback=None):
 
         try:

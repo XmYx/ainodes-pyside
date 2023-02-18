@@ -22,11 +22,6 @@ def extract_device_id(args, name):
 
 
 def get_cuda_device_string():
-    from backend.hypernetworks.modules import shared
-
-    if shared.cmd_opts.device_id is not None:
-        return f"cuda:{shared.cmd_opts.device_id}"
-
     return "cuda"
 
 

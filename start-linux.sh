@@ -22,9 +22,6 @@ fi
 $VENV_CMD ai-nodes
 source ./ai-nodes/bin/activate
 
-# Install the required packages
-pip install -r requirements.txt
 
 # Run the setup script
-pip install termcolor
-$PY_EXECUTABLE install_linux.py
+$PY_EXECUTABLE start.py

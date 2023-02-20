@@ -30,7 +30,7 @@ def is_using_v_parameterization_for_sd2(state_dict):
     device = devices.cpu
 
     with sd_disable_initialization.DisableInitialization():
-        unet = ldm_v2.modules.diffusionmodules.openaimodel.UNetModel(
+        unet = ldm.modules.diffusionmodules.openaimodel.UNetModel(
             use_checkpoint=True,
             use_fp16=False,
             image_size=32,

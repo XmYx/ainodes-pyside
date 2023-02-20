@@ -10,7 +10,7 @@ import safetensors.torch
 import torch
 from omegaconf import OmegaConf
 
-import ldm_v2.modules.midas as midas
+import ldm.modules.midas as midas
 from backend.hypernetworks.modules import paths, shared, modelloader, devices, script_callbacks, sd_vae, \
     sd_disable_initialization, hashes, sd_models_config
 from backend.hypernetworks.modules.sd_hijack_inpainting import do_inpainting_hijack

@@ -30,7 +30,7 @@ class Outpainting:
 
     def __init__(self, parent):
         self.parent = parent
-        self.current_widget = parent.current_widget
+        self.current_widget  = parent.current_widget
         self.signals = mySignals()
         self.tile_size = 512
         self.batch_process = None

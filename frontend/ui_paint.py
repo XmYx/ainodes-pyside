@@ -951,10 +951,10 @@ class Canvas(QGraphicsView):
                 outpainter.begin(outpaintimage)
                 outpainter.drawImage(0, 0, newimage)
                 outpainter.end()
-        outpaintimage.save("outpaint.png")
-        outpaintimage.save("outpaint_mask.png")
+        outpaintimage.save(os.path.join(gs.system.outpaint_tmp_dir,"outpaint.png"))
+        outpaintimage.save(os.path.join(gs.system.outpaint_tmp_dir,"outpaint_mask.png"))
         self.render_item = self.selected_item
-        self.outpaintsource = "outpaint.png"
+        self.outpaintsource = os.path.join(gs.system.outpaint_tmp_dir,"outpaint.png")
         self.busy = False
         # self.parent.parent.widgets[self.parent.parent.current_widget].w.recons_blur.setValue(0)
         self.signals.outpaint_signal.emit()
@@ -1005,16 +1005,16 @@ class Canvas(QGraphicsView):
                         # print(f"setting render index to:{self.rectlist.index(i)}")
 
                         self.parent.parent.ui_image.render_index = self.rectlist.index(i)
-        filename = "outpaint.png"
+        filename = os.path.join(gs.system.outpaint_tmp_dir,"outpaint.png")
         outpaintimage.save(filename)
         while not os.path.exists(filename):
             time.sleep(0.25)
-        filename = "outpaint_mask.png"
+        filename = os.path.join(gs.system.outpaint_tmp_dir,"outpaint_mask.png")
         outpaintmaskimage.save(filename)
         while not os.path.exists(filename):
             time.sleep(0.25)
         self.render_item = self.selected_item
-        self.outpaintsource = "outpaint.png"
+        self.outpaintsource = os.path.join(gs.system.outpaint_tmp_dir,"outpaint.png")
         self.busy = False
 
     def redo_outpaint(self, id):
@@ -1063,10 +1063,10 @@ class Canvas(QGraphicsView):
                     if i.id == x.id:
                         # print("Found an image to outpaint")
                         self.parent.parent.ui_image.render_index = self.rectlist.index(i)
-        outpaintimage.save("outpaint.png")
+        outpaintimage.save(os.path.join(gs.system.outpaint_tmp_dir,"outpaint.png"))
 
-        outpaintmaskimage.save("outpaint_mask.png")
-        self.outpaintsource = "outpaint.png"
+        outpaintmaskimage.save(os.path.join(gs.system.outpaint_tmp_dir,"outpaint_mask.png"))
+        self.outpaintsource = os.path.join(gs.system.outpaint_tmp_dir,"outpaint.png")
         self.redo = True
         self.render_item = self.selected_item
         self.signals.update_params.emit(id)
@@ -1121,9 +1121,9 @@ class Canvas(QGraphicsView):
         self.newimage = True
         self.redraw()
 
-        outpaintimage.save("outpaint.png")
-        outpaintmaskimage.save("outpaint_mask.png")
-        self.outpaintsource = "outpaint.png"
+        outpaintimage.save(os.path.join(gs.system.outpaint_tmp_dir,"outpaint.png"))
+        outpaintmaskimage.save(os.path.join(gs.system.outpaint_tmp_dir,"outpaint_mask.png"))
+        self.outpaintsource = os.path.join(gs.system.outpaint_tmp_dir,"outpaint.png")
         self.signals.outpaint_signal.emit()
 
     def delete_rect(self):

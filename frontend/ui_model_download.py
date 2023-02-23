@@ -119,7 +119,8 @@ NSFW: {model_info['item']['nsfw']}
 
     def add_model_search_item(self, model_description):
         self.model_download.w.model_list.addItem(model_description)
-        self.model_download.w.model_list.sortItems(Qt.AscendingOrder)
+        if self.model_download.w.sort.currentText() == '':
+            self.model_download.w.model_list.sortItems(Qt.AscendingOrder)
 
     def executeMoreRequest(self):
         # Create a QNetworkRequest with the specified url

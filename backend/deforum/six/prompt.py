@@ -30,15 +30,9 @@ def get_uc_and_c(prompts, model, args, frame = 0):
 def get_uc_and_c_new(prompts, negative_subprompts, model, args, frame = 0):
     prompt = prompts[0] # they are the same in a batch anyway
 
-    # get weighted sub-prompts
-    """negative_subprompts, positive_subprompts = split_weighted_subprompts(
-        prompt, frame, not args.normalize_prompt_weights
-    )"""
-
-    #negative_subprompts = parse_prompt_attention(negative_subprompts)
-    #positive_subprompts = parse_prompt_attention(prompt)
-
-    #print('negative_subprompts, positive_subprompts', negative_subprompts, positive_subprompts)
+    assert negative_subprompts.count('(') == negative_subprompts.count(')'), 'There seems to be a mismatch with () in your prompts this might lead to errors so we stop here'
+    assert prompt.count('(') == prompt.count(
+        ')'), 'There seems to be a mismatch with () in your prompts this might lead to errors so we stop here'
 
     uc = get_learned_conditioning(model, '', negative_subprompts, args, -1)
     c = get_learned_conditioning(model, '', prompt, args, 1)

@@ -328,6 +328,7 @@ class SessionParams():
             "prompt": self.parent.widgets[widget].w.prompts.toPlainText(),
             "apply_strength": 0,
             "apply_circular": False,
+            "karras": self.parent.widgets[widget].w.karras.isChecked(),
             "karras_sigma_min": self.parent.widgets[widget].w.karras_sigma_min.value(),
             "karras_sigma_max": self.parent.widgets[widget].w.karras_sigma_max.value(),
             "pathmode": self.parent.widgets[widget].w.pathmode.currentText(),

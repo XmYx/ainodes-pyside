@@ -438,7 +438,11 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
                     if args.prompt_weighting:
                         uc, c = get_uc_and_c(prompts, gs.models["sd"], args, frame)
                     else:
-                        uc, c = get_uc_and_c_new(prompts,args.negative_prompts, gs.models["sd"], args, frame)
+                        try:
+                            uc, c = get_uc_and_c_new(prompts,args.negative_prompts, gs.models["sd"], args, frame)
+                        except Exception as e:
+                            print('Prompt processing falied: ', e)
+                            return []
 
                     if args.scale == 1.0:
                         uc = None

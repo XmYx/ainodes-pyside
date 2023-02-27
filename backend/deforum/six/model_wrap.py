@@ -155,14 +155,17 @@ class CFGDenoiserWithGrad(CompVisDenoiser):
         # No conditioning
         else:
             # calculate cond and uncond simultaneously
-            if self.cond_uncond_sync:
+            # dows only work with prompts of the same size,
+            # so we check and if the size is different we go for the slower variant
+            c_size = cond.size()
+            uc_size = uncond.size()
+            if self.cond_uncond_sync and c_size == uc_size:
                 cond_in = torch.cat([uncond, cond])
                 x0 = _cfg_model(x, sigma, cond=cond_in)
             else:
                 uncond = self.inner_model(x, sigma, cond=uncond)
                 cond = self.inner_model(x, sigma, cond=cond)
                 x0 = uncond + (cond - uncond) * cond_scale
-
         return x0
 
     def make_cond_fn(self, loss_fn, scale):

@@ -242,7 +242,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-513</y>
             <width>878</width>
             <height>2984</height>
            </rect>
@@ -1073,7 +1073,7 @@
                  <item>
                   <widget class="QTabWidget" name="anim_values_tab">
                    <property name="currentIndex">
-                    <number>0</number>
+                    <number>3</number>
                    </property>
                    <widget class="QWidget" name="tab">
                     <property name="sizePolicy">
@@ -1144,9 +1144,6 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="13" column="1">
-                         <widget class="QSpinBox" name="fov"/>
-                        </item>
                         <item row="15" column="4">
                          <widget class="QCheckBox" name="use_depth_warping">
                           <property name="text">
@@ -1178,13 +1175,6 @@
                          <widget class="QLabel" name="label_52">
                           <property name="text">
                            <string>Far Plane</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="21" column="0">
-                         <widget class="QLabel" name="label_54">
-                          <property name="text">
-                           <string>Cadence</string>
                           </property>
                          </widget>
                         </item>
@@ -1230,13 +1220,6 @@
                          <widget class="QLabel" name="label_63">
                           <property name="text">
                            <string>Padding Mode</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="13" column="0">
-                         <widget class="QLabel" name="label_50">
-                          <property name="text">
-                           <string>FOV</string>
                           </property>
                          </widget>
                         </item>
@@ -1459,13 +1442,6 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="21" column="1">
-                         <widget class="QSpinBox" name="diffusion_cadence">
-                          <property name="maximum">
-                           <number>1000</number>
-                          </property>
-                         </widget>
-                        </item>
                         <item row="15" column="1">
                          <widget class="QDoubleSpinBox" name="midas_weight"/>
                         </item>
@@ -1490,6 +1466,30 @@
                          <widget class="QCheckBox" name="resume_from_timestring">
                           <property name="text">
                            <string>Resume from Timestring</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="20" column="0">
+                         <widget class="QLabel" name="label_50">
+                          <property name="text">
+                           <string>FOV</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="20" column="1">
+                         <widget class="QSpinBox" name="fov"/>
+                        </item>
+                        <item row="13" column="0">
+                         <widget class="QLabel" name="label_54">
+                          <property name="text">
+                           <string>Cadence</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="13" column="1">
+                         <widget class="QSpinBox" name="diffusion_cadence">
+                          <property name="maximum">
+                           <number>1000</number>
                           </property>
                          </widget>
                         </item>
@@ -1753,6 +1753,64 @@
                      </item>
                     </layout>
                    </widget>
+                   <widget class="QWidget" name="tab_5">
+                    <attribute name="title">
+                     <string>2D / 3D</string>
+                    </attribute>
+                    <layout class="QGridLayout" name="gridLayout_25">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_47">
+                       <property name="text">
+                        <string>Translation X</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QTextEdit" name="translation_x">
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>1000</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_45">
+                       <property name="text">
+                        <string>Translation Y</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QTextEdit" name="translation_y">
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>1000</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="0">
+                      <widget class="QLabel" name="label_46">
+                       <property name="text">
+                        <string>Translation Z</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="0">
+                      <widget class="QTextEdit" name="translation_z">
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>1000</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
                    <widget class="QWidget" name="anim_3d">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -1812,32 +1870,8 @@
                         <property name="verticalSpacing">
                          <number>5</number>
                         </property>
-                        <item row="0" column="0">
-                         <widget class="QLabel" name="label_2">
-                          <property name="text">
-                           <string>Rotation X</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="0" column="1">
-                         <widget class="QLabel" name="label_47">
-                          <property name="text">
-                           <string>Translation X</string>
-                          </property>
-                         </widget>
-                        </item>
                         <item row="1" column="0">
                          <widget class="QTextEdit" name="rotation_3d_x">
-                          <property name="maximumSize">
-                           <size>
-                            <width>16777215</width>
-                            <height>1000</height>
-                           </size>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="1" column="1">
-                         <widget class="QTextEdit" name="translation_x">
                           <property name="maximumSize">
                            <size>
                             <width>16777215</width>
@@ -1853,13 +1887,6 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="2" column="1">
-                         <widget class="QLabel" name="label_45">
-                          <property name="text">
-                           <string>Translation Y</string>
-                          </property>
-                         </widget>
-                        </item>
                         <item row="3" column="0">
                          <widget class="QTextEdit" name="rotation_3d_y">
                           <property name="maximumSize">
@@ -1870,8 +1897,8 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="3" column="1">
-                         <widget class="QTextEdit" name="translation_y">
+                        <item row="5" column="0">
+                         <widget class="QTextEdit" name="rotation_3d_z">
                           <property name="maximumSize">
                            <size>
                             <width>16777215</width>
@@ -1887,30 +1914,10 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="4" column="1">
-                         <widget class="QLabel" name="label_46">
+                        <item row="0" column="0">
+                         <widget class="QLabel" name="label_2">
                           <property name="text">
-                           <string>Translation Z</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="5" column="0">
-                         <widget class="QTextEdit" name="rotation_3d_z">
-                          <property name="maximumSize">
-                           <size>
-                            <width>16777215</width>
-                            <height>1000</height>
-                           </size>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="5" column="1">
-                         <widget class="QTextEdit" name="translation_z">
-                          <property name="maximumSize">
-                           <size>
-                            <width>16777215</width>
-                            <height>1000</height>
-                           </size>
+                           <string>Rotation X</string>
                           </property>
                          </widget>
                         </item>

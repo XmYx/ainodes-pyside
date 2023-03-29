@@ -48,7 +48,6 @@ class ModelDownload():
         self.model_download.w.more_results.clicked.connect(self.more_results)
         self.model_download.w.model_list.itemClicked.connect(self.show_model_infos)
         self.model_download.w.download_button.clicked.connect(self.signal_download_model)
-        self.model_download.w.maintain_custom_models.clicked.connect(self.maintain_custom_models)
         self.actual_model_list = {}
         self.next_models_link = None
         self.civit_ai_api = model_db_civitai.civit_ai_api()
@@ -65,7 +64,7 @@ class ModelDownload():
     def model_download_progress_callback(self, percent):
         self.signals.set_download_percent.emit(percent)
 
-    def maintain_custom_models(self):
+    def maintain_custom_models__(self):
         self.civit_ai_api.civitai_start_model_update()
         #self.civit_ai_api.signals.civitai_start_model_update.emit()
 
@@ -174,7 +173,7 @@ NSFW: {model_info['item']['nsfw']}
                                 model_description = f"{item['name']}  Version: {model['name']} Type: {file['type']} Format: {file['format']}"
 
                                 # Add the model and item information to the actual_model_list dictionary
-                                self.actual_model_list[model_description] = {'model':model, 'item':tmp_item, 'file':file}
+                                self.actual_model_list[model_description] = {'model':model, 'item':tmp_item, 'file':file, 'raw':{'file':file, 'item':item}}
 
                                 # Add the model description to the model list widget
                                 self.signals.add_model_search_item.emit(model_description)
@@ -287,6 +286,7 @@ NSFW: {model_info['item']['nsfw']}
         self.model_download.w.download_button.setEnabled(False)
         try:
             model_info = self.actual_model_list[self.model_download.w.model_list.currentItem().text()]
+            self.civit_ai_api.add_to_model_db(model_info)
             config_name = ''
             regex = re.compile(r'(.*?)\.')
             headers = wget_headers(model_info['file']['downloadUrl'])

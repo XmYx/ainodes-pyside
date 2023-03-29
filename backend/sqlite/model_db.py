@@ -17,7 +17,7 @@ def check_model_db_status():
     res = model_db_cur.execute("SELECT name FROM sqlite_master WHERE name='model_data'")
     model_data_exists = res.fetchone()
     if model_data_exists is None:
-        model_db_cur.execute("CREATE TABLE model_data(model_name PRIMARY KEY, creation_time DATETIME DEFAULT CURRENT_TIMESTAMP,type TEXT, nsfw TEXT, trained_words TEXT, tags TEXT, version TEXT, model_data BLOB, base_model TEXT,files TEXT,images TEXT, description TEXT)")
+        model_db_cur.execute("CREATE TABLE model_data(model_name PRIMARY KEY, creation_time DATETIME DEFAULT CURRENT_TIMESTAMP,type TEXT, nsfw TEXT, trained_words TEXT, tags TEXT, version TEXT, model_data BLOB, base_model TEXT,files TEXT,images TEXT, description TEXT,allowNoCredit TEXT, allowCommercialUse TEXT, allowDerivatives TEXT, allowDifferentLicense TEXT )")
     res = model_db_cur.execute("SELECT name FROM sqlite_master WHERE name='model_data'")
     model_data_exists = res.fetchone()
     if len(model_data_exists) > 0 and gs.system.update_model_data_on_startup:

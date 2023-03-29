@@ -81,10 +81,10 @@
            <item>
             <widget class="QTabWidget" name="tabWidget_2">
              <property name="toolTip">
-              <string>LORA is fast and produces small files, they are to be merged to each other or with the usal checkpoints, use LORA merge for that</string>
+              <string/>
              </property>
              <property name="currentIndex">
-              <number>6</number>
+              <number>2</number>
              </property>
              <widget class="QWidget" name="tab_3">
               <attribute name="title">
@@ -136,6 +136,13 @@
                   <property name="verticalSpacing">
                    <number>3</number>
                   </property>
+                  <item row="16" column="1">
+                   <widget class="QPushButton" name="runPreprocess">
+                    <property name="text">
+                     <string>Run Preprocess</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="1" column="1" colspan="2">
                    <widget class="QPushButton" name="select_process_input_files">
                     <property name="text">
@@ -143,195 +150,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="15" column="4">
-                   <widget class="QPushButton" name="pushButton_6">
-                    <property name="text">
-                     <string>Stop preprocess</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="6" column="3">
-                   <widget class="QSpinBox" name="process_height">
-                    <property name="maximum">
-                     <number>2048</number>
-                    </property>
-                    <property name="singleStep">
-                     <number>64</number>
-                    </property>
-                    <property name="value">
-                     <number>512</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1" colspan="2">
-                   <widget class="QPushButton" name="select_process_destination_folder">
-                    <property name="text">
-                     <string>Destination</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="13" column="1" colspan="5">
-                   <widget class="QFrame" name="autoCrop">
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
-                    </property>
-                    <layout class="QGridLayout" name="gridLayout_10">
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="horizontalSpacing">
-                      <number>2</number>
-                     </property>
-                     <property name="verticalSpacing">
-                      <number>3</number>
-                     </property>
-                     <item row="0" column="1">
-                      <widget class="QSpinBox" name="split_threshold"/>
-                     </item>
-                     <item row="1" column="1">
-                      <widget class="QSpinBox" name="overlap_ratio"/>
-                     </item>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="label_36">
-                       <property name="text">
-                        <string>Split overlap</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_30">
-                       <property name="text">
-                        <string>Split threshold</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item row="5" column="1">
-                   <widget class="QLabel" name="label_33">
-                    <property name="text">
-                     <string>Width</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="14" column="1" colspan="5">
-                   <widget class="QFrame" name="focalPointCrop">
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
-                    </property>
-                    <layout class="QGridLayout" name="gridLayout_12">
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="horizontalSpacing">
-                      <number>2</number>
-                     </property>
-                     <property name="verticalSpacing">
-                      <number>3</number>
-                     </property>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="label_31">
-                       <property name="text">
-                        <string>Face weight</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="2">
-                      <widget class="QSpinBox" name="process_focal_crop_face_weight"/>
-                     </item>
-                     <item row="2" column="0">
-                      <widget class="QLabel" name="label_32">
-                       <property name="text">
-                        <string>Entropy weight</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="2">
-                      <widget class="QSpinBox" name="process_focal_crop_entropy_weight"/>
-                     </item>
-                     <item row="3" column="0">
-                      <widget class="QLabel" name="label_35">
-                       <property name="text">
-                        <string>Edges weight</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="3" column="2">
-                      <widget class="QSpinBox" name="process_focal_crop_edges_weight"/>
-                     </item>
-                     <item row="0" column="0">
-                      <widget class="QCheckBox" name="process_focal_crop_debug">
-                       <property name="text">
-                        <string>Debug Images</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item row="9" column="1">
-                   <widget class="QCheckBox" name="process_flip">
-                    <property name="toolTip">
-                     <string>Create a copy which is flipped</string>
-                    </property>
-                    <property name="text">
-                     <string>Flipped Copy</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="15" column="1">
-                   <widget class="QPushButton" name="runPreprocess">
-                    <property name="text">
-                     <string>Run Preprocess</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="11" column="2">
-                   <widget class="QCheckBox" name="toggle_caption">
-                    <property name="toolTip">
-                     <string>Create caption files</string>
-                    </property>
-                    <property name="text">
-                     <string>Caption</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="3" colspan="3">
-                   <widget class="QLineEdit" name="process_dst">
-                    <property name="placeholderText">
-                     <string>Destination path where to save processed data</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="12" column="1" colspan="5">
                    <widget class="QFrame" name="processCaption">
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -358,14 +177,7 @@
                      <property name="verticalSpacing">
                       <number>3</number>
                      </property>
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_34">
-                       <property name="text">
-                        <string>Existing Caption Files</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="0">
+                     <item row="3" column="0">
                       <widget class="QCheckBox" name="process_caption">
                        <property name="toolTip">
                         <string>Caption by interrogate</string>
@@ -378,7 +190,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="2" column="1">
+                     <item row="3" column="1">
                       <widget class="QCheckBox" name="style_caption">
                        <property name="toolTip">
                         <string>Caption by clip interrogate</string>
@@ -388,20 +200,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="2" column="2">
-                      <widget class="QCheckBox" name="process_caption_deepbooru">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="toolTip">
-                        <string/>
-                       </property>
-                       <property name="text">
-                        <string>Deepbooru caption</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="1">
+                     <item row="1" column="1">
                       <widget class="QComboBox" name="preprocess_txt_action">
                        <item>
                         <property name="text">
@@ -425,13 +224,64 @@
                        </item>
                       </widget>
                      </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_34">
+                       <property name="text">
+                        <string>Existing Caption Files</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QCheckBox" name="toggle_caption">
+                       <property name="toolTip">
+                        <string>Create caption files</string>
+                       </property>
+                       <property name="text">
+                        <string>Caption</string>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
                    </widget>
                   </item>
-                  <item row="6" column="1">
-                   <widget class="QLabel" name="label_37">
+                  <item row="3" column="3" colspan="3">
+                   <widget class="QLineEdit" name="process_dst">
+                    <property name="placeholderText">
+                     <string>Destination path where to save processed data</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="16" column="4">
+                   <widget class="QPushButton" name="pushButton_6">
                     <property name="text">
-                     <string>Height</string>
+                     <string>Stop preprocess</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="3">
+                   <widget class="QSpinBox" name="process_height">
+                    <property name="maximum">
+                     <number>2048</number>
+                    </property>
+                    <property name="singleStep">
+                     <number>64</number>
+                    </property>
+                    <property name="value">
+                     <number>512</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1" colspan="2">
+                   <widget class="QPushButton" name="select_process_destination_folder">
+                    <property name="text">
+                     <string>Destination</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="3" colspan="3">
+                   <widget class="QLineEdit" name="process_src">
+                    <property name="placeholderText">
+                     <string>Path to original input files</string>
                     </property>
                    </widget>
                   </item>
@@ -448,34 +298,206 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="3" colspan="3">
-                   <widget class="QLineEdit" name="process_src">
-                    <property name="placeholderText">
-                     <string>Path to original input files</string>
+                  <item row="15" column="1" colspan="5">
+                   <widget class="QFrame" name="focalPointCrop">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
                     </property>
-                   </widget>
-                  </item>
-                  <item row="11" column="3">
-                   <widget class="QCheckBox" name="toggle_focal_crop">
-                    <property name="toolTip">
-                     <string>Crop based on focal point</string>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
                     </property>
-                    <property name="text">
-                     <string>Focal point crop</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="11" column="1">
-                   <widget class="QCheckBox" name="toggle_split_oversize">
-                    <property name="text">
-                     <string>Split Oversize</string>
-                    </property>
+                    <layout class="QGridLayout" name="gridLayout_12">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="horizontalSpacing">
+                      <number>2</number>
+                     </property>
+                     <property name="verticalSpacing">
+                      <number>3</number>
+                     </property>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_31">
+                       <property name="text">
+                        <string>Face weight</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QCheckBox" name="toggle_focal_crop">
+                       <property name="toolTip">
+                        <string>Crop based on focal point</string>
+                       </property>
+                       <property name="text">
+                        <string>Focal point crop</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="0">
+                      <widget class="QLabel" name="label_35">
+                       <property name="text">
+                        <string>Edges weight</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="1">
+                      <widget class="QDoubleSpinBox" name="process_focal_crop_edges_weight">
+                       <property name="maximum">
+                        <double>1.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.100000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QDoubleSpinBox" name="process_focal_crop_face_weight">
+                       <property name="maximum">
+                        <double>1.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.100000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
+                      <widget class="QDoubleSpinBox" name="process_focal_crop_entropy_weight">
+                       <property name="maximum">
+                        <double>1.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.100000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="label_32">
+                       <property name="text">
+                        <string>Entropy weight</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </widget>
                   </item>
                   <item row="0" column="1">
                    <widget class="QLabel" name="label_100">
                     <property name="text">
                      <string>Prepare input data</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QLabel" name="label_33">
+                    <property name="text">
+                     <string>Width</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="14" column="1" colspan="5">
+                   <widget class="QFrame" name="autoCrop">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_10">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="horizontalSpacing">
+                      <number>2</number>
+                     </property>
+                     <property name="verticalSpacing">
+                      <number>3</number>
+                     </property>
+                     <item row="4" column="1">
+                      <widget class="QDoubleSpinBox" name="overlap_ratio">
+                       <property name="maximum">
+                        <double>1.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.100000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QCheckBox" name="toggle_split_oversize">
+                       <property name="text">
+                        <string>Split Oversize</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
+                      <widget class="QDoubleSpinBox" name="split_threshold">
+                       <property name="maximum">
+                        <double>1.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.100000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="label_30">
+                       <property name="text">
+                        <string>Split threshold</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="0">
+                      <widget class="QLabel" name="label_36">
+                       <property name="text">
+                        <string>Split overlap</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="6" column="1">
+                   <widget class="QLabel" name="label_37">
+                    <property name="text">
+                     <string>Height</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="1">
+                   <widget class="QCheckBox" name="process_flip">
+                    <property name="toolTip">
+                     <string>Create a copy which is flipped</string>
+                    </property>
+                    <property name="text">
+                     <string>Flipped Copy</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="1">
+                   <widget class="QCheckBox" name="process_focal_crop_debug">
+                    <property name="text">
+                     <string>Debug Images</string>
                     </property>
                    </widget>
                   </item>
@@ -795,7 +817,7 @@
                   <item row="0" column="0">
                    <widget class="QRadioButton" name="lora2diff">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="text">
                      <string>Merge lora to diffuser</string>
@@ -866,7 +888,7 @@
                   <item row="0" column="1">
                    <widget class="QRadioButton" name="lora2lora">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="text">
                      <string>Merge lora to lora</string>

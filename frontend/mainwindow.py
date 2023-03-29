@@ -136,7 +136,6 @@ class MainWindow(QMainWindow):
         self.image_lab_ui = self.image_lab.imageLab
         self.model_download = ModelDownload(self)
         self.model_download_ui = self.model_download.model_download
-        self.model_download.maintain_custom_models()
         self.widgets[self.current_widget].w.dockWidget.setWindowTitle("Parameters")
         self.system_setup.w.dockWidget.setWindowTitle("⚙")
         self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
@@ -457,7 +456,7 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
                     images = custom_model_info['images']
                     images =  json.loads(images)
                     for image in images:
-                        self.show_image_from_url(image['url'])
+                        self.ui_image.show_image_from_url(image['url'])
 
         if 'custom/' in self.widgets[self.current_widget].w.selected_model.currentText():
             custom_model_info = self.civitai_api.civitai_get_model_data(self.widgets[self.current_widget].w.selected_model.currentText().replace('custom/',''))

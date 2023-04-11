@@ -218,10 +218,10 @@ class aiNodesPlugin:
             alpha=self.training.w.alpha.value(),
             mode=mode,
             with_text_lora= self.training.w.with_text_lora.isChecked(),
-            half = self.training.w.ckpt_half.isChecked()
+            as_half = self.training.w.ckpt_half.isChecked()
         )
         args = SimpleNamespace(**{})
-        args.model_path = os.path.join(self.training.w.output_path.text(),'merged_lora')
+        args.model_path = os.path.join(self.training.w.output_path.text(),'merged_lora.' + lom_output_type)
         args.checkpoint_path = os.path.join(self.training.w.output_path.text(),'merged_lora.ckpt')
         args.half=self.training.w.ckpt_half.isChecked()
         if mode != "upl-ckpt-v2":
@@ -239,7 +239,7 @@ class aiNodesPlugin:
         self.training.w.path_1.setText(filename[0])
 
     def lom_select_model_b(self):
-        filename = QFileDialog.c(caption='Model B to merge', filter='Model (*.pt)')
+        filename = QFileDialog.getOpenFileName(caption='Model B to merge', filter='Model (*.pt)')
         self.training.w.path_2.setText(filename[0])
 
     def lom_select_output_dir(self):

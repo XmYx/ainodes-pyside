@@ -170,7 +170,7 @@ NSFW: {model_info['item']['nsfw']}
                             if file['type'] != 'Training Data' and file['type'] != 'Config':
 
                                 # Construct a description of the model
-                                model_description = f"{item['name']}  Version: {model['name']} Type: {file['type']} Format: {file['format']}"
+                                model_description = f"{item['name']}  Version: {model['name']} Type: {file['type']} Format: {file['metadata']['format']}"
 
                                 # Add the model and item information to the actual_model_list dictionary
                                 self.actual_model_list[model_description] = {'model':model, 'item':tmp_item, 'file':file, 'raw':{'file':file, 'item':item}}

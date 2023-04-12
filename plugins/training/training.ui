@@ -14,7 +14,7 @@
    <string>Form</string>
   </property>
   <property name="toolTip">
-   <string>Batch size (per device) for the training dataloader.</string>
+   <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
@@ -58,8 +58,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>697</width>
-            <height>967</height>
+            <width>714</width>
+            <height>880</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -84,7 +84,7 @@
               <string/>
              </property>
              <property name="currentIndex">
-              <number>2</number>
+              <number>4</number>
              </property>
              <widget class="QWidget" name="tab_3">
               <attribute name="title">
@@ -817,7 +817,7 @@
                   <item row="0" column="0">
                    <widget class="QRadioButton" name="lora2diff">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Merge lora to diffuser</string>
@@ -888,7 +888,7 @@
                   <item row="0" column="1">
                    <widget class="QRadioButton" name="lora2lora">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Merge lora to lora</string>
@@ -1651,2026 +1651,932 @@ flag passed with the `accelerate.launch` command. Use this argument to override 
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="tab_7">
-              <attribute name="title">
-               <string>Hypernetwork</string>
-              </attribute>
-              <layout class="QGridLayout" name="gridLayout_19">
-               <property name="leftMargin">
-                <number>3</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>3</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <property name="horizontalSpacing">
-                <number>2</number>
-               </property>
-               <property name="verticalSpacing">
-                <number>3</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QTabWidget" name="tabWidget">
-                 <property name="currentIndex">
-                  <number>1</number>
-                 </property>
-                 <widget class="QWidget" name="tab">
-                  <attribute name="title">
-                   <string>Create Hypernetwork</string>
-                  </attribute>
-                  <layout class="QGridLayout" name="gridLayout_4">
-                   <property name="leftMargin">
-                    <number>3</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>3</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="horizontalSpacing">
-                    <number>2</number>
-                   </property>
-                   <property name="verticalSpacing">
-                    <number>3</number>
-                   </property>
-                   <item row="8" column="0">
-                    <widget class="QLabel" name="label_25">
-                     <property name="text">
-                      <string>Activation Function</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="0">
-                    <widget class="QCheckBox" name="size_768">
-                     <property name="text">
-                      <string>768</string>
-                     </property>
-                     <property name="checked">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="0">
-                    <widget class="QLabel" name="label_26">
-                     <property name="text">
-                      <string>Layer Structure</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="12" column="0">
-                    <widget class="QLabel" name="label_27">
-                     <property name="text">
-                      <string>Weight Init</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="16" column="0">
-                    <spacer name="verticalSpacer_2">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item row="4" column="0">
-                    <widget class="QCheckBox" name="size_320">
-                     <property name="text">
-                      <string>320</string>
-                     </property>
-                     <property name="checked">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QCheckBox" name="overwrite_old">
-                     <property name="text">
-                      <string>Overwrite Existing</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="1">
-                    <widget class="QCheckBox" name="size_640">
-                     <property name="text">
-                      <string>640</string>
-                     </property>
-                     <property name="checked">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="label_28">
-                     <property name="text">
-                      <string>Enable Sizes</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0" colspan="2">
-                    <widget class="QLineEdit" name="name_2"/>
-                   </item>
-                   <item row="14" column="1">
-                    <widget class="QCheckBox" name="use_dropout">
-                     <property name="text">
-                      <string>Use dropout</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="14" column="0">
-                    <widget class="QCheckBox" name="add_layer_norm">
-                     <property name="text">
-                      <string>Add layer normalization</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_29">
-                     <property name="text">
-                      <string>Name</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="1">
-                    <widget class="QCheckBox" name="size_1280">
-                     <property name="text">
-                      <string>1280</string>
-                     </property>
-                     <property name="checked">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="15" column="0">
-                    <widget class="QPushButton" name="create_network">
-                     <property name="text">
-                      <string>Create Hypernetwork</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="1">
-                    <widget class="QComboBox" name="activation_func"/>
-                   </item>
-                   <item row="12" column="1">
-                    <widget class="QComboBox" name="weight_init">
-                     <item>
-                      <property name="text">
-                       <string>Normal</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string>KaimingUniform</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string>KaimingNormal</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string>XavierUniform</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string>XavierNormal</string>
-                      </property>
-                     </item>
-                    </widget>
-                   </item>
-                   <item row="5" column="1">
-                    <widget class="QLineEdit" name="layer_structure">
-                     <property name="text">
-                      <string>1, 2, 1</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="Hypernetwork">
-                  <attribute name="title">
-                   <string>Hypernetwork Training</string>
-                  </attribute>
-                  <layout class="QGridLayout" name="gridLayout_6">
-                   <property name="leftMargin">
-                    <number>3</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>3</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="horizontalSpacing">
-                    <number>2</number>
-                   </property>
-                   <property name="verticalSpacing">
-                    <number>3</number>
-                   </property>
-                   <item row="10" column="0">
-                    <widget class="QPushButton" name="logsFolder_2">
-                     <property name="text">
-                      <string>Select Logs Folder</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="17" column="0">
-                    <widget class="QLabel" name="label_42">
-                     <property name="text">
-                      <string>Save Image any n Step</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="0">
-                    <widget class="QLabel" name="label_44">
-                     <property name="text">
-                      <string>Learn Rate</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="16" column="0">
-                    <widget class="QLabel" name="label_39">
-                     <property name="text">
-                      <string>Steps</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="17" column="2">
-                    <widget class="QSpinBox" name="create_image_every"/>
-                   </item>
-                   <item row="15" column="2">
-                    <widget class="QSpinBox" name="training_height"/>
-                   </item>
-                   <item row="4" column="2">
-                    <widget class="QSpinBox" name="batch_size">
-                     <property name="maximum">
-                      <number>10</number>
-                     </property>
-                     <property name="value">
-                      <number>1</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="15" column="0">
-                    <widget class="QLabel" name="label_38">
-                     <property name="text">
-                      <string>Training Height</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="16" column="2">
-                    <widget class="QSpinBox" name="steps"/>
-                   </item>
-                   <item row="21" column="0">
-                    <widget class="QPushButton" name="train_hypernetwork">
-                     <property name="text">
-                      <string>Start Training</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="12" column="0">
-                    <widget class="QPushButton" name="promptTemplateFile">
-                     <property name="text">
-                      <string>Select Prompt template File</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="2">
-                    <widget class="QLineEdit" name="learn_rate">
-                     <property name="text">
-                      <string>5e-5:100, 5e-6:1500, 5e-7:10000, 5e-8:20000</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="label_40">
-                     <property name="text">
-                      <string>Hypernetwork Name</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="2">
-                    <widget class="QComboBox" name="hypernetwork_list"/>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_46">
-                     <property name="text">
-                      <string>CKPT to train on</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="21" column="2">
-                    <widget class="QPushButton" name="Stop_2">
-                     <property name="text">
-                      <string>Stop Training</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="2">
-                    <widget class="QComboBox" name="ckpt_list"/>
-                   </item>
-                   <item row="18" column="2">
-                    <widget class="QSpinBox" name="save_hypernetwork_every"/>
-                   </item>
-                   <item row="18" column="0">
-                    <widget class="QLabel" name="label_41">
-                     <property name="text">
-                      <string>Save Network any n Step</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="2">
-                    <widget class="QLineEdit" name="data_root_2">
-                     <property name="text">
-                      <string>data/input/images</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="0">
-                    <widget class="QLabel" name="label_43">
-                     <property name="text">
-                      <string>Batch Size</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="14" column="0">
-                    <widget class="QLabel" name="label_45">
-                     <property name="text">
-                      <string>Training width</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="14" column="2">
-                    <widget class="QSpinBox" name="training_width"/>
-                   </item>
-                   <item row="10" column="2">
-                    <widget class="QLineEdit" name="log_directory">
-                     <property name="text">
-                      <string>data/hyper/output</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="0">
-                    <widget class="QPushButton" name="pathInputImages_2">
-                     <property name="text">
-                      <string>Select path to input Images</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="12" column="2">
-                    <widget class="QLineEdit" name="template_file">
-                     <property name="text">
-                      <string>data/hyper/templates/hypernetwork.txt</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="22" column="0">
-                    <spacer name="verticalSpacer_5">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="tab_2">
-                  <attribute name="title">
-                   <string>Training Monitor</string>
-                  </attribute>
-                  <layout class="QGridLayout" name="gridLayout_7">
-                   <property name="leftMargin">
-                    <number>3</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>3</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="horizontalSpacing">
-                    <number>2</number>
-                   </property>
-                   <property name="verticalSpacing">
-                    <number>3</number>
-                   </property>
-                   <item row="0" column="1">
-                    <widget class="QLCDNumber" name="lcdNumber"/>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_47">
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <spacer name="verticalSpacer_4">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="PreviewSamples">
-                  <attribute name="title">
-                   <string>Preview</string>
-                  </attribute>
-                  <layout class="QGridLayout" name="gridLayout_8">
-                   <property name="leftMargin">
-                    <number>3</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>3</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="horizontalSpacing">
-                    <number>2</number>
-                   </property>
-                   <property name="verticalSpacing">
-                    <number>3</number>
-                   </property>
-                   <item row="1" column="1">
-                    <widget class="QSpinBox" name="preview_width"/>
-                   </item>
-                   <item row="10" column="1">
-                    <widget class="QSpinBox" name="preview_cfg_scale"/>
-                   </item>
-                   <item row="4" column="0" colspan="2">
-                    <widget class="QTextEdit" name="preview_prompt"/>
-                   </item>
-                   <item row="11" column="0">
-                    <widget class="QLabel" name="label_53">
-                     <property name="text">
-                      <string>Seed</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="7" column="0">
-                    <widget class="QLabel" name="label_49">
-                     <property name="text">
-                      <string>Steps</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="0">
-                    <widget class="QLabel" name="label_55">
-                     <property name="text">
-                      <string>Prompt</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="1">
-                    <widget class="QComboBox" name="preview_sampler_index"/>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QSpinBox" name="spinBox_7"/>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="label_54">
-                     <property name="text">
-                      <string>Height</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QCheckBox" name="preview_from_txt2img">
-                     <property name="text">
-                      <string>Preview from Text 2 Image Settings</string>
-                     </property>
-                     <property name="checked">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="11" column="1">
-                    <widget class="QLineEdit" name="preview_seed">
-                     <property name="text">
-                      <string>-1</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="0">
-                    <widget class="QLabel" name="label_51">
-                     <property name="text">
-                      <string>Negative Prompt</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="label_48">
-                     <property name="text">
-                      <string>Width</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="0">
-                    <widget class="QLabel" name="label_50">
-                     <property name="text">
-                      <string>Sampler</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="7" column="1">
-                    <widget class="QSpinBox" name="preview_steps"/>
-                   </item>
-                   <item row="6" column="0" colspan="2">
-                    <widget class="QTextEdit" name="preview_negative_prompt"/>
-                   </item>
-                   <item row="10" column="0">
-                    <widget class="QLabel" name="label_52">
-                     <property name="text">
-                      <string>Scale</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="tab_8">
-              <attribute name="title">
-               <string>Dreambooth</string>
-              </attribute>
-              <layout class="QGridLayout" name="gridLayout_20">
-               <property name="leftMargin">
-                <number>3</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>3</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <property name="horizontalSpacing">
-                <number>2</number>
-               </property>
-               <property name="verticalSpacing">
-                <number>3</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QFrame" name="Dreambooth">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout">
-                  <property name="leftMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="horizontalSpacing">
-                   <number>2</number>
-                  </property>
-                  <property name="verticalSpacing">
-                   <number>3</number>
-                  </property>
-                  <item row="7" column="0">
-                   <widget class="QPushButton" name="pathInputImages_3">
-                    <property name="text">
-                     <string>Path to regularization Images</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="36" column="2">
-                   <widget class="QLabel" name="label_112">
-                    <property name="text">
-                     <string>Overfit batches</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="44" column="0">
-                   <widget class="QCheckBox" name="terminate_on_nan">
-                    <property name="text">
-                     <string>Terminate on NaN</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="32" column="2">
-                   <widget class="QLabel" name="label_84">
-                    <property name="text">
-                     <string>Max Time (sec) (0 = None)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="40" column="0">
-                   <widget class="QCheckBox" name="auto_lr_find">
-                    <property name="text">
-                     <string>Auto LR find</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="32" column="1">
-                   <widget class="QSpinBox" name="min_steps"/>
-                  </item>
-                  <item row="38" column="1">
-                   <widget class="QCheckBox" name="no_test">
-                    <property name="text">
-                     <string>No Test</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="10" column="0">
-                   <widget class="QPushButton" name="logsFolder">
-                    <property name="text">
-                     <string>Select Logs Folder</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="22" column="0">
-                   <widget class="QLabel" name="label_70">
-                    <property name="text">
-                     <string>Accelerator</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="24" column="2">
-                   <widget class="QLabel" name="label_91">
-                    <property name="text">
-                     <string>Accumulate grad batches</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="28" column="0">
-                   <widget class="QLabel" name="label_77">
-                    <property name="text">
-                     <string>Train batches</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="25" column="2">
-                   <widget class="QLabel" name="label_74">
-                    <property name="text">
-                     <string>Flush logs every n steps</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="33" column="0">
-                   <widget class="QLabel" name="label_87">
-                    <property name="text">
-                     <string>Num sanity val checks (0 = None, -1 all) </string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="35" column="2">
-                   <widget class="QLabel" name="label_110">
-                    <property name="text">
-                     <string>GPU's</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="34" column="0">
-                   <widget class="QLabel" name="label_89">
-                    <property name="text">
-                     <string>Reload dataloader every n epochs </string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="27" column="1">
-                   <widget class="QSpinBox" name="bs">
-                    <property name="minimum">
-                     <number>1</number>
-                    </property>
-                    <property name="maximum">
-                     <number>250</number>
-                    </property>
-                    <property name="value">
-                     <number>1</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="34" column="3">
-                   <widget class="QDoubleSpinBox" name="val_check_interval">
-                    <property name="value">
-                     <double>1.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="47" column="0">
-                   <widget class="QCheckBox" name="enable_model_summary">
-                    <property name="text">
-                     <string>Enable model summary</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="31" column="0">
-                   <widget class="QLabel" name="label_83">
-                    <property name="text">
-                     <string>Min epochs (0 = None)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="label">
-                    <property name="text">
-                     <string>Output Name</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="35" column="3">
-                   <widget class="QLineEdit" name="gpus">
-                    <property name="toolTip">
-                     <string>GPUs to train on (list or str) applied per node. additional , is added at the end automaticly</string>
-                    </property>
-                    <property name="text">
-                     <string>0</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="10" column="1" colspan="3">
-                   <widget class="QLineEdit" name="logdir">
-                    <property name="text">
-                     <string>data/output/ti/logs</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="6" column="1" colspan="3">
-                   <widget class="QLineEdit" name="data_root">
-                    <property name="text">
-                     <string>data/input/images/out</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="1" colspan="3">
-                   <widget class="QLineEdit" name="actual_resume">
-                    <property name="text">
-                     <string>data/models/sd-v1-4.ckpt</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="20" column="1">
-                   <widget class="QComboBox" name="base"/>
-                  </item>
-                  <item row="34" column="2">
-                   <widget class="QLabel" name="label_90">
-                    <property name="text">
-                     <string>Val check interval</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="28" column="1">
-                   <widget class="QDoubleSpinBox" name="limit_train_batches">
-                    <property name="singleStep">
-                     <double>0.100000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>1.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="25" column="3">
-                   <widget class="QSpinBox" name="flush_logs_every_n_steps">
-                    <property name="maximum">
-                     <number>10000</number>
-                    </property>
-                    <property name="value">
-                     <number>100</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="42" column="1">
-                   <widget class="QCheckBox" name="deterministic">
-                    <property name="text">
-                     <string>Deterministic</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="22" column="3">
-                   <widget class="QComboBox" name="amp_backend">
-                    <item>
-                     <property name="text">
-                      <string>native</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>apex</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="30" column="1">
-                   <widget class="QComboBox" name="multiple_trainloader_mode">
-                    <item>
-                     <property name="text">
-                      <string>max_size_cycle</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>min_size</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="36" column="3">
-                   <widget class="QDoubleSpinBox" name="overfit_batches"/>
-                  </item>
-                  <item row="46" column="1">
-                   <widget class="QCheckBox" name="enable_checkpointing">
-                    <property name="text">
-                     <string>Enable checkpointing</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="43" column="0">
-                   <widget class="QCheckBox" name="move_metrics_to_cpu">
-                    <property name="text">
-                     <string>Metrics to cpu</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="12" column="1" colspan="3">
-                   <widget class="QLineEdit" name="placeholder_tokens">
-                    <property name="text">
-                     <string>'*'</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="17" column="1" colspan="3">
-                   <widget class="QLineEdit" name="seed_2">
-                    <property name="text">
-                     <string>-1</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="26" column="1">
-                   <widget class="QSpinBox" name="gradient_clip_val">
-                    <property name="maximum">
-                     <number>100</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="36" column="1">
-                   <widget class="QSpinBox" name="log_every_n_steps">
-                    <property name="maximum">
-                     <number>1000</number>
-                    </property>
-                    <property name="value">
-                     <number>50</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1" colspan="3">
-                   <widget class="QLineEdit" name="name">
-                    <property name="text">
-                     <string>TestProject</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="42" column="0">
-                   <widget class="QCheckBox" name="checkpoint_callback">
-                    <property name="text">
-                     <string>Checkpoint call back</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="36" column="0">
-                   <widget class="QLabel" name="label_111">
-                    <property name="text">
-                     <string>Log every n steps</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="45" column="1">
-                   <widget class="QCheckBox" name="datadir_in_name">
-                    <property name="text">
-                     <string>Data Dir in name</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="31" column="1">
-                   <widget class="QSpinBox" name="min_epochs"/>
-                  </item>
-                  <item row="35" column="0">
-                   <widget class="QLabel" name="label_102">
-                    <property name="text">
-                     <string>Fast dev run</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="31" column="3">
-                   <widget class="QSpinBox" name="max_steps">
-                    <property name="maximum">
-                     <number>10000</number>
-                    </property>
-                    <property name="value">
-                     <number>800</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="28" column="3">
-                   <widget class="QDoubleSpinBox" name="limit_val_batches">
-                    <property name="singleStep">
-                     <double>0.100000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>1.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="47" column="1">
-                   <widget class="QCheckBox" name="enable_progress_bar">
-                    <property name="text">
-                     <string>Enable progressbar</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="31" column="2">
-                   <widget class="QLabel" name="label_86">
-                    <property name="text">
-                     <string>Max steps</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="7" column="1" colspan="3">
-                   <widget class="QLineEdit" name="reg_data_root">
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="29" column="1">
-                   <widget class="QDoubleSpinBox" name="limit_test_batches">
-                    <property name="singleStep">
-                     <double>0.100000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>1.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="67" column="0">
-                   <widget class="QPushButton" name="Start">
-                    <property name="text">
-                     <string>Start Dreambooth training</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="24" column="0">
-                   <widget class="QLabel" name="label_101">
-                    <property name="text">
-                     <string>Learning rate</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="14" column="1" colspan="3">
-                   <widget class="QLineEdit" name="init_word"/>
-                  </item>
-                  <item row="32" column="0">
-                   <widget class="QLabel" name="label_85">
-                    <property name="text">
-                     <string>Min steps (0 = None)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="26" column="3">
-                   <widget class="QComboBox" name="gradient_clip_algorithm">
-                    <item>
-                     <property name="text">
-                      <string>norm</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>value</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="43" column="1">
-                   <widget class="QCheckBox" name="stochastic_weight_avg">
-                    <property name="text">
-                     <string>Stochastic weight avg</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="30" column="3">
-                   <widget class="QSpinBox" name="max_epochs"/>
-                  </item>
-                  <item row="33" column="3">
-                   <widget class="QComboBox" name="precision">
-                    <item>
-                     <property name="text">
-                      <string>32</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>16</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>64</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="4" column="0">
-                   <widget class="QPushButton" name="resumeModel">
-                    <property name="text">
-                     <string>Model to resume from</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="37" column="0">
-                   <widget class="QLabel" name="label_113">
-                    <property name="text">
-                     <string>Progressbar refresh</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="45" column="0">
-                   <widget class="QCheckBox" name="debug">
-                    <property name="text">
-                     <string>Debug</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="37" column="1">
-                   <widget class="QSpinBox" name="progress_bar_refresh_rate"/>
-                  </item>
-                  <item row="25" column="0">
-                   <widget class="QLabel" name="label_72">
-                    <property name="text">
-                     <string>Check val every n epoch</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_6">
-                    <property name="text">
-                     <string>Dreambooth Training</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="29" column="0">
-                   <widget class="QLabel" name="label_79">
-                    <property name="text">
-                     <string>Test batches</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="39" column="1">
-                   <widget class="QCheckBox" name="replace_sampler_ddp">
-                    <property name="text">
-                     <string>Replace sampler ddp</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="39" column="0">
-                   <widget class="QCheckBox" name="db_scale_lr">
-                    <property name="text">
-                     <string>Scale LR</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="41" column="1">
-                   <widget class="QCheckBox" name="benchmark">
-                    <property name="text">
-                     <string>Benchmark</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="41" column="0">
-                   <widget class="QCheckBox" name="auto_select_gpus">
-                    <property name="text">
-                     <string>Auto select GPUs</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="22" column="1">
-                   <widget class="QComboBox" name="accelerator">
-                    <item>
-                     <property name="text">
-                      <string>None</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>ddp</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>dp</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>ddp2</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="33" column="1">
-                   <widget class="QSpinBox" name="num_sanity_val_steps"/>
-                  </item>
-                  <item row="26" column="0">
-                   <widget class="QLabel" name="label_75">
-                    <property name="text">
-                     <string>Grad Clip</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="34" column="1">
-                   <widget class="QSpinBox" name="reload_dataloaders_every_n_epochs"/>
-                  </item>
-                  <item row="20" column="0">
-                   <widget class="QLabel" name="label_2">
-                    <property name="text">
-                     <string>Finetune Config</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="12" column="0">
-                   <widget class="QLabel" name="label_3">
-                    <property name="text">
-                     <string>Placeholder Tokens</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="30" column="2">
-                   <widget class="QLabel" name="label_82">
-                    <property name="text">
-                     <string>Max epochs (0 = None)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="14" column="0">
-                   <widget class="QLabel" name="label_4">
-                    <property name="text">
-                     <string>Init Word</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="16" column="0">
-                   <widget class="QLabel" name="label_73">
-                    <property name="text">
-                     <string>Class word</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="24" column="3">
-                   <widget class="QSpinBox" name="accumulate_grad_batches">
-                    <property name="minimum">
-                     <number>1</number>
-                    </property>
-                    <property name="maximum">
-                     <number>10000</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="33" column="2">
-                   <widget class="QLabel" name="label_88">
-                    <property name="text">
-                     <string>Precission</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="29" column="3">
-                   <widget class="QDoubleSpinBox" name="limit_predict_batches">
-                    <property name="singleStep">
-                     <double>0.100000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>1.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="67" column="1">
-                   <widget class="QPushButton" name="Stop">
-                    <property name="text">
-                     <string>Stop training</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="25" column="1">
-                   <widget class="QSpinBox" name="check_val_every_n_epoch">
-                    <property name="maximum">
-                     <number>10000</number>
-                    </property>
-                    <property name="value">
-                     <number>1</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="17" column="0">
-                   <widget class="QLabel" name="label_114">
-                    <property name="text">
-                     <string>Seed</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="32" column="3">
-                   <widget class="QSpinBox" name="max_time"/>
-                  </item>
-                  <item row="35" column="1">
-                   <widget class="QSpinBox" name="fast_dev_run">
-                    <property name="minimum">
-                     <number>1</number>
-                    </property>
-                    <property name="maximum">
-                     <number>50</number>
-                    </property>
-                    <property name="value">
-                     <number>1</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="40" column="1">
-                   <widget class="QCheckBox" name="auto_scale_batch_size">
-                    <property name="text">
-                     <string>Auto scale batch</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="46" column="0">
-                   <widget class="QCheckBox" name="detect_anomaly">
-                    <property name="text">
-                     <string>Detect anomaly</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="16" column="1" colspan="3">
-                   <widget class="QLineEdit" name="class_word"/>
-                  </item>
-                  <item row="30" column="0">
-                   <widget class="QLabel" name="label_81">
-                    <property name="text">
-                     <string>Multiple trainlopader mode</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="38" column="0">
-                   <widget class="QCheckBox" name="train">
-                    <property name="text">
-                     <string>Train</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="44" column="1">
-                   <widget class="QCheckBox" name="sync_batchnorm">
-                    <property name="text">
-                     <string>Synmc batchnorm</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="26" column="2">
-                   <widget class="QLabel" name="label_76">
-                    <property name="text">
-                     <string>Grad clip algorithm</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="22" column="2">
-                   <widget class="QLabel" name="label_71">
-                    <property name="text">
-                     <string>AMP Backend</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="27" column="0">
-                   <widget class="QLabel" name="label_115">
-                    <property name="text">
-                     <string>Batch size</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="6" column="0">
-                   <widget class="QPushButton" name="pathInputImages">
-                    <property name="text">
-                     <string>Path to input Images</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="24" column="1">
-                   <widget class="QDoubleSpinBox" name="base_lr">
-                    <property name="decimals">
-                     <number>6</number>
-                    </property>
-                    <property name="maximum">
-                     <double>1.000000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>0.000500000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="29" column="2">
-                   <widget class="QLabel" name="label_80">
-                    <property name="text">
-                     <string>Predict Batches</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="66" column="0">
-                   <widget class="QLabel" name="label_5">
-                    <property name="text">
-                     <string>Steps tuned</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="66" column="1">
-                   <widget class="QLCDNumber" name="steps_tuned"/>
-                  </item>
-                  <item row="28" column="2">
-                   <widget class="QLabel" name="label_78">
-                    <property name="text">
-                     <string>Val batches</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="68" column="0">
-                   <spacer name="verticalSpacer_3">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>20</width>
-                      <height>40</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-              </layout>
-             </widget>
              <widget class="QWidget" name="tab_10">
               <attribute name="title">
                <string>Diffuser Dreambooth</string>
               </attribute>
               <layout class="QGridLayout" name="gridLayout_22">
-               <item row="30" column="1">
-                <widget class="QDoubleSpinBox" name="df_learning_rate">
-                 <property name="decimals">
-                  <number>8</number>
-                 </property>
-                 <property name="maximum">
-                  <double>1.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.000010000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>0.000005000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="30" column="2">
-                <widget class="QLabel" name="label_265">
-                 <property name="text">
-                  <string>Warmup steps</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="16" column="0">
-                <widget class="QLabel" name="label_251">
-                 <property name="text">
-                  <string>Instance prompt</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="30" column="0">
-                <widget class="QLabel" name="label_263">
-                 <property name="text">
-                  <string>Learning rate (LR)</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="20" column="3">
-                <widget class="QDoubleSpinBox" name="df_adam_beta2">
-                 <property name="decimals">
-                  <number>4</number>
-                 </property>
-                 <property name="maximum">
-                  <double>100.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.001000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>0.999000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="28" column="1">
-                <widget class="QSpinBox" name="df_gradient_accumulation_steps">
-                 <property name="maximum">
-                  <number>10000000</number>
-                 </property>
-                 <property name="value">
-                  <number>1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="25" column="2">
-                <widget class="QLabel" name="label_271">
-                 <property name="text">
-                  <string>Adam epsilon</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="29" column="3">
-                <widget class="QSpinBox" name="df_checkpointing_steps">
-                 <property name="maximum">
-                  <number>1000000</number>
-                 </property>
-                 <property name="value">
-                  <number>500</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QPushButton" name="df_select_model">
-                 <property name="text">
-                  <string>Model dir</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="19" column="1">
-                <widget class="QDoubleSpinBox" name="df_prior_loss_weight"/>
-               </item>
-               <item row="20" column="1">
-                <widget class="QSpinBox" name="df_resolution">
-                 <property name="maximum">
-                  <number>4068</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>64</number>
-                 </property>
-                 <property name="value">
-                  <number>512</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="14" column="1" colspan="3">
-                <widget class="QLineEdit" name="df_class_prompt"/>
-               </item>
-               <item row="33" column="3">
-                <widget class="QComboBox" name="df_lr_scheduler">
-                 <item>
-                  <property name="text">
-                   <string>constant</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>linear</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>cosine</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>cosine_with_restarts</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>polynomial</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>constant_with_warmup</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="22" column="1">
-                <widget class="QSpinBox" name="df_train_batch_size">
-                 <property name="maximum">
-                  <number>500</number>
-                 </property>
-                 <property name="value">
-                  <number>1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="27" column="3">
-                <widget class="QComboBox" name="df_mixed_precision">
-                 <item>
-                  <property name="text">
-                   <string>no</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>fp16</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>bf16</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="27" column="2">
-                <widget class="QLabel" name="label_273">
-                 <property name="text">
-                  <string>Mixed precision</string>
-                 </property>
-                </widget>
-               </item>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>2</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>2</number>
+               </property>
                <item row="0" column="0">
-                <widget class="QLabel" name="label_116">
-                 <property name="text">
-                  <string>Diffuser Dreambooth</string>
+                <widget class="QTabWidget" name="tabWidget">
+                 <property name="currentIndex">
+                  <number>0</number>
                  </property>
-                </widget>
-               </item>
-               <item row="19" column="0">
-                <widget class="QLabel" name="label_253">
-                 <property name="text">
-                  <string>Prior loss weight</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="26" column="0">
-                <widget class="QLabel" name="label_259">
-                 <property name="text">
-                  <string>Num train epochs</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="12" column="0">
-                <widget class="QCheckBox" name="export_safetensors">
-                 <property name="text">
-                  <string>export safetensors</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="38" column="0">
-                <widget class="QCheckBox" name="df_train_text_encoder">
-                 <property name="text">
-                  <string>Train text encoder</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="18" column="0">
-                <widget class="QLabel" name="label_255">
-                 <property name="text">
-                  <string>Seed</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="25" column="1">
-                <widget class="QSpinBox" name="df_sample_batch_size">
-                 <property name="maximum">
-                  <number>100</number>
-                 </property>
-                 <property name="value">
-                  <number>4</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QPushButton" name="df_select_images">
-                 <property name="text">
-                  <string>Images dir</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="22" column="3">
-                <widget class="QDoubleSpinBox" name="df_adam_weight_decay">
-                 <property name="maximum">
-                  <double>100.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.010000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>0.010000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="1" colspan="3">
-                <widget class="QLineEdit" name="df_logging_dir">
-                 <property name="text">
-                  <string>G:\training_up_to_5000_steps_UNET_300_text_encoder\logs</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="16" column="1" colspan="3">
-                <widget class="QLineEdit" name="df_instance_prompt">
-                 <property name="text">
-                  <string>test</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="38" column="2">
-                <widget class="QCheckBox" name="df_use_8bit_adam">
-                 <property name="text">
-                  <string>use 8bit adam</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="27" column="1">
-                <widget class="QSpinBox" name="df_max_train_steps">
-                 <property name="maximum">
-                  <number>1000000</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="30" column="3">
-                <widget class="QSpinBox" name="df_lr_warmup_steps">
-                 <property name="maximum">
-                  <number>10000000</number>
-                 </property>
-                 <property name="value">
-                  <number>1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="15" column="1" colspan="3">
-                <widget class="QLineEdit" name="df_tokenizer_name">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
-                <widget class="QPushButton" name="df_select_class_images">
-                 <property name="text">
-                  <string>Class images dir</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="18" column="1" colspan="3">
-                <widget class="QLineEdit" name="df_seed"/>
-               </item>
-               <item row="1" column="1" colspan="3">
-                <widget class="QLineEdit" name="df_pretrained_model_name_or_path">
-                 <property name="text">
-                  <string>runwayml/stable-diffusion-v1-5</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="28" column="0">
-                <widget class="QLabel" name="label_262">
-                 <property name="text">
-                  <string>Gradient accumulation steps</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="29" column="2">
-                <widget class="QLabel" name="label_261">
-                 <property name="text">
-                  <string>Checkpointing steps</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="22" column="2">
-                <widget class="QLabel" name="label_270">
-                 <property name="text">
-                  <string>Adam weight decay</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="0">
-                <widget class="QPushButton" name="df_select_output_folder">
-                 <property name="text">
-                  <string>Output dir</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="33" column="0">
-                <widget class="QCheckBox" name="df_scale_lr">
-                 <property name="text">
-                  <string>Scale LR</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="26" column="2">
-                <widget class="QLabel" name="label_272">
-                 <property name="text">
-                  <string>Max grad norm</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="28" column="2">
-                <widget class="QLabel" name="label_274">
-                 <property name="text">
-                  <string>Prior generation precision</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="1">
-                <widget class="QSpinBox" name="df_num_class_images"/>
-               </item>
-               <item row="41" column="0">
-                <spacer name="verticalSpacer_10">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="14" column="0">
-                <widget class="QLabel" name="label_252">
-                 <property name="text">
-                  <string>Class prompt</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="0">
-                <widget class="QLabel" name="label_254">
-                 <property name="text">
-                  <string>Class Images</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="26" column="3">
-                <widget class="QDoubleSpinBox" name="df_max_grad_norm">
-                 <property name="singleStep">
-                  <double>0.100000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>1.000000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1" colspan="3">
-                <widget class="QLineEdit" name="df_instance_data_dir">
-                 <property name="text">
-                  <string>G:\training_up_to_5000_steps_UNET_300_text_encoder\TwinRealms-1024\TwinRealms-1024</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="27" column="0">
-                <widget class="QLabel" name="label_260">
-                 <property name="text">
-                  <string>Max train steps</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="0">
-                <widget class="QPushButton" name="df_select_log_folder">
-                 <property name="text">
-                  <string>Log dir</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="29" column="0">
-                <widget class="QCheckBox" name="df_gradient_checkpointing">
-                 <property name="text">
-                  <string>Gradient checkpointing</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="25" column="3">
-                <widget class="QLineEdit" name="df_adam_epsilon">
-                 <property name="text">
-                  <string>1e-08</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="11" column="1" colspan="3">
-                <widget class="QLineEdit" name="checkpoint_filename"/>
-               </item>
-               <item row="22" column="0">
-                <widget class="QLabel" name="label_257">
-                 <property name="text">
-                  <string>Batch size</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="26" column="1">
-                <widget class="QSpinBox" name="df_num_train_epochs">
-                 <property name="maximum">
-                  <number>5000</number>
-                 </property>
-                 <property name="value">
-                  <number>1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="15" column="0">
-                <widget class="QLabel" name="label_118">
-                 <property name="text">
-                  <string>Tokenizer name</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="33" column="2">
-                <widget class="QLabel" name="label_264">
-                 <property name="text">
-                  <string>LR scheduler</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="20" column="2">
-                <widget class="QLabel" name="label_269">
-                 <property name="text">
-                  <string>Adam beta2</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="28" column="3">
-                <widget class="QComboBox" name="df_prior_generation_precision">
-                 <item>
-                  <property name="text">
-                   <string>no</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>fp32</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>fp16</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>bf16</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="37" column="0">
-                <widget class="QCheckBox" name="df_center_crop">
-                 <property name="text">
-                  <string>Center Crop</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="1" colspan="3">
-                <widget class="QLineEdit" name="df_output_dir">
-                 <property name="text">
-                  <string>G:\training_up_to_5000_steps_UNET_300_text_encoder\output</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="19" column="3">
-                <widget class="QDoubleSpinBox" name="df_adam_beta1">
-                 <property name="decimals">
-                  <number>4</number>
-                 </property>
-                 <property name="maximum">
-                  <double>100.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.100000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>0.900000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="25" column="0">
-                <widget class="QLabel" name="label_258">
-                 <property name="text">
-                  <string>Sample batch size</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="20" column="0">
-                <widget class="QLabel" name="label_256">
-                 <property name="text">
-                  <string>Resolution</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="11" column="0">
-                <widget class="QCheckBox" name="export_checkpoint">
-                 <property name="text">
-                  <string>export checkpoint</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="1" colspan="3">
-                <widget class="QLineEdit" name="df_class_data_dir"/>
-               </item>
-               <item row="19" column="2">
-                <widget class="QLabel" name="label_268">
-                 <property name="text">
-                  <string>Adam beta1</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="40" column="0">
-                <widget class="QPushButton" name="start_diffuser_dreambooth">
-                 <property name="text">
-                  <string>Run Diffuser Dreambooth</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="39" column="2">
-                <widget class="QCheckBox" name="df_enable_xformers_memory_efficient_attention">
-                 <property name="text">
-                  <string>Enable xformers</string>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="37" column="2">
-                <widget class="QCheckBox" name="df_allow_tf32">
-                 <property name="text">
-                  <string>Allow tf32</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="13" column="0">
-                <widget class="QCheckBox" name="as_half">
-                 <property name="text">
-                  <string>as half</string>
-                 </property>
+                 <widget class="QWidget" name="Training">
+                  <attribute name="title">
+                   <string>Training</string>
+                  </attribute>
+                  <layout class="QGridLayout" name="gridLayout">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
+                   <item row="0" column="0">
+                    <widget class="QScrollArea" name="scrollArea_2">
+                     <property name="widgetResizable">
+                      <bool>true</bool>
+                     </property>
+                     <widget class="QWidget" name="scrollAreaWidgetContents_2">
+                      <property name="geometry">
+                       <rect>
+                        <x>0</x>
+                        <y>0</y>
+                        <width>683</width>
+                        <height>930</height>
+                       </rect>
+                      </property>
+                      <layout class="QGridLayout" name="gridLayout_4">
+                       <item row="35" column="0">
+                        <widget class="QLabel" name="label_2">
+                         <property name="text">
+                          <string>LR power</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="16" column="2">
+                        <widget class="QLabel" name="label_5">
+                         <property name="text">
+                          <string>Validation steps</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="label_116">
+                         <property name="text">
+                          <string>Diffuser Dreambooth</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="1" colspan="3">
+                        <widget class="QLineEdit" name="df_pretrained_model_name_or_path">
+                         <property name="text">
+                          <string>runwayml/stable-diffusion-v1-5</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="38" column="0">
+                        <widget class="QCheckBox" name="df_allow_tf32">
+                         <property name="toolTip">
+                          <string>Whether or not to allow TF32 on Ampere GPUs. Can be used to speed up training.</string>
+                         </property>
+                         <property name="text">
+                          <string>Allow tf32</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="13" column="1" colspan="3">
+                        <widget class="QLineEdit" name="df_instance_prompt">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The prompt with identifier specifying the instance&lt;/p&gt;&lt;p&gt;Like:&lt;/p&gt;&lt;p&gt;A photo of &amp;quot;my&amp;quot; dog&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="placeholderText">
+                          <string>a photo of my dog</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="14" column="0">
+                        <widget class="QLabel" name="label_255">
+                         <property name="text">
+                          <string>Seed</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="25" column="3">
+                        <widget class="QDoubleSpinBox" name="df_max_grad_norm">
+                         <property name="singleStep">
+                          <double>0.100000000000000</double>
+                         </property>
+                         <property name="value">
+                          <double>1.000000000000000</double>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="33" column="0">
+                        <widget class="QLabel" name="label_264">
+                         <property name="text">
+                          <string>LR scheduler</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="5" column="0">
+                        <widget class="QLabel" name="label_254">
+                         <property name="text">
+                          <string>Class Images</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="16" column="0">
+                        <widget class="QLabel" name="label_4">
+                         <property name="text">
+                          <string>Num validation images</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QPushButton" name="df_select_model">
+                         <property name="text">
+                          <string>Model dir</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="25" column="2">
+                        <widget class="QLabel" name="label_272">
+                         <property name="text">
+                          <string>Max grad norm</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="6" column="1" colspan="3">
+                        <widget class="QLineEdit" name="df_output_dir">
+                         <property name="toolTip">
+                          <string>The output directory where the model predictions and checkpoints will be written.</string>
+                         </property>
+                         <property name="text">
+                          <string>G:\training_up_to_5000_steps_UNET_300_text_encoder\output</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="33" column="2">
+                        <widget class="QLabel" name="label_265">
+                         <property name="text">
+                          <string>Warmup steps</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="34" column="2">
+                        <widget class="QLabel" name="label_257">
+                         <property name="text">
+                          <string>Training Batch size</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="2">
+                        <widget class="QCheckBox" name="df_center_crop">
+                         <property name="toolTip">
+                          <string>Whether to center crop the input images to the resolution. If not set, the images will be randomly cropped. The images will be resized to the resolution first before cropping.</string>
+                         </property>
+                         <property name="text">
+                          <string>Center Crop</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="27" column="1">
+                        <widget class="QDoubleSpinBox" name="df_prior_loss_weight">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; background-color:#ffffff;&quot;&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:9.8pt; color:#067d17;&quot;&gt;Minimal class images for prior preservation loss. If there are not enough images already present in class_data_dir, additional images will be sampled with class_prompt.&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="34" column="3">
+                        <widget class="QSpinBox" name="df_train_batch_size">
+                         <property name="toolTip">
+                          <string>Batch size (per device) for the training dataloader.</string>
+                         </property>
+                         <property name="maximum">
+                          <number>500</number>
+                         </property>
+                         <property name="value">
+                          <number>1</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="0">
+                        <widget class="QLabel" name="label_256">
+                         <property name="text">
+                          <string>Resolution</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="21" column="1">
+                        <widget class="QSpinBox" name="df_max_train_steps">
+                         <property name="toolTip">
+                          <string>Total number of training steps to perform.  If provided, overrides num_train_epochs.</string>
+                         </property>
+                         <property name="maximum">
+                          <number>1000000</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="11" column="0">
+                        <widget class="QLabel" name="label_252">
+                         <property name="text">
+                          <string>Class prompt</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="5" column="1">
+                        <widget class="QSpinBox" name="df_num_class_images"/>
+                       </item>
+                       <item row="40" column="0">
+                        <widget class="QPushButton" name="start_diffuser_dreambooth">
+                         <property name="text">
+                          <string>Run Diffuser Dreambooth</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="26" column="0">
+                        <widget class="QCheckBox" name="checkBox">
+                         <property name="toolTip">
+                          <string>Flag to add prior preservation loss.</string>
+                         </property>
+                         <property name="text">
+                          <string>With prior preservation</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="34" column="0">
+                        <widget class="QLabel" name="label">
+                         <property name="text">
+                          <string>LR num cycles</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="33" column="1">
+                        <widget class="QComboBox" name="df_lr_scheduler">
+                         <property name="toolTip">
+                          <string>The scheduler type to use.</string>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>constant</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>linear</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>cosine</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>cosine_with_restarts</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>polynomial</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>constant_with_warmup</string>
+                          </property>
+                         </item>
+                        </widget>
+                       </item>
+                       <item row="14" column="1" colspan="3">
+                        <widget class="QLineEdit" name="df_seed"/>
+                       </item>
+                       <item row="32" column="3">
+                        <widget class="QComboBox" name="df_mixed_precision">
+                         <property name="toolTip">
+                          <string>Whether to use mixed precision. Choose between fp16 and bf16 (bfloat16). Bf16 requires an Nvidia Ampere GPU.</string>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>no</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>fp16</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>bf16</string>
+                          </property>
+                         </item>
+                        </widget>
+                       </item>
+                       <item row="4" column="0">
+                        <widget class="QPushButton" name="df_select_class_images">
+                         <property name="text">
+                          <string>Class images dir</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="18" column="1">
+                        <widget class="QSpinBox" name="df_sample_batch_size">
+                         <property name="toolTip">
+                          <string>Batch size (per device) for sampling images.</string>
+                         </property>
+                         <property name="maximum">
+                          <number>100</number>
+                         </property>
+                         <property name="value">
+                          <number>4</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="7" column="0">
+                        <widget class="QPushButton" name="df_select_log_folder">
+                         <property name="text">
+                          <string>Log dir</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="15" column="0">
+                        <widget class="QLabel" name="label_3">
+                         <property name="text">
+                          <string>Validation prompt</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="37" column="0">
+                        <widget class="QCheckBox" name="offset_noise">
+                         <property name="toolTip">
+                          <string>Fine-tuning against a modified noise</string>
+                         </property>
+                         <property name="text">
+                          <string>Offset noise</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="21" column="0">
+                        <widget class="QLabel" name="label_260">
+                         <property name="text">
+                          <string>Max train steps</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="32" column="2">
+                        <widget class="QLabel" name="label_273">
+                         <property name="text">
+                          <string>Mixed precision</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="32" column="0">
+                        <widget class="QCheckBox" name="df_scale_lr">
+                         <property name="toolTip">
+                          <string>Scale the learning rate by the number of GPUs, gradient accumulation steps, and batch size</string>
+                         </property>
+                         <property name="text">
+                          <string>Scale LR</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="10" column="0">
+                        <widget class="QCheckBox" name="as_half">
+                         <property name="text">
+                          <string>as half</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="27" column="3">
+                        <widget class="QComboBox" name="df_prior_generation_precision">
+                         <property name="toolTip">
+                          <string>Choose prior generation precision between fp32, fp16 and bf16 (bfloat16)</string>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>no</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>fp32</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>fp16</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>bf16</string>
+                          </property>
+                         </item>
+                        </widget>
+                       </item>
+                       <item row="21" column="3">
+                        <widget class="QSpinBox" name="df_num_train_epochs">
+                         <property name="maximum">
+                          <number>5000</number>
+                         </property>
+                         <property name="value">
+                          <number>1</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="11" column="1" colspan="3">
+                        <widget class="QLineEdit" name="df_class_prompt">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The prompt to specify images in the same class as provided instance images.&lt;/p&gt;&lt;p&gt;Like:&lt;/p&gt;&lt;p&gt;a photo of a dog&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="placeholderText">
+                          <string>a photo of a dog</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="36" column="1">
+                        <widget class="QSpinBox" name="df_gradient_accumulation_steps">
+                         <property name="toolTip">
+                          <string>Number of updates steps to accumulate before performing a backward/update pass.</string>
+                         </property>
+                         <property name="maximum">
+                          <number>10000000</number>
+                         </property>
+                         <property name="value">
+                          <number>1</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="8" column="0">
+                        <widget class="QCheckBox" name="export_checkpoint">
+                         <property name="text">
+                          <string>export checkpoint</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="12" column="1" colspan="3">
+                        <widget class="QLineEdit" name="df_tokenizer_name">
+                         <property name="toolTip">
+                          <string>Pretrained tokenizer name or path if not the same as model_name</string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="1" colspan="3">
+                        <widget class="QLineEdit" name="df_instance_data_dir">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; background-color:#ffffff;&quot;&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:9.8pt; color:#067d17;&quot;&gt;A folder containing the training data of instance images.&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
+                         <property name="text">
+                          <string>G:\training_up_to_5000_steps_UNET_300_text_encoder\TwinRealms-1024\TwinRealms-1024</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="9" column="0">
+                        <widget class="QCheckBox" name="export_safetensors">
+                         <property name="text">
+                          <string>export safetensors</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="27" column="2">
+                        <widget class="QLabel" name="label_274">
+                         <property name="text">
+                          <string>Prior generation precision</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="1">
+                        <widget class="QSpinBox" name="df_resolution">
+                         <property name="toolTip">
+                          <string>The resolution for input images, all the images in the train/validation dataset will be resized to this resolution</string>
+                         </property>
+                         <property name="maximum">
+                          <number>4068</number>
+                         </property>
+                         <property name="singleStep">
+                          <number>64</number>
+                         </property>
+                         <property name="value">
+                          <number>512</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="16" column="3">
+                        <widget class="QSpinBox" name="validation_steps">
+                         <property name="toolTip">
+                          <string>Run validation every X steps. Validation consists of running the prompt</string>
+                         </property>
+                         <property name="maximum">
+                          <number>10000</number>
+                         </property>
+                         <property name="value">
+                          <number>100</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="35" column="1">
+                        <widget class="QDoubleSpinBox" name="lr_power">
+                         <property name="toolTip">
+                          <string>Power factor of the polynomial scheduler.</string>
+                         </property>
+                         <property name="maximum">
+                          <double>100.000000000000000</double>
+                         </property>
+                         <property name="singleStep">
+                          <double>0.100000000000000</double>
+                         </property>
+                         <property name="value">
+                          <double>1.000000000000000</double>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="13" column="0">
+                        <widget class="QLabel" name="label_251">
+                         <property name="text">
+                          <string>Instance prompt</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="34" column="1">
+                        <widget class="QSpinBox" name="lr_num_cycles">
+                         <property name="toolTip">
+                          <string>Number of hard resets of the lr in cosine_with_restarts scheduler.</string>
+                         </property>
+                         <property name="minimum">
+                          <number>1</number>
+                         </property>
+                         <property name="maximum">
+                          <number>500</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="27" column="0">
+                        <widget class="QLabel" name="label_253">
+                         <property name="text">
+                          <string>Prior loss weight</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="18" column="0">
+                        <widget class="QLabel" name="label_258">
+                         <property name="text">
+                          <string>Sample batch size</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="6" column="0">
+                        <widget class="QPushButton" name="df_select_output_folder">
+                         <property name="text">
+                          <string>Output dir</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="21" column="2">
+                        <widget class="QLabel" name="label_259">
+                         <property name="text">
+                          <string>Num train epochs</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="7" column="1" colspan="3">
+                        <widget class="QLineEdit" name="df_logging_dir">
+                         <property name="text">
+                          <string>G:\training_up_to_5000_steps_UNET_300_text_encoder\logs</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="4" column="1" colspan="3">
+                        <widget class="QLineEdit" name="df_class_data_dir">
+                         <property name="toolTip">
+                          <string>A folder containing the training data of class images.</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="39" column="0">
+                        <widget class="QCheckBox" name="df_train_text_encoder">
+                         <property name="toolTip">
+                          <string>Whether to train the text encoder. If set, the text encoder should be float32 precision.</string>
+                         </property>
+                         <property name="text">
+                          <string>Train text encoder</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="16" column="1">
+                        <widget class="QSpinBox" name="num_validation_images">
+                         <property name="toolTip">
+                          <string>Number of images that should be generated during validation with `validation_prompt`.</string>
+                         </property>
+                         <property name="maximum">
+                          <number>10</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="36" column="0">
+                        <widget class="QLabel" name="label_262">
+                         <property name="text">
+                          <string>Gradient accumulation steps</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="8" column="1" colspan="3">
+                        <widget class="QLineEdit" name="checkpoint_filename">
+                         <property name="placeholderText">
+                          <string>Enter a name for the checkpoint to be stored</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="12" column="0">
+                        <widget class="QLabel" name="label_118">
+                         <property name="text">
+                          <string>Tokenizer name</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="15" column="1" colspan="3">
+                        <widget class="QLineEdit" name="validation_prompt">
+                         <property name="toolTip">
+                          <string>A prompt that is used during validation to verify that the model is learning.</string>
+                         </property>
+                         <property name="placeholderText">
+                          <string>a photo of my dog</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="0">
+                        <widget class="QPushButton" name="df_select_images">
+                         <property name="text">
+                          <string>Images dir</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="33" column="3">
+                        <widget class="QSpinBox" name="df_lr_warmup_steps">
+                         <property name="toolTip">
+                          <string>Number of steps for the warmup in the lr scheduler.</string>
+                         </property>
+                         <property name="maximum">
+                          <number>10000000</number>
+                         </property>
+                         <property name="value">
+                          <number>1</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="20" column="2">
+                        <widget class="QLabel" name="label_6">
+                         <property name="text">
+                          <string>Max checkpoints saved</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="20" column="3">
+                        <widget class="QSpinBox" name="checkpoints_total_limit">
+                         <property name="maximum">
+                          <number>500</number>
+                         </property>
+                         <property name="value">
+                          <number>10</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="20" column="0">
+                        <widget class="QLabel" name="label_261">
+                         <property name="text">
+                          <string>Checkpointing steps</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="20" column="1">
+                        <widget class="QSpinBox" name="df_checkpointing_steps">
+                         <property name="maximum">
+                          <number>1000000</number>
+                         </property>
+                         <property name="value">
+                          <number>500</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="28" column="0">
+                        <widget class="QLabel" name="label_263">
+                         <property name="text">
+                          <string>Learning rate (LR)</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="28" column="1">
+                        <widget class="QDoubleSpinBox" name="df_learning_rate">
+                         <property name="toolTip">
+                          <string>Initial learning rate (after the potential warmup period) to use.</string>
+                         </property>
+                         <property name="decimals">
+                          <number>8</number>
+                         </property>
+                         <property name="maximum">
+                          <double>1.000000000000000</double>
+                         </property>
+                         <property name="singleStep">
+                          <double>0.000010000000000</double>
+                         </property>
+                         <property name="value">
+                          <double>0.000005000000000</double>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                 <widget class="QWidget" name="Memory">
+                  <attribute name="title">
+                   <string>Memory</string>
+                  </attribute>
+                  <layout class="QGridLayout" name="gridLayout_6">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
+                   <item row="0" column="0">
+                    <widget class="QFrame" name="frame">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>300</height>
+                      </size>
+                     </property>
+                     <property name="frameShape">
+                      <enum>QFrame::StyledPanel</enum>
+                     </property>
+                     <property name="frameShadow">
+                      <enum>QFrame::Raised</enum>
+                     </property>
+                     <layout class="QGridLayout" name="gridLayout_7">
+                      <item row="2" column="1">
+                       <widget class="QDoubleSpinBox" name="df_adam_beta2">
+                        <property name="decimals">
+                         <number>4</number>
+                        </property>
+                        <property name="maximum">
+                         <double>100.000000000000000</double>
+                        </property>
+                        <property name="singleStep">
+                         <double>0.001000000000000</double>
+                        </property>
+                        <property name="value">
+                         <double>0.999000000000000</double>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="1">
+                       <widget class="QDoubleSpinBox" name="df_adam_beta1">
+                        <property name="decimals">
+                         <number>4</number>
+                        </property>
+                        <property name="maximum">
+                         <double>100.000000000000000</double>
+                        </property>
+                        <property name="singleStep">
+                         <double>0.100000000000000</double>
+                        </property>
+                        <property name="value">
+                         <double>0.900000000000000</double>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="0">
+                       <widget class="QLabel" name="label_270">
+                        <property name="text">
+                         <string>Adam weight decay</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="8" column="0" colspan="2">
+                       <widget class="QCheckBox" name="df_gradient_checkpointing">
+                        <property name="toolTip">
+                         <string>Whether or not to use gradient checkpointing to save memory at the expense of slower backward pass.</string>
+                        </property>
+                        <property name="text">
+                         <string>Gradient checkpointing</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="1">
+                       <widget class="QDoubleSpinBox" name="df_adam_weight_decay">
+                        <property name="maximum">
+                         <double>100.000000000000000</double>
+                        </property>
+                        <property name="singleStep">
+                         <double>0.010000000000000</double>
+                        </property>
+                        <property name="value">
+                         <double>0.010000000000000</double>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="4" column="0">
+                       <widget class="QLabel" name="label_271">
+                        <property name="text">
+                         <string>Adam epsilon</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="4" column="1">
+                       <widget class="QLineEdit" name="df_adam_epsilon">
+                        <property name="text">
+                         <string>1e-08</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="0">
+                       <widget class="QLabel" name="label_269">
+                        <property name="text">
+                         <string>Adam beta2</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="9" column="0">
+                       <spacer name="verticalSpacer_2">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>40</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="label_268">
+                        <property name="text">
+                         <string>Adam beta1</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="6" column="0" colspan="2">
+                       <widget class="QCheckBox" name="set_grads_to_none">
+                        <property name="toolTip">
+                         <string>Save more memory by using setting grads to None instead of zero. Be aware, that this changes certain behaviors, so disable this argument if it causes any problems.</string>
+                        </property>
+                        <property name="text">
+                         <string>Set Grads to None</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="0">
+                       <widget class="QCheckBox" name="df_use_8bit_adam">
+                        <property name="toolTip">
+                         <string>Whether or not to use 8-bit Adam from bitsandbytes</string>
+                        </property>
+                        <property name="text">
+                         <string>use 8bit adam</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="5" column="0">
+                       <widget class="QCheckBox" name="df_enable_xformers_memory_efficient_attention">
+                        <property name="toolTip">
+                         <string>Whether or not to use xformers.</string>
+                        </property>
+                        <property name="text">
+                         <string>Enable xformers</string>
+                        </property>
+                        <property name="checked">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
                 </widget>
                </item>
               </layout>

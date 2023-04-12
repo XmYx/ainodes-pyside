@@ -52,7 +52,6 @@ class aiNodesPlugin:
         gs.system.dreambooth_config = "plugins/training/configs/dreambooth"
         self.signals = Callbacks()
         self.connections()
-        self.load_folder_content()
         self.dreambooth_training = DreamBooth()
         self.showAll = False
         self.training.w.show()
@@ -62,12 +61,7 @@ class aiNodesPlugin:
 
 
     def connections(self):
-        self.training.w.pathInputImages.clicked.connect(self.set_path_to_input_image)
-        self.training.w.logsFolder.clicked.connect(self.set_path_to_logfiles)
-        self.training.w.resumeModel.clicked.connect(self.set_path_to_resume_model)
-        #self.training.w.initEmbeddingManager.clicked.connect(self.set_path_to_init_embedding_manager)
-        self.training.w.Start.clicked.connect(self.start_dreambooth)
-        self.training.w.Stop.clicked.connect(self.stop_dreambooth)
+
         self.training.w.ckpt2diff_start_process.clicked.connect(self.ckpt2diff_start_process)
         self.training.w.ckpt2diff_select_source.clicked.connect(self.ckpt2diff_select_source)
         self.training.w.ckpt2diff_select_destination.clicked.connect(self.ckpt2diff_select_destination)
@@ -325,13 +319,7 @@ class aiNodesPlugin:
         filename = QFileDialog.getExistingDirectory(caption='Dir to Instance Images for training')
         self.training.w.instance_data_dir.setText(filename)
 
-    def load_folder_content(self):
-        self.training.w.base.clear()
-        models = os.listdir(gs.system.dreambooth_config)
-        #self.parent.path_setup.w.activeModel.setText(gs.system.sdPath)
-        for model in models:
-            location = os.path.join(gs.system.dreambooth_config, model)
-            self.training.w.base.addItem(model)
+
 
     @Slot()
     def ckpt2diff_select_source(self):
@@ -673,8 +661,11 @@ class aiNodesPlugin:
             as_checkpoint=self.training.w.export_checkpoint.isChecked(),
             as_safetensors=self.training.w.export_safetensors.isChecked(),
             as_half=self.training.w.as_half.isChecked(),
-            ckpt_filename=self.training.w.checkpoint_filename.text()
-
-
-
-        )
+            ckpt_filename=self.training.w.checkpoint_filename.text(),
+            checkpoints_total_limit=self.training.w.checkpoints_total_limit.value(),
+            dataloader_num_workers=0,
+            offset_noise=self.training.w.offset_noise.isChecked(),
+            set_grads_to_none=self.training.w.set_grads_to_none.isChecked(),
+            validation_steps=self.training.w.validation_steps.value(),
+            num_validation_images=self.training.w.num_validation_images.value(),
+            validation_prompt=self.training.w.validation_prompt.text() if self.training.w.validation_prompt.text() != '' else None)

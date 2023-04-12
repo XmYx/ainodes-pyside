@@ -232,7 +232,7 @@ def convert_to_ckpt(model_path, checkpoint_path, as_half, as_safetensor=False):
     state_dict = {"state_dict": state_dict}
     if as_safetensor:
         checkpoint_path = checkpoint_path + '.safetensors'
-        safetensors.torch.save_file(state_dict, checkpoint_path, metadata={"format": "pt"})
+        safetensors.torch.save_file(state_dict['state_dict'], checkpoint_path, metadata={"format": "pt"})
     else:
         checkpoint_path = checkpoint_path + '.ckpt'
         torch.save(state_dict, checkpoint_path)

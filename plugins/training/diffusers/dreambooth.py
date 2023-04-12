@@ -1390,6 +1390,28 @@ def main(args):
             )
 
     accelerator.end_training()
+    vae.to('cpu', dtype=weight_dtype)
+    unet.to('cpu', dtype=weight_dtype)
+    text_encoder.to('cpu', dtype=weight_dtype)
+    if pipeline:
+        pipeline.to('cpu')
+        del pipeline
+    del accelerator
+    del lr_scheduler
+    del optimizer
+    del train_dataloader
+    del train_dataset
+    del params_to_optimize
+    del tokenizer
+    del text_encoder_cls
+    del noise_scheduler
+    del text_encoder
+    del vae
+    del unet
+    torch_gc
+    if args.as_checkpoint or args.as_safetensors:
+        output_path = os.path.join(args.output_dir, args.ckpt_filename)
+        convert_to_ckpt(args.output_dir, output_path, as_half=args.as_half, as_safetensor=args.as_safetensors)
 
 
 
@@ -1458,7 +1480,15 @@ def run_diff_dreambooth(
         as_checkpoint=True,
         as_safetensors=False,
         as_half=True,
-        ckpt_filename='checkpoint'): # Whether to use xformers.
+        ckpt_filename='checkpoint',
+
+        checkpoints_total_limit=None,
+        dataloader_num_workers=0,
+        offset_noise=False,
+        set_grads_to_none=False,
+        validation_steps=100,
+        num_validation_images=1,
+        validation_prompt='test'): # Whether to use xformers.
     args=SimpleNamespace(**locals())
     main(args)
 

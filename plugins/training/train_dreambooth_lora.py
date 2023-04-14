@@ -948,12 +948,15 @@ def main(args):
                     pipeline(args.validation_prompt, num_inference_steps=25, generator=generator).images[0]
                     for _ in range(args.num_validation_images)
                 ]
-
+                n = 0
                 for tracker in accelerator.trackers:
+                    print(f'tracker.name {tracker.name}' )
                     if tracker.name == "tensorboard":
+                        n = n + 1
                         np_images = np.stack([np.asarray(img) for img in images])
                         tracker.writer.add_images("validation", np_images, epoch, dataformats="NHWC")
                     if tracker.name == "wandb":
+                        n = n + 1
                         tracker.log(
                             {
                                 "validation": [
@@ -962,6 +965,14 @@ def main(args):
                                 ]
                             }
                         )
+                print(f'n = {n}')
+                if n == 0:
+                    i = 0
+                    for image in images:
+                        print('save image',args.logging_dir,f'{str(epoch)}_{str(i)}_{args.validation_prompt}.png' )
+                        image.save(os.path.join(args.logging_dir,f'{str(epoch)}_{str(i)}_{args.validation_prompt}.png'))
+                        i = i + 1
+                images = []
 
                 del pipeline
                 torch.cuda.empty_cache()

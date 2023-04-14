@@ -264,9 +264,9 @@ class aiNodesPlugin:
         args.num_train_epochs = self.training.w.num_train_epochs.value()
         args.max_train_steps = self.training.w.max_train_steps.value()
         args.adam_epsilon = float(self.training.w.adam_epsilon.text())
-        seed = self.training.w.seed.text()
+        seed = seed_everything(int(self.training.w.seed.text()) if self.training.w.seed.text() != '' else -1)
         if seed == '':
-            args.seed = None
+            args.seed = -1
         else:
             args.seed = int(seed)
         args.gradient_accumulation_steps = self.training.w.gradient_accumulation_steps.value()
@@ -286,6 +286,19 @@ class aiNodesPlugin:
         args.hub_model_id = None
         args.tokenizer_name = None
         args.revision = None
+
+        args.checkpoints_total_limit = 10
+        args.report_to = None
+        args.enable_xformers_memory_efficient_attention = True
+        args.allow_tf32 = False
+        args.dataloader_num_workers = 0
+        args.lr_num_cycles = 0
+        args.lr_power = 1.0
+        args.resume_from_checkpoint = None
+        args.checkpointing_steps = 500
+        args.validation_prompt = 'a photo of a werner blaster'
+        args.validation_epochs = 1
+        args.num_validation_images = 1
 
         return args
 

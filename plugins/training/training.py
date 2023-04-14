@@ -13,7 +13,7 @@ gs = singleton
 
 from plugins.training.dreambooth_class import DreamBooth
 from plugins.training.sd_to_diffusers import run_translation
-from plugins.training.train_lora_dreambooth import run_lora_dreambooth
+from plugins.training.train_dreambooth_lora import run_lora_dreambooth
 from plugins.training.diffusers.cli_lora_add import add as lom_merge_models
 from plugins.training.diffuser_to_sd import diff2sd
 from plugins.training.txt_inv.textual_inversion import create_txt_inv
@@ -628,7 +628,7 @@ class aiNodesPlugin:
             gradient_accumulation_steps=self.training.w.df_gradient_accumulation_steps.value(),          # Number of updates steps to accumulate before performing a backward/update pass.
             gradient_checkpointing=self.training.w.df_gradient_checkpointing.isChecked(),           # Whether or not to use gradient checkpointing to save memory at the expense of slower backward pass.
             learning_rate=self.training.w.df_learning_rate.value(),                     # Initial learning rate (after the potential warmup period) to use.
-            scale_lr=self.training.w.df_scale_lr.isChecked(),                         # Scale the learning rate by the number of GPUs, gradient accumulation steps, and batch size.
+            scale_lr=False,#self.training.w.df_scale_lr.isChecked(),                         # Scale the learning rate by the number of GPUs, gradient accumulation steps, and batch size.
             lr_scheduler=self.training.w.df_lr_scheduler.currentText(),                # The scheduler type to use. Choose between ["linear", "cosine", "cosine_with_restarts", "polynomial",
             # "constant", "constant_with_warmup"]
             lr_warmup_steps=self.training.w.df_lr_warmup_steps.value(),                      # Number of steps for the warmup in the lr scheduler.
@@ -666,6 +666,7 @@ class aiNodesPlugin:
             dataloader_num_workers=0,
             offset_noise=self.training.w.offset_noise.isChecked(),
             set_grads_to_none=self.training.w.set_grads_to_none.isChecked(),
-            validation_steps=self.training.w.validation_steps.value(),
-            num_validation_images=self.training.w.num_validation_images.value(),
-            validation_prompt=self.training.w.validation_prompt.text() if self.training.w.validation_prompt.text() != '' else None)
+            validation_steps=0,#self.training.w.validation_steps.value(),
+            num_validation_images=0, #self.training.w.num_validation_images.value(),
+            validation_prompt=None#self.training.w.validation_prompt.text() if self.training.w.validation_prompt.text() != '' else None
+         )

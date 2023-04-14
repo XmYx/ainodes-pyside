@@ -264,18 +264,15 @@ class aiNodesPlugin:
         args.num_train_epochs = self.training.w.num_train_epochs.value()
         args.max_train_steps = self.training.w.max_train_steps.value()
         args.adam_epsilon = float(self.training.w.adam_epsilon.text())
-        seed = seed_everything(int(self.training.w.seed.text()) if self.training.w.seed.text() != '' else -1)
-        if seed == '':
-            args.seed = -1
-        else:
-            args.seed = int(seed)
+        args.seed = seed_everything(int(self.training.w.seed.text()) if self.training.w.seed.text() != '' else -1)
+
         args.gradient_accumulation_steps = self.training.w.gradient_accumulation_steps.value()
         args.max_grad_norm = self.training.w.max_grad_norm.value()
         args.mixed_precision = self.training.w.mixed_precision.currentText()
         args.center_crop = self.training.w.center_crop.isChecked()
         args.train_text_encoder = self.training.w.train_text_encoder.isChecked()
         args.gradient_checkpointing = self.training.w.gradient_checkpointing.isChecked()
-        args.scale_lr = self.training.w.scale_lr.isChecked()
+        args.scale_lr = False #self.training.w.scale_lr.isChecked()
         args.use_8bit_adam = self.training.w.use_8bit_adam.isChecked()
         args.adam_weight_decay = self.training.w.adam_weight_decay.value()
         args.save_steps = self.training.w.save_steps.value()
@@ -287,18 +284,18 @@ class aiNodesPlugin:
         args.tokenizer_name = None
         args.revision = None
 
-        args.checkpoints_total_limit = 10
+        args.checkpoints_total_limit = self.training.w.checkpoints_total_limit.value()
         args.report_to = None
         args.enable_xformers_memory_efficient_attention = True
-        args.allow_tf32 = False
+        args.allow_tf32 = self.training.w.use_8bit_adam.isChecked()
         args.dataloader_num_workers = 0
-        args.lr_num_cycles = 0
-        args.lr_power = 1.0
+        args.lr_num_cycles = self.training.w.allow_tf32.value()
+        args.lr_power = self.training.w.lr_power.value()
         args.resume_from_checkpoint = None
-        args.checkpointing_steps = 500
-        args.validation_prompt = 'a photo of a werner blaster'
-        args.validation_epochs = 1
-        args.num_validation_images = 1
+        args.checkpointing_steps = self.training.w.checkpointing_steps.value()
+        args.validation_prompt = self.training.w.validation_prompt.text()
+        args.validation_epochs = self.training.w.validation_epochs.value()
+        args.num_validation_images = self.training.w.num_validation_images.value()
 
         return args
 
@@ -671,15 +668,15 @@ class aiNodesPlugin:
             # 1.10.and an Nvidia Ampere GPU.  Default to  fp16 if a GPU is available else fp32.
             local_rank=-1,                          # For distributed training: local_rank
             enable_xformers_memory_efficient_attention=self.training.w.df_enable_xformers_memory_efficient_attention.isChecked(),
-            as_checkpoint=self.training.w.export_checkpoint.isChecked(),
-            as_safetensors=self.training.w.export_safetensors.isChecked(),
-            as_half=self.training.w.as_half.isChecked(),
-            ckpt_filename=self.training.w.checkpoint_filename.text(),
-            checkpoints_total_limit=self.training.w.checkpoints_total_limit.value(),
+            as_checkpoint=self.training.w.df_export_checkpoint.isChecked(),
+            as_safetensors=self.training.w.df_export_safetensors.isChecked(),
+            as_half=self.training.w.df_as_half.isChecked(),
+            ckpt_filename=self.training.w.df_checkpoint_filename.text(),
+            checkpoints_total_limit=self.training.w.df_checkpoints_total_limit.value(),
             dataloader_num_workers=0,
-            offset_noise=self.training.w.offset_noise.isChecked(),
-            set_grads_to_none=self.training.w.set_grads_to_none.isChecked(),
-            validation_steps=0,#self.training.w.validation_steps.value(),
-            num_validation_images=0, #self.training.w.num_validation_images.value(),
-            validation_prompt=None#self.training.w.validation_prompt.text() if self.training.w.validation_prompt.text() != '' else None
+            offset_noise=self.training.w.df_offset_noise.isChecked(),
+            set_grads_to_none=self.training.w.df_set_grads_to_none.isChecked(),
+            validation_steps=self.training.w.df_validation_steps.value(),
+            num_validation_images=self.training.w.df_num_validation_images.value(),
+            validation_prompt=self.training.w.df_validation_prompt.text() if self.training.w.df_validation_prompt.text() != '' else None
          )

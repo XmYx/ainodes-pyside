@@ -3,7 +3,7 @@ import os
 from PySide6 import QtUiTools, QtCore
 from PySide6.QtCore import QFile, QObject, QEasingCurve, Signal
 from PySide6.QtGui import QCursor, Qt
-from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QWidget, QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox, QFileDialog
 
 from backend.singleton import singleton
 from backend.sqlite import model_db_civitai
@@ -22,6 +22,7 @@ class UniControl(QObject):
         loader = QtUiTools.QUiLoader()
         file = QFile("frontend/ui/unicontrol.ui")
         file.open(QFile.ReadOnly)
+
         self.w = loader.load(file)
         file.close()
         self.initAnimation()
@@ -108,6 +109,16 @@ class UniControl(QObject):
     def set_prompt(self, prompt):
         self.w.prompts.setPlainText(prompt)
 
+    def add_input_widgets_as_attributes(self):
+        # get input widgets from parent widget
+        input_widgets = [
+            widget for widget in self.findChildren(QWidget)
+            if isinstance(widget, (QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox))
+        ]
+
+        # add input widgets as attributes of the widget
+        for widget in input_widgets:
+            setattr(self, widget.objectName(), widget)
     def stop_all(self):
         gs.stop_all = True
 

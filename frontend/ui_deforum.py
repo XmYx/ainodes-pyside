@@ -80,6 +80,9 @@ class Deforum_UI(QObject):
         if getattr(gs.system, 'use_comfyui', False):
             self.run_comfyui(image_callback)
             return
+        if getattr(gs.system, 'native_model', ''):
+            self.run_modern(image_callback)
+            return
         self.deforum_six.run_deforum_six(W=int(self.params.W),
                                          H=int(self.params.H),
                                          seed=int(self.params.seed) if self.params.seed != '' else self.params.seed,
@@ -258,16 +261,98 @@ class Deforum_UI(QObject):
 
     def run_comfyui(self, image_callback):
         from backend.comfyui.client import ComfyUIClient, ComfyUIError, run_txt2img_params
-        client = ComfyUIClient(getattr(gs.system, 'comfyui_url', None))
+        client = ComfyUIClient(getattr(gs.system, 'comfyui_url', None),
+                               compile=bool(getattr(gs.system, 'comfyui_compile', False)))
         self.status_bar_update(f'Generating on ComfyUI at {client.base_url}')
         try:
             images = run_txt2img_params(self.params, client, image_callback=image_callback,
                                         should_stop=lambda: gs.stop_all,
                                         checkpoint=getattr(gs.system, 'comfyui_checkpoint', '') or None)
             self.status_bar_update(f'ComfyUI finished, {len(images)} image(s)')
+            self.signals.image_ready_in_ui.emit()  # advances a running canvas batch, like the native path
         except (ComfyUIError, OSError) as e:
             print('ComfyUI generation failed:', e)
             self.status_bar_update(f'ComfyUI generation failed: {e}')
+
+    def run_modern(self, image_callback):
+        """txt2img with a modern diffusers model (FLUX.2 / FLUX.3 / Krea 2), placed by the memory planner."""
+        from backend import modern_models
+        from backend.comfyui.client import split_prompts
+        key = gs.system.native_model
+        spec = modern_models.MODELS[key]
+        runner = modern_models.runner(compile=bool(getattr(gs.system, 'native_compile', False)))
+        seed = int(self.params.seed) if str(self.params.seed) not in ('', 'None') else seeder.get_strong_seed(4294967295)
+        try:
+            for prompt in split_prompts(self.params.prompts):
+                self.status_bar_update(f'Generating with {spec.label}')
+                for image in runner.txt2img(key, prompt, width=self.params.W, height=self.params.H, seed=seed):
+                    if self.params.save_samples and self.params.outdir:
+                        os.makedirs(self.params.outdir, exist_ok=True)
+                        image.save(os.path.join(self.params.outdir, f"{time.time():.0f}_{seed}_{key}.png"))
+                    image_callback(image)
+                if self.params.seed_behavior == 'iter':
+                    seed += 1
+            plan = runner.plan
+            self.status_bar_update(f'{spec.label} finished ({plan.strategy}{", fp8 weights" if plan.fp8_storage else ""})')
+        except Exception as e:
+            print(f'{spec.label} failed:', e)
+            self.status_bar_update(f'{spec.label} failed: {e}')
+        self.signals.image_ready_in_ui.emit()
+
+    def tile_edges(self):
+        """Sides of the current canvas tile that border other content (left, top, right, bottom)."""
+        return getattr(self.parent.canvas.canvas, 'tile_inner_edges', (True, True, True, True))
+
+    def run_modern_outpaint(self, params):
+        """Canvas inpaint / outpaint of the prepared tile with a modern diffusers model."""
+        from backend import modern_models
+        from backend.comfyui import inpaint as blend
+        from backend.comfyui.client import split_prompts
+        key = gs.system.native_model
+        runner = modern_models.runner(compile=bool(getattr(gs.system, 'native_compile', False)))
+        tmp = gs.system.outpaint_tmp_dir
+        image = Image.open(os.path.join(tmp, "outpaint.png")).convert("RGBA")
+        mask = blend.canvas_mask(Image.open(os.path.join(tmp, "outpaint_mask.png")).convert("RGBA"))
+        seed = int(params.seed) if str(params.seed) not in ('', 'None') else seeder.get_strong_seed(4294967295)
+        try:
+            result = runner.inpaint(key, image, mask, ", ".join(split_prompts(params.prompts)), seed=seed,
+                                    fade_edges=self.tile_edges())
+        except Exception as e:
+            print('outpaint failed:', e)
+            self.status_bar_update(f'Outpaint failed: {e}')
+            return
+        os.makedirs(gs.system.outpaint_out_dir, exist_ok=True)
+        result.save(os.path.join(gs.system.outpaint_out_dir, f"{time.time():.0f}_{seed}_{key}_outpaint.png"))
+        self.parent.ui_image.image_preview_signal_op(result)
+        self.signals.image_ready_in_ui.emit()
+
+    def run_comfyui_outpaint(self, params):
+        """Canvas inpaint / outpaint of the prepared tile through ComfyUI."""
+        from backend.comfyui.client import ComfyUIClient, ComfyUIError, split_prompts
+        from backend.comfyui import inpaint as comfy_inpaint
+        client = ComfyUIClient(getattr(gs.system, 'comfyui_url', None),
+                               compile=bool(getattr(gs.system, 'comfyui_compile', False)))
+        tmp = gs.system.outpaint_tmp_dir
+        image = Image.open(os.path.join(tmp, "outpaint.png")).convert("RGBA")
+        mask = comfy_inpaint.canvas_mask(Image.open(os.path.join(tmp, "outpaint_mask.png")).convert("RGBA"))
+        seed = int(params.seed) if str(params.seed) not in ('', 'None') else seeder.get_strong_seed(4294967295)
+        prompt = ", ".join(split_prompts(params.prompts))
+        self.status_bar_update(f'Outpainting on ComfyUI at {client.base_url}')
+        try:
+            result = comfy_inpaint.inpaint(client, image, mask, prompt,
+                                           checkpoint=getattr(gs.system, 'comfyui_checkpoint', '') or None,
+                                           negative_prompt=params.negative_prompts or "", steps=int(params.steps),
+                                           cfg=float(params.scale), seed=seed, sampler=params.sampler,
+                                           should_stop=lambda: gs.stop_all, fade_edges=self.tile_edges())
+        except (ComfyUIError, OSError) as e:
+            print('ComfyUI outpaint failed:', e)
+            self.status_bar_update(f'ComfyUI outpaint failed: {e}')
+            return
+        os.makedirs(gs.system.outpaint_out_dir, exist_ok=True)
+        result.save(os.path.join(gs.system.outpaint_out_dir, f"{time.time():.0f}_{seed}_comfyui_outpaint.png"))
+        self.status_bar_update('ComfyUI outpaint finished')
+        self.parent.ui_image.image_preview_signal_op(result)
+        self.signals.image_ready_in_ui.emit()  # advances a running canvas batch, like the native path
 
     def multi_dim_loop(self, image_callback):
         ints_vals=['W','H','seed','steps', 'n_batch','n_samples','mean_scale','var_scale','exposure_scale','exposure_target','colormatch_n_colors', 'ignore_sat_weight','clip_scale','aesthetics_scale','cutn', 'init_mse_scale', 'blue_scale',]
@@ -528,6 +613,14 @@ class Deforum_UI(QObject):
             if params == None:
                 params = self.parent.sessionparams.update_params()
                 self.parent.params = self.parent.sessionparams.update_params()
+            if getattr(gs.system, 'use_comfyui', False):
+                self.parent.params.canvas_single = True
+                self.run_comfyui_outpaint(params)
+                return
+            if getattr(gs.system, 'native_model', ''):
+                self.parent.params.canvas_single = True
+                self.run_modern_outpaint(params)
+                return
             if 'inpaint' in gs.system.sd_model_file:
                 params.with_inpaint = True
                 self.parent.with_inpaint = True
@@ -545,7 +638,7 @@ class Deforum_UI(QObject):
                 make_grid = self.parent.widgets[self.parent.current_widget].w.make_grid.isChecked()
             #sampler_name = translate_sampler(self.parent.sampler.w.sampler.currentText())
             sampler_name = "ddim"
-            init_image = os.path.join(gs.system.outpaint_tmp.dir,"outpaint.png")
+            init_image = os.path.join(gs.system.outpaint_tmp_dir,"outpaint.png")
             gs.T = self.parent.widgets[self.parent.current_widget].w.gradient_steps.value()
             gs.lr = self.parent.widgets[self.parent.current_widget].w.gradient_scale.value()
             gs.slerp = self.parent.widgets[self.parent.current_widget].w.slerp.isChecked()
@@ -587,8 +680,9 @@ class Deforum_UI(QObject):
                                               with_inpaint=with_inpaint)
 
             # self.run_txt2img_lm(init_img=init_image, init_mask='outpaint_mask.png')
-        except:
-            pass
+        except Exception as e:
+            print('outpaint failed:', e)
+            self.status_bar_update(f'Outpaint failed: {e}')
         finally:
             self.signals.all_done.emit()
 

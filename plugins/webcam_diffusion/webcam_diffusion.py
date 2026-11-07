@@ -88,11 +88,8 @@ class aiNodesPlugin():
         #subprocess.Popen(cmd)
         cmd = ["pip", "install", "sk-video", "--upgrade"]
         subprocess.Popen(cmd)
-        sshFile = "frontend/style/elegantDark.stylesheet"
         self.widget = WebcamWidget()
         self.widget.setWindowTitle("Webcam Diffusion")
-        with open(sshFile, "r") as fh:
-            self.widget.setStyleSheet(fh.read())
         self.widget.show()
 
 
@@ -215,9 +212,6 @@ class WebcamWidget(QtWidgets.QWidget):
         prevlayout.addWidget(self.fullscreen_button)
         prevlayout.addWidget(self.image_label)
         self.image_dialog.setLayout(prevlayout)
-        sshFile = "frontend/style/QTDark.stylesheet"
-        with open(sshFile, "r") as fh:
-            self.image_dialog.setStyleSheet(fh.read())
         self.image_dialog.show()
         self.loadedmodel = None
         #gs.models["sd"] = None

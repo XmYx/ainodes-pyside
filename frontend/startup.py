@@ -35,14 +35,11 @@ def run_app():
     icon = QIcon('frontend/main/splash_2.png')
     from frontend.mainwindow import MainWindow
 
-    sshFile="frontend/style/elegantDark.stylesheet"
 
     mainWindow = MainWindow()
 
     mainWindow.setWindowTitle("aiNodes")
     mainWindow.setWindowIcon(QIcon('frontend/main/splash_2.png'))
-    with open(sshFile,"r") as fh:
-        mainWindow.setStyleSheet(fh.read())
 
     mainWindow.show()
 

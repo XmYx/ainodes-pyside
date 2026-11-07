@@ -34,9 +34,8 @@ def get_optimal_device():
 
 
 def torch_gc():
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-        torch.cuda.ipc_collect()
+    from backend.hardware import empty_cache
+    empty_cache()
 
 
 def enable_tf32():
@@ -90,12 +89,9 @@ def mps_contiguous_to(input_tensor, device): return mps_contiguous(input_tensor,
 
 
 def choose_torch_device() -> str:
-    '''Convenience routine for guessing which GPU device to run model on'''
-    if torch.cuda.is_available():
-        return 'cuda'
-    if hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
-        return 'mps'
-    return 'cpu'
+    '''Best device type for the models: cuda (NVIDIA and AMD ROCm), xpu (Intel), mps (Apple) or cpu'''
+    from backend.hardware import detect
+    return detect().primary.device.split(':')[0]
 
 def choose_autocast_device(device):
     '''Returns an autocast compatible device from a torch device'''

@@ -441,7 +441,9 @@ def generate(args, root, frame=0, return_latent=False, return_sample=False, retu
                         try:
                             uc, c = get_uc_and_c_new(prompts,args.negative_prompts, gs.models["sd"], args, frame)
                         except Exception as e:
-                            print('Prompt processing falied: ', e)
+                            import traceback
+                            print('Prompt processing failed: ', e)
+                            traceback.print_exc(limit=12)
                             return []
 
                     if args.scale == 1.0:

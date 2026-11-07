@@ -10,6 +10,7 @@ import backend.hypernetworks.modules.textual_inversion.textual_inversion
 import ldm.modules.attention
 import ldm.modules.diffusionmodules.model
 import ldm.modules.diffusionmodules.util
+import ldm.modules.encoders.modules  # used below as ldm.modules.encoders.modules.*
 from backend.devices import torch_gc, choose_torch_device
 from backend.hypernetworks.modules import prompt_parser, sd_hijack_optimizations, xlmr, sd_hijack_xlmr, sd_hijack_clip, \
     sd_hijack_open_clip
@@ -108,12 +109,13 @@ class StableDiffusionModelHijack:
             model_embeddings.token_embedding = EmbeddingsWithFixes(model_embeddings.word_embeddings, self)
             m.cond_stage_model = sd_hijack_xlmr.FrozenXLMREmbedderWithCustomWords(m.cond_stage_model, self)
 
-        elif type(m.cond_stage_model) == ldm.modules.encoders.modules.FrozenCLIPEmbedder:
+        # ldm, ldm_v2 and ldm_outpaint each define their own embedder classes, so match by name
+        elif type(m.cond_stage_model).__name__ == "FrozenCLIPEmbedder":
             model_embeddings = m.cond_stage_model.transformer.text_model.embeddings
             model_embeddings.token_embedding = EmbeddingsWithFixes(model_embeddings.token_embedding, self)
             m.cond_stage_model = sd_hijack_clip.FrozenCLIPEmbedderWithCustomWords(m.cond_stage_model, self)
 
-        elif type(m.cond_stage_model) == ldm.modules.encoders.modules.FrozenOpenCLIPEmbedder:
+        elif type(m.cond_stage_model).__name__ == "FrozenOpenCLIPEmbedder":
             m.cond_stage_model.model.token_embedding = EmbeddingsWithFixes(m.cond_stage_model.model.token_embedding, self)
             m.cond_stage_model = sd_hijack_open_clip.FrozenOpenCLIPEmbedderWithCustomWords(m.cond_stage_model, self)
 

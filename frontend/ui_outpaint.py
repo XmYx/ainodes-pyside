@@ -296,7 +296,7 @@ class Outpainting:
 
         self.rparams = self.parent.sessionparams.update_params()
         # print(self.tempsize_int)
-        prompt_series = pd.Series([np.nan for a in range(self.tempsize_int)])
+        prompt_series = pd.Series([np.nan for a in range(self.tempsize_int)], dtype=object)
         # print(prompt_series)
         if self.rparams.keyframes == '':
             self.rparams.keyframes = "0"

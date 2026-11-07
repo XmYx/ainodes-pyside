@@ -195,6 +195,11 @@ class FrozenCLIPEmbedderWithCustomWordsBase(torch.nn.Module):
 
         return batch_chunks, token_count
 
+    def encode(self, texts):
+        # the ldm embedders expose encode() == forward(); inpaint samplers call it directly,
+        # sometimes with a single string (the empty unconditional prompt)
+        return self([texts] if isinstance(texts, str) else texts)
+
     def forward(self, texts):
         """
         Accepts an array of texts; Passes texts through transformers network to create a tensor with numerical representation of those texts.
@@ -301,7 +306,10 @@ class FrozenCLIPEmbedderWithCustomWords(FrozenCLIPEmbedderWithCustomWordsBase):
     def encode_with_transformers(self, tokens):
         outputs = self.wrapped.transformer(input_ids=tokens, output_hidden_states=-gs.CLIP_stop_at_last_layers)
 
-        if gs.CLIP_stop_at_last_layers > 1:
+        if torch.is_tensor(outputs):
+            # the textual-inversion embedder (ldm_outpaint) returns the final normed state; no CLIP skip there
+            z = outputs
+        elif gs.CLIP_stop_at_last_layers > 1:
             z = outputs.hidden_states[-gs.CLIP_stop_at_last_layers]
             z = self.wrapped.transformer.text_model.final_layer_norm(z)
         else:

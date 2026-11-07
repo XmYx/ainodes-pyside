@@ -715,7 +715,7 @@ class DeforumSix:
         root.half_precision = True
         # Mod 2, animation prompt parsing
         if anim_args.animation_mode != 'None':
-            prompt_series = pd.Series([np.nan for a in range(max_frames)])
+            prompt_series = pd.Series([np.nan for a in range(max_frames)], dtype=object)
             if keyframes == '':
                 keyframes = "0"
             prom = prompts
@@ -1155,7 +1155,9 @@ class DeforumSix:
                     masked_image_for_blend=masked_image_for_blend,
                     callback=step_callback)
             except Exception as e:
+                import traceback
                 print('inpainting caused an error: ', e)
+                traceback.print_exc(limit=-8)
                 result = -1
             if result != -1:
                 fpath = os.path.join(sample_path, f"{base_name}_{base_count:05}.png")

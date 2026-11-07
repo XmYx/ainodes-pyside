@@ -22,6 +22,8 @@ STAMP = os.path.join(VENV, ".ainodes-install")
 PYTHON_VERSION = "3.12"
 SUPPORTED = ((3, 10), (3, 12))
 TORCH_CUDA_INDEX = "https://download.pytorch.org/whl/cu128"
+TORCH_ROCM_INDEX = "https://download.pytorch.org/whl/rocm7.1"
+TORCH_XPU_INDEX = "https://download.pytorch.org/whl/xpu"
 TORCH_CPU_INDEX = "https://download.pytorch.org/whl/cpu"
 
 
@@ -40,15 +42,53 @@ def venv_python():
     return os.path.join(VENV, "bin", "python")
 
 
+def gpu_vendors():
+    """PCI display vendors present: nvidia, amd, intel (best effort, no torch needed)."""
+    vendors = set()
+    if shutil.which("nvidia-smi"):
+        vendors.add("nvidia")
+    if shutil.which("rocminfo") or shutil.which("rocm-smi") or os.path.exists("/opt/rocm"):
+        vendors.add("amd")
+    ids = {"0x10de": "nvidia", "0x1002": "amd", "0x8086": "intel"}
+    drm = "/sys/class/drm"
+    if os.path.isdir(drm):
+        for card in os.listdir(drm):
+            path = os.path.join(drm, card, "device", "vendor")
+            if card.startswith("card") and "-" not in card and os.path.exists(path):
+                vendors.add(ids.get(open(path).read().strip(), "other"))
+    if os.name == "nt":
+        try:
+            out = subprocess.run(["powershell", "-NoProfile", "-Command",
+                                  "(Get-CimInstance Win32_VideoController).Name"],
+                                 capture_output=True, text=True, timeout=20).stdout.lower()
+            for key, vendor in (("nvidia", "nvidia"), ("radeon", "amd"), ("amd", "amd"), ("arc", "intel")):
+                if key in out:
+                    vendors.add(vendor)
+        except Exception:
+            pass
+    return vendors
+
+
 def torch_index(force_cpu=False):
-    """Wheel index for torch: CUDA when an NVIDIA GPU is present, PyPI on macOS (MPS)."""
+    """Wheel index for torch, by GPU: NVIDIA CUDA, AMD ROCm (Linux), Intel XPU, macOS PyPI (MPS)."""
     if os.environ.get("AINODES_TORCH_INDEX"):
         return os.environ["AINODES_TORCH_INDEX"]
     if platform.system() == "Darwin":
         return ""
-    if force_cpu or not shutil.which("nvidia-smi"):
+    if force_cpu:
         return TORCH_CPU_INDEX
-    return TORCH_CUDA_INDEX
+    vendors = gpu_vendors()
+    if "nvidia" in vendors:
+        return TORCH_CUDA_INDEX
+    if "amd" in vendors and platform.system() == "Linux":
+        return TORCH_ROCM_INDEX
+    if "intel" in vendors:
+        # integrated Intel graphics also match; XPU wheels fall back to CPU cleanly there
+        return TORCH_XPU_INDEX
+    if "amd" in vendors:
+        log("AMD GPU on Windows: PyTorch has no ROCm wheels there, using CPU. "
+            "Use the ComfyUI backend (ComfyUI-Zluda / ROCm) for GPU speed.")
+    return TORCH_CPU_INDEX
 
 
 def install_fingerprint(index):

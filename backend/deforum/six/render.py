@@ -267,7 +267,7 @@ def render_animation(args, anim_args, animation_prompts, root, image_callback=No
         args.timestring = anim_args.resume_timestring
 
     # expand prompts out to per-frame
-    prompt_series = pd.Series([np.nan for a in range(anim_args.max_frames)])
+    prompt_series = pd.Series([np.nan for a in range(anim_args.max_frames)], dtype=object)
     for i, prompt in animation_prompts.items():
         prompt_series[i] = prompt
     prompt_series = prompt_series.ffill().bfill()

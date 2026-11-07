@@ -368,16 +368,22 @@ class FrozenCLIPEmbedder(AbstractEncoder):
                 if output_hidden_states:
                     encoder_states = encoder_states + (hidden_states,)
 
-                layer_outputs = encoder_layer(
-                    hidden_states,
-                    attention_mask,
-                    causal_attention_mask,
-                    output_attentions=output_attentions,
-                )
+                if "causal_attention_mask" in encoder_layer.forward.__code__.co_varnames:
+                    layer_outputs = encoder_layer(
+                        hidden_states,
+                        attention_mask,
+                        causal_attention_mask,
+                        output_attentions=output_attentions,
+                    )
+                else:
+                    # transformers >= 5: one additive mask, layer returns a tensor
+                    mask = causal_attention_mask if attention_mask is None else \
+                        (attention_mask if causal_attention_mask is None else attention_mask + causal_attention_mask)
+                    layer_outputs = encoder_layer(hidden_states, mask)
 
-                hidden_states = layer_outputs[0]
+                hidden_states = layer_outputs[0] if isinstance(layer_outputs, tuple) else layer_outputs
 
-                if output_attentions:
+                if output_attentions and isinstance(layer_outputs, tuple):
                     all_attentions = all_attentions + (layer_outputs[1],)
 
             if output_hidden_states:

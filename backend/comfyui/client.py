@@ -52,36 +52,15 @@ def pick_checkpoint(checkpoints):
     return (usable or checkpoints)[0]
 
 
-def build_txt2img_workflow(prompt, checkpoint, negative_prompt="", width=512, height=512,
-                           steps=20, cfg=7.0, seed=None, sampler="euler", scheduler="normal",
-                           batch_size=1, filename_prefix="aiNodes"):
-    """Return a ComfyUI API-format graph for a plain checkpoint txt2img run."""
-    if seed is None or seed == "" or int(seed) < 0:
-        seed = random.randint(0, 2 ** 32 - 1)
-    # ComfyUI latents must be multiples of 8
-    width, height = int(width) // 8 * 8, int(height) // 8 * 8
-    return {
-        "1": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": checkpoint}},
-        "2": {"class_type": "CLIPTextEncode", "inputs": {"text": prompt, "clip": ["1", 1]}},
-        "3": {"class_type": "CLIPTextEncode", "inputs": {"text": negative_prompt or "", "clip": ["1", 1]}},
-        "4": {"class_type": "EmptyLatentImage",
-              "inputs": {"width": width, "height": height, "batch_size": int(batch_size)}},
-        "5": {"class_type": "KSampler",
-              "inputs": {"model": ["1", 0], "positive": ["2", 0], "negative": ["3", 0],
-                         "latent_image": ["4", 0], "seed": int(seed), "steps": int(steps),
-                         "cfg": float(cfg), "sampler_name": comfy_sampler(sampler),
-                         "scheduler": scheduler, "denoise": 1.0}},
-        "6": {"class_type": "VAEDecode", "inputs": {"samples": ["5", 0], "vae": ["1", 2]}},
-        "7": {"class_type": "SaveImage", "inputs": {"images": ["6", 0], "filename_prefix": filename_prefix}},
-    }
-
-
 class ComfyUIClient:
-    def __init__(self, base_url=DEFAULT_URL, timeout=10, session=None):
+    def __init__(self, base_url=DEFAULT_URL, timeout=10, session=None, compile=False):
         self.base_url = (base_url or DEFAULT_URL).rstrip("/")
         self.timeout = timeout
         self.session = session or requests.Session()
         self.client_id = uuid.uuid4().hex
+        self.compile = compile
+        self._available = None
+        self._hardware = None
 
     def _get(self, path, **kwargs):
         response = self.session.get(f"{self.base_url}{path}", timeout=self.timeout, **kwargs)
@@ -126,6 +105,15 @@ class ComfyUIClient:
             time.sleep(poll)
         raise ComfyUIError(f"timed out after {max_wait}s waiting for {prompt_id}")
 
+    def free_memory(self):
+        """Ask ComfyUI to unload its models so another backend can use the VRAM."""
+        try:
+            self.session.post(f"{self.base_url}/free", timeout=self.timeout,
+                              json={"unload_models": True, "free_memory": True})
+            return True
+        except requests.RequestException:
+            return False
+
     def interrupt(self):
         try:
             self.session.post(f"{self.base_url}/interrupt", timeout=self.timeout)
@@ -143,12 +131,66 @@ class ComfyUIClient:
                 images.append(Image.open(io.BytesIO(data)).convert("RGB"))
         return images
 
-    def txt2img(self, prompt, checkpoint=None, should_stop=None, **kwargs):
-        if not checkpoint:
-            checkpoint = pick_checkpoint(self.list_checkpoints())
-        workflow = build_txt2img_workflow(prompt, checkpoint, **kwargs)
+    def upload_image(self, image, name, subfolder="ainodes"):
+        """Upload a PIL image to ComfyUI's input folder; returns the name LoadImage expects."""
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+        response = self.session.post(f"{self.base_url}/upload/image", timeout=self.timeout,
+                                     files={"image": (name, buffer.getvalue(), "image/png")},
+                                     data={"subfolder": subfolder, "type": "input", "overwrite": "true"})
+        if response.status_code != 200:
+            raise ComfyUIError(f"image upload failed: {response.text[:300]}")
+        info = response.json()
+        return f"{info['subfolder']}/{info['name']}" if info.get("subfolder") else info["name"]
+
+    def run_workflow(self, workflow, should_stop=None):
         entry = self.wait_for(self.queue_prompt(workflow), should_stop=should_stop)
         return self.fetch_images(entry)
+
+    def resolve_checkpoint(self, checkpoint=None):
+        return checkpoint or pick_checkpoint(self.list_checkpoints())
+
+    def hardware(self):
+        from backend.comfyui.families import ComfyHardware
+        if self._hardware is None:
+            try:
+                self._hardware = ComfyHardware.from_stats(self.system_stats())
+            except requests.RequestException:
+                self._hardware = ComfyHardware()
+        return self._hardware
+
+    def components(self, model):
+        """Files that go with `model` (text encoder, VAE for diffusion models); raises if any are missing."""
+        from backend.comfyui import families
+        family = families.detect_family(model)
+        if family.loader == "checkpoint":
+            return families.Components(family, model)
+        if self._available is None:
+            self._available = families.available_models(self)
+        comps = families.resolve_components(model, self._available)
+        if not comps.ready:
+            raise ComfyUIError(f"{model} cannot run on this ComfyUI, missing: " + "; ".join(comps.missing))
+        return comps
+
+    def graph(self, model, prompt, steps=None, cfg=None, sampler=None, **kwargs):
+        """Graph for any supported family. Distilled modern models keep their tuned sampler settings."""
+        from backend.comfyui import families
+        comps = self.components(model)
+        if comps.family.loader == "diffusion":
+            steps = cfg = sampler = None
+        else:
+            sampler = comfy_sampler(sampler) if sampler else None
+        return families.build_graph(comps, prompt, steps=steps, cfg=cfg, sampler=sampler,
+                                    hardware=self.hardware(), compile=self.compile, **kwargs)
+
+    def txt2img(self, prompt, checkpoint=None, should_stop=None, negative_prompt="", width=512, height=512,
+                steps=20, cfg=7.0, seed=None, sampler="euler", batch_size=1, **kwargs):
+        if seed is None or seed == "" or int(seed) < 0:
+            seed = random.randint(0, 2 ** 32 - 1)
+        workflow = self.graph(self.resolve_checkpoint(checkpoint), prompt, steps=steps, cfg=cfg, sampler=sampler,
+                              negative_prompt=negative_prompt, width=int(width) // 8 * 8,
+                              height=int(height) // 8 * 8, seed=seed, batch_size=batch_size, **kwargs)
+        return self.run_workflow(workflow, should_stop=should_stop)
 
 
 def split_prompts(text):
@@ -170,11 +212,21 @@ def run_txt2img_params(params, client, image_callback=None, should_stop=None, ch
         for _ in range(max(1, int(getattr(params, "n_batch", 1) or 1))):
             if should_stop and should_stop():
                 return images
-            result = client.txt2img(prompt, checkpoint=checkpoint, should_stop=should_stop,
-                                    negative_prompt=params.negative_prompts or "",
-                                    width=params.W, height=params.H, steps=params.steps,
-                                    cfg=params.scale, seed=seed, sampler=params.sampler,
-                                    batch_size=getattr(params, "n_samples", 1) or 1)
+            init_image = getattr(params, "init_image", None) if getattr(params, "use_init", False) else None
+            if init_image:
+                # img2img (also used by the canvas hires batch for each tile)
+                from backend.comfyui.inpaint import img2img
+                source = Image.open(init_image).convert("RGB")
+                result = [img2img(client, source, prompt, checkpoint=checkpoint,
+                                  negative_prompt=params.negative_prompts or "", steps=params.steps,
+                                  cfg=params.scale, seed=seed if seed is not None else random.randint(0, 2 ** 32 - 1),
+                                  sampler=params.sampler, denoise=float(params.strength), should_stop=should_stop)]
+            else:
+                result = client.txt2img(prompt, checkpoint=checkpoint, should_stop=should_stop,
+                                        negative_prompt=params.negative_prompts or "",
+                                        width=params.W, height=params.H, steps=params.steps,
+                                        cfg=params.scale, seed=seed, sampler=params.sampler,
+                                        batch_size=getattr(params, "n_samples", 1) or 1)
             for image in result:
                 if getattr(params, "save_samples", False) and getattr(params, "outdir", None):
                     os.makedirs(params.outdir, exist_ok=True)

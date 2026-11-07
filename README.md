@@ -41,20 +41,72 @@ downloads a few GB of support models (BLIP, MiDaS) into `data/models/support`.
 | `--cpu` | install the CPU build of PyTorch |
 | `--test` | run the unit tests (`pytest` arguments may follow) |
 
-Set `AINODES_TORCH_INDEX` to use a different PyTorch wheel index (e.g. a ROCm one).
+The launcher picks the PyTorch build for your GPU: CUDA for NVIDIA, ROCm for AMD on Linux, XPU for
+Intel Arc / Xe, the standard build with Metal (MPS) on Apple Silicon, CPU otherwise. AMD on Windows has
+no ROCm PyTorch wheels, so there it runs on CPU; use the ComfyUI backend for GPU speed. Set
+`AINODES_TORCH_INDEX` to force another wheel index and `AINODES_DEVICE` (`cuda`, `xpu`, `mps`, `cpu`)
+to force a device. *Help ▸ About* shows what was detected.
 To update: `git pull`, then start as usual.
 
 Put Stable Diffusion 1.x / 2.x checkpoints into `data/models`, or download them from the
 Model Download tab.
 
+## Using the app
+
+aiNodes starts in **simple mode**: the model card, a prompt, the **Dream** button and the canvas.
+The **model card** at the top of the parameter panel shows where images are generated (local Stable
+Diffusion, a local FLUX / Krea model, or a ComfyUI server), the model, the image size, steps, CFG and seed,
+and how much GPU memory is free right now. Picking a model sets the steps, CFG and size it was made for;
+the hint line underneath names anything that is missing (a gated model's login, a ComfyUI VAE, ...). Turn on
+**Advanced** (the button in the parameter panel, *View ▸ Advanced Mode* or `Ctrl+Shift+A`) to show
+every option and the extra panels (settings, model download, image lab, prompt tools); the choice
+is remembered.
+
+The menu bar holds the everyday functions: new canvas, open image, open/save canvas projects and
+export the canvas as PNG (*File*); undo and delete (*Edit*); dream, stop, the ComfyUI switch and
+model loading (*Generate*); canvas modes (*Canvas*); themes, panels and full screen (*View*).
+*Help ▸ Keyboard Shortcuts* lists the shortcuts; `Ctrl+Enter` dreams from anywhere.
+
+*View ▸ Theme* offers **Light**, **Dark** and **System**, which follows your desktop's light/dark
+setting and switches along with it.
+
+## Models and memory
+
+Besides Stable Diffusion 1.x / 2.x, *Generate ▸ Native Model* runs current models in-process through
+diffusers: **FLUX.2 [klein] 4B** (free download), and, after accepting their licenses on Hugging Face
+and logging in with `huggingface-cli login`, **FLUX.2 [klein] 9B**, **FLUX.2 [dev]**, **Krea 2 Turbo** and
+**FLUX.3 [klein]**. Weights download on first use.
+
+Before loading, aiNodes measures the memory that is *actually free* on the GPU right now (other apps,
+a running ComfyUI and the desktop count) and keeps a reserve. Depending on that it loads the model fully,
+stores the weights as fp8 (half the memory, on any GPU except Apple), swaps components between GPU and
+RAM, or streams the transformer block by block. *Compile Model* compiles the transformer's repeated blocks
+with `torch.compile` where supported (NVIDIA, AMD ROCm, Intel XPU): the first image is slower, later ones
+faster.
+
+## Inpainting and outpainting
+
+The canvas inpaints (paint over an area with the inpaint brush) and outpaints, one tile at a time or as a
+batch (*Preview batch*, then *Run batch*), with every backend: the native SD 1.5 inpainting model, the
+modern native models, and any ComfyUI model. For models that were not trained for inpainting the
+area is pre-filled from its surroundings, generated with a feathered mask at the model's native resolution
+and blended back with a second light pass over the seam; only the masked area changes.
+
 ## Generate with ComfyUI
 
 aiNodes can hand txt2img jobs to a running [ComfyUI](https://github.com/comfyanonymous/ComfyUI) server
 instead of its own models, which also gives you every checkpoint ComfyUI can load (SDXL and newer).
-Open **System Settings**, tick **Generate with ComfyUI**, check the URL (default
+Tick *Generate ▸ Generate with ComfyUI* (or the same box in *Settings*), check the URL in *Settings* (default
 `http://127.0.0.1:8188`) and optionally name a checkpoint; empty picks the first one ComfyUI lists.
 The prompt box, negative prompt, size, steps, CFG, sampler, seed and batch settings are passed through,
 one prompt per line. Results show on the canvas and are saved to the txt2img output folder.
+
+*Generate ▸ ComfyUI Model* lists the image models on the server: SD / SDXL checkpoints and the modern
+diffusion models **Krea 2**, **FLUX.2** and **FLUX.3**, for which aiNodes picks the matching text encoder
+and VAE and the sampler settings from ComfyUI's official templates (distilled models keep their tuned
+steps and CFG). If a part is missing, the status bar names it (e.g. `flux2-vae` for FLUX.2). On GPUs
+with fp8 support, full-precision models load as fp8; *Compile Model* adds `TorchCompileModel`. FLUX.3
+needs a ComfyUI from October 2026 or newer.
 
 ## Development
 

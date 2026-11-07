@@ -42,9 +42,6 @@ class aiNodesPlugin:
         self.parent = parent
         os.environ["PL_TORCH_DISTRIBUTED_BACKEND"] = "gloo"
         self.training = FineTune()
-        sshFile="frontend/style/elegantDark.stylesheet"
-        with open(sshFile,"r") as fh:
-            self.training.w.setStyleSheet(fh.read())
 
 
     def initme(self):

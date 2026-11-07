@@ -32,6 +32,12 @@ __idleColor__ = QColor(91, 48, 232)
 __selColor__ = QColor(255, 102, 102)
 
 
+def set_paper_color(color):
+    """Fill color of the empty canvas area; set by the active theme."""
+    global __backgroudColor__
+    __backgroudColor__ = QColor(color)
+
+
 class Rectangle(object):
     def __init__(self, prompt, x, y, w, h, id, order=None, img_path=None, image=None, render_index=None, params=None):
 
@@ -583,10 +589,9 @@ class Canvas(QGraphicsView):
 
             # print(item)
             templist.append(item)
-        if filename != False:
-            data = filename
-        else:
-            data = self.getfile(save=True)
+        data = filename if filename else self.getfile(save=True)
+        if not data:
+            return
         with open(data, "w") as output:
             json.dump(templist, output, sort_keys=True, indent=4)
         print("File Saved")
@@ -640,12 +645,12 @@ class Canvas(QGraphicsView):
                 self.parent.parent.signals.image_loaded.emit(enc_image, mode, size, render_index)
 
 
-    def load_rects_from_json(self):
+    def load_rects_from_json(self, filename=None):
         # print('load_rects_from_json')
         # self.reset()
         # self.soft_reset()
 
-        data = self.getfile()
+        data = filename if filename else self.getfile()
 
         if data is not None:
             self.rectlist.clear()
@@ -692,7 +697,7 @@ class Canvas(QGraphicsView):
         self.tempbatch.clear()
         # self.rectlist.clear()
 
-        prompt_series = pd.Series([np.nan for a in range(int(self.rows) * int(self.cols))])
+        prompt_series = pd.Series([np.nan for a in range(int(self.rows) * int(self.cols))], dtype=object)
 
         prom = prompts
         if keyframes == '':
@@ -946,6 +951,9 @@ class Canvas(QGraphicsView):
                 self.parent.parent.ui_image.render_index = self.rectlist.index(items)
                 # print(items.render_index)
                 rect = QRect(items.x, items.y, self.w, self.h)
+                # sides of the tile that border other canvas content (left, top, right, bottom)
+                self.tile_inner_edges = (items.x > 0, items.y > 0, items.x + self.w < self.pixmap.width(),
+                                         items.y + self.h < self.pixmap.height())
                 image = self.pixmap.toImage()
                 newimage = image.copy(rect)
                 outpainter.begin(outpaintimage)
@@ -973,6 +981,8 @@ class Canvas(QGraphicsView):
         self.selected_item = id
         for x in self.rectlist:
             if x.id == id:
+                self.tile_inner_edges = (x.x > 0, x.y > 0, x.x + self.w < self.pixmap.width(),
+                                         x.y + self.h < self.pixmap.height())
 
                 for i in self.rectlist:
                     if x.y >= i.y - i.h and x.x >= i.x - i.w:

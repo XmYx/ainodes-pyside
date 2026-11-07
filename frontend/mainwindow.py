@@ -16,7 +16,7 @@ from datetime import datetime
 from uuid import uuid4
 import torch
 from PySide6.QtCore import QEasingCurve, Slot, QThreadPool, QDir, Signal, QObject
-from PySide6.QtWidgets import QMainWindow, QFileDialog, \
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, \
     QLabel
 from PySide6.QtGui import QIcon, QColor, QPixmap, QPainter, Qt, QShortcut, QKeySequence
 from PySide6 import QtCore, QtWidgets
@@ -29,7 +29,10 @@ from backend.prompt_ai.prompt_gen import AiPrompt
 
 
 from frontend import plugin_loader
-from frontend.ui_paint import PaintUI
+from frontend.ui_paint import PaintUI, set_paper_color
+from frontend.menubar import MainMenu
+from frontend.style.theme import ThemeManager
+from frontend.model_bar import ModelCard
 from frontend.ui_classes import SystemSetup, ThumbsUI, AnimKeyEditor
 from frontend.unicontrol import UniControl
 from frontend.ui_krea import Krea
@@ -137,7 +140,7 @@ class MainWindow(QMainWindow):
         self.model_download = ModelDownload(self)
         self.model_download_ui = self.model_download.model_download
         self.widgets[self.current_widget].w.dockWidget.setWindowTitle("Parameters")
-        self.system_setup.w.dockWidget.setWindowTitle("⚙")
+        self.system_setup.w.dockWidget.setWindowTitle("Settings")
         self.image_lab_ui.w.dockWidget.setWindowTitle("Image Lab")
         self.lexicart.w.dockWidget.setWindowTitle("Lexica Art")
         self.krea.w.dockWidget.setWindowTitle("Krea")
@@ -191,10 +194,38 @@ class MainWindow(QMainWindow):
 
 
         self.gpu_info()
-        self.shortcut = QShortcut(QKeySequence("Ctrl+Enter"), self)
-        self.shortcut.activated.connect(self.task_switcher)
+
+        self.theme_manager = ThemeManager(QApplication.instance(), getattr(gs.system, 'theme', 'system'))
+        self.theme_manager.apply()
+        self.apply_canvas_theme()
+        advanced_button = self.widgets[self.current_widget].w.lucky
+        advanced_button.setText("Advanced")
+        advanced_button.setCheckable(True)
+        advanced_button.setToolTip("Show every option and panel (Ctrl+Shift+A)")
+        self.menu = MainMenu(self, self.theme_manager)
+        controls = self.widgets[self.current_widget].w
+        self.model_card = ModelCard(self, controls)
+        controls.dockWidgetContents.layout().insertWidget(0, self.model_card)
+        controls.dockWidgetContents.layout().insertSpacing(1, 6)
+        self.system_setup.w.ok.clicked.connect(self.menu.sync)
+        self.advanced_mode_changed()
 
         self.check_first_run()
+
+    def set_advanced_mode(self, enabled):
+        if bool(enabled) == self.default_hidden:  # default_hidden means simple mode
+            self.show_default()
+
+    def advanced_mode_changed(self):
+        # hide_default / show_default run before the menu exists during startup
+        if not hasattr(self, 'menu'):
+            return
+        self.widgets[self.current_widget].w.lucky.setChecked(not self.default_hidden)
+        self.menu.sync()
+
+    def apply_canvas_theme(self):
+        set_paper_color(self.theme_manager.token('paper'))
+        self.canvas.canvas.redraw()
 
 
     def check_first_run(self):
@@ -640,6 +671,7 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
 
 
         self.widgets[self.current_widget].w.base_setup.setVisible(False)
+        self.widgets[self.current_widget].w.scrollArea.setVisible(False)
         self.widgets[self.current_widget].w.advanced_toppics.setVisible(False)
         self.widgets[self.current_widget].w.negative_prompts.setVisible(False)
         self.widgets[self.current_widget].w.keyframes.setVisible(False)
@@ -678,6 +710,7 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
         self.thumbs.w.dockWidget.setVisible(False)
 
         self.default_hidden = True
+        self.advanced_mode_changed()
 
     def set_all_unchecked(self):
         self.widgets[self.current_widget].w.toggle_sampler.setChecked(False)
@@ -696,6 +729,7 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
                 self.sessionparams.update_system_params()
 
             self.widgets[self.current_widget].w.base_setup.setVisible(True)
+            self.widgets[self.current_widget].w.scrollArea.setVisible(True)
             self.widgets[self.current_widget].w.advanced_toppics.setVisible(True)
             self.widgets[self.current_widget].w.negative_prompts.setVisible(True)
             self.system_setup.w.dockWidget.setVisible(True)
@@ -719,6 +753,7 @@ max_allocated_memory: {torch.cuda.max_memory_allocated()}
 
             self.set_hires_strength_visablity()
             self.default_hidden = False
+            self.advanced_mode_changed()
         else:
             if gs.system.show_settings != False:
                 gs.system.show_settings = False

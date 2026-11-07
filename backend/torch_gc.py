@@ -4,9 +4,8 @@ try:
 
 
     def torch_gc():
-        gc.collect()
-        torch.cuda.empty_cache()
-        torch.cuda.ipc_collect()
+        from backend.hardware import empty_cache
+        empty_cache()
 except:
     def torch_gc():
         pass

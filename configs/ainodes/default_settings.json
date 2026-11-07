@@ -21,8 +21,8 @@
     "realesrgan_model_file": "data/models/support/upscale/RealESRGAN_x4plus.pth",
     "gfpgan_model_file": "data/models/support/upscale/GFPGANv1.3.pth",
     "blip_large_model_file": "data/models/support/model_large_caption.pth",
-    "sd_model_file": "data/models/v1-5-pruned-emaonly.ckpt",
-    "sd_inpaint_model_file": "data/models/sd-v1-5-inpainting.ckpt",
+    "sd_model_file": "data/models/v1-5-pruned-emaonly.safetensors",
+    "sd_inpaint_model_file": "data/models/sd-v1-5-inpainting.safetensors",
     "v1_inference_yaml_file": "configs/stable-diffusion/v1-inference.yaml",
     "v2_inference_yaml_file": "configs/stable-diffusion/v2-inference.yaml",
     "v2_upscale_inference_yaml_file": "backend/sdv2/v2_upscale_inference_yaml_file.yaml",
@@ -57,7 +57,11 @@
     "show_settings": false,
     "use_comfyui": false,
     "comfyui_url": "http://127.0.0.1:8188",
-    "comfyui_checkpoint": ""
+    "comfyui_checkpoint": "",
+    "theme": "system",
+    "comfyui_compile": false,
+    "native_model": "",
+    "native_compile": false
   },
   "diffusion": {
     "angle": "0:(0)",

@@ -7,8 +7,8 @@ import requests
 from PIL import Image
 
 from backend.comfyui import client as comfy
-from backend.comfyui.client import (ComfyUIClient, ComfyUIError, build_txt2img_workflow, comfy_sampler,
-                                    pick_checkpoint, run_txt2img_params, split_prompts)
+from backend.comfyui.client import (ComfyUIClient, ComfyUIError, comfy_sampler, pick_checkpoint,
+                                    run_txt2img_params, split_prompts)
 
 
 def png_bytes(color=(255, 0, 0), size=(8, 8)):
@@ -48,23 +48,30 @@ class FakeSession:
         return self.routes.get("POST " + url.split("8188", 1)[1], FakeResponse({}))
 
 
-def test_workflow_wires_nodes_and_rounds_size():
-    wf = build_txt2img_workflow("a cat", "model.safetensors", negative_prompt="blurry",
-                                width=515, height=770, steps=12, cfg=5.5, seed=7, sampler="euler_a")
-    assert wf["1"]["inputs"]["ckpt_name"] == "model.safetensors"
-    assert wf["2"]["inputs"]["text"] == "a cat"
-    assert wf["3"]["inputs"]["text"] == "blurry"
-    assert (wf["4"]["inputs"]["width"], wf["4"]["inputs"]["height"]) == (512, 768)
-    sampler = wf["5"]["inputs"]
+def capture_txt2img(**kwargs):
+    client = ComfyUIClient(session=FakeSession({}))
+    sent = []
+    client.run_workflow = lambda wf, should_stop=None: sent.append(wf) or []
+    client.txt2img("a cat", checkpoint="model.safetensors", **kwargs)
+    return sent[0]
+
+
+def test_txt2img_graph_uses_ui_settings_for_checkpoints():
+    wf = capture_txt2img(negative_prompt="blurry", width=515, height=770, steps=12, cfg=5.5, seed=7, sampler="euler_a")
+    by_type = {n["class_type"]: n["inputs"] for n in wf.values()}
+    assert by_type["CheckpointLoaderSimple"]["ckpt_name"] == "model.safetensors"
+    assert (by_type["EmptyLatentImage"]["width"], by_type["EmptyLatentImage"]["height"]) == (512, 768)
+    sampler = by_type["KSampler"]
     assert sampler["seed"] == 7 and sampler["steps"] == 12 and sampler["cfg"] == 5.5
     assert sampler["sampler_name"] == "euler_ancestral"
-    assert sampler["positive"] == ["2", 0] and sampler["negative"] == ["3", 0]
-    assert wf["7"]["class_type"] == "SaveImage"
+    texts = [n["inputs"]["text"] for n in wf.values() if n["class_type"] == "CLIPTextEncode"]
+    assert texts == ["a cat", "blurry"]
 
 
 @pytest.mark.parametrize("seed", [None, "", -1])
-def test_workflow_picks_random_seed_when_unset(seed):
-    value = build_txt2img_workflow("x", "m", seed=seed)["5"]["inputs"]["seed"]
+def test_txt2img_picks_random_seed_when_unset(seed):
+    wf = capture_txt2img(seed=seed)
+    value = next(n["inputs"]["seed"] for n in wf.values() if n["class_type"] == "KSampler")
     assert 0 <= value < 2 ** 32
 
 

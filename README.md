@@ -1,4 +1,4 @@
-# aiNodes - Stable Diffusion Desktop
+# aiNodes - AI Image Desktop
 
 <p align="left">
 <a href="https://github.com/XmYx/ainodes-pyside/commits"><img alt="Last Commit" src="https://img.shields.io/github/last-commit/XmYx/ainodes-pyside"></a>
@@ -10,10 +10,27 @@
 
 Please join our Discord for further information: https://discord.gg/XDQm9pk5pd
 Support us on Patreon: https://www.patreon.com/ainodes
-Welcome to aiNodes, a desktop GUI with Deforum Art, Outpaint, Upscalers, and many more.
 
+aiNodes is a desktop app for AI image making: text to image, an infinite canvas for inpainting and
+outpainting, Deforum animation, upscalers and an image lab. It runs Stable Diffusion 1.x / 2.x and current
+models such as **FLUX.2**, **FLUX.3** and **Krea 2** on your own GPU, or hands the work to a
+**ComfyUI** server.
 
-![aiNodes main window](installImages/img.png)
+![aiNodes in simple mode, dark theme](docs/images/ui_simple_dark.png)
+
+## What's new in 1.0
+
+- **Model card**: backend, model, size, steps, CFG, seed and free GPU memory always in view.
+- **Current models**: FLUX.2 [klein] / [dev], FLUX.3 [klein] and Krea 2, locally through diffusers or on
+  ComfyUI, with each model's recommended settings applied when you pick it.
+- **Uses the memory you actually have**: free VRAM is measured before every load; models go fully on the
+  GPU, as fp8 weights, or swapped / streamed from RAM. NVIDIA, AMD (ROCm), Intel (XPU), Apple (MPS) and CPU.
+- **Inpaint and outpaint that blend**: single tiles and whole canvas batches on every backend, without
+  visible seams.
+- **ComfyUI backend** for SD, SDXL and the modern model families, with fp8 and `torch.compile`.
+- **New look**: light, dark and system themes, a full menu bar, simple and advanced modes.
+- **One-step install**: `start.sh` / `start.bat` build the environment for your GPU and start the app.
+- Ported to Python 3.12, PyTorch 2.11, transformers 5, diffusers 0.42 and PySide6 6.12; unit tests included.
 
 ## Install and run
 
@@ -57,7 +74,11 @@ aiNodes starts in **simple mode**: the model card, a prompt, the **Dream** butto
 The **model card** at the top of the parameter panel shows where images are generated (local Stable
 Diffusion, a local FLUX / Krea model, or a ComfyUI server), the model, the image size, steps, CFG and seed,
 and how much GPU memory is free right now. Picking a model sets the steps, CFG and size it was made for;
-the hint line underneath names anything that is missing (a gated model's login, a ComfyUI VAE, ...). Turn on
+the hint line underneath names anything that is missing (a gated model's login, a ComfyUI VAE, ...).
+
+<p align="center"><img alt="The model card with FLUX.2 [klein] selected" src="docs/images/model_card.png" width="560"></p>
+
+Turn on
 **Advanced** (the button in the parameter panel, *View ▸ Advanced Mode* or `Ctrl+Shift+A`) to show
 every option and the extra panels (settings, model download, image lab, prompt tools); the choice
 is remembered.
@@ -66,6 +87,8 @@ The menu bar holds the everyday functions: new canvas, open image, open/save can
 export the canvas as PNG (*File*); undo and delete (*Edit*); dream, stop, the ComfyUI switch and
 model loading (*Generate*); canvas modes (*Canvas*); themes, panels and full screen (*View*).
 *Help ▸ Keyboard Shortcuts* lists the shortcuts; `Ctrl+Enter` dreams from anywhere.
+
+![Advanced mode, light theme](docs/images/ui_advanced_light.png)
 
 *View ▸ Theme* offers **Light**, **Dark** and **System**, which follows your desktop's light/dark
 setting and switches along with it.
@@ -91,6 +114,14 @@ batch (*Preview batch*, then *Run batch*), with every backend: the native SD 1.5
 modern native models, and any ComfyUI model. For models that were not trained for inpainting the
 area is pre-filled from its surroundings, generated with a feathered mask at the model's native resolution
 and blended back with a second light pass over the seam; only the masked area changes.
+
+| FLUX.2 [klein] 4B, local: canvas batch of 6 tiles (24 s on an RTX 4090) | Krea 2 on ComfyUI: same batch (91 s) |
+| --- | --- |
+| ![Outpaint batch with FLUX.2 klein](docs/images/outpaint_batch_flux2_klein.jpg) | ![Outpaint batch with Krea 2 on ComfyUI](docs/images/outpaint_batch_krea2_comfyui.jpg) |
+
+| Text to image, FLUX.2 [klein] 4B (1024 px, 1.3 s) | Outpainting the right half of the scaled-down image |
+| --- | --- |
+| ![Text to image with FLUX.2 klein](docs/images/txt2img_flux2_klein.jpg) | ![Outpaint with FLUX.2 klein](docs/images/outpaint_flux2_klein.jpg) |
 
 ## Generate with ComfyUI
 
@@ -127,10 +158,11 @@ to point to a different directory.
 Some modules download data the first time they are used and cannot report progress; check the
 terminal for output before assuming it hangs.
 
-![aiNodes grid render](installImages/img2.png)
-
-
 # Feature List
+- current models: FLUX.2 [klein] / [dev], FLUX.3 [klein], Krea 2 (local through diffusers or on ComfyUI)
+- ComfyUI backend for SD 1.x / 2.x, SDXL and the modern families, fp8 weights and torch.compile
+- hardware detection and VRAM planning for NVIDIA, AMD, Intel, Apple and CPU
+- model card with the essential settings, light / dark / system themes, menu bar, simple and advanced mode
 - Deforum as render Backend
 - Deforum like prompt weighting
 - text to image
@@ -168,10 +200,4 @@ terminal for output before assuming it hangs.
 
 All this is hiding behind that very harmless looking UI once you installed it and run it for the first time.
 
-Click on show / hide options to enable the full power of this UI to help you make more art in less time
-
-
-
-
-
-
+Turn on **Advanced** to enable the full power of this UI to help you make more art in less time.

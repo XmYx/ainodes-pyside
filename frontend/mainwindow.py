@@ -321,7 +321,6 @@ sometimes it makes the APP feel frozen.<br /><br /></div>
         self.image_lab.signals.ebl_model_merge_start.connect(self.image_lab.ebl_model_merge_start_thread)
         self.image_lab.signals.run_aestetic_prediction.connect(self.image_lab.run_aestetic_prediction_thread)
         self.image_lab.signals.run_interrogation.connect(self.image_lab.run_interrogation_thread)
-        self.image_lab.signals.run_volta_accel.connect(self.image_lab.run_volta_accel_thread)
         self.image_lab.signals.run_upscale_20.connect(self.image_lab.run_upscale_20_thread)
         self.image_lab.signals.crop_image.connect(self.image_lab.crop_image)
         self.image_lab.signals.show_crop_image.connect(self.image_lab.show_crop_image)

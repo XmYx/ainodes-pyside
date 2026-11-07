@@ -22,7 +22,6 @@ from backend.singleton import singleton
 from backend.upscale import Upscale
 from backend.watermark import add_watermark
 
-#from volta_accelerate import convert_to_onnx, convert_to_trt
 gs = singleton
 
 interrogator = backend.interrogate.InterrogateModels("interrogate")
@@ -161,7 +160,6 @@ class Callbacks(QObject):
     ebl_model_merge_start = Signal()
     run_aestetic_prediction = Signal()
     run_interrogation = Signal()
-    run_volta_accel = Signal()
     run_upscale_20 = Signal()
     image_text_ready = Signal(str)
     crop_image = Signal()
@@ -289,8 +287,6 @@ class ImageLab():  # for signaling, could be a QWidget  too
 
 
     @Slot()
-    def run_volta_accel_thread(self):
-        self.parent.run_as_thread(self.run_volta_accel)
 
     @Slot()
     def ebl_model_merge_start_thread(self):
@@ -349,12 +345,7 @@ class ImageLab():  # for signaling, could be a QWidget  too
                noise_level=self.imageLab.w.noise_level.value()
         )
 
-    def signal_run_volta_accel(self):
-        self.signals.run_volta_accel.emit()
 
-    def select_accel_model(self):
-        accel_model_filename = QFileDialog.getOpenFileName()[0]
-        self.imageLab.w.accel_path.setText(accel_model_filename)
 
 
     def signal_run_interrogation(self):

@@ -1,5 +1,6 @@
 import os
 import sys
+import backend.compat  # noqa: F401  shims for moved library APIs, must run before model imports
 #import backend.hypernetworks.modules.safe
 
 script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -21,7 +22,6 @@ path_dirs = [
     (os.path.join(sd_path, 'pytorch3d-lite'), 'py3d_tools.py', 'pytorch-lite', []),
     (os.path.join(sd_path, 'realesrgan'), 'inference_realesrgan.py', 'realesrgan', []),
     (os.path.join(sd_path, 'improved-aesthetic-predictor'), 'train_predictor.py', 'improved-aesthetic-predictor', []),
-    (os.path.join(sd_path, 'volta-ml'), 'volta_accelerate.py', 'volta-accelerate', []),
 ]
 paths = {}
 

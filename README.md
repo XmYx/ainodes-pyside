@@ -13,42 +13,69 @@ Support us on Patreon: https://www.patreon.com/ainodes
 Welcome to aiNodes, a desktop GUI with Deforum Art, Outpaint, Upscalers, and many more.
 
 
-![img.png](installImages/img.png)
+![aiNodes main window](installImages/img.png)
 
-This product does not yet have a sophisticated installer mechanics.
-So you have to follow the few but very simple installation steps
+## Install and run
 
-Do not use admin right for the installation, run every step with your normal user
+You need **git** and either **[uv](https://docs.astral.sh/uv/)** (recommended, it also fetches the right
+Python for you) or **Python 3.10 - 3.12**. An NVIDIA GPU is recommended; Apple Silicon runs on MPS and
+anything else falls back to CPU.
 
-1. Install Conda, download from here https://docs.conda.io/en/latest/miniconda.html
-2. Install GIT https://git-scm.com/download/win.
-3. Once Conda is installed 
-4. clone your copy of aiNodes with git clone https://github.com/XmYx/ainodes-pyside
-5. with your explorer navigate to the folder where you cloned aiNodes
-6. Double-click on clean-install.bat and wait for it to finish, It will start the aiNodes App at the very end of the install
-7. Next time you want to start it again double-click on start.bat
+```bash
+git clone https://github.com/XmYx/ainodes-pyside
+cd ainodes-pyside
+./start.sh          # Linux and macOS
+```
 
-If you like to update your install, do a git pull with your version of GIT
-and then run clean-install.bat again by double-clicking it just to be sure any new module will get installed
+On Windows double-click `start.bat` (or run it from a terminal). Do not use admin rights.
 
-So welcome to the one (double click) install of aiNodes
+The first start creates `.venv`, installs PyTorch (CUDA 12.8 build when `nvidia-smi` is found) and
+everything in `requirements.txt`, and clones the helper repos (BLIP, MiDaS, taming, ...) into `src/`.
+Later starts skip all of that unless `requirements.txt` changed. On the first launch the app also
+downloads a few GB of support models (BLIP, MiDaS) into `data/models/support`.
 
-![img.png](installImages/img2.png)
+| Option | What it does |
+| --- | --- |
+| `--install-only` | prepare the environment without starting the app |
+| `--reinstall` | reinstall all dependencies |
+| `--cpu` | install the CPU build of PyTorch |
+| `--test` | run the unit tests (`pytest` arguments may follow) |
 
+Set `AINODES_TORCH_INDEX` to use a different PyTorch wheel index (e.g. a ROCm one).
+To update: `git pull`, then start as usual.
+
+Put Stable Diffusion 1.x / 2.x checkpoints into `data/models`, or download them from the
+Model Download tab.
+
+## Generate with ComfyUI
+
+aiNodes can hand txt2img jobs to a running [ComfyUI](https://github.com/comfyanonymous/ComfyUI) server
+instead of its own models, which also gives you every checkpoint ComfyUI can load (SDXL and newer).
+Open **System Settings**, tick **Generate with ComfyUI**, check the URL (default
+`http://127.0.0.1:8188`) and optionally name a checkpoint; empty picks the first one ComfyUI lists.
+The prompt box, negative prompt, size, steps, CFG, sampler, seed and batch settings are passed through,
+one prompt per line. Results show on the canvas and are saved to the txt2img output folder.
+
+## Development
+
+```bash
+./start.sh --test           # unit tests; the ComfyUI test runs only when a server is reachable
+./start.sh --test -m "not slow"
+```
+
+`backend/compat.py` holds the shims that keep the bundled 2022/2023 model code working on current
+torch, transformers and pytorch_lightning releases.
 
 # F.A.Q:
 
-1. I have the following error: RuntimeError: failed to find interpreter for Builtin discover of python_spec='python3.10'
-Solution: Please make sure you have Python version 3.10 installed on your system and added to your PATH, or in your conda environment you are running the launcher from.
-https://realpython.com/add-python-to-path/
-2. Why I have access denied error when downloading the files from huggingface to the user\.cache folder
-Solution can be to rename the existing folder to allow creating a new one, delete the existing one is kind the same but more agressive
-also you can use HF_DATASETS_CACHE="/path/to/another/directory" as environment variable to point to a different folder
-3. Why I get an SSL Error when starting the App: AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'
-Solution is to downgrade the SSL version of the installed conda to a working one, 
-We did not find how this happens to be installed wrong in the first place. Its a pure conda issue we can not fix.
-with this you can downgrade the lib in question, just run this in the conda prompt python -m pip install cryptography==38.0.4
+1. Why do I get access denied when files are downloaded from Hugging Face into the user `.cache` folder?
+Rename or delete the existing cache folder so a new one can be created, or set `HF_HOME`
+to point to a different directory.
+2. The app looks frozen.
+Some modules download data the first time they are used and cannot report progress; check the
+terminal for output before assuming it hangs.
 
+![aiNodes grid render](installImages/img2.png)
 
 
 # Feature List

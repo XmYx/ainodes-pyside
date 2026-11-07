@@ -1,36 +1,31 @@
 @echo off
+rem aiNodes for Windows: creates .venv on first run, then starts the app.
+rem Options: --install-only, --reinstall, --test, --cpu (see launcher.py)
+setlocal
+cd /d "%~dp0"
 
-rem Check for Anaconda in the system profile
-if exist "%ProgramData%\Anaconda3\Scripts\activate.bat" (
-  call "%ProgramData%\Anaconda3\Scripts\activate.bat" activate ai-nodes
-  goto end
+where uv >nul 2>nul
+if %ERRORLEVEL% == 0 (
+    uv run --no-project --python 3.12 python launcher.py %*
+    goto end
 )
 
-rem Check for Anaconda in the user profile
-if exist "%userprofile%\Anaconda3\Scripts\activate.bat" (
-  call "%userprofile%\Anaconda3\Scripts\activate.bat" activate ai-nodes
-  goto end
+for %%V in (3.12 3.11 3.10) do (
+    py -%%V -c "" >nul 2>nul
+    if not errorlevel 1 (
+        py -%%V launcher.py %*
+        goto end
+    )
 )
 
-rem Check for Miniconda in the system profile
-if exist "%ProgramData%\Miniconda3\Scripts\activate.bat" (
-  call "%ProgramData%\Miniconda3\Scripts\activate.bat" activate ai-nodes
-  goto end
+python -c "import sys; sys.exit(not (3, 10) <= sys.version_info[:2] <= (3, 12))" >nul 2>nul
+if not errorlevel 1 (
+    python launcher.py %*
+    goto end
 )
 
-rem Check for Miniconda in the user profile
-if exist "%userprofile%\Miniconda3\Scripts\activate.bat" (
-  call "%userprofile%\Miniconda3\Scripts\activate.bat" activate ai-nodes
-  goto end
-)
-echo Error: Conda was not found in either the system or user profile.
+echo aiNodes needs Python 3.10-3.12 or uv (https://docs.astral.sh/uv/).
 pause
-goto end
 
 :end
-
-
-set PYSIDE_DESIGNER_PLUGINS = '.'
-
-call activate ai-nodes
-call python start.py
+endlocal

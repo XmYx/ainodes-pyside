@@ -54,7 +54,10 @@
     "cache_dir": "data/transformers_cache",
     "db_dir": "data/db",
     "update_model_data_on_startup": false,
-    "show_settings": false
+    "show_settings": false,
+    "use_comfyui": false,
+    "comfyui_url": "http://127.0.0.1:8188",
+    "comfyui_checkpoint": ""
   },
   "diffusion": {
     "angle": "0:(0)",

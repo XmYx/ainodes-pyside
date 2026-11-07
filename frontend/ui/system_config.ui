@@ -153,6 +153,37 @@
             </widget>
            </item>
            <item>
+            <widget class="QCheckBox" name="use_comfyui">
+             <property name="text">
+              <string>Generate with ComfyUI</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_comfyui_url">
+             <property name="text">
+              <string>ComfyUI URL</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="comfyui_url">
+             <property name="text">
+              <string>http://127.0.0.1:8188</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_comfyui_checkpoint">
+             <property name="text">
+              <string>ComfyUI checkpoint (empty: first available)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="comfyui_checkpoint"/>
+           </item>
+           <item>
             <widget class="QLabel" name="label_26">
              <property name="text">
               <string>Textual Inversion</string>

@@ -30,6 +30,7 @@ def load_default():
 
 def load_settings_json():
     db_base.check_settings_db_status()
+    settings = []
     if gs.db_settings_present is True:
         settings = setting_db.get_last_settings()
     # load default anyways to have a bseline of the valid params

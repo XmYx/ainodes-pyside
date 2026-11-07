@@ -87,7 +87,7 @@ parser.add_argument("--ui-debug-mode", action='store_true', help="Don't load mod
 parser.add_argument("--device-id", type=str, help="Select the default CUDA device to use (export CUDA_VISIBLE_DEVICES=0,1,etc might be needed before)", default=None)
 parser.add_argument("--administrator", action='store_true', help="Administrator rights", default=False)
 
-cmd_opts = parser.parse_args()
+cmd_opts, _ = parser.parse_known_args()  # the app and Qt take their own args
 restricted_opts = {
     "samples_filename_pattern",
     "directories_filename_pattern",

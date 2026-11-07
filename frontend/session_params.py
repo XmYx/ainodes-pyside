@@ -71,7 +71,7 @@ class SessionParams():
             except Exception as e:
                 continue
             try:
-                gs.system.__dict__[key] = value
+                gs.system.__dict__[key] = self.system_params[key]
             except:
                 pass
         setting_db.save_settings()

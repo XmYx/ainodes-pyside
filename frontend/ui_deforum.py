@@ -77,6 +77,9 @@ class Deforum_UI(QObject):
 
     def run_it(self, image_callback):
         random.seed(secrets.randbelow(4294967295))
+        if getattr(gs.system, 'use_comfyui', False):
+            self.run_comfyui(image_callback)
+            return
         self.deforum_six.run_deforum_six(W=int(self.params.W),
                                          H=int(self.params.H),
                                          seed=int(self.params.seed) if self.params.seed != '' else self.params.seed,
@@ -252,6 +255,19 @@ class Deforum_UI(QObject):
             self.params.seed = seeder.get_strong_seed(4294967295)
 
 
+
+    def run_comfyui(self, image_callback):
+        from backend.comfyui.client import ComfyUIClient, ComfyUIError, run_txt2img_params
+        client = ComfyUIClient(getattr(gs.system, 'comfyui_url', None))
+        self.status_bar_update(f'Generating on ComfyUI at {client.base_url}')
+        try:
+            images = run_txt2img_params(self.params, client, image_callback=image_callback,
+                                        should_stop=lambda: gs.stop_all,
+                                        checkpoint=getattr(gs.system, 'comfyui_checkpoint', '') or None)
+            self.status_bar_update(f'ComfyUI finished, {len(images)} image(s)')
+        except (ComfyUIError, OSError) as e:
+            print('ComfyUI generation failed:', e)
+            self.status_bar_update(f'ComfyUI generation failed: {e}')
 
     def multi_dim_loop(self, image_callback):
         ints_vals=['W','H','seed','steps', 'n_batch','n_samples','mean_scale','var_scale','exposure_scale','exposure_target','colormatch_n_colors', 'ignore_sat_weight','clip_scale','aesthetics_scale','cutn', 'init_mse_scale', 'blue_scale',]

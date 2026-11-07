@@ -71,7 +71,7 @@ class LexicArt(QObject):
 
 
         for url in imagelist:
-            r = requests.get(url)
+            r = requests.get(url, timeout=30)
             if r.status_code == 200:
                 print('requested url:', url)
                 r.raw.decode_content = True
